@@ -40,6 +40,10 @@ class  Diario extends Model
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_id', 'sucursal_id');
     }
+    public function movimientocaja()
+    {
+        return $this->belongsTo(Movimiento_Caja::class, 'diario_id', 'diario_id');
+    }
     public function anticipo()
     {
         return $this->belongsTo(Anticipo_Cliente::class, 'diario_id', 'diario_id');

@@ -479,16 +479,19 @@ class notaEntregaController extends Controller
             }
             
             $ntaux= $nentrega;
-            foreach ($nentrega->detalle as $detalle) {
-                $detalle->delete();
-                $auditoria->registrarAuditoria('Eliminacion del detalle de Nota de entrega de nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);
-                $detalle->movimiento->delete();
-                $auditoria->registrarAuditoria('Eliminacion del Movimiento de producto'.$detalle->producto->producto_nombre.' con nota de entrega N° '.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);  
+            if (isset($nentrega->diariocosto)) {
+                foreach ($nentrega->diariocosto->detalles as $diariodetalle) {
+                    $diariodetalle->delete();
+
+                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$nentrega->diario->diario_codigo.' con nota de entrega N°'.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion del detalle diario con Permiso con id -> '.$id);
+                }
             }
-            
+           
             if (isset($nentrega->diario)) {
                 foreach ($nentrega->diario->detalles as $diariodetalle) {
+                    
                     $diariodetalle->delete();
+
                     $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$nentrega->diario->diario_codigo.' con nota de entrega N°'.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion del detalle diario con Permiso con id -> '.$id);
                 }
                 if (isset($nentrega->diario->pagocuentaCobrar)) {
@@ -503,6 +506,8 @@ class notaEntregaController extends Controller
                     $aux=$nentrega->diario->pagocuentaCobrar;
                     $nentrega->diario->pagocuentaCobrar->delete();
                     $general->registrarAuditoria('Eliminacion del pago de la cuenta por cobrar por Nota de entrega numero: -> '.$nentrega->nc_numero, $id, 'Tipo '.$aux->cuenta_tipo.' con Descripcion -> '.$aux->cuenta_descripcion.' Con el valor-> '.$aux->cuenta_monto);
+                    $nentrega->diario->movimientocaja->delete();
+                    $general->registrarAuditoria('Eliminacion del Movimiento Caja por Nota de entrega numero: -> '.$nentrega->nc_numero, $id, 'Tipo '.$aux->cuenta_tipo.' con Descripcion -> '.$aux->cuenta_descripcion.' Con el valor-> '.$aux->cuenta_monto);
                 }
                
 
@@ -511,14 +516,28 @@ class notaEntregaController extends Controller
                 $nentrega->diario->delete();
                 $auditoria->registrarAuditoria('Eliminacion del diario con nota de entrega N°'.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion  con Permiso con id -> '.$id);
             }
-            foreach ($nentrega->cuentaCobrar->detallepago as $detalle) {
-                    
-                    $detalle->delete();
-                    $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por cobrar  '.$nentrega->cuentaCobrar->cuenta_descripcion.' con nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion del detalle diario con Permiso con id -> '.$id);  
+            foreach ($nentrega->detalle as $detalle) {
+                $aucdeta=Detalle_NE::findOrFail($detalle->detalle_id);
+                $aucdeta->movimiento_id=null;
+                $aucdeta->save();
+
+                $detalle->movimiento->delete();
+                $auditoria->registrarAuditoria('Eliminacion del Movimiento de producto'.$detalle->producto->producto_nombre.' con nota de entrega N° '.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);  
+
+                $detalle->delete();
+                $auditoria->registrarAuditoria('Eliminacion del detalle de Nota de entrega de nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);
+                
             }
-            foreach ($nentrega->cuentaCobrar->detallepago as $detalle) {
-                $detalle->pagoCXC->delete();
-                $auditoria->registrarAuditoria('Eliminacion del Pago ceuntas por cobrar'.$nentrega->cuentaCobrar->cuenta_descripcion.' con nota de entrega N° '.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion del detalle diario con Permiso con id -> '.$id);  
+
+            if ($nentrega->nt_tipo_pago=="EN EFECTIVO") {
+                foreach ($nentrega->cuentaCobrar->detallepago as $detalle) {
+                    $detalle->pagoCXC->delete();
+                    $auditoria->registrarAuditoria('Eliminacion del Pago ceuntas por cobrar'.$nentrega->cuentaCobrar->cuenta_descripcion.' con nota de entrega N° '.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion del detalle diario con Permiso con id -> '.$id);
+                }
+                foreach ($nentrega->cuentaCobrar->detallepago as $detalle) {
+                    $detalle->delete();
+                    $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por cobrar  '.$nentrega->cuentaCobrar->cuenta_descripcion.' con nota de entrega N°'.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion del detalle diario con Permiso con id -> '.$id);
+                }
             }
             $ntaux= $nentrega;
             $ntaux->cuenta_id=NULL;

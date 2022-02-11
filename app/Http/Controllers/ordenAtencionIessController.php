@@ -1,0 +1,210 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Arqueo_Caja;
+use App\Models\Bodega;
+use App\Models\Documento_Anulado;
+use App\Models\Documento_Orden_Atencion;
+use App\Models\Empresa;
+use App\Models\Especialidad;
+use App\Models\Forma_Pago;
+use App\Models\Medico_Especialidad;
+use App\Models\Orden_Atencion;
+use App\Models\Paciente;
+use App\Models\Punto_Emision;
+use App\Models\Sucursal;
+use App\Models\Tipo_Dependencia;
+use App\Models\Tipo_Seguro;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use PDF;
+
+class ordenAtencionIessController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+    public function nuevaOrdenIess()
+    {
+        try{ 
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $sucursales=Sucursal::Sucursales()->get();
+            $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first(); 
+            $pacientes = Paciente::Pacientes()->get();    
+            $especialidades = Especialidad::Especialidades()->get();
+            $ordenesAtencion = Orden_Atencion::Ordenes()->get();
+            $secuencial=1;
+            $secuencialAux = Orden_Atencion::Ordenes()->max('orden_secuencial');
+            if($secuencialAux){
+                $secuencial=$secuencialAux+1;
+            }
+            return view('admin.agendamientoCitas.ordenAtencionIess.nuevaOrdenIess',['cajaAbierta'=>$cajaAbierta,'bodegas'=>Bodega::Bodegas()->get(),'formasPago'=>Forma_Pago::formaPagos()->get(),'seguros'=>Tipo_Seguro::tipos()->get(),'documentos'=>Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get(),'tiposDependencias'=>Tipo_Dependencia::TiposDependencias()->get(),'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'sucursales'=>$sucursales,'pacientes'=>$pacientes,'especialidades'=>$especialidades,'ordenesAtencion'=>$ordenesAtencion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+           
+            $general = new generalController();
+            $empresa = Empresa::empresa()->first();
+        
+            /***************SABER SI SE GENERAR UN ASIENTO DE COSTO****************/
+            $cierre = $general->cierre($request->get('fechaCitaID'));
+            if ($cierre) {
+                return redirect('ordenAtencion')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            $ordenAtencion = new Orden_Atencion();
+            $ordenAtencion->orden_codigo = $request->get('Codigo');
+            $ordenAtencion->orden_numero = $request->get('Codigo').'-'.$request->get('Secuencial');
+            $ordenAtencion->orden_secuencial = $request->get('Secuencial');
+            $ordenAtencion->orden_reclamo =$request->get('idReclamoNum');
+            $ordenAtencion->orden_secuencial_reclamo =$request->get('idReclamoSec');
+            $ordenAtencion->orden_fecha =$request->get('fechaCitaID');
+            $ordenAtencion->orden_hora = $request->get('horaCitaID');
+            $ordenAtencion->orden_observacion = $request->get('Observacion');
+            $ordenAtencion->orden_iess = '1';
+            $ordenAtencion->orden_frecuencia = $request->get('tipo_atencion');
+            $ordenAtencion->orden_dependencia = $request->get('es_dependiente');
+            $ordenAtencion->orden_cedula_afiliado = $request->get('idCedulaAsegurado');
+            $ordenAtencion->orden_nombre_afiliado = $request->get('idNombreAsegurado');
+            $ordenAtencion->orden_precio = $request->get('IdPrecio');
+            $ordenAtencion->orden_cobertura_porcentaje = $request->get('IdCoberturaPorcen');
+            $ordenAtencion->orden_cobertura = $request->get('IdCobertura');
+            $ordenAtencion->orden_copago = $request->get('IdCopago');
+            $mespecialidad=Medico_Especialidad::findOrFail($request->get('idMespecialidad'));
+            $ordenAtencion->medico_id = $mespecialidad->medico->medico_id;
+            $ordenAtencion->tipod_id = $request->get('IdTipoDependencia');
+            $ordenAtencion->entidad_id = $request->get('identidad');
+            $ordenAtencion->orden_estado  = 2;
+            $ordenAtencion->cliente_id = $request->get('ClienteId');
+            $ordenAtencion->sucursal_id = $request->get('idSucursal');
+            $ordenAtencion->paciente_id = $request->get('idPaciente');
+            $ordenAtencion->especialidad_id = $request->get('especialidad_id');
+            $ordenAtencion->producto_id = $request->get('IdCodigo');
+            $ordenAtencion->tipo_id = $request->get('idSeguro');
+            $ordenAtencion->orden_precio = 0;
+            $ordenAtencion->orden_cobertura_porcentaje = 0;
+            $ordenAtencion->orden_cobertura = 0;
+            $ordenAtencion->orden_copago = 0;
+            $ordenAtencion->save();
+            /*Inicio de registro de auditoria */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Registro de orden de atencion -> '.$request->get('Codigo').' del Paciente -> '.$request->get('idPaciente'), '0', '');
+            /*Fin de registro de auditoria */
+
+            $documento=Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get();
+            foreach ($documento as $documentos) {
+                $file='file-es'.$documentos->documento_id;
+                if (($request->get($file))) {
+                    if ($request->file($file)) {
+                        $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
+                        if (!is_dir($ruta)) {
+                            mkdir($ruta, 0777, true);
+                        }
+                        if ($request->file($file)->isValid()) {
+                            $name = $documentos->documento_nombre.'.'.$request->file($file)->getClientOriginalExtension();
+                            $path = $request->file($file)->move($ruta, $name);
+                            $documen_orden=new Documento_Orden_Atencion();
+                            $documen_orden->doccita_nombre=$name;
+                            $documen_orden->doccita_url=$ruta.'/'.$name;
+                            $documen_orden->doccita_estado='1';
+                            $documen_orden->orden_id=$ordenAtencion->orden_id;
+                        }
+                    }
+                }
+            }
+
+            $empresa = Empresa::empresa()->first();
+            $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenAtencionIess', ['orden'=>$ordenAtencion,'empresa'=>$empresa]);
+            $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
+            if (!is_dir($ruta)) {
+                mkdir($ruta, 0777, true);
+            }
+            $nombreArchivo = 'Orden de atencion';
+            PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo.'.pdf');
+            DB::commit();
+            return redirect('ordenAtencionIess')->with('success', 'Datos guardados exitosamente')->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
+          
+        }
+        catch(\Exception $ex){    
+            DB::rollBack();  
+            return redirect('ordenAtencionIess')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

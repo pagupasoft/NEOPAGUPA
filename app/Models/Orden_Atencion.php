@@ -1,0 +1,165 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Orden_Atencion extends Model
+{
+    use HasFactory;
+    protected $table='orden_atencion';
+    protected $primaryKey = 'orden_id';
+    public $timestamps=true;
+    protected $fillable = [
+        'orden_codigo',
+        'orden_numero', 
+        'orden_secuencial',  
+        'orden_reclamo', 
+        'orden_secuencial_reclamo', 
+        'orden_fecha',
+        'orden_hora',
+        'orden_observacion',
+        'orden_iess',
+        'orden_frecuencia',
+        'orden_dependencia',
+        'orden_cedula_afiliado',
+        'orden_nombre_afiliado',
+        'orden_precio',
+        'orden_cobertura_porcentaje',
+        'orden_cobertura',
+        'orden_copago',
+        'orden_estado',
+        'sucursal_id',
+        'paciente_id',
+        'tipo_id',
+        'tipod_id',
+        'factura_id',
+        'medico_id',
+        'especialidad_id',
+        'entidad_id',
+        'cliente_id', //Es una seguradora del paciente Nota: No es un cliente 
+        'producto_id', //procedimiento
+    ];
+    protected $guarded =[
+    ];
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_id', 'sucursal_id');
+    }
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'producto_id', 'producto_id');
+    }
+    public function paciente()
+    {
+        return $this->belongsTo(Paciente::class, 'paciente_id', 'paciente_id');
+    }
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id', 'cliente_id');
+    }
+    public function medico()
+    {
+        return $this->belongsTo(Medico::class, 'medico_id', 'medico_id');
+    }
+    public function procedimientoA()
+    {
+        return $this->belongsTo(Aseguradora_Procedimiento::class, 'procedimientoA_id', 'procedimientoA_id');
+    }
+    public function tipoSeguro()
+    {
+        return $this->belongsTo(Tipo_Seguro::class, 'tipo_id', 'tipo_id');
+    }
+    public function factura()
+    {
+        return $this->belongsTo(Factura_Venta::class, 'factura_id', 'factura_id');
+    }
+    public function expendiente()
+    {
+        return $this->belongsTo(Expediente::class, 'orden_id', 'orden_id');
+    }
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'especialidad_id', 'especialidad_id');
+    }
+    public function scopeOrdenesByFechaSuc($query,$fechaI,$fechaF,$sucursal){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('orden_fecha','>=',$fechaI
+                    )->where('orden_fecha','<=',$fechaF
+                    )->where('orden_atencion.sucursal_id','=',$sucursal
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');
+    }
+    public function scopeOrdenes($query){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'     
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
+                    )->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');
+    }
+    public function scopeOrdenesHoy($query){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'     
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
+                    )->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id')
+                    ->where('orden_fecha','=',date("Y-m-d"))
+                    ->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
+                    ->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');
+    }
+    public function scopeSignosVitales($query){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'     
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id')
+                    ->where('orden_fecha','=',date("Y-m-d"))
+                    ->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
+                    ->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');
+    }
+    public function scopeOrden($query, $id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
+                    )->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('orden_atencion.orden_id','=',$id)->orderBy('orden_atencion.orden_id','asc');
+    }        
+    public function scopeMedicoOrden($query){
+        return $query->join('medico_especialidad','medico_especialidad.mespecialidad_id','=','orden_atencion.mespecialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
+                    )->where('medico.empresa_id', '=', Auth::user()->empresa_id)->orderBy('orden_atencion.orden_id','asc');
+    }
+
+    public function scopeOrdenFecha($query, $buscar){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
+                    )->join('medico_especialidad','medico_especialidad.mespecialidad_id','=','orden_atencion.mespecialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->where('orden_atencion.orden_estado','=',$buscar)->orderBy('orden_atencion.orden_id','asc');
+    }   
+    public function scopeclienteaseguradora($query, $id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->join('cliente','cliente.cliente_id','=','orden_atencion.paciente_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('cliente.cliente_id','=',$id);
+    }
+    public function scopeHistorial($query, $id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('orden_estado','=','4')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('paciente_id','=',$id);
+    }
+    
+    public function scopeOrdenProcedimientoId($query, $id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
+                    )->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
+                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
+                    )->join('aseguradora_procedimiento','aseguradora_procedimiento.procedimientoA_id','=','orden_atencion.procedimientoA_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('aseguradora_procedimiento.cliente_id','=',$id);
+    }
+    public function scopesecuencialr($query, $id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('orden_atencion.cliente_id','=',$id);
+    }
+}

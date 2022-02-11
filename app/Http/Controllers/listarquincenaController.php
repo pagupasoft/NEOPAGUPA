@@ -1,0 +1,348 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Cheque;
+use App\Models\Detalle_Diario;
+use App\Models\Diario;
+use App\Models\Empleado;
+use App\Models\Punto_Emision;
+use App\Models\Quincena;
+use App\Models\Transferencia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class listarquincenaController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            $quincena=null;
+            $estados=Quincena::Estados()->select('quincena_estado')->distinct()->get();
+            $empleado=Empleado::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>null,'fecha_hasta'=>null,'fecha_todo'=>null,'nombre_empleado'=>null,'estadoactual'=>null,'estados'=>$estados,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('incio')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            $quincena=null;
+            $esta_quin=Quincena::Estados()->select('quincena_estado')->distinct()->get();
+            $empleado=Empleado::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') == "--TODOS--") {
+                $quincena=Quincena::Estados()->get();
+            }
+            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') != "--TODOS--") {
+                
+                $quincena=Quincena::QuincenasDiferente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('estados'))->get();
+                        
+            }             
+            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') == "--TODOS--") {
+                $quincena=Quincena::Quincenasfecha($request->get('fecha_desde'),$request->get('fecha_hasta'))->get();
+            }
+            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') == "--TODOS--") {
+                $quincena=Quincena::QuincenasEmpleado($request->get('nombre_empleado'))->get();
+                            
+            } 
+            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') != "--TODOS--") {
+                $quincena=Quincena::Quincenasestado($request->get('estados'))->get();               
+            }   
+            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'estadoactual'=>$request->get('estados'),'estados'=>$esta_quin,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            
+            $quincena=Quincena::findOrFail($id);
+           
+            $transferencia=null;
+            $cheque=null;
+            foreach ($quincena->diario->detalles as $i) {
+                   
+                if (isset($i->cheque_id)) {
+                    $cheque=Cheque::findOrFail($i->cheque_id);
+                }
+                if (isset($i->transferencia_id)) {
+                    $transferencia=Transferencia::findOrFail($i->transferencia_id);
+                }
+            }
+    
+            return view('admin.recursosHumanos.quincena.ver',['transferencia'=>$transferencia,'cheque'=>$cheque,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        return redirect('/denegado');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        return redirect('/denegado');
+    }
+    public function delete($id)
+    {        
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            $transferencia=null;
+            $cheque=null;
+            $quincena=Quincena::Quincena($id)->get()->first();
+            $diario=Quincena::Validacion($quincena->diario_id)->get();
+           
+            if (count($diario)==1) {
+                $transferencia=null;
+                $cheque=null;
+                foreach ($quincena->diario->detalles as $i) {
+                    if (isset($i->cheque_id)) {
+                        $cheque=Cheque::findOrFail($i->cheque_id);
+                    }
+                    if (isset($i->transferencia_id)) {
+                        $transferencia=Transferencia::findOrFail($i->transferencia_id);
+                    }
+                }
+         
+            
+           
+                return view('admin.recursosHumanos.quincena.eliminar', ['transferencia'=>$transferencia,'cheque'=>$cheque,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            }
+            else{
+
+                foreach ($quincena->diario->detalles as $i) {
+                    if (isset($i->cheque_id)) {
+                        $cheque=Cheque::findOrFail($i->cheque_id);
+                    }
+                    if (isset($i->transferencia_id)) {
+                        $transferencia=Transferencia::findOrFail($i->transferencia_id);
+                    }
+                }
+                return view('admin.recursosHumanos.quincenaConsolidada.eliminar', ['transferencia'=>$transferencia,'cheque'=>$cheque,'quincenas'=>$quincena,'quincena'=>$diario,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+
+            }
+
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+
+    }
+    public function anular($id)
+    {        
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+           
+            $quincena=Quincena::Quincena($id)->get()->first();
+            $transferencia=null;
+            $cheque=null;
+                foreach ($quincena->diario->detalles as $i) {
+                   
+                    if (isset($i->cheque_id)) {
+                        $cheque=Cheque::findOrFail($i->cheque_id);
+                    }
+                    if (isset($i->transferencia_id)) {
+                        $transferencia=Transferencia::findOrFail($i->transferencia_id);
+                    }
+                }
+         
+            
+           
+            return view('admin.recursosHumanos.quincena.anular',['transferencia'=>$transferencia,'cheque'=>$cheque,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try{
+            DB::beginTransaction();
+            $quincena=Quincena::findOrFail($id);
+            $diario=Diario::findOrFail($quincena->diario_id);
+            $general = new generalController();
+            $cierre = $general->cierre($quincena->quincena_fecha);          
+            if($cierre){
+                return redirect('lquincena')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            foreach ($quincena->diario->detalles as $i) {
+                
+                if (isset($i->cheque_id)) {
+                   
+                    $detalle=Detalle_Diario::findOrFail($i->detalle_id);
+                  
+                    $chequeAux=Cheque::findOrFail($i->cheque_id);
+                   
+                    $detalle->cheque_id=null;
+                    $detalle->save();
+                    
+                    $chequeAux->delete();
+                    $general->registrarAuditoria('Eliminacion de Cheque numero: -> '.$chequeAux->cheque_numero, $id, 'Con quincena  id -> '.$id.'Con valor de -> '.$chequeAux->cheque_valor);         
+                }          
+                if (isset($i->transferencia_id)) {
+                    $detalle=Detalle_Diario::findOrFail($i->detalle_id);
+                    
+                    $transferenciaAux=Transferencia::findOrFail($i->transferencia_id);
+
+                    $detalle->transferencia_id=null;
+                    $detalle->save();
+
+                    $transferenciaAux->delete();
+                    $general->registrarAuditoria('Eliminacion de Cheque numero: -> '.$transferenciaAux->transferencia_numero, $id, 'Con quincena  id -> '.$id.'Con valor de -> '.$transferenciaAux->transferencia_valor);  
+                }
+               
+
+                $i->delete();
+                $general = new generalController();
+                $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento.'con empleado '.$quincena->empleado->emepleado_nombre, $id,'Con quincena  id -> '.$i.'con codigo de diario'.$quincena->diario->diario_codigo);
+               
+            }    
+            $quincena->diario_id=null;
+            $quincena->save();
+
+            $diario->delete();
+            $general->registrarAuditoria('Eliminacion de Dario: -> '.$id.'con empleado '.$quincena->empleado->emepleado_nombre, $id, 'Con quincena  id -> '.$id);     
+          
+            $quincena->delete();
+            $general->registrarAuditoria('Eliminacion de la quincena: -> '.$id.'con empleado '.$quincena->empleado->emepleado_nombre, $id, 'Con quincena  id -> '.$id);     
+            $quincena->diario->delete();
+            $general->registrarAuditoria('Eliminacion del diario tipo documento numero: -> '.$quincena->diario->diario_codigo.'con empleado '.$quincena->empleado->emepleado_nombre, $id, 'Con quincena  id -> '.$id);  
+        
+           
+            DB::commit();
+            return redirect('lquincena')->with('success','Datos Eliminados exitosamente');
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function anulacion(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+            $quincena=Quincena::findOrFail($request->get('idquincena'));
+            $diario=Diario::findOrFail($quincena->diario_id);
+            $general = new generalController();
+            $cierre = $general->cierre($quincena->quincena_fecha);          
+            if($cierre){
+                return redirect('lquincena')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            foreach ($quincena->diario->detalles as $i) {
+                
+                if (isset($i->cheque_id)) {
+                   
+                    $detalle=Detalle_Diario::findOrFail($i->detalle_id);
+                  
+                    $chequeAux=Cheque::findOrFail($i->cheque_id);
+                   
+                    $detalle->cheque_id=null;
+                    $detalle->save();
+                    $chequeAux->cheque_estado='2';
+                    $chequeAux->save();
+                    $general->registrarAuditoria('Eliminacion de Cheque numero: -> '.$chequeAux->cheque_numero, $request->get('idquincena'), 'Con quincena  id -> '.$request->get('idquincena').'Con valor de -> '.$chequeAux->cheque_valor);         
+                }          
+              
+               
+
+                $i->delete();
+                $general = new generalController();
+                $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento.'con empleado '.$quincena->empleado->emepleado_nombre, $request->get('idquincena'),'Con quincena  id -> '.$i.'con codigo de diario'.$quincena->diario->diario_codigo);
+               
+            }    
+            $quincena->diario_id=null;
+            $quincena->save();
+
+            $diario->delete();
+            $general->registrarAuditoria('Eliminacion de Dario: -> '.$request->get('idquincena').'con empleado '.$quincena->empleado->emepleado_nombre, $request->get('idquincena'), 'Con quincena  id -> '.$request->get('idquincena'));     
+          
+            $quincena->delete();
+            $general->registrarAuditoria('Eliminacion de la quincena: -> '.$request->get('idquincena').'con empleado '.$quincena->empleado->emepleado_nombre, $request->get('idquincena'), 'Con quincena  id -> '.$request->get('idquincena'));     
+            $quincena->diario->delete();
+            $general->registrarAuditoria('Eliminacion del diario tipo documento numero: -> '.$quincena->diario->diario_codigo.'con empleado '.$quincena->empleado->emepleado_nombre, $request->get('idquincena'), 'Con quincena  id -> '.$request->get('idquincena'));  
+        
+           
+            DB::commit();
+            return redirect('lquincena')->with('success','Datos Eliminados exitosamente');
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function imprimir($id)
+    {
+        try{   
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            $quincena=Quincena::Quincena($id)->get()->first();
+            $general = new generalController();
+            $url = $general->pdfDiario($quincena->diario);
+            return redirect('lquincena')->with('diario',$url);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    
+   
+}

@@ -517,15 +517,13 @@ class notaEntregaController extends Controller
                 $auditoria->registrarAuditoria('Eliminacion del diario con nota de entrega N°'.$nentrega->nt_numero, $nentrega->nt_numero, 'Eliminacion  con Permiso con id -> '.$id);
             }
             foreach ($nentrega->detalle as $detalle) {
-                $aucdeta=Detalle_NE::findOrFail($detalle->detalle_id);
-                $aucdeta->movimiento_id=null;
-                $aucdeta->save();
-
+                $deta=Detalle_NE::findOrFail($detalle->detalle_id);
+                $deta->delete();
+                $auditoria->registrarAuditoria('Eliminacion del detalle de Nota de entrega de nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);
+                
                 $detalle->movimiento->delete();
                 $auditoria->registrarAuditoria('Eliminacion del Movimiento de producto'.$detalle->producto->producto_nombre.' con nota de entrega N° '.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);  
 
-                $detalle->delete();
-                $auditoria->registrarAuditoria('Eliminacion del detalle de Nota de entrega de nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion de cantidad de producto'.$detalle->detalle_cantidad.' del movimiento de nota de entrega con id -> '.$id);
                 
             }
 

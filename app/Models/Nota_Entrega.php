@@ -93,6 +93,7 @@ class Nota_Entrega extends Model
     public function arqueoCaja(){
         return $this->belongsTo(Arqueo_Caja::class, 'arqueo_id', 'arqueo_id');
     }
+   
     public function detalle(){
         return $this->hasMany(Detalle_NE::class, 'nt_id', 'nt_id');
     }

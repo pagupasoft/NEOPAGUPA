@@ -15,7 +15,8 @@ class Rubro extends Model
     protected $fillable = [        
         'rubro_nombre',
         'rubro_descripcion',
-        'rubro_tipo',                  
+        'rubro_tipo',
+        'rubro_numero',                  
         'empresa_id',
         'rubro_estado',         
     ];
@@ -32,6 +33,9 @@ class Rubro extends Model
     }
     public function scopeRubrotipo($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->where('rubro_tipo','=',$id);
+    }
+    public function scopeRubrotipoorder($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->orderBy('rubro_numero','asc')->where('rubro_tipo','=',$id);
     }
     public function scopeexiste($query, $nomb){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_nombre','=',$nomb);

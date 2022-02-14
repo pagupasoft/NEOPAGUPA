@@ -281,7 +281,9 @@ class generalController extends Controller
             }
         }
         $empresa = Empresa::empresa()->first();
-        $rubro=Rubro::Rubros()->get();
+        $rubro=Rubro::RubrosRH()->get();
+        $ingresos=Rubro::Rubrotipoorder('2')->get();
+        $egresos=Rubro::Rubrotipoorder('1')->get();
         $ruta = public_path().'/roles/'.$empresa->empresa_ruc.'/'.date("m-Y", strtotime($rol->cabecera_rol_fecha));
         echo "$ruta";
         if (!is_dir($ruta)) {
@@ -290,7 +292,7 @@ class generalController extends Controller
         $nombreArchivo = $rol->empleado->empleado_nombre.'-'.date("m-Y", strtotime($rol->cabecera_rol_fecha)). ".pdf";
         setlocale(LC_ALL, 'spanish');
         $mes=strftime('%B',strtotime($rol->cabecera_rol_fecha));
-        $view =  \View::make('admin.formatosPDF.rolesCM.rolOperativo', ['empresa'=> $empresa,'rol'=> $rol,'mes'=> $mes,'bancaria'=> $cuenta,'rubros'=>$rubro]);
+        $view =  \View::make('admin.formatosPDF.rolesCM.rolOperativo', ['empresa'=> $empresa,'rol'=> $rol,'mes'=> $mes,'bancaria'=> $cuenta,'egresos'=>$egresos,'ingresos'=>$ingresos,'rubros'=>$rubro]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
         return 'roles/'.$empresa->empresa_ruc.'/'.date("m-Y", strtotime($rol->cabecera_rol_fecha)).'/'.$nombreArchivo;
 
@@ -307,7 +309,9 @@ class generalController extends Controller
             }
         }
         $empresa = Empresa::empresa()->first();
-        $rubro=Rubro::Rubros()->get();
+        $rubro=Rubro::RubrosRH()->get();
+        $ingresos=Rubro::Rubrotipoorder('2')->get();
+        $egresos=Rubro::Rubrotipoorder('1')->get();
         $ruta = public_path().'/roles/'.$empresa->empresa_ruc.'/'.date("m-Y", strtotime($rol->cabecera_rol_fecha));
         echo "$ruta";
         if (!is_dir($ruta)) {
@@ -316,7 +320,7 @@ class generalController extends Controller
         $nombreArchivo = $rol->empleado->empleado_nombre.'-'.date("m-Y", strtotime($rol->cabecera_rol_fecha)). ".pdf";
         setlocale(LC_ALL, 'spanish');
         $mes=strftime('%B',strtotime($rol->cabecera_rol_fecha));
-        $view =  \View::make('admin.formatosPDF.rolesCM.rolOperativo', ['empresa'=> $empresa,'rol'=> $rol,'mes'=> $mes,'bancaria'=> $cuenta,'rubros'=>$rubro]);
+        $view =  \View::make('admin.formatosPDF.rolesCM.rolOperativo', ['empresa'=> $empresa,'rol'=> $rol,'mes'=> $mes,'bancaria'=> $cuenta,'egresos'=>$egresos,'ingresos'=>$ingresos,'rubros'=>$rubro]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('rol.pdf');
 

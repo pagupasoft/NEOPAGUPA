@@ -78,7 +78,7 @@ class rolOperactivoCostaMarketController extends Controller
         try{
             $rol=Cabecera_Rol_CM::Rol($id)->get()->first();
             $general = new generalController();
-            $url = $general->pdfDiariourl($rol->diariopago);
+            $url = $general->pdfDiarioEgresourl($rol->diariopago);
             return $url;
         }
         catch(\Exception $ex){      
@@ -105,7 +105,8 @@ class rolOperactivoCostaMarketController extends Controller
      */
     public function store(Request $request)
     {
-        
+        try{
+            DB::beginTransaction();
             $urlcheque = '';
             $anticipos=$request->get('check');
            
@@ -802,12 +803,15 @@ class rolOperactivoCostaMarketController extends Controller
             $cabecera=Cabecera_Rol_CM::findOrFail($cabecera_rol->cabecera_rol_id);
             $url2 = $general->pdfRolCm($cabecera);
             if ($request->get('tipo') == 'Cheque') {
-      //          DB::commit();
+                DB::commit();
                 return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosament')->with('pdf',$url2)->with('diario',$url3)->with('pdf2',$url)->with('cheque',$urlcheque);
             }
-       //     DB::commit();
+            DB::commit();
             return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('pdf',$url2)->with('diario',$url3)->with('pdf2',$url);      
-                      
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }              
         
     }
     public function eliminar($id){

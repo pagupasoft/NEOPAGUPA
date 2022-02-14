@@ -68,8 +68,8 @@
                     <td colspan="2" valign="top" class="detalle-diario">  
                     <table style="vertical-align: top; border-collapse: collapse;">
                         <tbody>
-                        @foreach($rubros as $rubro)
-                            @if($rubro->rubro_tipo=='2')
+                        @foreach($ingresos as $rubro)
+                           
                             <tr style="text-align: left; vertical-align: top;">
                                     <td > {{$rubro->rubro_descripcion}}</td> 
                                    <?php $contador=false; $valor=0; ?>
@@ -78,9 +78,9 @@
                                         <?php $valor=$detalle->detalle_rol_valor;?>
                                     @endif
                                 @endforeach
-                                <td class="detalle-diario dereche">$ {{$valor}}</td>
+                                <td class="detalle-diario dereche">$ {{number_format($valor,2)}}</td>
                             </tr>
-                            @endif
+                           
                         @endforeach
                         </tbody>
                     </table>
@@ -89,8 +89,8 @@
                     <td colspan="2" class="foot-rol-linea-left detalle-diario"> 
                         <table style="white-space: normal!important; ">
                             <tbody>
-                            @foreach($rubros as $rubro)
-                                @if($rubro->rubro_tipo=='1')
+                            @foreach($egresos as $rubro)
+                                
                                 <tr >
                                         <td class="detalle-diario"> {{$rubro->rubro_descripcion}}</td> 
                                     <?php $contador=false; $valor=0; ?>
@@ -99,9 +99,9 @@
                                             <?php $valor=$detalle->detalle_rol_valor;?>
                                         @endif
                                     @endforeach
-                                    <td class="detalle-diario dereche">$ {{$valor}}</td>
+                                    <td class="detalle-diario dereche">$ {{number_format($valor,2)}}</td>
                                 </tr>
-                                @endif
+                              
                             @endforeach
                             </tbody>
                         </table>

@@ -315,7 +315,7 @@ class rolOperactivoCostaMarketController extends Controller
             $diariocontabilizado->diario_secuencial = substr($diario->diario_codigo, 8);
             $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
             $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
-            $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES: '.$empleado->empleado_nombre.' Con el sueldo de: '.$cabecera_rol->cabecera_rol_sueldo;
+            $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES: '.$empleado->empleado_nombre;
                     
             $diariocontabilizado->diario_numero_documento = 0;
             $diariocontabilizado->diario_beneficiario =$empleado->empleado_nombre;

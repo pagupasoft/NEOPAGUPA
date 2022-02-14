@@ -2,7 +2,7 @@
 @section('contenido')
     @section('titulo')
         <tr><td colspan="2" class="centrar letra15 negrita">
-                COMPROBANTE DE EGRESO
+                    COMPROBANTE DE EGRESO
         </td></tr>
         <tr><td colspan="2" class="centrar letra15 borde-gris">No. {{ $diario->diario_codigo }}</td></tr>
     @endsection

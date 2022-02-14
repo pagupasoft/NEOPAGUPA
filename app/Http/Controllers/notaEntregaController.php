@@ -541,9 +541,9 @@ class notaEntregaController extends Controller
             $ntaux=Nota_Entrega::findOrFail($id);
             $ntaux->cuenta_id=NULL;
             $ntaux->save();
-            if (isset($nentrega->cuentaCobrar)) {
-                $nentrega->cuentaCobrar->delete();
-            }
+           
+            $nentrega->cuentaCobrar->delete();
+            
             $auditoria->registrarAuditoria('Eliminacion de la cuenta por cobrar  con nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion  con Permiso con id -> '.$id);  
             $nentrega->delete();
             $auditoria->registrarAuditoria('Eliminacion nota de entrega N°'.$nentrega->nt_numero ,$nentrega->nt_numero,'Eliminacion con id -> '.$id);

@@ -693,6 +693,36 @@ class rolOperactivoCostaMarketController extends Controller
                 $diariocontabilizado->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dtercero);
             }
+            if (floatval($Vacacioneacu)>0) {
+                $detalleDiario = new Detalle_Diario();
+                $detalleDiario->detalle_debe = floatval($Vacacioneacu);
+                $detalleDiario->detalle_haber = 0.00;
+                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                $detalleDiario->detalle_conciliacion = '0';
+                $detalleDiario->detalle_estado = '1';
+                $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'vacacion')->first();
+                $detalleDiario->cuenta_id = $tipo->cuenta_debe;
+                $detalleDiario->empleado_id = $idempleado;
+                $diariocontabilizado->detalles()->save($detalleDiario);
+                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_debe.' con el valor de: -> '.$Dtercero);
+
+
+                $detalleDiario = new Detalle_Diario();
+                $detalleDiario->detalle_debe = 0.00;
+                $detalleDiario->detalle_haber = floatval($Vacacioneacu);
+                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                $detalleDiario->detalle_conciliacion = '0';
+                $detalleDiario->detalle_estado = '1';
+                $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'vacacion')->first();
+                $detalleDiario->cuenta_id = $tipo->cuenta_haber;
+                $detalleDiario->empleado_id = $idempleado;
+                $diariocontabilizado->detalles()->save($detalleDiario);
+                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dtercero);
+            }
             if (floatval($Dcuartoacu)>0) {
                 $detalleDiario = new Detalle_Diario();
                 $detalleDiario->detalle_debe = floatval($Dcuartoacu);

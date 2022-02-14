@@ -168,7 +168,7 @@
                         <div class="form-group row">
                             <label for="idEmail" class="col-sm-3 col-form-label">Email</label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" id="idEmail" name="idEmail" placeholder="Email" required>
+                                <input type="text" class="form-control" id="idEmail" name="idEmail" placeholder="Email" required>
                             </div>
                         </div>
                         <div class="form-group row">

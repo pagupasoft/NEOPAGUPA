@@ -105,8 +105,7 @@ class rolOperactivoCostaMarketController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            DB::beginTransaction();
+        
             $urlcheque = '';
             $anticipos=$request->get('check');
            
@@ -253,7 +252,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $transferencia = new Transferencia();
                 $transferencia->transferencia_descripcion = 'PAGO ROL DE EMPLEADO '.$empleado->empleado_nombre.' CON MES Y AÑO '.date('Y', strtotime($request->get('fechafinal'))).'/'.date('F', strtotime($request->get('fechafinal')));
                 $transferencia->transferencia_beneficiario = $empleado->empleado_nombre;
-                $transferencia->transferencia_fecha = $request->get('fechafinal');
+                $transferencia->transferencia_fecha = $request->get('idFechatrasnfer');
                 $transferencia->transferencia_valor = $cabecera_rol->cabecera_rol_pago;
                 $transferencia->cuenta_bancaria_id = $request->get('cuenta_id_transfer');
                 $transferencia->transferencia_estado = '1';
@@ -264,6 +263,7 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $diario = new Diario();
             $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechafinal'), 'CPRP');
+
             $diario->diario_fecha = $request->get('fechafinal');
             $diario->diario_referencia = 'COMPROBANTE DE PAGO DE ROL DE EMPLEADO';
 
@@ -274,14 +274,18 @@ class rolOperactivoCostaMarketController extends Controller
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
             $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
             $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
-            $diario->diario_comentario = 'COMPROBANTE DE PAGO DE ROL DE EMPLEADO: '.$empleado->empleado_nombre.' Con el sueldo de: '.$cabecera_rol->cabecera_rol_sueldo;
+            $diario->diario_comentario = 'PAGO DEL ROL DEL '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+           
             if ($request->get('tipo') == 'Transferencia') {
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
+                $diario->diario_fecha = $request->get('idFechatrasnfer');
                 $diario->diario_numero_documento =0;
             }
             if ($request->get('tipo') == 'Cheque') {
                 $diario->diario_tipo_documento = 'CHEQUE';
                 $diario->diario_numero_documento =$request->get('idNcheque');
+               
+                $diario->diario_fecha = $request->get('idFechaCheque');
             }
             $diario->diario_beneficiario =$empleado->empleado_nombre;
             $diario->diario_cierre = '0';
@@ -297,14 +301,21 @@ class rolOperactivoCostaMarketController extends Controller
 
             $diariocontabilizado = new Diario();
             $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fechafinal'), 'CCMR');
-            $diariocontabilizado->diario_fecha = $request->get('fechafinal');
+ 
+            if ($request->get('tipo') == 'Transferencia') {
+            $diariocontabilizado->diario_fecha = $request->get('idFechatrasnfer');
+            }
+            if ($request->get('tipo') == 'Cheque') {
+                $diariocontabilizado->diario_fecha = $request->get('idFechaCheque');
+            }
             $diariocontabilizado->diario_referencia = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES';
             $diariocontabilizado->diario_tipo_documento = 'CONTABILIZACION MENSUAL';
             $diariocontabilizado->diario_tipo = 'CCMR';
             $diariocontabilizado->diario_secuencial = substr($diario->diario_codigo, 8);
             $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
             $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
-            $diariocontabilizado->diario_comentario = 'PAGO DEL ROL DEL '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+            $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES: '.$empleado->empleado_nombre.' Con el sueldo de: '.$cabecera_rol->cabecera_rol_sueldo;
+                    
             $diariocontabilizado->diario_numero_documento = 0;
             $diariocontabilizado->diario_beneficiario =$empleado->empleado_nombre;
             $diariocontabilizado->diario_cierre = '0';
@@ -431,7 +442,9 @@ class rolOperactivoCostaMarketController extends Controller
                     $auditoria->registrarAuditoria('Actualizacion del Anticipo de estado a 2 con empleado-> '.$empleado->empleado_nombre, '0', 'Por el pago de rol');
                 }
             }
-           
+            $matriz=null;
+            $activador=true;
+            $count=1;
             for ($i = 0; $i < count($rubros); ++$i) {
                 if ($idrubros[$i]!="{idrubro}") {
                     if ($valorrubros[$i]>0) {
@@ -451,42 +464,59 @@ class rolOperactivoCostaMarketController extends Controller
                         }                   
                         $detalle->movimiento()->associate($auxrubro);
                         $cabecera_rol->detalles()->save($detalle);
-                        $general->registrarAuditoria('Registro de Detalle de Detalle Rol DE EMPLEADO -> '.$empleado->empleado_nombre, '0', ' con el valor de: -> '.$total);
-                        
-                        
+                        $general->registrarAuditoria('Registro de Detalle de Detalle Rol DE EMPLEADO -> '.$empleado->empleado_nombre, '0', ' con el valor de: -> '.$total); 
                         if ($tiporubros[$i]=='2') {
-                            
-                                $detalleDiario = new Detalle_Diario();
-                                $detalleDiario->detalle_debe = floatval($valorrubros[$i]);
-                                $detalleDiario->detalle_haber = 0.00;
-                                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d', $request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('d-m-Y');
-                                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
-                                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                                $detalleDiario->detalle_conciliacion = '0';
-                                $detalleDiario->detalle_estado = '1';
                                 $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, $rubros[$i])->first();
-                                $detalleDiario->cuenta_id = $tipo->cuenta_debe;
-                                $detalleDiario->empleado_id = $idempleado;
-                                $diariocontabilizado->detalles()->save($detalleDiario);
-                                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_debe.' con el valor de: -> '.floatval($valorrubros[$i]));
-                            
-                        }
+                                if($matriz==null){
+                                    $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                                    $matriz[$count]["debe"]= floatval($valorrubros[$i]);
+                                    $matriz[$count]["tipo"]= 'DEBE';
+                                    $matriz[$count]["haber"]=0;
+                                    $count++;
+                                }
+                                else{
+                                    $activador=true;
+                                    for ($k = 1; $k <= count($matriz); ++$k) {
+                                        if($matriz[$k]["idcuenta"]==$tipo->cuenta_debe && $matriz[$k]["debe"]>0){
+                                            $matriz[$k]["debe"]=  $matriz[$k]["debe"]+floatval($valorrubros[$i]);
+                                            $activador=false;
+                                        }
+                                    }
+                                    if($activador==true){
+                                        $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                                        $matriz[$count]["debe"]= floatval($valorrubros[$i]);
+                                        $matriz[$count]["tipo"]= 'DEBE';
+                                        $matriz[$count]["haber"]=0;
+                                        $count++;
+                                    }
+                                }                               
+                       }
                         if ($tiporubros[$i]=='1') {
-                          
-                                $detalleDiario = new Detalle_Diario();
-                                $detalleDiario->detalle_debe = 0.00;
-                                $detalleDiario->detalle_haber = floatval($valorrubros[$i]);
-                                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d', $request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('d-m-Y');
-                                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
-                                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                                $detalleDiario->detalle_conciliacion = '0';
-                                $detalleDiario->detalle_estado = '1';
-                                $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, $rubros[$i])->first();
-                                $detalleDiario->cuenta_id = $tipo->cuenta_haber;
-                                $detalleDiario->empleado_id = $idempleado;
-                                $diariocontabilizado->detalles()->save($detalleDiario);
-                                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.floatval($valorrubros[$i]));
-                            
+                            $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, $rubros[$i])->first();
+                            if($matriz==null){
+                                $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                                $matriz[$count]["haber"]= floatval($valorrubros[$i]);
+                                $matriz[$count]["tipo"]= 'HABER';
+                                $matriz[$count]["debe"]=0;
+                                $count++;
+                            }
+                            else{
+                                $activador=true;
+                                for ($k = 1; $k <= count($matriz); ++$k) {
+                                    if($matriz[$k]["idcuenta"]==$tipo->cuenta_haber && $matriz[$k]["haber"]>0){
+                                        $matriz[$k]["haber"]=  $matriz[$k]["haber"]+floatval($valorrubros[$i]);
+                                        $activador=false;
+                                    }
+                                }
+                                if($activador==true){
+                                    $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                                    $matriz[$count]["haber"]= floatval($valorrubros[$i]);
+                                    $matriz[$count]["tipo"]= 'HABER';
+                                    $matriz[$count]["debe"]=0;
+                                    $count++;
+                                }  
+                            }
+                                                     
                         }
                     }
                 
@@ -558,36 +588,63 @@ class rolOperactivoCostaMarketController extends Controller
 
                 }
             if (floatval($IECE)>0) {
-                $detalleDiario = new Detalle_Diario();
-                $detalleDiario->detalle_debe = floatval($IECE);
-                $detalleDiario->detalle_haber = 0.00;
-                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
-                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
-                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                $detalleDiario->detalle_conciliacion = '0';
-                $detalleDiario->detalle_estado = '1';
                 $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'iece')->first();
-                $detalleDiario->cuenta_id = $tipo->cuenta_debe;
-                $detalleDiario->empleado_id = $idempleado;
-                $diariocontabilizado->detalles()->save($detalleDiario);
-                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_debe.' con el valor de: -> '.$cabecera_rol->cabecera_rol_iesspatronal);
+
+                if($matriz==null){
+                    $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                    $matriz[$count]["debe"]=floatval($IECE);
+                    $matriz[$count]["tipo"]= 'DEBE';
+                    $matriz[$count]["haber"]=0;
+                    $count++;
+                }
+                else{
+                    $activador=true;
+                    for ($k = 1; $k <= count($matriz); ++$k){ 
+                        if($matriz[$k]["idcuenta"]==$tipo->cuenta_debe && $matriz[$k]["debe"]>0){
+                            $matriz[$k]["debe"]=  $matriz[$k]["debe"]+floatval($IECE);
+                            $activador=false;
+                        }
+                    }
+                    if($activador==true){
+                        $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                        $matriz[$count]["debe"]= floatval($IECE);
+                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["haber"]=0;
+                        $count++;
+                    }
+                    
+                }
+
+               
 
             }
             if (floatval($viaticos)>0) {
-                $detalleDiario = new Detalle_Diario();
-                $detalleDiario->detalle_debe = floatval($viaticos);
-                $detalleDiario->detalle_haber = 0.00;
-                $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
-                $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
-                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                $detalleDiario->detalle_conciliacion = '0';
-                $detalleDiario->detalle_estado = '1';
                 $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'viaticos')->first();
-                $detalleDiario->cuenta_id = $tipo->cuenta_debe;
-                $detalleDiario->empleado_id = $idempleado;
-                $diariocontabilizado->detalles()->save($detalleDiario);
-                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_debe.' con el valor de: -> '.$cabecera_rol->cabecera_rol_iesspatronal);
-
+                if($matriz==null){
+                    $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                    $matriz[$count]["debe"]= floatval($viaticos);
+                    $matriz[$count]["tipo"]= 'DEBE';
+                    $matriz[$count]["haber"]=0;
+                    $count++;
+                }
+                else{
+                    $activador=true;
+                    for ($k = 1; $k <= count($matriz); ++$k){
+                        if($matriz[$k]["idcuenta"]==$tipo->cuenta_debe && $matriz[$k]["debe"]>0){
+                            $matriz[$k]["debe"]=  $matriz[$k]["debe"]+floatval($viaticos);
+                            $activador=false;
+                        }
+                    
+                    }
+                    if($activador==true){
+                        $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                        $matriz[$count]["debe"]= floatval($viaticos);
+                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["haber"]=0;
+                        $count++;
+                    }
+                }
+               
             }
             if ((floatval($aportepatornal)+floatval($IECE))>0) {
                 $detalleDiario = new Detalle_Diario();
@@ -706,21 +763,52 @@ class rolOperactivoCostaMarketController extends Controller
                 $diariocontabilizado->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dcuarto);
 
+
+                
+                for ($k = 1; $k <= count($matriz); ++$k)  {
+                    if($matriz[$k]["tipo"]=="DEBE"){
+                        $detalleDiario = new Detalle_Diario();
+                        $detalleDiario->detalle_debe =  $matriz[$k]["debe"];
+                        $detalleDiario->detalle_haber = 0.00;
+                        $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+                        $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                        $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                        $detalleDiario->detalle_conciliacion = '0';
+                        $detalleDiario->detalle_estado = '1';          
+                        $detalleDiario->cuenta_id = $matriz[$k]["idcuenta"];
+                        $detalleDiario->empleado_id = $idempleado;
+                        $diariocontabilizado->detalles()->save($detalleDiario);
+                        $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["debe"]);
+        
+                    }
+                    if($matriz[$k]["tipo"]=="HABER"){
+                        $detalleDiario = new Detalle_Diario();
+                        $detalleDiario->detalle_debe =  0.00;
+                        $detalleDiario->detalle_haber =  $matriz[$k]["haber"];
+                        $detalleDiario->detalle_comentario =  'Pago del Rol del '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' al '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+                        $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                        $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                        $detalleDiario->detalle_conciliacion = '0';
+                        $detalleDiario->detalle_estado = '1';          
+                        $detalleDiario->cuenta_id = $matriz[$k]["idcuenta"];
+                        $detalleDiario->empleado_id = $idempleado;
+                        $diariocontabilizado->detalles()->save($detalleDiario);
+                        $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["haber"]);
+        
+                    }
+                }
             $url = $general->pdfDiarioEgreso($diario);
             $url3 = $general->pdfDiario($diariocontabilizado);
             $cabecera=Cabecera_Rol_CM::findOrFail($cabecera_rol->cabecera_rol_id);
             $url2 = $general->pdfRolCm($cabecera);
             if ($request->get('tipo') == 'Cheque') {
-                DB::commit();
+      //          DB::commit();
                 return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosament')->with('pdf',$url2)->with('diario',$url3)->with('pdf2',$url)->with('cheque',$urlcheque);
             }
-            DB::commit();
+       //     DB::commit();
             return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('pdf',$url2)->with('diario',$url3)->with('pdf2',$url);      
                       
-        }catch(\Exception $ex){
-            DB::rollBack();
-            return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        } 
+        
     }
     public function eliminar($id){
         try {

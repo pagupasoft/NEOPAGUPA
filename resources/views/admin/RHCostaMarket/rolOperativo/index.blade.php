@@ -613,6 +613,12 @@
                                                                 </select>
                                                             </div>
                                                     </div> 
+                                                    <div class="form-group row">
+                                                                <label for="idFechatrasnfer" class="col-sm-3 col-form-label">Fecha</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="date" class="form-control" id="idFechatrasnfer" name="idFechatrasnfer" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
+                                                                </div>
+                                                    </div>
                                                 </div>
                                             </div>    
                                         </div>
@@ -977,7 +983,7 @@ function cargarIngreso(id) {
                 document.getElementById("Patronall").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS_Pa").innerHTML))/100).toFixed(2);
                 document.getElementById("Patronal").value=document.getElementById("Patronall").innerHTML;
                 document.getElementById("IECEl").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
-                
+                document.getElementById("IECE").value= document.getElementById("IECEl").innerHTML;
                 if (document.getElementById("VCuarto").value=="1") {
                     document.getElementById("TotalCuartoV").innerHTML=((Number(document.getElementById("sueldo_basico").value))/12).toFixed(2);
                     document.getElementById("TCuarto").value=document.getElementById("TotalCuartoV").innerHTML;
@@ -1146,7 +1152,7 @@ function recalculo(){
     if(document.getElementById("VAfiliado").value=="1"){
         document.getElementById("Patronall").innerHTML=(((ingresos)*Number(document.getElementById("%IESS_Pa").innerHTML))/100).toFixed(2);
         document.getElementById("IECEl").innerHTML=(((ingresos)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
-
+        document.getElementById("IECE").value=document.getElementById("IECEl").innerHTML;
         if(document.getElementById("asumidot").value=="1"){
 
             document.getElementById("Tasumido").value=(((ingresos)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);

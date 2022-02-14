@@ -26,7 +26,7 @@
                         <option value="" label>--Seleccione una opcion--</option>
                         @if($tipoEmpleado->tipo_categoria =='ADMINISTRATIVO')<option value="ADMINISTRATIVO" selected>ADMINISTRATIVO</option>  @else <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>@endif
                         @if($tipoEmpleado->tipo_categoria =='OPERATIVO')<option value="OPERATIVO" selected>OPERATIVO</option>  @else <option value="OPERATIVO">OPERATIVO</option>@endif
-                        @if($tipoEmpleado->tipo_categoria =='OPERATIVO CONTROL DIAS')<option value="OPERATIVO" selected>OPERATIVO CONTROL DIAS</option>  @else <option value="OPERATIVO CONTROL DIAS">OPERATIVO CONTROL DIAS</option>@endif
+                        @if($tipoEmpleado->tipo_categoria =='OPERATIVO CONTROL DIAS')<option value="OPERATIVO CONTROL DIAS" selected>OPERATIVO CONTROL DIAS</option>  @else <option value="OPERATIVO CONTROL DIAS">OPERATIVO CONTROL DIAS</option>@endif
                     </select>
                 </div>
             </div>

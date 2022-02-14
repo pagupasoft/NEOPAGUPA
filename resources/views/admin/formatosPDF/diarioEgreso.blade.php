@@ -2,12 +2,7 @@
 @section('contenido')
     @section('titulo')
         <tr><td colspan="2" class="centrar letra15 negrita">
-            @if($diario->diario_tipo == 'CEPP' or $diario->diario_tipo == 'CEQE' or $diario->diario_tipo == 'CEAP' or $diario->diario_tipo == 'CEAE' 
-            or $diario->diario_tipo == 'CEPV' or $diario->diario_tipo == 'CPRE')
                 COMPROBANTE DE EGRESO
-            @else
-                COMPROBANTE DE DIARIO
-            @endif
         </td></tr>
         <tr><td colspan="2" class="centrar letra15 borde-gris">No. {{ $diario->diario_codigo }}</td></tr>
     @endsection

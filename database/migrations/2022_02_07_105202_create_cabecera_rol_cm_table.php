@@ -32,6 +32,7 @@ class CreateCabeceraRolCmTable extends Migration
             $table->double('cabecera_rol_decimotercero_acumula',19,2);
             $table->double('cabecera_rol_decimocuarto_acumula',19,2);
             $table->double('cabecera_rol_aporte_patronal',19,2);
+            $table->double('cabecera_rol_vacaciones',19,2);
             $table->double('cabecera_rol_viaticos',19,2);
             $table->double('cabecera_rol_iece_secap',19,2);
             $table->string('cabecera_rol_estado');

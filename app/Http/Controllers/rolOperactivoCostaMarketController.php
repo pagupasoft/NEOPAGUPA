@@ -147,6 +147,7 @@ class rolOperactivoCostaMarketController extends Controller
 
             $Dterceroacu = $request->get('Tercero');
             $Dcuartoacu = $request->get('Cuarto');
+            $Vacacioneacu = $request->get('VACACIONESP');
             $fondoreservaacu = $request->get('Fondo'); 
             $aportepatornal = $request->get('Patronal'); 
             $IECE=$request->get('IECE');
@@ -196,7 +197,7 @@ class rolOperactivoCostaMarketController extends Controller
             $cabecera_rol->cabecera_rol_fr_acumula = $fondoreservaacu;
             $cabecera_rol->cabecera_rol_decimotercero_acumula = $Dterceroacu;
             $cabecera_rol->cabecera_rol_decimocuarto_acumula = $Dcuartoacu;
-
+            $cabecera_rol->cabecera_rol_vacaciones = $Vacacioneacu;
             $cabecera_rol->cabecera_rol_fondo_reserva = $fondoreserva;
             $cabecera_rol->cabecera_rol_decimotercero = $Dtercero;
             $cabecera_rol->cabecera_rol_decimocuarto = $Dcuarto;

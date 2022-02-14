@@ -137,7 +137,7 @@
             </tr>
             <tr><td></td></tr>
            
-                <tr><td><b>Email: </b> {{ $factura->cliente->cliente_email }}</td></tr>
+                <tr><td><b>Email: </b> {{ str_replace(';','; ',$factura->cliente->cliente_email) }}</td></tr>
                 <tr><td><b>Observacion: </b> {{ $factura->factura_comentario }}</td></tr>
            
           </table>

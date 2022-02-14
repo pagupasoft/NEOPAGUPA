@@ -443,7 +443,12 @@ function eliminarItem(id) {
     $("#row_" + id).remove();
 
 }
-
+function eliminarTodo() {
+    for(i = 1; i < id_item; i++){
+        $("#row_" + i).remove();
+    }
+    resetearCampos();
+}
 
 function calcularFecha() {
     let hoy = new Date();

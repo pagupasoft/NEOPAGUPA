@@ -601,8 +601,10 @@ class facturaVentaController extends Controller
             }
             $docElectronico = new facturacionElectronicaController();
             $arqueoCaja=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-            if(isset($arqueoCaja->arqueo_id) == false){
-                throw new Exception('No puede guardar la factura porque la forma de pago es en efectivo y usted no tiene una caja abierta.');
+            if($request->get('factura_tipo_pago') == 'EN EFECTIVO'){
+                if(isset($arqueoCaja->arqueo_id) == false){
+                    throw new Exception('No puede guardar la factura porque la forma de pago es en efectivo y usted no tiene una caja abierta.');
+                }
             }
             $factura = new Factura_Venta();
             $factura->factura_numero = $request->get('factura_serie').substr(str_repeat(0, 9).$request->get('factura_numero'), - 9);

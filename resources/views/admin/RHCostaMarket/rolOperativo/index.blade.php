@@ -960,7 +960,7 @@ function cargarIngreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  data[i]["valor"]);
+                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
                     total+=Number(data[i]["valor"]);
                     $("#tablaingresos tbody").append(linea);
                 
@@ -1043,7 +1043,7 @@ function cargaregreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  data[i]["valor"]);
+                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
                     total+=Number(data[i]["valor"]);
                     $("#tablaegresos tbody").append(linea);
                 

@@ -18,6 +18,7 @@ class CreateRubroTable extends Migration
             $table->string('rubro_nombre');
             $table->string('rubro_descripcion');
             $table->string('rubro_tipo');
+            $table->string('rubro_numero');
             $table->string('rubro_estado');            
             $table->bigInteger('empresa_id');
             $table->foreign('empresa_id')->references('empresa_id')->on('empresa');               

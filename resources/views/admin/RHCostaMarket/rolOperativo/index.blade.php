@@ -443,7 +443,21 @@
                                                 </div>
                                             </div>         
                                         </div> 
-                                        
+                                        <div class="row clearfix form-horizontal">   
+                                            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5  form-control-label  "
+                                                style="margin-bottom : 0px;">
+                                                <label>Vacaciones:</label>
+                                            </div>
+                                            <div class="ccol-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label id="VACACIONESPL" name="VACACIONESPL" >0</label>
+                                                        <input type="hidden" id="VACACIONESP" name="VACACIONESP" class="form-control "
+                                                        value="0.00"  required>
+                                                    </div>
+                                                </div>
+                                            </div>         
+                                        </div> 
                                          
                                     </div>
                                 </div>    
@@ -984,6 +998,8 @@ function cargarIngreso(id) {
                 document.getElementById("Patronal").value=document.getElementById("Patronall").innerHTML;
                 document.getElementById("IECEl").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
                 document.getElementById("IECE").value= document.getElementById("IECEl").innerHTML;
+                document.getElementById("VACACIONESPL").innerHTML=(Number(document.getElementById("Total_In").value)/24).toFixed(2);
+                document.getElementById("VACACIONESP").value= document.getElementById("VACACIONESPL").innerHTML;
                 if (document.getElementById("VCuarto").value=="1") {
                     document.getElementById("TotalCuartoV").innerHTML=((Number(document.getElementById("sueldo_basico").value))/12).toFixed(2);
                     document.getElementById("TCuarto").value=document.getElementById("TotalCuartoV").innerHTML;
@@ -1153,6 +1169,8 @@ function recalculo(){
         document.getElementById("Patronall").innerHTML=(((ingresos)*Number(document.getElementById("%IESS_Pa").innerHTML))/100).toFixed(2);
         document.getElementById("IECEl").innerHTML=(((ingresos)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
         document.getElementById("IECE").value=document.getElementById("IECEl").innerHTML;
+        document.getElementById("VACACIONESPL").innerHTML=((ingresos)/24).toFixed(2);
+        document.getElementById("VACACIONESP").value= document.getElementById("VACACIONESPL").innerHTML;
         if(document.getElementById("asumidot").value=="1"){
 
             document.getElementById("Tasumido").value=(((ingresos)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);

@@ -32,6 +32,7 @@ class Cabecera_Rol_CM extends Model
         'cabecera_rol_viaticos',
         'cabecera_rol_iece_secap',
         'cabecera_rol_aporte_patronal',
+        'cabecera_rol_vacaciones',
         'cabecera_rol_estado',
         'empleado_id',
         'diario_contabilizacion_id',

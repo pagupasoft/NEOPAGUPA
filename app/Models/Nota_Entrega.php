@@ -77,7 +77,7 @@ class Nota_Entrega extends Model
         ->where('cliente.cliente_id', '=', $cliente)
         ->orderBy('nt_numero','asc');
     }
-    public function scopebuscarFechaSucursal($query,$fecha_desde,$fecha_hasta,$cliente,$sucursal){
+    public function scopebuscarFechaSucursal($query,$fecha_desde,$fecha_hasta,$sucursal){
         return $query->join('cliente','cliente.cliente_id','=','nota_entrega.cliente_id')->join('bodega','bodega.bodega_id','=','nota_entrega.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
         ->where('nt_fecha', '>=', $fecha_desde)
         ->where('nt_fecha', '<=', $fecha_hasta)

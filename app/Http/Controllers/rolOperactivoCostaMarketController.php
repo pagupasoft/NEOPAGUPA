@@ -570,7 +570,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $diariocontabilizado->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dcuarto);
             }
-            if (floatval($aportepatornal)>0) {
+            if (floatval($cabecera_rol->cabecera_rol_aporte_patronal)>0) {
                 $detalleDiario = new Detalle_Diario();
                 $detalleDiario->detalle_debe = $cabecera_rol->cabecera_rol_aporte_patronal;
                 $detalleDiario->detalle_haber = 0.00;

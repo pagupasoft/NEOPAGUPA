@@ -275,7 +275,7 @@ class quincenaConsolidadaController extends Controller
                 }
                 /*REGISTRO DE TRANSFERENCIA*/
                 
-                $tipo=Empleado::EmpleadoTipo($idEmpleado[$contador[$i]])->first();
+                $tipo=Empleado::EmpleadoBusquedaCuenta($idEmpleado[$contador[$i]],'quincena')->first();
                 /**********************asiento diario****************************/
                
                    

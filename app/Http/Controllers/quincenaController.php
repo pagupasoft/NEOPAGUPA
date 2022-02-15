@@ -248,7 +248,7 @@ class quincenaController extends Controller
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';
             $detalleDiario->detalle_estado = '1';
-            $detalleDiario->cuenta_id = $tipo->cuenta_debe;   
+            $detalleDiario->cuenta_id = $tipo->cuenta_haber;   
             $detalleDiario->empleado_id = $request->get('idEmpleado');         
             $diario->detalles()->save($detalleDiario);
             $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo,'0','En la cuenta del debe -> '.$tipo->cuenta_debe.' con el valor de: -> '.$request->get('idValor'));

@@ -149,6 +149,8 @@ class quincenaConsolidadaController extends Controller
 
     public function generar(Request $request)
     {
+        try{
+            DB::beginTransaction();
             $idEmpleado = $request->get('idquincena'); 
             $contador = $request->get('contador');
             $nombre = $request->get('Dnombre');
@@ -307,7 +309,7 @@ class quincenaConsolidadaController extends Controller
                     $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                     $detalleDiario->detalle_conciliacion = '0';
                     $detalleDiario->detalle_estado = '1';
-                    $detalleDiario->cuenta_id = $tipo->cuenta_debe;
+                    $detalleDiario->cuenta_id = $tipo->cuenta_haber;
                     $detalleDiario->empleado_id = $idEmpleado[$contador[$i]];
                     $diario->detalles()->save($detalleDiario);
                     
@@ -323,7 +325,7 @@ class quincenaConsolidadaController extends Controller
                     $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                     $detalleDiario->detalle_conciliacion = '0';
                     $detalleDiario->detalle_estado = '1';
-                    $detalleDiario->cuenta_id = $tipo->cuenta_debe;
+                    $detalleDiario->cuenta_id = $tipo->cuenta_haber;
                     $detalleDiario->empleado_id = $idEmpleado[$contador[$i]];
                     $diario->detalles()->save($detalleDiario);
                     
@@ -377,9 +379,12 @@ class quincenaConsolidadaController extends Controller
                 return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('diario',$url);
 
             }
-           // DB::commit();
+            DB::commit();
             return view('admin.recursosHumanos.quincenaConsolidada.impresion',['datos'=>$datos,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin])->with('success','Datos guardados exitosamente');
-       
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }  
     }
    
     public function extraer(Request $request)

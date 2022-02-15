@@ -700,10 +700,7 @@
                                         </tr>
                                         
                                         
-                                        
-                                   
-                                      
-
+                                    
                                        
                                         <td class="letra-blanca fondo-gris-oscuro negrita">Viaticos (+)</td>
                                         <td >

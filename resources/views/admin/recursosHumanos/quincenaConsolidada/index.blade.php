@@ -185,7 +185,7 @@ function cajaActivar(){
     if(document.getElementById("idTipo").value=="Transferencia"){
         document.getElementById("banco_id").disabled = false;
         document.getElementById("cuenta_id").disabled = false;
-        document.getElementById("idFechaCheque").disabled = true;
+        document.getElementById("idFechaCheque").disabled = false;
         document.getElementById("idNcheque").disabled = true;
         document.getElementById("idCuentaContable").disabled = false;
         document.getElementById("idCuentaContable").innerHTML = "";         

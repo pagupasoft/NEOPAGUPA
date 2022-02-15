@@ -157,7 +157,7 @@ class quincenaConsolidadaController extends Controller
             $Squincena = $request->get('quincena');
           
         $general = new generalController();
-        $fecha=$request->get('fecha')."-01";
+        $fecha=$request->get('fecha')."-15";
         $total=0;
       
         $cierre = $general->cierre($fecha);
@@ -179,8 +179,8 @@ class quincenaConsolidadaController extends Controller
             if ($request->get('idTipo') == 'Transferencia') {
                 $general = new generalController();
                 $diario = new Diario();
-                $diario->diario_codigo = $general->generarCodigoDiario($fecha, 'CEQE');
-                $diario->diario_fecha = $fecha;
+                $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CEQE');
+                $diario->diario_fecha = $request->get('fechaactual');
                 $diario->diario_referencia = 'COMPROBANTE DE EMISION DE QUINCENAS DE EMPLEADOS';
             
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
@@ -236,8 +236,8 @@ class quincenaConsolidadaController extends Controller
                    
                     $general = new generalController();
                     $diario = new Diario();
-                    $diario->diario_codigo = $general->generarCodigoDiario($fecha, 'CEQE');
-                    $diario->diario_fecha = $fecha;
+                    $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CEQE');
+                    $diario->diario_fecha = $request->get('fechaactual');
                     $diario->diario_referencia = 'COMPROBANTE DE EMISION DE QUINCENA DE EMPLEADO';
                 
                     $diario->diario_tipo_documento = 'CHEQUE';
@@ -261,7 +261,7 @@ class quincenaConsolidadaController extends Controller
                     $cheque->cheque_numero = $numero;
                     $cheque->cheque_descripcion =  'Quincena de Empleado : '.$nombre[$contador[$i]];
                     $cheque->cheque_beneficiario =  $nombre[$contador[$i]];
-                    $cheque->cheque_fecha_emision = $fecha;
+                    $cheque->cheque_fecha_emision = $request->get('fechaactual');
                     $cheque->cheque_fecha_pago = $request->get('idFechaCheque');
                     $cheque->cheque_valor = $Squincena[$contador[$i]];
                     $cheque->cheque_valor_letras = $formatter->toInvoice($cheque->cheque_valor, 2, 'Dolares');
@@ -353,7 +353,7 @@ class quincenaConsolidadaController extends Controller
                 $transferencia = new Transferencia();
                 $transferencia->transferencia_descripcion =  'Quincena Consolida De empleados';
                 $transferencia->transferencia_beneficiario =  'Quincena Consolida De empleados';
-                $transferencia->transferencia_fecha = $fecha;
+                $transferencia->transferencia_fecha = $request->get('idFechaCheque');
                 $transferencia->transferencia_valor = $total;
                 $transferencia->cuenta_bancaria_id = $request->get('cuenta_id');
                 $transferencia->transferencia_estado = '1';

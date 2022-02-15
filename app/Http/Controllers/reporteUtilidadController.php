@@ -33,11 +33,11 @@ class reporteUtilidadController extends Controller
             if($request->get('productoID') == '0'){
                 $datos =  $this->datos($request);
             }else{
-                $datosP = $this->calcular(Producto::producto($request->get('productoID'))->first(), $request->get('fecha_desde'), $request->get('fecha_hasta'));
+                $datosP = $this->calcular(Producto::producto($request->get('productoID'))->first(), $request->get('fecha_desde'), $request->get('fecha_hasta'),1);
             }
             if(is_array($datos)){
                 if (isset($_POST['buscar'])){
-                    return view('admin.inventario.reportes.utilidadProducto',['productoC'=>$request->get('productoID'),'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'productos'=>Producto::productos()->where('producto_compra_venta','=','3')->orwhere('producto_compra_venta','=','2')->get(),'datos'=>$datos]);        
+                    return view('admin.inventario.reportes.utilidadProducto',['datosP'=>$datosP,'productoC'=>$request->get('productoID'),'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'productos'=>Producto::productos()->where('producto_compra_venta','=','3')->orwhere('producto_compra_venta','=','2')->get(),'datos'=>$datos]);        
                 }
                 if (isset($_POST['pdf'])){
                     $empresa =  Empresa::empresa()->first();
@@ -72,15 +72,26 @@ class reporteUtilidadController extends Controller
                 $datos[$count]['gru'] = $producto->grupo->grupo_nombre;
                 $datos[$count]['cod'] = $producto->producto_codigo;
                 $datos[$count]['nom'] = $producto->producto_nombre;
-                $resultado = $this->calcular($producto, $request->get('fecha_desde'), $request->get('fecha_hasta'));
+                $resultado = $this->calcular($producto, $request->get('fecha_desde'), $request->get('fecha_hasta'),0);
                 $datos[$count]['can'] = $resultado[0];
-                $datos[$count]['vec'] = $resultado[1];
+                if($producto->producto_tipo == '2'){
+                    $datos[$count]['vec'] = 0;
+                }else{
+                    $datos[$count]['vec'] = $resultado[1];
+                }
                 $datos[$count]['ven'] = $resultado[2];
                 $datos[$count]['uti'] = floatval($datos[$count]['ven']) - floatval($datos[$count]['vec']);
                 $totalVC = $totalVC + floatval($datos[$count]['vec']);
                 $totalV = $totalV + floatval($datos[$count]['ven']);
                 $totalU = $totalU + floatval($datos[$count]['uti']);
-                $count ++;
+                $datos[$count]['venta'] = $producto->cuentaVenta->cuenta_numero;
+                $datos[$count]['costo'] = '';
+                if(isset($producto->cuentaGasto->cuenta_numero)){
+                    $datos[$count]['costo'] = $producto->cuentaGasto->cuenta_numero;
+                }
+                if($datos[$count]['can'] > 0){
+                    $count ++;
+                }
             }
             $datos[$count]['gru'] = '';
             $datos[$count]['cod'] = '';
@@ -89,13 +100,15 @@ class reporteUtilidadController extends Controller
             $datos[$count]['vec'] = $totalVC;
             $datos[$count]['ven'] = $totalV;
             $datos[$count]['uti'] = $totalU;
+            $datos[$count]['venta'] = '';
+            $datos[$count]['costo'] = '';
             $count ++;
             return $datos;
         }catch(\Exception $ex){
             return redirect('utilidadProducto')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
-    public function calcular($producto, $fechaI, $fechaF){
+    public function calcular($producto, $fechaI, $fechaF,$bandera){
         $datos = null;
         $count = 1;
         $sin_fecha = 0;
@@ -103,6 +116,7 @@ class reporteUtilidadController extends Controller
         $resultado[0] = 0;
         $resultado[1] = 0;
         $resultado[2] = 0;
+        $bandera2 = false;
         if($sin_fecha == 0){
             /***********************SALDO ANTERIOR***********************/
             $datos[$count]['doc'] = '';
@@ -130,6 +144,16 @@ class reporteUtilidadController extends Controller
             /***********************************************************/
         }
         foreach(Movimiento_Producto::MovProductoByFecha($producto->producto_id,$fechaI,$fechaF)->orderBy('movimiento_fecha','asc')->orderBy('movimiento_id','asc')->get() as $movimiento){
+            $bandera2 = false;
+            if($movimiento->movimiento_motivo != "ANULACION"){
+                if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                    if(isset($movimiento->detalle_fv->facturaVenta->diario->diario_id)){
+                        $bandera2 = true;
+                    }
+                }else{
+                    $bandera2 = true;
+                }
+            }
             $datos[$count]['doc'] = $movimiento->movimiento_documento;
             $datos[$count]['num'] = '';
             $datos[$count]['fec'] = $movimiento->movimiento_fecha;
@@ -175,28 +199,41 @@ class reporteUtilidadController extends Controller
                 $datos[$count]['pre2'] = $datos[$count]['pre3'];
                 $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
             }
-            if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
-                $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
-                $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
-                $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
-            }
             if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
-                $resultado [0] = $resultado[0] - round($datos[$count]['can2'],2); 
-                $resultado [1] = $resultado[1] - round($datos[$count]['tot2'],2); 
-                $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
+                $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
             }
-            if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
-                $resultado [0] = $resultado[0] - round($datos[$count]['can2'],2); 
-                $resultado [1] = $resultado[1] - round($datos[$count]['tot2'],2); 
-                $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
+            if($movimiento->detalle_fv){
+                $datos[$count]['num'] = $movimiento->detalle_fv->facturaVenta->factura_numero;
             }
-            if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
-                $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
-                $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
-                $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
+            if($bandera2){
+                if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                    $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
+                    $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
+                    $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
+                }
+                if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                    $resultado [0] = $resultado[0] - round($datos[$count]['can1'],2); 
+                    $resultado [1] = $resultado[1] - round($datos[$count]['tot1'],2); 
+                    $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
+                }
+                if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                    $resultado [0] = $resultado[0] - round($datos[$count]['can2'],2); 
+                    $resultado [1] = $resultado[1] - round($datos[$count]['tot2'],2); 
+                    $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
+                }
+                if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                    $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
+                    $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
+                    $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
+                }
+                $count ++;
             }
-            $count ++;
         }
-        return $resultado;
+        if($bandera == 0){
+            return $resultado;
+        }else{
+            return $datos;
+        }
     }
 }

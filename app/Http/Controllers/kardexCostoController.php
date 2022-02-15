@@ -90,6 +90,16 @@ class kardexCostoController extends Controller
                 $movimientos = Movimiento_Producto::MovProductoByFecha($producto->producto_id,$request->get('fecha_desde'),$request->get('fecha_hasta'))->orderBy('movimiento_fecha','asc')->orderBy('movimiento_id','asc')->get();
             }
             foreach($movimientos as $movimiento){
+                $bandera2 = false;
+                if($movimiento->movimiento_motivo != "ANULACION"){
+                    if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                        if(isset($movimiento->detalle_fv->facturaVenta->diario->diario_id)){
+                            $bandera2 = true;
+                        }
+                    }else{
+                        $bandera2 = true;
+                    }
+                }
                 $datos[$count]['doc'] = $movimiento->movimiento_documento;
                 $datos[$count]['fec'] = $movimiento->movimiento_fecha;
                 $datos[$count]['can1'] = 0;
@@ -133,6 +143,10 @@ class kardexCostoController extends Controller
                 if($movimiento->movimiento_tipo == "SALIDA"){
                     $datos[$count]['pre2'] = $datos[$count]['pre3'];
                     $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                }
+                if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                    $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                    $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
                 }
                 $totalE = $totalE + floatval($datos[$count]['tot1']);
                 $totalS = $totalS + floatval($datos[$count]['tot2']);
@@ -205,7 +219,9 @@ class kardexCostoController extends Controller
                 }
                 $datos[$count]['tra'] = $movimiento->movimiento_motivo;
                 $datos[$count]['des'] = $movimiento->movimiento_descripcion;
-                $count ++;
+                if($bandera2){
+                    $count ++;
+                }
             }
             return view('admin.inventario.kardexCosto.index',['datos'=>$datos,'totalE'=>$totalE,'totalS'=>$totalS,'sin_fecha'=>$sin_fecha,'fDesde'=>$request->get('fecha_desde'),'fHasta'=>$request->get('fecha_hasta'),'productoC'=>$request->get('productoID'),'categoriaC'=>$request->get('categoriaID'),'bodegaC'=>$request->get('bodegaID'),'productos'=>Producto::productos()->get(),'categorias'=>Categoria_Producto::categorias()->get(),'bodegas'=>Bodega::bodegas()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){

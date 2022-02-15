@@ -58,6 +58,16 @@ class actualizarCostosController extends Controller
                 $count ++;
                 /***********************************************************/
                 foreach(Movimiento_Producto::MovProductoByFecha($producto->producto_id,$request->get('fecha_desde'),$request->get('fecha_hasta'))->orderBy('movimiento_fecha','asc')->orderBy('movimiento_id','asc')->get() as $movimiento){
+                    $bandera2 = false;
+                    if($movimiento->movimiento_motivo != "ANULACION"){
+                        if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                            if(isset($movimiento->detalle_fv->facturaVenta->diario->diario_id)){
+                                $bandera2 = true;
+                            }
+                        }else{
+                            $bandera2 = true;
+                        }
+                    }
                     $datos[$count]['fec'] = $movimiento->movimiento_fecha;
                     $datos[$count]['can1'] = 0;
                     $datos[$count]['pre1'] = 0;
@@ -143,7 +153,9 @@ class actualizarCostosController extends Controller
                             }
                         }
                     }
-                    $count ++;
+                    if($bandera2){
+                        $count ++;
+                    }
                 }
             }
             DB::commit();

@@ -36,84 +36,77 @@
             </div>
             <hr>
             @if(isset($datos))
-            <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
-                <thead>
-                    <tr class="text-center">
-                        <th>Grupo</th>
-                        <th>Codigo</th>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Venta Costo</th>
-                        <th>Venta</th>
-                        <th>Utilidad Generada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for ($i = 1; $i <= count($datos); ++$i)    
-                    <tr>
-                        <td>{{ $datos[$i]['gru'] }}</td>
-                        <td>{{ $datos[$i]['cod'] }}</td>
-                        <td>{{ $datos[$i]['nom'] }}</td>
-                        <td class="centrar-texto">{{ $datos[$i]['can'] }}</td>
-                        <td class="centrar-texto">{{ number_format($datos[$i]['vec'],2) }}</td>
-                        <td class="centrar-texto">{{ number_format($datos[$i]['ven'],2) }}</td>
-                        <td class="centrar-texto">{{ number_format($datos[$i]['uti'],2) }}</td>
-                    </tr>
-                    @endfor
-                </tbody>
-            </table>
+                @if(count($datos) > 0)
+                <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Grupo</th>
+                            <th>Codigo</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Venta Costo</th>
+                            <th>Venta</th>
+                            <th>Utilidad Generada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for ($i = 1; $i <= count($datos); ++$i)    
+                        <tr>
+                            <td>{{ $datos[$i]['gru'] }}</td>
+                            <td>{{ $datos[$i]['cod'] }}</td>
+                            <td>{{ $datos[$i]['nom'] }}</td>
+                            <td class="centrar-texto">{{ $datos[$i]['can'] }}</td>
+                            <td class="centrar-texto">{{ number_format($datos[$i]['vec'],2) }}</td>
+                            <td class="centrar-texto">{{ number_format($datos[$i]['ven'],2) }}</td>
+                            <td class="centrar-texto">{{ number_format($datos[$i]['uti'],2) }}</td>
+                        </tr>
+                        @endfor
+                    </tbody>
+                </table>
+                @endif
             @endif
             @if(isset($datosP))
-            <table id="example5" class="table table-bordered table-hover table-responsive sin-salto">
-                <thead>
-                    <tr class="text-center">
-                        <th colspan="3"></th>
-                        <th class="fondo-naranja letra-blanca" colspan="3">ENTRADAS</th>
-                        <th class="fondo-azul-claro letra-blanca" colspan="3">SALIDAS</th>
-                        <th class="fondo-verde letra-blanca" colspan="3">SALDOS</th>
-                        <th colspan="5"></th>
-                    </tr>
-                    <tr class="text-center">
-                        <th>Documento</th>
-                        <th>Numero</th>
-                        <th>Fecha</th>
-                        <th class="fondo-naranja-claro">Cantidad</th>
-                        <th class="fondo-naranja-claro">Precio</th>
-                        <th class="fondo-naranja-claro">Total</th>
-                        <th class="fondo-celeste">Cantidad</th>
-                        <th class="fondo-celeste">Precio</th>
-                        <th class="fondo-celeste">Total</th>
-                        <th class="fondo-verde-claro">Cantidad</th>
-                        <th class="fondo-verde-claro">Costo</th>
-                        <th class="fondo-verde-claro">Total</th>
-                        <th>Diario Costo</th> 
-                        <th>Diario</th>
-                        <th>Transaccion</th>
-                        <th>Cliente/Proveedor</th> 
-                        <th>Descripción</th> 
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(isset($datos))
-                        @for ($i = 1; $i <= count($datos); ++$i)    
-                            <tr class="centrar-texto">
-                                <td>{{ $datos[$i]['doc'] }}<input type="hidden" name="idDoc[]" value="{{ $datos[$i]['doc'] }}"/></td>
-                                <td>{{ $datos[$i]['num'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['num'] }}"/></td>
-                                <td>{{ $datos[$i]['fec'] }}<input type="hidden" name="idFec[]" value="{{ $datos[$i]['fec'] }}"/></td>
-                                <td>@if($datos[$i]['can1'] <> 0) {{ $datos[$i]['can1'] }} @endif<input type="hidden" name="idCan1[]" value="{{ $datos[$i]['can1'] }}"/></td>
-                                <td>@if($datos[$i]['pre1'] <> 0) {{ number_format($datos[$i]['pre1'],4) }} @endif<input type="hidden" name="idPre1[]" value="{{ $datos[$i]['pre1'] }}"/></td>
-                                <td>@if($datos[$i]['tot1'] <> 0) {{ number_format($datos[$i]['tot1'],2) }} @endif<input type="hidden" name="idTot1[]" value="{{ $datos[$i]['tot1'] }}"/></td>
-                                <td>@if($datos[$i]['can2'] <> 0) {{ $datos[$i]['can2'] }} @endif<input type="hidden" name="idCan2[]" value="{{ $datos[$i]['can2'] }}"/></td>
-                                <td>@if($datos[$i]['pre2'] <> 0) {{ number_format($datos[$i]['pre2'],4) }} @endif<input type="hidden" name="idPre2[]" value="{{ $datos[$i]['pre2'] }}"/></td>
-                                <td>@if($datos[$i]['tot2'] <> 0) {{ number_format($datos[$i]['tot2'],2) }} @endif<input type="hidden" name="idTot2[]" value="{{ $datos[$i]['tot2'] }}"/></td>
-                                <td>{{ $datos[$i]['can3'] }}<input type="hidden" name="idCan3[]" value="{{ $datos[$i]['can3'] }}"/></td>
-                                <td>{{ number_format($datos[$i]['pre3'],4) }}<input type="hidden" name="idPre3[]" value="{{ $datos[$i]['pre3'] }}"/></td>
-                                <td>{{ number_format($datos[$i]['tot3'],2) }}<input type="hidden" name="idTot3[]" value="{{ $datos[$i]['tot3'] }}"/></td>
-                            </tr>
-                        @endfor
-                    @endif
-                </tbody>
-            </table>
+                @if(count($datosP)>0)
+                <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
+                    <thead>
+                       
+                        <tr class="text-center">
+                            <th>Documento</th>
+                            <th>Numero</th>
+                            <th>Fecha</th>
+                            <th class="fondo-naranja-claro">Cantidad</th>
+                            <th class="fondo-naranja-claro">Precio</th>
+                            <th class="fondo-naranja-claro">Total</th>
+                            <th class="fondo-celeste">Cantidad</th>
+                            <th class="fondo-celeste">Precio</th>
+                            <th class="fondo-celeste">Total</th>
+                            <th class="fondo-verde-claro">Cantidad</th>
+                            <th class="fondo-verde-claro">Costo</th>
+                            <th class="fondo-verde-claro">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(isset($datosP))
+                            @for ($i = 1; $i <= count($datosP); ++$i)    
+                                <tr class="centrar-texto">
+                                    <td>{{ $datosP[$i]['doc'] }}<input type="hidden" name="idDoc[]" value="{{ $datosP[$i]['doc'] }}"/></td>
+                                    <td>{{ $datosP[$i]['num'] }}<input type="hidden" name="idNum[]" value="{{ $datosP[$i]['num'] }}"/></td>
+                                    <td>{{ $datosP[$i]['fec'] }}<input type="hidden" name="idFec[]" value="{{ $datosP[$i]['fec'] }}"/></td>
+                                    <td>@if($datosP[$i]['can1'] <> 0) {{ $datosP[$i]['can1'] }} @endif<input type="hidden" name="idCan1[]" value="{{ $datosP[$i]['can1'] }}"/></td>
+                                    <td>@if($datosP[$i]['pre1'] <> 0) {{ number_format($datosP[$i]['pre1'],4) }} @endif<input type="hidden" name="idPre1[]" value="{{ $datosP[$i]['pre1'] }}"/></td>
+                                    <td>@if($datosP[$i]['tot1'] <> 0) {{ number_format($datosP[$i]['tot1'],2) }} @endif<input type="hidden" name="idTot1[]" value="{{ $datosP[$i]['tot1'] }}"/></td>
+                                    <td>@if($datosP[$i]['can2'] <> 0) {{ $datosP[$i]['can2'] }} @endif<input type="hidden" name="idCan2[]" value="{{ $datosP[$i]['can2'] }}"/></td>
+                                    <td>@if($datosP[$i]['pre2'] <> 0) {{ number_format($datosP[$i]['pre2'],4) }} @endif<input type="hidden" name="idPre2[]" value="{{ $datosP[$i]['pre2'] }}"/></td>
+                                    <td>@if($datosP[$i]['tot2'] <> 0) {{ number_format($datosP[$i]['tot2'],2) }} @endif<input type="hidden" name="idTot2[]" value="{{ $datosP[$i]['tot2'] }}"/></td>
+                                    <td>{{ $datosP[$i]['can3'] }}<input type="hidden" name="idCan3[]" value="{{ $datosP[$i]['can3'] }}"/></td>
+                                    <td>{{ number_format($datosP[$i]['pre3'],4) }}<input type="hidden" name="idPre3[]" value="{{ $datosP[$i]['pre3'] }}"/></td>
+                                    <td>{{ number_format($datosP[$i]['tot3'],2) }}<input type="hidden" name="idTot3[]" value="{{ $datosP[$i]['tot3'] }}"/></td>
+                                </tr>
+                            @endfor
+                        @endif
+                    </tbody>
+                </table>
+                @endif
             @endif
         </form>
     </div>

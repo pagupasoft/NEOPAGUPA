@@ -708,7 +708,7 @@
                                         <td class="letra-blanca fondo-gris-oscuro negrita">Viaticos (+)</td>
                                         <td >
                                         <input type="number" id="Viaticos" name="Viaticos" class="form-control "
-                                                        value="0.00" onclick="sumatotales();" onkeyup="sumatotales();"  required>
+                                                        value="0.00" onclick="sumatotales();" onkeyup="sumatotales();" step="any" required>
                                         </td>
                                         </tr>
                                         <tr>

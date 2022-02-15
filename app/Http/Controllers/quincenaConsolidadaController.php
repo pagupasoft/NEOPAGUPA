@@ -149,8 +149,11 @@ class quincenaConsolidadaController extends Controller
 
     public function generar(Request $request)
     {
-        try{
-            DB::beginTransaction();
+            $idEmpleado = $request->get('idquincena'); 
+            $contador = $request->get('contador');
+            $nombre = $request->get('Dnombre');
+            $Squincena = $request->get('quincena');
+          
         $general = new generalController();
         $fecha=$request->get('fecha')."-01";
         $total=0;
@@ -166,10 +169,7 @@ class quincenaConsolidadaController extends Controller
         $cuentabanco=Cuenta_Bancaria::findOrFail($request->get('cuenta_id'));
         $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
         $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
-            $idEmpleado = $request->get('idquincena'); 
-            $contador = $request->get('contador');
-            $nombre = $request->get('Dnombre');
-            $Squincena = $request->get('quincena');
+            
           
             if ($request->get('idTipo') == 'Cheque') {
             $numero=$request->get('idNcheque');
@@ -240,9 +240,7 @@ class quincenaConsolidadaController extends Controller
                 
                     $diario->diario_tipo_documento = 'CHEQUE';
                     $diario->diario_numero_documento =$numero;
-                
-                    
-              
+                                    
                     $diario->diario_beneficiario = $nombre[$contador[$i]];
                     $diario->diario_tipo = 'CEQE';
                     $diario->diario_secuencial = substr($diario->diario_codigo, 8);
@@ -376,16 +374,12 @@ class quincenaConsolidadaController extends Controller
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$request->get('idCuentaContable').' con el valor de: -> '.$total);
                 $url = $general->pdfDiarioEgreso($diario);
                 DB::commit();
-                return redirect('pquincena/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('diario',$url);
+                return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('diario',$url);
 
             }
-            DB::commit();
+           // DB::commit();
             return view('admin.recursosHumanos.quincenaConsolidada.impresion',['datos'=>$datos,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin])->with('success','Datos guardados exitosamente');
-        }
-        catch(\Exception $ex){ 
-            DB::rollBack();     
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+       
     }
    
     public function extraer(Request $request)
@@ -424,7 +418,7 @@ class quincenaConsolidadaController extends Controller
                     }
                 } 
                 if ($boole==1) {
-                    $datos[$count]['count'] =$count;
+                    $datos[$count]['count'] =$count-1;
                     $datos[$count]['ID'] =$empleado->empleado_id;
                     $datos[$count]['Dcedula'] =$empleado->empleado_cedula;
                     $datos[$count]['Dnombre'] =$empleado->empleado_nombre;

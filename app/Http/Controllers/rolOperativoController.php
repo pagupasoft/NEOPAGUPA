@@ -99,10 +99,7 @@ class rolOperativoController extends Controller
             if($cierre){
                 return redirect('listaroles')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-            $cierre = $general->cierre($cheque->cheque_fecha_pago);          
-            if($cierre){
-                return redirect('listaroles')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-            }
+           
            
             
             $detalle->cheque_id=null;
@@ -123,9 +120,12 @@ class rolOperativoController extends Controller
             $chequenew->cheque_estado = '1';
             $chequenew->empresa_id = Auth::user()->empresa->empresa_id;
             $chequenew->save();
-            $urlcheque = $general->pdfImprimeCheque($cheque->cuenta_bancaria_id,$chequenew);
             $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNewcheque'), '0', 'Por motivo de: -> '.$request->get('descripcion').' con el valor de: -> '.$chequenew->cheque_valor);
             $detalle->cheque()->associate($chequenew); 
+            $detalle->save();
+            
+            $urlcheque = $general->pdfImprimeCheque($cheque->cuenta_bancaria_id,$chequenew);
+            
             DB::commit();
             return redirect('/listaroles')->with('success','Datos guardados exitosamente')->with('cheque',$urlcheque);
         }catch(\Exception $ex){

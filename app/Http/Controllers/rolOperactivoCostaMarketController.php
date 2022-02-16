@@ -858,6 +858,53 @@ class rolOperactivoCostaMarketController extends Controller
         }              
         
     }
+
+    public function actualizarcheque(Request $request)
+    {
+
+        try{
+            DB::beginTransaction();
+            $urlcheque = '';
+            $iddetalle=$request->get('iddetalle');
+            $idcheque = floatval($request->get('idcheque'));
+            $cheque=Cheque::findOrFail($idcheque);
+            $detalle=Detalle_Diario::findOrFail($iddetalle);
+            $general = new generalController();       
+            $cierre = $general->cierre($cheque->cheque_fecha_emision);          
+            if($cierre){
+                return redirect('listaroles')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            $detalle->cheque_id=null;
+            $detalle->save();
+
+            $cheque->cheque_estado = '2';
+            $cheque->save();
+            
+            $chequenew = new Cheque();
+            $chequenew->cheque_numero = $request->get('idNewcheque');
+            $chequenew->cheque_descripcion = $cheque->cheque_descripcion;
+            $chequenew->cheque_beneficiario = $cheque->cheque_beneficiario;
+            $chequenew->cheque_fecha_emision = $request->get('fechactual');
+            $chequenew->cheque_fecha_pago =$request->get('idFechaCheque');
+            $chequenew->cheque_valor = $cheque->cheque_valor;
+            $chequenew->cheque_valor_letras = $cheque->cheque_valor_letras;
+            $chequenew->cuenta_bancaria_id = $cheque->cuenta_bancaria_id;
+            $chequenew->cheque_estado = '1';
+            $chequenew->empresa_id = Auth::user()->empresa->empresa_id;
+            $chequenew->save();
+            $urlcheque = $general->pdfImprimeCheque($cheque->cuenta_bancaria_id,$chequenew);
+            
+            $detalle->cheque()->associate($chequenew); 
+            $detalle->save();
+            $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNewcheque'), '0', 'Por motivo de: -> '.$request->get('descripcion').' con el valor de: -> '.$chequenew->cheque_valor);
+            
+            DB::commit();
+            return redirect('/listaRolCM')->with('success','Datos guardados exitosamente')->with('cheque',$urlcheque);
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     public function eliminar($id){
         try {
             DB::beginTransaction();
@@ -970,9 +1017,114 @@ class rolOperactivoCostaMarketController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function cambiocheque($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono', 'grupo_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->join('grupo_permiso', 'grupo_permiso.grupo_id', '=', 'permiso.grupo_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('grupo_orden', 'asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('permiso_orden', 'asc')->get();
+            $tipopago=null;
+            $datos=null;
+            $detalles=null;
+            $alimentacion=null;
+            $anticipo=null;
+            $quincenas=null;
+            $rol2= Cabecera_Rol_CM::findOrFail($id);
+            $count=1;
+            $datos[$count]['rol_id']=$rol2->cabecera_rol_id;
+            $datos[$count]['empleado']=$rol2->empleado_id;
+            $datos[$count]['ingresos']=$rol2->cabecera_rol_total_ingresos;
+            $datos[$count]['egresos']=$rol2->cabecera_rol_total_egresos;
+            $datos[$count]['descripcion']=$rol2->cabecera_rol_descripcion;
+            $datos[$count]['pago']=$rol2->cabecera_rol_pago;
+            $datos[$count]['cuarto']=$rol2->cabecera_rol_decimocuarto;
+        
+            $datos[$count]['tercero']=$rol2->cabecera_rol_decimotercero;
+            $datos[$count]['fondos']=$rol2->cabecera_rol_fondo_reserva;
+            $datos[$count]['viaticos']=$rol2->cabecera_rol_viaticos;
+            $datos[$count]['secap']=$rol2->cabecera_rol_aporte_patronal;
+            $datos[$count]['patronal']=$rol2->cabecera_rol_aporte_patronal;
+            $datos[$count]['terceroacu']=$rol2->cabecera_rol_decimotercero_acumula;
+            $datos[$count]['cuartoacu']=$rol2->cabecera_rol_decimocuarto_acumula;
+            $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
+            $datos[$count]['dias']=$rol2->cabecera_rol_total_dias;
+            $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
+            $datos[$count]['vacacion']=$rol2->cabecera_rol_vacaciones;
+            
+            $datos[$count]['normal']=$rol2->controlcm->control_normal;
+            $datos[$count]['decanso']=$rol2->controlcm->control_decanso;
+            $datos[$count]['vacaciones']=$rol2->controlcm->control_vacaciones;
+            $datos[$count]['permiso']=$rol2->controlcm->control_permiso;
+            $datos[$count]['cosecha']=$rol2->controlcm->control_cosecha;
+            $datos[$count]['extra']=$rol2->controlcm->control_extra;
+            $datos[$count]['ausente']=$rol2->controlcm->control_ausente;
+         
+            $count=1;
+            foreach ($rol2->alimentacioncm as $alimentaciones) {
+                $alimentacion[$count]['fecha']=$alimentaciones->alimentacion_fecha;
+                $alimentacion[$count]['valor']=$alimentaciones->alimentacion_valor;
+                $alimentacion[$count]['factura']=$alimentaciones->transaccion->transaccion_numero;
+                $count++;
+            }
+            $count=1;
+            foreach ($rol2->anticiposcm as $anticipos) {
+                $anticipo[$count]['descuento_fecha']=$anticipos->descuento_fecha;
+                $anticipo[$count]['descuento_valor']=$anticipos->descuento_valor;
+                $anticipo[$count]['Valor_Anticipó']=$anticipos->anticipo->anticipo_valor;
+                $count++;
+            }
+            $count=1;
+            foreach ($rol2->quincenacm as $quincena) {
+                $quincenas[$count]['descuento_fecha']=$quincena->descuento_fecha;
+                $quincenas[$count]['descuento_valor']=$quincena->descuento_valor;
+                $quincenas[$count]['Valor_Anticipó']=$quincena->quincena->quincena_valor;
+                $count++;
+            }
+            $count=1;
+            $datos[$count]['tipo']="Efectivo";
+            foreach($rol2->diariopago->detalles as $detalle){
+                if ($detalle->detalle_haber>0) {
+                    $datos[$count]['iddetalle']=$detalle->detalle_id;
+                    if (isset($detalle->cheque)) {
+                       
+                        $datos[$count]['tipo']="Cheque";
+                        $datos[$count]['idcheque']=$detalle->cheque->cheque_id;
+                        $datos[$count]['cheque']=$detalle->cheque->cheque_numero;
+                        $datos[$count]['fecha']=$detalle->cheque->cheque_fecha_pago;
+                        $datos[$count]['numero']=$detalle->cheque->cuentaBancaria->cuenta_bancaria_numero;
+                        $datos[$count]['banco']=$detalle->cheque->cuentaBancaria->banco->bancoLista->banco_lista_nombre;
+                        $count++;
+                    }
+                    if (isset($detalle->transferencia)) {
+                       
+                        $datos[$count]['tipo']="Transferencia";
+                        $datos[$count]['numero']=$detalle->transferencia->cuentaBancaria->cuenta_bancaria_numero;
+                        $datos[$count]['banco']=$detalle->transferencia->cuentaBancaria->banco->bancoLista->banco_lista_nombre;
+                
+                        $count++;
+                    }
+                }
+            }
+        $count=1;
+        $rubros=Rubro::Rubros()->get();
+        foreach ($rubros as $rubro) {
+            $detalles[$count]['Descripcion']=$rubro->rubro_descripcion;
+            $detalles[$count]['Valor']='0.00';
+            $detalles[$count]['Tipo']=$rubro->rubro_tipo;
+            foreach ($rol2->detalles as $detalle) {
+                if ($rubro->rubro_id==$detalle->rubro_id) {
+                    $detalles[$count]['Descripcion']=$detalle->detalle_rol_descripcion;
+                    $detalles[$count]['Valor']=$detalle->detalle_rol_valor;
+                }
+            }
+            $count++;
+        }
+        DB::commit();
+        return view('admin.RHCostaMarket.rolOperativo.cambiocheque',['quincenas'=>$quincenas,'detalles'=>$detalles,'tipopago'=>$tipopago,'anticipo'=>$anticipo,'alimentacion'=>$alimentacion,'datos'=>$datos,'rol'=>$rol2,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**
@@ -1145,4 +1297,6 @@ class rolOperactivoCostaMarketController extends Controller
             return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }  
     }
+    
+   
 }

@@ -2,8 +2,7 @@
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="card card-primary ">
-    <form method="POST" action="{{ route('rolindividualCM.destroy', $datos[1]['rol_id']) }}"> 
-    @method('DELETE')
+    
     @csrf
         <div class="row">
         <!-- Tabla de empelados -->
@@ -40,7 +39,6 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             
                             <div class="float-right">
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>&nbsp;Eliminar</button>
                             <button type="button" onclick='window.location = "{{ url("listaRolCM") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                                 
                             <br>
@@ -549,7 +547,7 @@
                 </div>
         
         </div>
-    </form>
+
 </div>
 
 

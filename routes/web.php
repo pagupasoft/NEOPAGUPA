@@ -959,6 +959,8 @@ Route::get('/roloperativoCM/new/{id}', [rolOperactivoCostaMarketController::clas
 Route::get('/roloperativoCM/{id}/eliminar', [rolOperactivoCostaMarketController::class, 'eliminar'])->middleware('auth');
 Route::get('/rolindividualCM/{id}/eliminar', [rolIndividualCostaMarketController::class, 'eliminar'])->middleware('auth');
 
+Route::get('/roloperativoCM/{id}/cambiocheque', [rolOperactivoCostaMarketController::class, 'cambiocheque'])->middleware('auth');
+Route::get('/rolindividualCM/{id}/cambiocheque', [rolIndividualCostaMarketController::class, 'cambiocheque'])->middleware('auth');
 //Crear proforma
 Route::get('/proforma/new/{id}', [proformaController::class, 'nuevo'])->middleware('auth');
 
@@ -1063,7 +1065,9 @@ Route::get('/Roloperativo/{id}/ver', [rolConsolidadoController::class, 'veropera
 Route::get('/Rol/{id}/ver', [rolConsolidadoController::class, 'verindividual'])->middleware('auth');
 Route::get('/Roloperativo/{id}/eliminar', [rolConsolidadoController::class, 'eliminarChequeoperativo'])->middleware('auth');
 Route::get('/Roles/{id}/eliminar', [rolConsolidadoController::class, 'eliminarChequeindividual'])->middleware('auth');
-Route::post('/roloperativo/cheque', [rolOperativoController::class, 'cambiocheque'])->middleware('auth');
+Route::post('/roloperativoCM/cheque', [rolOperactivoCostaMarketController::class, 'actualizarcheque'])->middleware('auth');
+
+Route::get('/Rol/{id}/cambiocheque', [rolConsolidadoController::class, 'verChequeindividual'])->middleware('auth');
 
 
 Route::post('/contabilizado/extraer', [contabilizacionMensualController::class, 'extraer'])->middleware('auth');

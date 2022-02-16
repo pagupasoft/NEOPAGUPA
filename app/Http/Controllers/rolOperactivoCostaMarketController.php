@@ -902,9 +902,9 @@ class rolOperactivoCostaMarketController extends Controller
             $diario=Diario::findOrFail($detalle->diario_id);
             $diario->diario_numero_documento=$request->get('idNewcheque');
             $diario->save();
-
+            $url = $general->pdfDiarioEgreso($diario);
             DB::commit();
-            return redirect('/listaRolCM')->with('success','Datos guardados exitosamente')->with('cheque',$urlcheque);
+            return redirect('/listaRolCM')->with('success','Datos guardados exitosamente')->with('diario',$url)->with('cheque',$urlcheque);
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

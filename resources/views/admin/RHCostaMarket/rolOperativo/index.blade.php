@@ -729,7 +729,8 @@
                                             
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Banco</td>
                                             <td id="bancoEmpleado" name="bancoEmpleado" class="derecha-texto negrita"> </td> 
-                                            <input type="hidden"   name="VbancoEmpleado"  id="VbancoEmpleado" value="0" >                                           
+                                            <input type="hidden"   name="VbancoEmpleado"  id="VbancoEmpleado" value="0" > 
+                                            <input type="hidden"   name="fechaactual"  id="fechaactual" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' required readonly>                                           
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Cuenta</td>

@@ -869,6 +869,7 @@ class rolOperactivoCostaMarketController extends Controller
             $idcheque = floatval($request->get('idcheque'));
             $cheque=Cheque::findOrFail($idcheque);
             $detalle=Detalle_Diario::findOrFail($iddetalle);
+            
             $general = new generalController();       
             $cierre = $general->cierre($cheque->cheque_fecha_emision);          
             if($cierre){
@@ -897,7 +898,11 @@ class rolOperactivoCostaMarketController extends Controller
             $detalle->cheque()->associate($chequenew); 
             $detalle->save();
             $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNewcheque'), '0', 'Por motivo de: -> '.$request->get('descripcion').' con el valor de: -> '.$chequenew->cheque_valor);
-            
+           
+            $diario=Diario::findOrFail($detalle->diario_id);
+            $diario->diario_numero_documento=$request->get('idNewcheque');
+            $diario->save();
+
             DB::commit();
             return redirect('/listaRolCM')->with('success','Datos guardados exitosamente')->with('cheque',$urlcheque);
         }catch(\Exception $ex){

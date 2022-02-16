@@ -7,7 +7,8 @@
             <h3 class="card-title">Quincena Consolidada</h3>
             <div class="float-right">
                 <button type="submit" id="generar" name="generar" class="btn btn-success btn-sm ">Generar Quincena</button>
-                <button onclick='window.location = "{{ url("quincenaConsolidada") }}";' class="btn btn-default btn-sm"><i class="fa fa-times"></i>&nbsp;Cancelar</button>
+                <a href="{{ url("quincenaConsolidada") }}" class="btn btn-danger btn-sm">Cancelar</a>
+                
             </div>
         </div>
         <div class="card"> 
@@ -16,7 +17,7 @@
                 <label for="fecha" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
                     <div class="col-sm-2">
                         <input type="month" class="form-control" id="fecha" name="fecha"  onchange="vaciar();"  value=@if(isset($fecha)){{$fecha}} @else'<?php echo(date("Y")."-".date("m")); ?>'@endif >
-                       
+                        <input type="hidden"  id="fechaactual" name="fechaactual" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
 
                     </div>
                     <label for="idsucursal" class="col-sm-1 col-form-label">Sucursal</label>   
@@ -179,7 +180,7 @@ function cajaActivar(){
     if(document.getElementById("idTipo").value=="Transferencia"){
         document.getElementById("banco_id").disabled = false;
         document.getElementById("cuenta_id").disabled = false;
-        document.getElementById("idFechaCheque").disabled = true;
+        document.getElementById("idFechaCheque").disabled = false;
         document.getElementById("idNcheque").disabled = true;
         document.getElementById("idCuentaContable").disabled = false;
         document.getElementById("idCuentaContable").innerHTML = "";         

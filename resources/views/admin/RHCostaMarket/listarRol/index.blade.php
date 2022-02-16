@@ -53,7 +53,13 @@
                         <tr>  
                             <td class="text-center">
                             @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("roloperativoCM/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF 
-                                          
+                            @if($datos[$i]["tipo"]=='INDIVIDUAL') <a href="{{url("rolindividualCM/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF    
+                            @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("roloperativoCM/{$datos[$i]["idrol"]}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a> @ENDIF 
+                            @if($datos[$i]["tipo"]=='INDIVIDUAL' || $datos[$i]["tipo"]=='CONSOLIDADO') <a href="{{url("rolindividualCM/{$datos[$i]["idrol"]}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>@ENDIF                   
+                            @if($datos[$i]["cheque"]==1)
+                                @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("roloperativoCM/{$datos[$i]["idrol"]}/cambiocheque")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Cambio Cheque"><i class="fas fa-money-check-alt"></i> </a> @ENDIF 
+                                @if($datos[$i]["tipo"]=='INDIVIDUAL' || $datos[$i]["tipo"]=='CONSOLIDADO') <a href="{{url("rolindividualCM/{$datos[$i]["idrol"]}/cambiocheque")}}"  class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Cambio Cheque"><i class="fas fa-money-check-alt"></i> </a>@ENDIF                        
+                            @endif
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimir")}}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Rol"><i class="fa fa-print"></i></a>                   
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimirdiario")}}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Asiento"><i class="fa fa-print"></i></a>   
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimirdiariocontabilizado")}}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Diario Contabilizado"><i class="fa fa-print"></i></a>       

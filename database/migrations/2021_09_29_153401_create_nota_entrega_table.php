@@ -33,7 +33,7 @@ class CreateNotaEntregaTable extends Migration
             $table->foreign('cliente_id')->references('cliente_id')->on('cliente');
             $table->bigInteger('rango_id');
             $table->foreign('rango_id')->references('rango_id')->on('rango_documento');
-            $table->bigInteger('cuenta_id');
+            $table->bigInteger('cuenta_id')->nullable();
             $table->foreign('cuenta_id')->references('cuenta_id')->on('cuenta_cobrar');
             $table->bigInteger('arqueo_id')->nullable();
             $table->foreign('arqueo_id')->references('arqueo_id')->on('arqueo_caja');

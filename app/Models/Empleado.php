@@ -126,6 +126,7 @@ class Empleado extends Model
                     )->join('cuenta', 'cuenta.cuenta_id','=','tipo_empleado_parametrizacion.cuenta_haber'
                     )->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')->where('empleado_id','=',$id);
     } 
+    
     public function scopeEmpleadoBusquedaCuenta($query, $id,$rubro){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id'
                     )->join('empresa_departamento', 'empresa_departamento.departamento_id','=','empleado.departamento_id'

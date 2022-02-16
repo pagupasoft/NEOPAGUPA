@@ -139,6 +139,7 @@ class quincenaController extends Controller
                 return redirect('pquincena/new/'.$request->get('punto_id'))->with('error2','Ya existe la quincena del empleado');
             }
             $empleado = Empleado::EmpleadoById($request->get('idEmpleado'))->first();
+            
             $quincena = new Quincena();
             $quincena->quincena_numero = $request->get('quincena_serie').substr(str_repeat(0, 9).$request->get('quincena_numero'), - 9);;
             $quincena->quincena_serie = $request->get('quincena_serie');

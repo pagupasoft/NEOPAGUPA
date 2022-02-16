@@ -18,6 +18,7 @@
                 <label for="fecha" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
                     <div class="col-sm-2">
                         <input type="date" class="form-control" id="fecha" name="fecha"  value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
+                        <input type="hidden"  id="fechaactual" name="fechaactual" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
                     </div>
                     <label for="idTipo" class="col-sm-2 col-form-label">Sucursal</label>
                     <div class="col-sm-10">
@@ -136,6 +137,7 @@
                         <label for="idFechaCheque" class="col-sm-2 col-form-label">Fecha</label>
                         <div class="col-sm-10">
                             <input type="date" class="form-control" id="idFechaCheque" name="idFechaCheque" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
+                            
                         </div>
             </div>                
             <div class="form-group row">
@@ -185,7 +187,7 @@ function cajaActivar(){
     if(document.getElementById("idTipo").value=="Transferencia"){
         document.getElementById("banco_id").disabled = false;
         document.getElementById("cuenta_id").disabled = false;
-        document.getElementById("idFechaCheque").disabled = true;
+        document.getElementById("idFechaCheque").disabled = false;
         document.getElementById("idNcheque").disabled = true;
         document.getElementById("idCuentaContable").disabled = false;
         document.getElementById("idCuentaContable").innerHTML = "";         

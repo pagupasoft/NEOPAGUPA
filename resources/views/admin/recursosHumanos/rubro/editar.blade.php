@@ -25,7 +25,7 @@
                         @if($rubro->rubro_tipo == 1)<option value="1" selected>EGRESOS</option>@else <option value="1">EGRESOS</option>@endif
                         @if($rubro->rubro_tipo == 2)<option value="2" selected>INGRESOS</option>@else <option value="2">INGRESOS</option>@endif
                         @if($rubro->rubro_tipo == 3)<option value="3" selected>PROVISIONES</option>@else <option value="3">PROVISIONES</option>@endif
-                        @if($rubro->rubro_tipo == 4)<option value="4" selected>OTROS</option>@else <option value="3">OTROS</option>@endif
+                        @if($rubro->rubro_tipo == 4)<option value="4" selected>OTROS</option>@else <option value="4">OTROS</option>@endif
                     </select>
                 </div>
             </div>

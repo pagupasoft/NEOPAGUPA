@@ -555,7 +555,7 @@
                                                         <div class="form-line">
                                                             <input id="retencion_secuencial" name="retencion_secuencial"
                                                                 type="text" class="form-control"
-                                                                value="{{ $secuencial }}" readonly>
+                                                                value="{{ $secuencial }}" required>
                                                         </div>
                                                     </div>
                                                 </div>

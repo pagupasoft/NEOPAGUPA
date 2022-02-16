@@ -17,7 +17,7 @@ class CreateDetalleExpedienteTable extends Migration
             $table->id('detallee_id');
             $table->string('detallee_nombre');
             $table->string('detallee_tipo');
-            $table->string('detallee_medida');
+            $table->string('detallee_medida')->nullable();
             $table->string('detallee_url');
             $table->string('detallee_multiple');
             $table->string('detallee_valor');

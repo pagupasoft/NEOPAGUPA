@@ -762,6 +762,8 @@ function validar() {
         alert('El total a pagar no debe ser menor a cero');
         return false
     }  
+    document.getElementById("guardarID").value = "Enviando...";
+	document.getElementById("guardarID").disabled = true; 
     return true;
 }
 

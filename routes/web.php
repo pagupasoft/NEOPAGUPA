@@ -157,6 +157,7 @@ use App\Http\Controllers\tipoMovimientoegresoController;
 use App\Http\Controllers\vacacionController;
 use App\Http\Controllers\signosVitalesController;
 use App\Http\Controllers\atencionCitasController;
+use App\Http\Controllers\atencionRecetasController;
 use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\categoriaCostoController;
 use App\Http\Controllers\cierreMesController;
@@ -658,6 +659,13 @@ Route::get('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 
 Route::post('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'consultar'])->middleware('auth');
 Route::get('/nuevoSignosV/{id}', [signosVitalesController::class, 'nuevoSigno'])->middleware('auth');
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
+
+Route::get('/receta', [atencionRecetasController::class, 'index'])->middleware('auth')->middleware('acceso');
+Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])->middleware('auth')->middleware('acceso');
+Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'])->middleware('auth')->middleware('acceso');
+Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
+Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
+
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/historial', [historialClinicoController::class, 'historial'])->middleware('auth')->middleware('acceso');

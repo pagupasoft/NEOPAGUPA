@@ -1481,7 +1481,9 @@ function validar() {
     if(Number(document.getElementById("LiquidacionTotal").innerHTML)<0){
         alert('El total a pagar no debe ser menor a cero');
         return false
-    }  
+    }
+    document.getElementById("guardarID").value = "Enviando...";
+	document.getElementById("guardarID").disabled = true; 
     return true;
 }
 

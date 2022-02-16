@@ -76,6 +76,15 @@ class listarquincenaController extends Controller
             } 
             if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') != "--TODOS--") {
                 $quincena=Quincena::Quincenasestado($request->get('estados'))->get();               
+            }
+            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') == "--TODOS--") {
+                $quincena=Quincena::QuincenasFechaEmpleado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();               
+            }
+            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') != "--TODOS--") {
+                $quincena=Quincena::QuincenasFechaEstado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'))->get();               
+            }
+            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') != "--TODOS--") {
+                $quincena=Quincena::QuincenasEmpleadoEstado($request->get('nombre_empleado'),$request->get('estados'))->get();               
             }   
             return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'estadoactual'=>$request->get('estados'),'estados'=>$esta_quin,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
@@ -148,7 +157,14 @@ class listarquincenaController extends Controller
             $cheque=null;
             $quincena=Quincena::Quincena($id)->get()->first();
             $diario=Quincena::Validacion($quincena->diario_id)->get();
-           
+            $quincenaaux=Quincena::findOrFail($id);
+            if(isset($quincenaaux->rolcm)){
+                return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+            }
+            if(count($quincenaaux->decuento)>0){
+                return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+            }
+            
             if (count($diario)==1) {
                 $transferencia=null;
                 $cheque=null;

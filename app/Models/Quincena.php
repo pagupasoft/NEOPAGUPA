@@ -49,6 +49,23 @@ class Quincena extends Model
         ->where('quincena_fecha', '>=', $fechadesde)
         ->where('quincena_fecha', '<=', $fechahasta);
     }
+    public function scopeQuincenasFechaEmpleado($query,$fechadesde,$fechahasta,$empleado_id){
+        return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)
+        ->where('quincena_fecha', '>=', $fechadesde)
+        ->where('quincena_fecha', '<=', $fechahasta)
+        ->where('empleado_id', '=', $empleado_id);
+    }
+    public function scopeQuincenasFechaEstado($query,$fechadesde,$fechahasta,$estado){
+        return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)
+        ->where('quincena_fecha', '>=', $fechadesde)
+        ->where('quincena_fecha', '<=', $fechahasta)
+        ->where('quincena_estado','=',$estado);
+    }
+    public function scopeQuincenasEmpleadoEstado($query,$empleado_id,$estado){
+        return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)
+        ->where('empleado_id', '=', $empleado_id)
+        ->where('quincena_estado','=',$estado);
+    }
     public function scopeQuincenasSucursal($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','quincena.rango_id')
         ->join('punto_emision','punto_emision.punto_id','=','rango_documento.punto_id')
@@ -103,6 +120,14 @@ class Quincena extends Model
     public function rol()
     {
         return $this->belongsTo(Rol_Consolidado::class, 'cabecera_rol_id', 'cabecera_rol_id');
+    }
+    public function decuento()
+    {
+        return $this->hasMany(Descuento_Quincena::class, 'quincena_id', 'quincena_id');
+    }
+    public function rolcm()
+    {
+        return $this->belongsTo(Cabecera_Rol_CM::class, 'cabecera_rol_id', 'cabecera_rol_id');
     }
     public function empleado()
     {

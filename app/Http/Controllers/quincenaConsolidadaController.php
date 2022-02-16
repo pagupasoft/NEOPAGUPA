@@ -98,7 +98,15 @@ class quincenaConsolidadaController extends Controller
         try{
             DB::beginTransaction();
             $idquince=$request->get('idquincena');
-
+            for ($i = 0; $i < count($idquince); ++$i) {
+                $quincena=Quincena::findOrFail($idquince[$i]);
+                if(isset($quincena->rol)){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+                if(count($quincena->decuento)>0){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+            }
             for ($i = 0; $i < count($idquince); ++$i) {
                 $quincena=Quincena::findOrFail($idquince[$i]);
                 $id=$idquince[$i];

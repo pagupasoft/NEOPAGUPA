@@ -2,8 +2,7 @@
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="card card-primary ">
-    <form method="POST" action="{{ route('roloperativoCM.destroy', $datos[1]['rol_id']) }}"> 
-    @method('DELETE')
+    <form method="POST" action="{{ url("roloperativoCM/cheque") }} ">
     @csrf
         <div class="row">
         <!-- Tabla de empelados -->
@@ -109,7 +108,8 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             
                             <div class="float-right">
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>&nbsp;Eliminar</button>
+                            <button id="guardarID" type="submit" class="btn btn-success btn-sm" ><i
+                                        class="fa fa-save"></i><span> Guardar</span></button>
                             <button type="button" onclick='window.location = "{{ url("listaRolCM") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                                 
                             <br>
@@ -545,30 +545,30 @@
                                             <h3 class="card-title">Forma de Pago</h3>
                                         </div>
                                     </div>
-                                        <div class="card-header p-2">
+                                    <div class="card-header p-2">
                                             <ul id="ul_prueba" class="nav nav-pills">
-                                            <li class="nav-item " onclick="Selection('Cheque')" ><a class="nav-link item active" href="#timeline" data-toggle="tab" >{{ $tipopago[1]['tipo'] }}</a></li>
+                                            <li class="nav-item "  ><a class="nav-link item active" href="#timeline" data-toggle="tab" >{{ $datos[1]['tipo'] }}</a></li>
             
                                             </ul>
                                            
                                         </div>
                                         <div class="card-body">
                                             <div class="tab-content">
-                                            
+
                                                
                                             
-                                                 @if( $tipopago[1]['tipo'] =='Cheque')  
+                                                @if( $datos[1]['tipo'] =='Cheque')  
                                                 <div class="tab-pane active" id="timeline"> 
                                                     <div class="form-group row">
                                                         <label for="banco_id_cheque" class="col-sm-3 col-form-label">Banco</label>
                                                         <div class="col-sm-9">
-                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['banco'] }}</label>
+                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $datos[1]['banco'] }}</label>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                             <label for="cuenta_id_cheque" class="col-sm-3 col-form-label">Cuenta</label>
                                                             <div class="col-sm-9">
-                                                                <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['numero'] }}</label>
+                                                                <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $datos[1]['numero'] }}</label>
                                                                
                                                             </div>
                                                     </div> 
@@ -576,30 +576,36 @@
                                                     <div class="form-group row">
                                                                 <label for="idFechaCheque" class="col-sm-3 col-form-label">Fecha</label>
                                                                 <div class="col-sm-9">
-                                                                    <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['fecha'] }}</label>
+                                                                <input type="hidden"  id="fechactual" name="fechactual" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
+                                                                    <input type="date" class="form-control" id="idFechaCheque" name="idFechaCheque" value="{{ $datos[1]['fecha'] }}" >
                                                                 </div>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label for="idNcheque" class="col-sm-3 col-form-label">N° de Cheque</label>
+                                                        <label for="idNcheque" class="col-sm-3 col-form-label">N° de Cheque Anterior</label>
                                                         <div class="col-sm-9">
-                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['cheque'] }}</label>
+                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $datos[1]['cheque'] }}</label>
                                                         </div>
                                                     </div> 
-                                                     
+                                                    <div class="form-group row">
+                                                        <label for="idNewcheque" class="col-sm-3 col-form-label">Nuevo # de Cheque</label>
+                                                        <div class="col-sm-9">
+                                                            <input type="number" class="form-control" id="idNewcheque" name="idNewcheque" >
+                                                        </div>
+                                                    </div>   
                                                 </div>
                                                 @endif
-                                                @if( $tipopago[1]['tipo'] =='Transferencia')  
+                                                @if( $datos[1]['tipo'] =='Transferencia')  
                                                 <div class="tab-pane active" id="timeline"> 
                                                     <div class="form-group row">
                                                         <label for="banco_id_cheque" class="col-sm-3 col-form-label">Banco</label>
                                                         <div class="col-sm-9">
-                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['banco'] }}</label>
+                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $datos[1]['banco'] }}</label>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                             <label for="cuenta_id_cheque" class="col-sm-3 col-form-label">Cuenta</label>
                                                             <div class="col-sm-9">
-                                                                <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $tipopago[1]['numero'] }}</label>
+                                                                <label id="Total_Vacacionesl" name="Total_Vacacionesl">{{ $datos[1]['numero'] }}</label>
                                                                
                                                             </div>
                                                     </div> 
@@ -607,7 +613,19 @@
                                                   
                                                 </div>
                                                 @endif
+                                                @if( $datos[1]['tipo'] =='Efectivo')  
+                                                <div class="tab-pane active" id="timeline"> 
+                                                    <div class="form-group row">
+                                                        <label for="banco_id_cheque" class="col-sm-3 col-form-label">Pago</label>
+                                                        <div class="col-sm-9">
+                                                            <label id="Total_Vacacionesl" name="Total_Vacacionesl">Efectivo</label>
+                                                        </div>
+                                                    </div>
+                                                    
                                                 
+                                                  
+                                                </div>
+                                                @endif
                                                 
                                             </div>    
                                         </div>
@@ -666,6 +684,9 @@
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Liquido a Pagar</td>
                                             <td id="LiquidacionTotal" name="LiquidacionTotal" class="derecha-texto negrita">{{ number_format($datos[1]['pago'],2) }}</td>
+                                            <input type="hidden"   name="idcheque"  id="idcheque" value="{{ $datos[1]['idcheque'] }}" required readonly> 
+                                            <input type="hidden"   name="iddetalle"  id="iddetalle" value="{{ $datos[1]['iddetalle'] }}" required readonly>       
+                                            <input type="hidden"   name="descripcion"  id="descripcion" value="{{ $datos[1]['descripcion'] }}" required readonly> 
                                             
                                           
                                                

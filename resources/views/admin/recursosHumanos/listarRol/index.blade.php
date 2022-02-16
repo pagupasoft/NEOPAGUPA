@@ -54,7 +54,7 @@
                             <td class="text-center"> 
                             
                             @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("Roloperativo/{$datos[$i]["idrol"]}/ver")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a> @ENDIF 
-                                @if($datos[$i]["tipo"]=='INDIVIDUAL' || $datos[$i]["tipo"]=='CONSOLIDADO') <a href="{{url("Rol/{$datos[$i]["idrol"]}/ver")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>@ENDIF                   
+                            @if($datos[$i]["tipo"]=='INDIVIDUAL' || $datos[$i]["tipo"]=='CONSOLIDADO') <a href="{{url("Rol/{$datos[$i]["idrol"]}/ver")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>@ENDIF                   
                            
                             @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("Roloperativo/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF 
                             @if($datos[$i]["tipo"]=='INDIVIDUAL' || $datos[$i]["tipo"]=='CONSOLIDADO') <a href="{{url("/Roles/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF                        

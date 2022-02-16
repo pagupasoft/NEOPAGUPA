@@ -1260,7 +1260,7 @@ function Extraerdias(){
     if(ultimoDia=='31'){
      
        ultimoDia=ultimoDia-1;
-   }
+    }
    
     let fecha_minimo = anioactual + '-' + mesactual + '-' + diaactual; 
     let fecha_maximo = anioactual + '-' + mesactual + '-' + ultimoDia; 

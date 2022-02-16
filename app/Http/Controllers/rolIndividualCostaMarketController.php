@@ -85,10 +85,18 @@ class rolIndividualCostaMarketController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             DB::beginTransaction();
-        $general = new generalController();
-        $urlcheque = '';
+            
+            $roles=Cabecera_Rol_CM::RolesValidar($request->get('fechafinal'),$request->get('empleadoid'))->get();
+           
+            if(count($roles)>0){
+                return redirect('/rolindividualCM/new/'.$request->get('punto_id'))->with('error2','Ya esta realizado el rol del empleado verifique por favor');
+            }
+           
+
+            $general = new generalController();
+            $urlcheque = '';
             $anticipos=$request->get('check');
            
             $idanticipos=($request->get('IDE'));
@@ -124,7 +132,6 @@ class rolIndividualCostaMarketController extends Controller
             $fechaini=$request->get('Tdesde');
             $fechafin = $request->get('Thasta');     
             $aniticos=$request->get('porcentaje');
-           
             
             $idrubros=$request->get('idrubro'); 
 

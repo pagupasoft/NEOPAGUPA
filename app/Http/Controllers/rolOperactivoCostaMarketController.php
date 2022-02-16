@@ -107,6 +107,11 @@ class rolOperactivoCostaMarketController extends Controller
     {
         try{
             DB::beginTransaction();
+            $roles=Cabecera_Rol_CM::RolesValidar($request->get('fechafinal'),$request->get('empleadoid'))->get();
+           
+            if(count($roles)>0){
+                return redirect('/rolindividualCM/new/'.$request->get('punto_id'))->with('error2','Ya esta realizado el rol del empleado verifique por favor');
+            }
             $urlcheque = '';
             $anticipos=$request->get('check');
            

@@ -7,7 +7,8 @@
             <h3 class="card-title">Eliminar Quincena Consolidada</h3>
             <div class="float-right">
                 <button type="submit" id="generar" name="generar" class="btn btn-success btn-sm ">Eliminar Quincena</button>
-                <button onclick='window.location = "{{ url("eliminarquincena") }}";' class="btn btn-default btn-sm"><i class="fa fa-times"></i>&nbsp;Cancelar</button>
+               
+                <a href="{{ url("lquincena") }}" class="btn btn-danger btn-sm">Cancelar</a>
             </div>
         </div>
         <div class="card"> 

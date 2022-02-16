@@ -107,6 +107,11 @@ class rolOperactivoCostaMarketController extends Controller
     {
         try{
             DB::beginTransaction();
+            $roles=Cabecera_Rol_CM::RolesValidar($request->get('fechafinal'),$request->get('empleadoid'))->get();
+           
+            if(count($roles)>0){
+                return redirect('/rolindividualCM/new/'.$request->get('punto_id'))->with('error2','Ya esta realizado el rol del empleado verifique por favor');
+            }
             $urlcheque = '';
             $anticipos=$request->get('check');
            
@@ -238,7 +243,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $cheque->cheque_numero = $request->get('idNcheque');
                 $cheque->cheque_descripcion =  'PAGO ROL DE EMPLEADO '.$empleado->empleado_nombre.' CON MES Y AÑO '.date('Y', strtotime($request->get('fechafinal'))).'/'.date('F', strtotime($request->get('fechafinal')));
                 $cheque->cheque_beneficiario = $empleado->empleado_nombre;
-                $cheque->cheque_fecha_emision = $request->get('fechafinal');
+                $cheque->cheque_fecha_emision = $request->get('fechaactual');
                 $cheque->cheque_fecha_pago = $request->get('idFechaCheque');
                 $cheque->cheque_valor = $cabecera_rol->cabecera_rol_pago;
                 $cheque->cheque_valor_letras = $formatter->toInvoice($cheque->cheque_valor, 2, 'Dolares');
@@ -264,9 +269,9 @@ class rolOperactivoCostaMarketController extends Controller
             
             }
             $diario = new Diario();
-            $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechafinal'), 'CPRP');
+            $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CPRP');
 
-            $diario->diario_fecha = $request->get('fechafinal');
+            $diario->diario_fecha = $request->get('fechaactual');
             $diario->diario_referencia = 'COMPROBANTE DE PAGO DE ROL DE EMPLEADO';
 
             $diario->diario_tipo_documento = 'ROL OPERATIVO';
@@ -274,8 +279,8 @@ class rolOperactivoCostaMarketController extends Controller
             $diario->diario_tipo = 'CPRP';
 
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
-            $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
-            $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
+            $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('m');
+            $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('Y');
             $diario->diario_comentario = 'PAGO DEL ROL DEL '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
            
             if ($request->get('tipo') == 'Transferencia') {
@@ -302,7 +307,7 @@ class rolOperactivoCostaMarketController extends Controller
 
 
             $diariocontabilizado = new Diario();
-            $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fechafinal'), 'CCMR');
+            $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CCMR');
  
             if ($request->get('tipo') == 'Transferencia') {
             $diariocontabilizado->diario_fecha = $request->get('idFechatrasnfer');
@@ -314,8 +319,8 @@ class rolOperactivoCostaMarketController extends Controller
             $diariocontabilizado->diario_tipo_documento = 'CONTABILIZACION MENSUAL';
             $diariocontabilizado->diario_tipo = 'CCMR';
             $diariocontabilizado->diario_secuencial = substr($diario->diario_codigo, 8);
-            $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
-            $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
+            $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('m');
+            $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('Y');
             $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES: '.$empleado->empleado_nombre;
                     
             $diariocontabilizado->diario_numero_documento = 0;
@@ -400,7 +405,7 @@ class rolOperactivoCostaMarketController extends Controller
                     $quincenas=Quincena::findOrFail($idquincena[$quincena[$j]]);
                 
                     $anticipoquincena=new Descuento_Quincena();
-                    $anticipoquincena->descuento_fecha=$request->get('fechafinal');
+                    $anticipoquincena->descuento_fecha=$request->get('fechaactual');
                     $anticipoquincena->descuento_descripcion='Descuento de quincena en Rol';
                     $anticipoquincena->descuento_valor=$valorquincena[$j];
                     $anticipoquincena->descuento_estado='1';
@@ -424,7 +429,7 @@ class rolOperactivoCostaMarketController extends Controller
                     $anticipo=Anticipo_Empleado::findOrFail($idanticipos[$anticipos[$j]]);
         
                     $anticipodescuento=new Descuento_Anticipo_Empleado();
-                    $anticipodescuento->descuento_fecha=$request->get('fechafinal');
+                    $anticipodescuento->descuento_fecha=$request->get('fechaactual');
                     $anticipodescuento->descuento_descripcion='Descuento de anticipo en Rol';
                     $anticipodescuento->descuento_valor=$valoranticipos[$j];
                     $anticipodescuento->descuento_estado='1';
@@ -884,7 +889,8 @@ class rolOperactivoCostaMarketController extends Controller
             $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
             $datos[$count]['dias']=$rol2->cabecera_rol_total_dias;
             $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
-        
+            $datos[$count]['vacacion']=$rol2->cabecera_rol_vacaciones;
+            
             $datos[$count]['normal']=$rol2->controlcm->control_normal;
             $datos[$count]['decanso']=$rol2->controlcm->control_decanso;
             $datos[$count]['vacaciones']=$rol2->controlcm->control_vacaciones;
@@ -892,8 +898,7 @@ class rolOperactivoCostaMarketController extends Controller
             $datos[$count]['cosecha']=$rol2->controlcm->control_cosecha;
             $datos[$count]['extra']=$rol2->controlcm->control_extra;
             $datos[$count]['ausente']=$rol2->controlcm->control_ausente;
-
-            
+         
             $count=1;
             foreach ($rol2->alimentacioncm as $alimentaciones) {
                 $alimentacion[$count]['fecha']=$alimentaciones->alimentacion_fecha;
@@ -950,16 +955,12 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $count++;
         }
-
-
-
         DB::commit();
         return view('admin.RHCostaMarket.rolOperativo.eliminaroperativo',['quincenas'=>$quincenas,'detalles'=>$detalles,'tipopago'=>$tipopago,'anticipo'=>$anticipo,'alimentacion'=>$alimentacion,'datos'=>$datos,'rol'=>$rol2,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-       
-    }catch(\Exception $ex){
-        DB::rollBack();
-        return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-    } 
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
 
     }
 

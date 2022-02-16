@@ -151,8 +151,13 @@ class quincenaConsolidadaController extends Controller
     {
         try{
             DB::beginTransaction();
+            $idEmpleado = $request->get('idquincena'); 
+            $contador = $request->get('contador');
+            $nombre = $request->get('Dnombre');
+            $Squincena = $request->get('quincena');
+          
         $general = new generalController();
-        $fecha=$request->get('fecha')."-01";
+        $fecha=$request->get('fecha')."-15";
         $total=0;
       
         $cierre = $general->cierre($fecha);
@@ -166,10 +171,7 @@ class quincenaConsolidadaController extends Controller
         $cuentabanco=Cuenta_Bancaria::findOrFail($request->get('cuenta_id'));
         $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
         $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
-            $idEmpleado = $request->get('idquincena'); 
-            $contador = $request->get('contador');
-            $nombre = $request->get('Dnombre');
-            $Squincena = $request->get('quincena');
+            
           
             if ($request->get('idTipo') == 'Cheque') {
             $numero=$request->get('idNcheque');
@@ -177,8 +179,8 @@ class quincenaConsolidadaController extends Controller
             if ($request->get('idTipo') == 'Transferencia') {
                 $general = new generalController();
                 $diario = new Diario();
-                $diario->diario_codigo = $general->generarCodigoDiario($fecha, 'CEQE');
-                $diario->diario_fecha = $fecha;
+                $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CEQE');
+                $diario->diario_fecha = $request->get('fechaactual');
                 $diario->diario_referencia = 'COMPROBANTE DE EMISION DE QUINCENAS DE EMPLEADOS';
             
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
@@ -234,15 +236,13 @@ class quincenaConsolidadaController extends Controller
                    
                     $general = new generalController();
                     $diario = new Diario();
-                    $diario->diario_codigo = $general->generarCodigoDiario($fecha, 'CEQE');
-                    $diario->diario_fecha = $fecha;
+                    $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CEQE');
+                    $diario->diario_fecha = $request->get('fechaactual');
                     $diario->diario_referencia = 'COMPROBANTE DE EMISION DE QUINCENA DE EMPLEADO';
                 
                     $diario->diario_tipo_documento = 'CHEQUE';
                     $diario->diario_numero_documento =$numero;
-                
-                    
-              
+                                    
                     $diario->diario_beneficiario = $nombre[$contador[$i]];
                     $diario->diario_tipo = 'CEQE';
                     $diario->diario_secuencial = substr($diario->diario_codigo, 8);
@@ -261,7 +261,7 @@ class quincenaConsolidadaController extends Controller
                     $cheque->cheque_numero = $numero;
                     $cheque->cheque_descripcion =  'Quincena de Empleado : '.$nombre[$contador[$i]];
                     $cheque->cheque_beneficiario =  $nombre[$contador[$i]];
-                    $cheque->cheque_fecha_emision = $fecha;
+                    $cheque->cheque_fecha_emision = $request->get('fechaactual');
                     $cheque->cheque_fecha_pago = $request->get('idFechaCheque');
                     $cheque->cheque_valor = $Squincena[$contador[$i]];
                     $cheque->cheque_valor_letras = $formatter->toInvoice($cheque->cheque_valor, 2, 'Dolares');
@@ -275,7 +275,7 @@ class quincenaConsolidadaController extends Controller
                 }
                 /*REGISTRO DE TRANSFERENCIA*/
                 
-                $tipo=Empleado::EmpleadoTipo($idEmpleado[$contador[$i]])->first();
+                $tipo=Empleado::EmpleadoBusquedaCuenta($idEmpleado[$contador[$i]],'quincena')->first();
                 /**********************asiento diario****************************/
                
                    
@@ -309,7 +309,7 @@ class quincenaConsolidadaController extends Controller
                     $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                     $detalleDiario->detalle_conciliacion = '0';
                     $detalleDiario->detalle_estado = '1';
-                    $detalleDiario->cuenta_id = $tipo->cuenta_debe;
+                    $detalleDiario->cuenta_id = $tipo->cuenta_haber;
                     $detalleDiario->empleado_id = $idEmpleado[$contador[$i]];
                     $diario->detalles()->save($detalleDiario);
                     
@@ -325,7 +325,7 @@ class quincenaConsolidadaController extends Controller
                     $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                     $detalleDiario->detalle_conciliacion = '0';
                     $detalleDiario->detalle_estado = '1';
-                    $detalleDiario->cuenta_id = $tipo->cuenta_debe;
+                    $detalleDiario->cuenta_id = $tipo->cuenta_haber;
                     $detalleDiario->empleado_id = $idEmpleado[$contador[$i]];
                     $diario->detalles()->save($detalleDiario);
                     
@@ -353,7 +353,7 @@ class quincenaConsolidadaController extends Controller
                 $transferencia = new Transferencia();
                 $transferencia->transferencia_descripcion =  'Quincena Consolida De empleados';
                 $transferencia->transferencia_beneficiario =  'Quincena Consolida De empleados';
-                $transferencia->transferencia_fecha = $fecha;
+                $transferencia->transferencia_fecha = $request->get('idFechaCheque');
                 $transferencia->transferencia_valor = $total;
                 $transferencia->cuenta_bancaria_id = $request->get('cuenta_id');
                 $transferencia->transferencia_estado = '1';
@@ -376,16 +376,15 @@ class quincenaConsolidadaController extends Controller
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$request->get('idCuentaContable').' con el valor de: -> '.$total);
                 $url = $general->pdfDiarioEgreso($diario);
                 DB::commit();
-                return redirect('pquincena/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('diario',$url);
+                return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('success','Datos guardados exitosamente')->with('diario',$url);
 
             }
             DB::commit();
             return view('admin.recursosHumanos.quincenaConsolidada.impresion',['datos'=>$datos,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin])->with('success','Datos guardados exitosamente');
-        }
-        catch(\Exception $ex){ 
-            DB::rollBack();     
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }  
     }
    
     public function extraer(Request $request)
@@ -424,7 +423,7 @@ class quincenaConsolidadaController extends Controller
                     }
                 } 
                 if ($boole==1) {
-                    $datos[$count]['count'] =$count;
+                    $datos[$count]['count'] =$count-1;
                     $datos[$count]['ID'] =$empleado->empleado_id;
                     $datos[$count]['Dcedula'] =$empleado->empleado_cedula;
                     $datos[$count]['Dnombre'] =$empleado->empleado_nombre;

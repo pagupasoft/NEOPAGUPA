@@ -2,7 +2,7 @@
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="card card-primary ">
-    <form method="POST" action="{{ url("roloperativoCM") }} "> 
+    <form method="POST" action="{{ url("roloperativoCM")}}" onsubmit="return validar()"> 
     @csrf
         <div class="row">
         <!-- Tabla de empelados -->
@@ -152,7 +152,7 @@
                         
                     
                         <!-- Tabla de ingresos -->
-                        <div  class="col-md-2-5">
+                        <div  class="col-md-2">
                             <br>
                             <div class="card card-secondary">  
                                 <div class="card-header">
@@ -308,7 +308,7 @@
                                     </div>
                                 </div>    
                             </div>
-                            <div  class="col-md-3">
+                            <div  class="col-md-3-5">
                                 <br>
                                 <div class="card card-secondary">  
                                     <div class="card-header">
@@ -700,15 +700,12 @@
                                         </tr>
                                         
                                         
-                                        
-                                   
-                                      
-
+                                    
                                        
                                         <td class="letra-blanca fondo-gris-oscuro negrita">Viaticos (+)</td>
                                         <td >
                                         <input type="number" id="Viaticos" name="Viaticos" class="form-control "
-                                                        value="0.00" onclick="sumatotales();" onkeyup="sumatotales();"  required>
+                                                        value="0.00" onclick="sumatotales();" onkeyup="sumatotales();" step="any" required>
                                         </td>
                                         </tr>
                                         <tr>
@@ -732,7 +729,8 @@
                                             
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Banco</td>
                                             <td id="bancoEmpleado" name="bancoEmpleado" class="derecha-texto negrita"> </td> 
-                                            <input type="hidden"   name="VbancoEmpleado"  id="VbancoEmpleado" value="0" >                                           
+                                            <input type="hidden"   name="VbancoEmpleado"  id="VbancoEmpleado" value="0" > 
+                                            <input type="hidden"   name="fechaactual"  id="fechaactual" value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' required readonly>                                           
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Cuenta</td>
@@ -759,6 +757,14 @@ function cargarmetodo() {
     cargarbanco();
 
 }
+function validar() {
+    if(Number(document.getElementById("LiquidacionTotal").innerHTML)<0){
+        alert('El total a pagar no debe ser menor a cero');
+        return false
+    }  
+    return true;
+}
+
 function nuevo() { 
     if($('input:radio[name=radioempleado]:checked').val()== undefined){
         alert('Selecione un empelado');
@@ -1073,9 +1079,7 @@ function cargaregreso(id) {
                     document.getElementById("iess").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
                     document.getElementById("Viess").value= document.getElementById("iess").innerHTML;
                 }
-                if (document.getElementById("VInpuesto").value=="1") {
-                    impuestorentacalculo(Number(document.getElementById("Total_In").value));
-                }
+                
             }
          
             sumaegresos();
@@ -1179,9 +1183,7 @@ function recalculo(){
             document.getElementById("TotalIess").innerHTML=(((sueldo)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
             document.getElementById("Iess").value= document.getElementById("TotalIess").innerHTML;
         }
-        if (document.getElementById("VInpuesto").value=="1") {
-            impuestorentacalculo(sueldo);
-        }  
+          
         if(document.getElementById("VCuarto").value=="1"){
         document.getElementById("Cuartol").innerHTML=((sueldo)/12).toFixed(2);
         document.getElementById("Cuarto").value=0;
@@ -1496,30 +1498,7 @@ function porcentajepermiso() {
     sumaingresos();
 }
 
-function impuestorentacalculo(sueldo){
-    $.ajax({
-        url: '{{ url("buscarimpuestorenta/searchN") }}',
-        dataType: "json",
-        type: "GET",
-        data: { 
-        },
-        success: function(data){
-          
-            for (var i=0; i<data.length; i++) {
-                if (((sueldo*12) >= data[i].impuesto_fraccion_basica) && ((sueldo*12) < data[i].impuesto_exceso_hasta)) {
-                          
-                    document.getElementById("impuestoRenta").innerHTML=(((((Number(data[i].impuesto_exceso_hasta)-(sueldo*12))*Number(data[i].impuesto_sobre_fraccion))/100)+Number(data[i].impuesto_fraccion_excede))/12).toFixed(2);
-                    document.getElementById("VimpuestoRenta").value=(((((Number(data[i].impuesto_exceso_hasta)-(sueldo*12))*Number(data[i].impuesto_sobre_fraccion))/100)+Number(data[i].impuesto_fraccion_excede))/12).toFixed(2);
-                  
-                }
-                
-                
-            }
-            
-        },
-    });
 
-}
 function getRow() {
         $("input[type='checkbox'][id='check']").each(function(){        
             if (this.checked) {           
@@ -1574,22 +1553,17 @@ function SumaAdelantos(id) {
     if(Number($("input[name='TDescontar[]']")[id].value)<=Number($("input[name='TSaldo[]']")[id].value)) {           
                 
         var liquidacion= Number(document.getElementById("LiquidacionTotal").innerHTML);
-    
+       
     $("input[type='checkbox'][id='check']").each(function(){        
             if (this.checked) {   
                     nuevo+=Number(document.getElementById('Descontar'+$(this).val()).value);
+
+                   
                 
-                    if (liquidacion<Number(nuevo)) {
-                    
-                        $("input[name='TDescontar[]']")[id].value=0.00;
-                        $("input[name='TDescont[]']")[id].value=0.00;
-                    }
-                
-                    else{
                         $("input[name='TDescont[]']")[id].value=$("input[name='TDescontar[]']")[id].value;
                         document.getElementById("anticipos").innerHTML=nuevo;  
                         document.getElementById("Vanticipos").value=nuevo;  
-                    }
+                    
                
             }
         });
@@ -1608,15 +1582,11 @@ function SumaQuincena(id) {
     $("input[type='checkbox'][id='Qcheck']").each(function(){        
             if (this.checked) {   
                     nuevo+=Number(document.getElementById('QDescontar'+$(this).val()).value);
-                    if (liquidacion<Number(nuevo)) {
-                        $("input[name='QTDescontar[]']")[id].value=0.00;
-                        $("input[name='QTDescont[]']")[id].value=0.00;
-                    }
-                    else{
-                        $("input[name='QTDescont[]']")[id].value=$("input[name='QTDescontar[]']")[id].value;
-                        document.getElementById("quincena").innerHTML=nuevo;  
-                        document.getElementById("Vquincena").value=nuevo;  
-                    }
+                    
+                    $("input[name='QTDescont[]']")[id].value=$("input[name='QTDescontar[]']")[id].value;
+                    document.getElementById("quincena").innerHTML=nuevo;  
+                    document.getElementById("Vquincena").value=nuevo;  
+                    
             }
         });
     }

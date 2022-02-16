@@ -54,6 +54,12 @@ class Cabecera_Rol_CM extends Model
         ->where('cabecera_rol_estado','=','1')
         ->where('empresa.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado_nombre','asc');
     }
+    public function scopeRolesValidar($query,$fecha,$empleado_id){
+        return $query->join('detalle_rol_cm','detalle_rol_cm.cabecera_rol_id','=','cabecera_rol_cm.cabecera_rol_id')->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('cabecera_rol_fecha', '=', $fecha)
+        ->where('cabecera_rol_cm.empleado_id', '=', $empleado_id)
+        ->orderBy('cabecera_rol_fecha','desc');
+    }
     public function scopeRolesBuscar($query,$fechadesde,$fechahasta,$empleado_id){
         return $query->join('detalle_rol_cm','detalle_rol_cm.cabecera_rol_id','=','cabecera_rol_cm.cabecera_rol_id')->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('detalle_rol_fecha_inicio', '>=', $fechadesde)

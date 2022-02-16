@@ -122,7 +122,7 @@
                         
                     
                         <!-- Tabla de ingresos -->
-                        <div  class="col-md-2-5">
+                        <div  class="col-md-2">
                             <br>
                             <div class="card card-secondary">  
                                 <div class="card-header">
@@ -272,7 +272,7 @@
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                             <div class="form-group">
                                                 <div class="form-line">
-                                                    <label id="Total_Inl" name="Total_Inl">{{ $datos[1]['ingresos'] }}</label>
+                                                    <label id="Total_Inl" name="Total_Inl">{{ number_format($datos[1]['ingresos'] ,2)}}</label>
                                                     <input type="hidden" id="Total_In" name="Total_In" class="form-control "
                                                         value="0.00"   required>
                                                 </div>
@@ -281,10 +281,11 @@
                                     </div>  
                                 </div>     
                             </div>
-                            <div  class="col-md-3">
+                            <div  class="col-md-3-5">
+                            <br>
                                 <div class="card card-secondary"> 
                                     <div class="card-header">
-                                        <h3 class="card-title ">Ingresos</h3>
+                                        <h3 class="card-title ">Egresos</h3>
                                         <input type="hidden" id="DiaN" name="DiaN" class="form-control "
                                                         value="0"  required>     
                                     </div> 
@@ -316,7 +317,7 @@
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin-bottom : 0px;">
                                             <div class="form-group">
                                                 <div class="form-line">
-                                                    <label id="Total_Egl" name="Total_Egl" >{{ $datos[1]['egresos'] }}</label>
+                                                    <label id="Total_Egl" name="Total_Egl" >{{ number_format($datos[1]['egresos'],2) }}</label>
                                                     <input type="hidden" id="Total_Eg" name="Total_Eg" class="form-control "
                                                     value="0.00"  required>
                                                 </div>
@@ -344,7 +345,7 @@
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                                 <div class="form-group">
                                                     <div class="form-line">
-                                                        <label id="Patronall" name="Patronall" >{{ $datos[1]['patronal'] }}</label>
+                                                        <label id="Patronall" name="Patronall" >{{ number_format($datos[1]['patronal'],2) }}</label>
                                                         
                                                         
                                                     </div>
@@ -364,7 +365,7 @@
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                                 <div class="form-group">
                                                     <div class="form-line">
-                                                        <label id="Tercerol" name="Tercerol" >{{ $datos[1]['terceroacu'] }}</label>
+                                                        <label id="Tercerol" name="Tercerol" >{{ number_format($datos[1]['terceroacu'],2) }}</label>
                                                        
                                                     </div>
                                                 </div>
@@ -378,7 +379,7 @@
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                                 <div class="form-group">
                                                     <div class="form-line">
-                                                        <label id="Cuartol" name="Cuartol" >{{ $datos[1]['cuartoacu'] }}</label>
+                                                        <label id="Cuartol" name="Cuartol" >{{ number_format($datos[1]['cuartoacu'],2) }}</label>
                                                         
                                                     </div>
                                                 </div>
@@ -393,7 +394,7 @@
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                                 <div class="form-group">
                                                     <div class="form-line">
-                                                        <label id="Fondol" name="Fondol" >{{ $datos[1]['fondosacu'] }}</label>
+                                                        <label id="Fondol" name="Fondol" >{{ number_format($datos[1]['fondosacu'] ,2)}}</label>
                                                         
                                                     </div>
                                                 </div>
@@ -407,13 +408,26 @@
                                             <div class="ccol-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
                                                 <div class="form-group">
                                                     <div class="form-line">
-                                                        <label id="IECEl" name="IECEl" >{{ $datos[1]['secap'] }}</label>
+                                                        <label id="IECEl" name="IECEl" >{{ number_format($datos[1]['secap'],2) }}</label>
                                                        
                                                     </div>
                                                 </div>
                                             </div>         
                                         </div> 
-                                        
+                                        <div class="row clearfix form-horizontal">   
+                                            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5  form-control-label  "
+                                                style="margin-bottom : 0px;">
+                                                <label>Vacaciones:</label>
+                                            </div>
+                                            <div class="ccol-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label id="IECEl" name="IECEl" >{{ number_format($datos[1]['vacacion'],2) }}</label>
+                                                       
+                                                    </div>
+                                                </div>
+                                            </div>         
+                                        </div> 
                                         
                                     </div>
                                 </div>    
@@ -424,7 +438,7 @@
                                 <!-- Tabla de adelantos -->
                                     <div class="card card-secondary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Adelantos</h3>
+                                            <h3 class="card-title">Anticipos y Prestamos</h3>
                                         </div>
                                     
                                         <div class="card-body table-responsive p-0" style="height: 130px;"> 
@@ -444,9 +458,9 @@
                                                     <tr >
                                                         <td class="text-center-encabesado">{{$anticipo[$i]['descuento_fecha']}}
                                                         </td>
-                                                        <td class="text-center-encabesado">{{$anticipo[$i]['Valor_Anticipó']}}
+                                                        <td class="text-center-encabesado">{{number_format($anticipo[$i]['Valor_Anticipó'],2)}}
                                                         </td>
-                                                        <td class="text-center-encabesado">{{$anticipo[$i]['descuento_valor']}}
+                                                        <td class="text-center-encabesado">{{number_format($anticipo[$i]['descuento_valor'],2)}}
                                                         </td>
                                                         
                                                     </tr>
@@ -478,9 +492,9 @@
                                                     <tr >
                                                         <td class="text-center-encabesado">{{$quincenas[$i]['descuento_fecha']}}
                                                         </td>
-                                                        <td class="text-center-encabesado">{{$quincenas[$i]['Valor_Anticipó']}}
+                                                        <td class="text-center-encabesado">{{number_format($quincenas[$i]['Valor_Anticipó'],2)}}
                                                         </td>
-                                                        <td class="text-center-encabesado">{{$quincenas[$i]['descuento_valor']}}
+                                                        <td class="text-center-encabesado">{{number_format($quincenas[$i]['descuento_valor'],2)}}
                                                         </td>
                                                        
                                                     </tr>
@@ -514,7 +528,7 @@
                                                     <tr >
                                                         <td class="text-center-encabesado">{{$alimentacion[$i]['fecha']}}
                                                         </td>
-                                                        <td class="text-center-encabesado">{{$alimentacion[$i]['valor']}}
+                                                        <td class="text-center-encabesado">{{number_format($alimentacion[$i]['valor'],2)}}
                                                         </td>
                                                         <td class="text-center-encabesado">{{$alimentacion[$i]['factura']}}
                                                         </td>
@@ -531,7 +545,7 @@
                                             <h3 class="card-title">Forma de Pago</h3>
                                         </div>
                                     </div>
-                                    <div class="card-header p-2">
+                                        <div class="card-header p-2">
                                             <ul id="ul_prueba" class="nav nav-pills">
                                             <li class="nav-item " onclick="Selection('Cheque')" ><a class="nav-link item active" href="#timeline" data-toggle="tab" >{{ $tipopago[1]['tipo'] }}</a></li>
             
@@ -613,45 +627,45 @@
                                         <tr>
                                             <td  class="letra-blanca fondo-gris-oscuro negrita" width="90">Total Ingresos (+)
                                             </td>
-                                            <td id="TotalIngresosV" name="TotalIngresosV" width="100" class="derecha-texto negrita">{{ $datos[1]['ingresos'] }}
+                                            <td id="TotalIngresosV" name="TotalIngresosV" width="100" class="derecha-texto negrita">{{ number_format($datos[1]['ingresos'],2) }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Total Egresos (-)/td>
-                                            <td id="TotalEgresos"  name="TotalEgresos" class="derecha-texto negrita">{{ $datos[1]['egresos'] }}</td>
+                                            <td id="TotalEgresos"  name="TotalEgresos" class="derecha-texto negrita">{{ number_format($datos[1]['egresos'],2) }}</td>
                                            
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Ingresos - Egresos
                                             </td>
-                                            <td id="TIngreEgreV" name="TIngreEgreV" class="derecha-texto negrita">{{ $datos[1]['ingresos']-$datos[1]['egresos'] }}</td>
+                                            <td id="TIngreEgreV" name="TIngreEgreV" class="derecha-texto negrita">{{ number_format($datos[1]['ingresos']-$datos[1]['egresos'],2) }}</td>
                                             
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Fondos de Reserva</td>
-                                            <td id="TotalFondosV"  name="TotalFondosV" class="derecha-texto negrita">{{ $datos[1]['fondos'] }}</td>
+                                            <td id="TotalFondosV"  name="TotalFondosV" class="derecha-texto negrita">{{ number_format($datos[1]['fondos'],2) }}</td>
                                                         
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Decimo Tercero</td>
-                                            <td id="TotalTerceroV"  name="TotalTerceroV" class="derecha-texto negrita">{{ $datos[1]['tercero'] }}</td>
+                                            <td id="TotalTerceroV"  name="TotalTerceroV" class="derecha-texto negrita">{{ number_format($datos[1]['tercero'],2) }}</td>
                                             
                                         </tr>
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Decimo Cuarto</td>
-                                            <td id="TotalCuartoV"  name="TotalCuartoV" class="derecha-texto negrita">{{ $datos[1]['cuarto'] }}</td>
+                                            <td id="TotalCuartoV"  name="TotalCuartoV" class="derecha-texto negrita">{{ number_format($datos[1]['cuarto'],2) }}</td>
                                             
                                         </tr>
                                         <tr>
                                             <td  class="letra-blanca fondo-gris-oscuro negrita">Viaticos (+)
                                             </td>
-                                            <td id="Tquincena"  name="Tquincena" class="derecha-texto negrita">{{ $datos[1]['viaticos'] }}</td>
+                                            <td id="Tquincena"  name="Tquincena" class="derecha-texto negrita">{{ number_format($datos[1]['viaticos'],2) }}</td>
                                                             
                                         </tr>
                                         
                                         <tr>
                                             <td class="letra-blanca fondo-gris-oscuro negrita">Liquido a Pagar</td>
-                                            <td id="LiquidacionTotal" name="LiquidacionTotal" class="derecha-texto negrita">{{ $datos[1]['pago'] }}</td>
+                                            <td id="LiquidacionTotal" name="LiquidacionTotal" class="derecha-texto negrita">{{ number_format($datos[1]['pago'],2) }}</td>
                                             
                                           
                                                

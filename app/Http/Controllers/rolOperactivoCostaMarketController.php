@@ -889,7 +889,8 @@ class rolOperactivoCostaMarketController extends Controller
             $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
             $datos[$count]['dias']=$rol2->cabecera_rol_total_dias;
             $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
-        
+            $datos[$count]['vacacion']=$rol2->cabecera_rol_vacaciones;
+            
             $datos[$count]['normal']=$rol2->controlcm->control_normal;
             $datos[$count]['decanso']=$rol2->controlcm->control_decanso;
             $datos[$count]['vacaciones']=$rol2->controlcm->control_vacaciones;
@@ -897,8 +898,7 @@ class rolOperactivoCostaMarketController extends Controller
             $datos[$count]['cosecha']=$rol2->controlcm->control_cosecha;
             $datos[$count]['extra']=$rol2->controlcm->control_extra;
             $datos[$count]['ausente']=$rol2->controlcm->control_ausente;
-
-            
+         
             $count=1;
             foreach ($rol2->alimentacioncm as $alimentaciones) {
                 $alimentacion[$count]['fecha']=$alimentaciones->alimentacion_fecha;
@@ -955,16 +955,12 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $count++;
         }
-
-
-
         DB::commit();
         return view('admin.RHCostaMarket.rolOperativo.eliminaroperativo',['quincenas'=>$quincenas,'detalles'=>$detalles,'tipopago'=>$tipopago,'anticipo'=>$anticipo,'alimentacion'=>$alimentacion,'datos'=>$datos,'rol'=>$rol2,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-       
-    }catch(\Exception $ex){
-        DB::rollBack();
-        return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-    } 
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
 
     }
 

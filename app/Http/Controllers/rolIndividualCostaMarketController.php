@@ -861,6 +861,111 @@ class rolIndividualCostaMarketController extends Controller
         //
     }
 
+    public function eliminar($id){
+        try {
+            DB::beginTransaction();
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono', 'grupo_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->join('grupo_permiso', 'grupo_permiso.grupo_id', '=', 'permiso.grupo_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('grupo_orden', 'asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('permiso_orden', 'asc')->get();
+            $tipopago=null;
+            $datos=null;
+            $detalles=null;
+            $alimentacion=null;
+            $anticipo=null;
+            $quincenas=null;
+            $rol2= Cabecera_Rol_CM::findOrFail($id);
+            $count=1;
+            $datos[$count]['rol_id']=$rol2->cabecera_rol_id;
+            $datos[$count]['empleado']=$rol2->empleado_id;
+            $datos[$count]['ingresos']=$rol2->cabecera_rol_total_ingresos;
+            $datos[$count]['egresos']=$rol2->cabecera_rol_total_egresos;
+
+            $datos[$count]['pago']=$rol2->cabecera_rol_pago;
+            $datos[$count]['cuarto']=$rol2->cabecera_rol_decimocuarto;
+        
+            $datos[$count]['tercero']=$rol2->cabecera_rol_decimotercero;
+            $datos[$count]['fondos']=$rol2->cabecera_rol_fondo_reserva;
+            $datos[$count]['viaticos']=$rol2->cabecera_rol_viaticos;
+            $datos[$count]['secap']=$rol2->cabecera_rol_aporte_patronal;
+            $datos[$count]['patronal']=$rol2->cabecera_rol_aporte_patronal;
+            $datos[$count]['terceroacu']=$rol2->cabecera_rol_decimotercero_acumula;
+            $datos[$count]['cuartoacu']=$rol2->cabecera_rol_decimocuarto_acumula;
+            $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
+            $datos[$count]['dias']=$rol2->cabecera_rol_total_dias;
+            $datos[$count]['fondosacu']=$rol2->cabecera_rol_fr_acumula;
+            $datos[$count]['vacaciones']=$rol2->cabecera_rol_vacaciones;
+           
+
+            
+            $count=1;
+            foreach ($rol2->alimentacioncm as $alimentaciones) {
+                $alimentacion[$count]['fecha']=$alimentaciones->alimentacion_fecha;
+                $alimentacion[$count]['valor']=$alimentaciones->alimentacion_valor;
+                $alimentacion[$count]['factura']=$alimentaciones->transaccion->transaccion_numero;
+                $count++;
+            }
+            $count=1;
+            foreach ($rol2->anticiposcm as $anticipos) {
+                $anticipo[$count]['descuento_fecha']=$anticipos->descuento_fecha;
+                $anticipo[$count]['descuento_valor']=$anticipos->descuento_valor;
+                $anticipo[$count]['Valor_Anticipó']=$anticipos->anticipo->anticipo_valor;
+                $count++;
+            }
+            $count=1;
+            foreach ($rol2->quincenacm as $quincena) {
+                $quincenas[$count]['descuento_fecha']=$quincena->descuento_fecha;
+                $quincenas[$count]['descuento_valor']=$quincena->descuento_valor;
+                $quincenas[$count]['Valor_Anticipó']=$quincena->quincena->quincena_valor;
+                $count++;
+            }
+            $count=1;
+        foreach($rol2->diariopago->detalles as $detalle){
+            if (isset($detalle->cheque)) {
+                $tipopago[$count]['iddetalle']=$detalle->detalle_id; 
+                $tipopago[$count]['tipo']="Cheque";
+                $tipopago[$count]['idcheque']=$detalle->cheque->cheque_id;
+                $tipopago[$count]['cheque']=$detalle->cheque->cheque_numero;
+                $tipopago[$count]['fecha']=$detalle->cheque->cheque_fecha_pago;
+                $tipopago[$count]['numero']=$detalle->cheque->cuentaBancaria->cuenta_bancaria_numero;
+                $tipopago[$count]['banco']=$detalle->cheque->cuentaBancaria->banco->bancoLista->banco_lista_nombre;
+              
+            }
+            if (isset($detalle->transferencia)) {
+                $tipopago[$count]['iddetalle']=$detalle->detalle_id; 
+                $tipopago[$count]['tipo']="Transferencia";
+                $tipopago[$count]['numero']=$detalle->transferencia->cuentaBancaria->cuenta_bancaria_numero;
+                $tipopago[$count]['banco']=$detalle->transferencia->cuentaBancaria->banco->bancoLista->banco_lista_nombre;
+               
+            }
+            
+        }
+        $count=1;
+        $rubros=Rubro::Rubros()->get();
+        foreach ($rubros as $rubro) {
+            $detalles[$count]['identificacion']=$rubro->rubro_nombre;
+            $detalles[$count]['fechaincio']='';
+            $detalles[$count]['fechafin']='';
+            $detalles[$count]['Descripcion']=$rubro->rubro_descripcion;
+            $detalles[$count]['Valor']='0.00';
+            $detalles[$count]['Tipo']=$rubro->rubro_tipo;
+            foreach ($rol2->detalles as $detalle) {
+                if ($rubro->rubro_id==$detalle->rubro_id) {
+                    $detalles[$count]['fechaincio']=$detalle->detalle_rol_fecha_inicio;
+                    $detalles[$count]['fechafin']=$detalle->detalle_rol_fecha_fin;
+                    $detalles[$count]['Descripcion']=$detalle->detalle_rol_descripcion;
+                    $detalles[$count]['Valor']=$detalle->detalle_rol_valor;
+                }
+            }
+            $count++;
+        }
+        DB::commit();
+        return view('admin.RHCostaMarket.rolIndividual.eliminar',['quincenas'=>$quincenas,'detalles'=>$detalles,'tipopago'=>$tipopago,'anticipo'=>$anticipo,'alimentacion'=>$alimentacion,'datos'=>$datos,'rol'=>$rol2,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -892,6 +997,125 @@ class rolIndividualCostaMarketController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            DB::beginTransaction();
+            $auditoria = new generalController();
+            $rol = Cabecera_Rol_CM::findOrFail($id);
+            $cierre = $auditoria->cierre($rol->cabecera_rol_fecha);          
+            if($cierre){
+                return redirect('listaroles')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            $aux=Cabecera_Rol_CM::findOrFail($id);
+            $aux->diario_pago_id=null;
+            $aux->diario_contabilizacion_id=null;   
+            $aux->save();
+            $auditoria->registrarAuditoria('Actualziacion de Rol de diarios null para la eliminacion de diario para la eliminacion de rol  con valor '.$rol->cabecera_rol_pago ,'0','');
+            
+            if (isset($rol->RolMovimientos)) {
+                foreach ($rol->RolMovimientos as $movimiento) {
+                    $movi = Rol_Movimiento::findOrFail($movimiento->rol_movimiento_id);
+                    $movi->cabecera_rol_cm_id=null;
+                    $movi->rol_movimiento_estado='1';
+                    $movi->save();
+                }
+            }
+            if (isset($rol->anticiposcm)) {
+                foreach ($rol->anticiposcm as $detalle) {
+                    $anticipos = Descuento_Anticipo_Empleado::findOrFail($detalle->descuento_id);
+                    $anticipo = Anticipo_Empleado::findOrFail($anticipos->anticipo_id);
+                    $anticipos->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Descuento de Anticipos para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');
+
+                    $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    $anticipo->anticipo_estado='1';
+                    $anticipo->update();
+                 
+                    $auditoria->registrarAuditoria('Actualziacion de  Anticipos para la eliminacion de descuento de anticipo para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');
+    
+                }
+            }
+            if (isset($rol->quincenacm)) {
+                foreach ($rol->quincenacm as $detalle) {
+                    $quincena = Descuento_Quincena::findOrFail($detalle->descuento_id);
+                    $quincenas = Quincena::findOrFail($quincena->quincena_id);
+                    $quincena->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Descuento de Anticipos para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');
+                    
+                    $quincenas->quincena_saldo=$quincenas->quincena_valor-(Descuento_Quincena::Anticipos($quincenas->quincena_id)->sum('descuento_valor'));
+                    $quincenas->quincena_estado='1';
+                    $quincenas->update();
+                    $auditoria->registrarAuditoria('Actualziacion de  Anticipos para la eliminacion de descuento de anticipo para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');
+    
+                    
+                }
+            }
+            if (isset($rol->alimentacioncm)) {
+                foreach ($rol->alimentacioncm as $alimentacion) {
+                    $alimentaciones = Alimentacion::findOrFail($alimentacion->alimentacion_id);
+                    $alimentaciones->cabecera_rol_cm_id=null;
+                    $alimentaciones->alimentacion_estado='1';
+                    $alimentaciones->save();
+                    $auditoria->registrarAuditoria('Actualziacion de  Alimentacion a null para la eliminacion de rol ','0','');
+                }
+            }
+           
+            if (isset($rol->diariopago->diario_id)) {
+                foreach ($rol->diariopago->detalles as $detalle) {
+                    if (isset($detalle->cheque->cheque_id)) {
+                        $cheques = Cheque::findOrFail($detalle->cheque->cheque_id);
+                    }
+                    if (isset($detalle->transferencia->transferencia_id)) {
+                        $transferencias = Transferencia::findOrFail($detalle->transferencia->transferencia_id);
+                    }
+                }
+                foreach ($rol->diariopago->detalles as $detalle) {
+                    $detalles = Detalle_Diario::findOrFail($detalle->detalle_id);
+                    $detalles->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Detalle diario de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                }
+                if(isset($cheques)){
+                    $cheques->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Cheque -> '.$cheques->cheque_numero.' de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                }
+                if(isset($transferencias)){
+                    $transferencias->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Tranferencia de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                }
+                $rol->diariopago->delete();
+                $auditoria->registrarAuditoria('Eliminacion de Diario de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
+                
+            }
+            if (isset($rol->diariocontabilizacion)) {
+               
+                foreach ($rol->diariocontabilizacion->detalles as $detalle) {
+                    $detalles = Detalle_Diario::findOrFail($detalle->detalle_id);
+                    $detalles->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de Detalle diario contabilizado de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                }
+                $rol->diariocontabilizacion->delete();
+                $auditoria->registrarAuditoria('Eliminacion de Diario contabilizado de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+
+
+            }
+            
+            foreach ($rol->detalles as $detalle) {
+                $detalles = Detalle_Rol_CM::findOrFail($detalle->detalle_rol_id);
+                $detalles->delete();
+                $auditoria->registrarAuditoria('Eliminacion de Detalle Rol de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
+            }
+            
+            
+            
+            $rol->delete();
+            $auditoria->registrarAuditoria('Eliminacion de  de rol  tipo -> '.$rol->cabecera_rol_tipo.' con valor '.$rol->cabecera_rol_pago ,'0','');
+            /*Fin de registro de auditoria */
+           
+         
+            DB::commit();
+            return redirect('listaRolCM')->with('success','Datos eliminados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/listaRolCM')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }  
     }
 }

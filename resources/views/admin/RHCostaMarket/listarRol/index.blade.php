@@ -53,7 +53,7 @@
                         <tr>  
                             <td class="text-center">
                             @if($datos[$i]["tipo"]=='OPERATIVO') <a href="{{url("roloperativoCM/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF 
-                                          
+                            @if($datos[$i]["tipo"]=='INDIVIDUAL') <a href="{{url("rolindividualCM/{$datos[$i]["idrol"]}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @ENDIF    
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimir")}}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Rol"><i class="fa fa-print"></i></a>                   
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimirdiario")}}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Asiento"><i class="fa fa-print"></i></a>   
                             <a href="{{url("rolCM/{$datos[$i]["idrol"]}/imprimirdiariocontabilizado")}}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Diario Contabilizado"><i class="fa fa-print"></i></a>       

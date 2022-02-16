@@ -957,7 +957,7 @@ Route::get('/rolindividualCM/new/{id}', [rolIndividualCostaMarketController::cla
 Route::get('/roloperativoCM/new/{id}', [rolOperactivoCostaMarketController::class, 'nuevo'])->middleware('auth');
 
 Route::get('/roloperativoCM/{id}/eliminar', [rolOperactivoCostaMarketController::class, 'eliminar'])->middleware('auth');
-
+Route::get('/rolindividualCM/{id}/eliminar', [rolIndividualCostaMarketController::class, 'eliminar'])->middleware('auth');
 
 //Crear proforma
 Route::get('/proforma/new/{id}', [proformaController::class, 'nuevo'])->middleware('auth');

@@ -152,7 +152,7 @@
                         
                     
                         <!-- Tabla de ingresos -->
-                        <div  class="col-md-2-5">
+                        <div  class="col-md-2">
                             <br>
                             <div class="card card-secondary">  
                                 <div class="card-header">
@@ -308,7 +308,7 @@
                                     </div>
                                 </div>    
                             </div>
-                            <div  class="col-md-3">
+                            <div  class="col-md-3-5">
                                 <br>
                                 <div class="card card-secondary">  
                                     <div class="card-header">

@@ -41,4 +41,13 @@ class Expediente extends Model
     {
         return $this->belongsTo(Orden_Atencion::class, 'orden_id', 'orden_id');
     }
+
+
+    // 
+    public function scopeFindByOrden($query, $ordenId){
+        return $query->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
+                    )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->where('orden_atencion.orden_id','=',$ordenId);         
+    }
 }

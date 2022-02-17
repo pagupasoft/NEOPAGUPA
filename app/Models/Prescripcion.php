@@ -38,23 +38,23 @@ class Prescripcion extends Model
     }
 
     public function scopePrescripcionesBusqueda($query, $request){
-        if(intval($request->pacienteID)==0)
-            return $query->join('expediente','expediente.expediente_id','=','prescripcion.expediente_id'
-                )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
-                )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                )->join('paciente', 'paciente.paciente_id', '=', 'orden_atencion.paciente_id'
-                )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
-                )->where('prescripcion.prescripcion_estado','=',"$request->estado"
-                )->whereBetween('orden_atencion.orden_fecha',[$request->fecha_desde, $request->fecha_hasta]);
-        else
-            return $query->join('expediente','expediente.expediente_id','=','prescripcion.expediente_id'
-                )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
-                )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                )->join('paciente', 'paciente.paciente_id', '=', 'orden_atencion.paciente_id'
-                )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
-                )->where('prescripcion.prescripcion_estado','=',"$request->estado"
-                )->Where('orden_atencion.paciente_id','=',$request->pacienteID
-                )->whereBetween('orden_atencion.orden_fecha',[$request->fecha_desde, $request->fecha_hasta]);
+        $query->join('expediente','expediente.expediente_id','=','prescripcion.expediente_id'
+            )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
+            )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+            )->join('paciente', 'paciente.paciente_id', '=', 'orden_atencion.paciente_id'
+            )->where('sucursal.empresa_id','=',Auth::user()->empresa_id);
+        
+        
+        if(intval($request->incluirFechas))
+            $query->whereBetween('orden_atencion.orden_fecha',[$request->fecha_desde, $request->fecha_hasta]);
+            
+        if(intval($request->pacienteID!=0))
+            $query->where('orden_atencion.paciente_id','=', $request->pacienteID);
+
+        if(intval($request->estado<3))
+            $query->where('prescripcion.prescripcion_estado','=', $request->estado);
+
+        return $query;
     }
 
     public function scopePrescripcionDetalle($query, $id){

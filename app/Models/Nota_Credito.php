@@ -121,6 +121,9 @@ class Nota_Credito extends Model
     public function factura(){
         return $this->belongsTo(Factura_Venta::class, 'factura_id', 'factura_id');
     }
+    public function cliente(){
+        return $this->hasOneThrough(Cliente::class, Factura_Venta::class, 'factura_id', 'cliente_id', 'factura_id', 'cliente_id');
+    }
     public function rangoDocumento(){
         return $this->belongsTo(Rango_Documento::class, 'rango_id', 'rango_id');
     }

@@ -63,7 +63,7 @@ class formulariosController extends Controller
                 $nombreArchivo = 'REPORTE TRIBUTARIO DEL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             } 
-            if (isset($_POST['guardar'])){
+            if (isset($_POST['guardar'])){                
                 
             }   
         }catch(\Exception $ex){
@@ -227,10 +227,18 @@ class formulariosController extends Controller
                                 $datos[3]['compraBruta'] = floatval($datos[3]['compraBruta']) + $detalle->detalle_total;  
                             }
                         }else{
-                            $datos[2]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que dan derecho a crédito tributario';
-                            $datos[2]['porcentaje'] = 0; 
-                            $datos[2]['casillero'] = '405'; 
-                            $datos[2]['compraBruta'] = floatval($datos[2]['compraBruta']) + $detalle->detalle_total; 
+                            if($venta->cliente->tipoCliente->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que no dan derecho a crédito tributario';
+                                $datos[1]['porcentaje'] = 0; 
+                                $datos[1]['casillero'] = '403'; 
+                                $datos[1]['compraBruta'] = floatval($datos[1]['compraBruta']) + $detalle->detalle_total; 
+                            }else{
+                                $datos[2]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que dan derecho a crédito tributario';
+                                $datos[2]['porcentaje'] = 0; 
+                                $datos[2]['casillero'] = '405'; 
+                                $datos[2]['compraBruta'] = floatval($datos[2]['compraBruta']) + $detalle->detalle_total; 
+                            }
+                            
                         }
                     }
                 }
@@ -254,7 +262,11 @@ class formulariosController extends Controller
                                 $datos[3]['nc'] = floatval($datos[3]['nc']) + $detallenc->detalle_total; 
                             }
                         }else{
-                            $datos[2]['nc'] = floatval($datos[2]['nc']) + $detallenc->detalle_total; 
+                            if($nc->cliente->tipoCliente->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
+                            }else{
+                                $datos[2]['nc'] = floatval($datos[2]['nc']) + $detallenc->detalle_total; 
+                            }
                         }
                     }
                 }

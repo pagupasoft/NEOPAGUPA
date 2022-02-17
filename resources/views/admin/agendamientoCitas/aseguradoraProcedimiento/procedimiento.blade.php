@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<form class="form-horizontal" method="POST" action="{{ route('aseguradoraProcedimiento.guardarProcedimiento', [$cliente->cliente_id]) }}">
+<form class="form-horizontal" onsubmit="return comprobarDatos();" method="POST" action="{{ route('aseguradoraProcedimiento.guardarProcedimiento', [$cliente->cliente_id]) }}">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
@@ -207,5 +207,27 @@
             }
    
     }
+
+    function comprobarDatos(){
+        var nFilas = $("#cargarItemProcedimiento tbody tr").length;
+
+        for(f=0; f<nFilas; f++){
+            if ($("#Pcheckbox"+f).is(':checked')){
+                if(parseFloat($("#Pcosto"+f).val())==0){
+                    alert("A marcar una casilla debe ingresar la información");
+                    $("#Pcosto"+f).focus();
+                    return false;
+                }
+                if(parseFloat($("#PcodigoT"+f).val())==0){
+                    alert("A marcar una casilla debe ingresar la información")
+                    $("#PcodigoT"+f).focus();
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
 </script>
 @endsection

@@ -97,6 +97,7 @@ class usuarioController extends Controller
     }
 
     public function enviarCorreoUsuario($correo, $nombre, $username, $password){
+        $empresa=Empresa::Empresa()->first();
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);
         try {
@@ -108,10 +109,10 @@ class usuarioController extends Controller
             $mail->SMTPAutoTLS = false;
             $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
             $mail->Username = trim('neopagupa@pagupasoft.com');
-            $mail->Password = trim('ServerP07');
+            $mail->Password = trim('PagupaServer07');
             $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
             $mail->Subject = 'NEOPAGUPA-Sistema Contable';
-            $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la contraseña de su usuario -> '.$username. ' su contraseña es: '.$password);
+            $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);
             $mail->addAddress(trim($correo), $nombre);
             $mail->SMTPOptions= array(
                 'ssl' => array(

@@ -928,7 +928,7 @@ function cargardatosempleados(id){
                 document.getElementById("VTFondo").value=data[i].parametrizar_fondos_reserva;
                 document.getElementById("VAfiliado").value=data[i].empleado_afiliado;
                 document.getElementById("VInpuesto").value=data[i].empleado_impuesto_renta;
-                
+               
                 if( data[i].empleado_fondos_reserva=="1"){    
                     if ( data[i].empleado_fecha_inicioFR <= fechaactual()) {       
                         document.getElementById("reservatacu").value ="1"; 
@@ -941,7 +941,7 @@ function cargardatosempleados(id){
                        
                     }     
                 }
-
+               
                 
                
               

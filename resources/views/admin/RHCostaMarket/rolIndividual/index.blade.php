@@ -456,7 +456,7 @@
                                             <input type="hidden"   name="dias"  id="dias" value="0" required readonly> 
                                             <input type="hidden"   name="sueldod"  id="sueldod" value="0" required readonly> 
                                             <input type="hidden"   name="acureservat"  id="acureservat" value="0" required readonly> 
-                                            <input type="hidden"   name="reservat"  id="reservat" value="0" required readonly> 
+                                           
                                             <input type="hidden"   name="cuartot"  id="cuartot" value="0" required readonly> 
                                             <input type="hidden"   name="tercerot"  id="tercerot" value="0" required readonly> 
                                             
@@ -1005,6 +1005,8 @@ function cargardatosempleados(id){
                 document.getElementById("dias").value= 1;
                 document.getElementById("sueldod").value= (data[i].empleado_sueldo/30);
                 document.getElementById("acureservat").value= data[i].empleado_fondos_reserva; 
+            
+              
                 if(data[i].empleado_afiliado=="1") {
                     if( data[i].empleado_fondos_reserva=="1"){    
                             if ( data[i].empleado_fecha_inicioFR <= fechaactual()) {       
@@ -1013,12 +1015,13 @@ function cargardatosempleados(id){
                     }
                     if( data[i].empleado_fondos_reserva=="0"){    
                             if ( data[i].empleado_fecha_inicioFR <= fechaactual()) {       
-                                document.getElementById("reservat").value ="0";
+                                document.getElementById("").value ="0";
                             }       
                     }
                     document.getElementById("tercerot").value= data[i].empleado_decimo_tercero;
                     document.getElementById("cuartot").value= data[i].empleado_decimo_cuarto;
                 }
+               
             }                  
         },
     });

@@ -77,7 +77,7 @@ class empleadoController extends Controller
     public function presentarEmpleados($id){
         $compra=null;
         $alimentaciones=Alimentacion::Factura($id)->get();
-        $alimenta=Alimentacion::Factura($id)->first();
+        
         $empleados=Empleado::Empleados()->get();
         $i=0;
         foreach($empleados as $empleado){
@@ -86,15 +86,16 @@ class empleadoController extends Controller
             $compra[$i]["cedula"]=$empleado->empleado_cedula;
             $compra[$i]["nombre"]=$empleado->empleado_nombre;
             $compra[$i]["valor"]=0.00;
-            $compra[$i]["rol"]=null;
-            if (($alimenta)) {
-                $compra[$i]["rol"]=$alimenta->cabecera_rol_id;
-            }
+            $compra[$i]["rol"]=0;
+            $compra[$i]["rolcm"]=0;
+            
            if (count($alimentaciones)>0) {
                foreach ($alimentaciones as $alimentacion) {
                    if ($alimentacion->empleado_id==$empleado->empleado_id) {
-                       $compra[$i]["valor"]=$alimentacion->alimentacion_valor;
-                       $compra[$i]["idalim"]=$alimentacion->alimentacion_id;
+                        $compra[$i]["rol"]=$alimentacion->cabecera_rol_id;
+                        $compra[$i]["rolcm"]=$alimentacion->cabecera_rol_cm_id;
+                        $compra[$i]["valor"]=$alimentacion->alimentacion_valor;
+                        $compra[$i]["idalim"]=$alimentacion->alimentacion_id;
                    }
                }
            }

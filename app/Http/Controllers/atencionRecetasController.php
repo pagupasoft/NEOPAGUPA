@@ -144,7 +144,7 @@ class atencionRecetasController extends Controller
             $prescripciones = Prescripcion::prescripcionesBusqueda($request)->get();
             $pacientes = Paciente::pacientes()->get();
 
-            return view('admin.citasMedicas.farmacia.index',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'prescripciones'=>$prescripciones, 'pacienteID'=>$request->pacienteID, 'fDesde' => $request->fecha_desde, 'fHasta' => $request->fecha_hasta, 'prescripcionE'=>$request->estado, 'pacientes'=>$pacientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.citasMedicas.farmacia.index',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'prescripciones'=>$prescripciones, 'pacienteID'=>$request->pacienteID, 'fDesde' => $request->fecha_desde, 'fHasta' => $request->fecha_hasta, 'fechasI'=>$request->incluirFechas, 'prescripcionE'=>$request->estado, 'pacientes'=>$pacientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }

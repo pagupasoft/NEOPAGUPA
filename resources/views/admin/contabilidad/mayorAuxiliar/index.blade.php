@@ -34,7 +34,7 @@
             <div class="form-group row">
                 <label for="nombre_cuenta" class="col-sm-1 col-form-label"><center>Cuenta Inicio</center></label>
                 <div class="col-sm-5">
-                    <select class="custom-select select2" id="cuenta_inicio" name="cuenta_inicio" require>
+                    <select class="custom-select select2" id="cuenta_inicio" name="cuenta_inicio" onchange="autoCuenta();" require>
                         @foreach($cuentas as $cuenta)
                             <option value="{{$cuenta->cuenta_numero}}" @if(isset($ini)) @if($ini == $cuenta->cuenta_numero) selected @endif @endif>{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
                         @endforeach
@@ -94,4 +94,9 @@
     <!-- /.card-body -->
 </div>
 <!-- /.card -->
+<script type="text/javascript">
+    function autoCuenta(){        
+        $("#cuenta_fin").val(document.getElementById("cuenta_inicio").value).change()
+    }
+</script>
 @endsection

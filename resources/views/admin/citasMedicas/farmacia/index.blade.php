@@ -9,48 +9,61 @@
     <div class="card-body">
     <form class="form-horizontal" method="POST" action="{{ url("receta") }}">
         @csrf
-        <div class="form-group row">
-            <label for="pacientes" class="col-sm-1 col-form-label"><center>Pacientes:</center></label>
-            <div class="col-sm-5">
-                <select class="custom-select select2" id="pacienteID" name="pacienteID" require>
-                    <option value="0">Todos</option>
-                    @foreach($pacientes as $paciente)
-                        <option value="{{$paciente->paciente_id}}" @if(isset($pacienteID)) @if($pacienteID == $paciente->paciente_id) selected @endif @endif>{{$paciente->paciente_apellidos}} {{$paciente->paciente_nombres}}</option>
-                    @endforeach
-                </select>                    
-            </div>
-            
-            <div class="col-sm-2 centrar-texto">
-                <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                <!--button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel   "></i></button-->
-                <!--button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button-->
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-sm-5">
-                <div class="row">
-                    <label for="fecha_desde" class="col-sm-2 col-form-label"><center>Desde :</center></label>
-                    <div class="col-sm-4">
-                        <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"  value='<?php if(isset($fDesde)){echo $fDesde;}else{ echo(date("Y")."-".date("m")."-".date("d"));} ?>' required>
+        <div class="col-md-12">
+            <div class="form-group row">
+                <!--div class="offset-sm-1 col-sm-11">
+                    
+                </div-->
+                <div class="col-sm-12">
+                    <div class="row mb-2">
+                        <label for="fecha_desde" class="col-sm-1 col-form-label text-right">Desde :</label>
+                        <div class="col-sm-3">
+                            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"  value='<?php if(isset($fDesde)){echo $fDesde;}else{ echo(date("Y")."-".date("m")."-".date("d"));} ?>' required>
+                        </div>
+                        <label for="fecha_hasta" class="col-sm-1 col-form-label text-right">Hasta :</label>
+                        <div class="col-sm-3">
+                            <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"  value='<?php if(isset($fHasta)){echo $fHasta;}else{ echo(date("Y")."-".date("m")."-".date("d"));} ?>' required>
+                        </div>
+
+                        <div class="custom-control custom-checkbox col-sm2 pt-2">
+                            <input class="custom-control-input" type="checkbox" id="incluirFechas" name="incluirFechas" value="1" <?php if(isset($fechasI)) echo "checked"; ?>>
+                            <label for="incluirFechas" class="custom-control-label">Todo</label>
+                        </div>
                     </div>
-                    <label for="fecha_hasta" class="col-sm-2 col-form-label"><center>Hasta :</center></label>
-                    <div class="col-sm-4">
-                        <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"  value='<?php if(isset($fHasta)){echo $fHasta;}else{ echo(date("Y")."-".date("m")."-".date("d"));} ?>' required>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label for="pacientes" class="col-sm-1 col-form-label text-right">Pacientes:</label>
+                        <div class="col-sm-3">
+                            <select class="custom-select select2" id="pacienteID" name="pacienteID" require>
+                                <option value="0">Todos</option>
+                                @foreach($pacientes as $paciente)
+                                    <option value="{{$paciente->paciente_id}}" @if(isset($pacienteID)) @if($pacienteID == $paciente->paciente_id) selected @endif @endif>{{$paciente->paciente_apellidos}} {{$paciente->paciente_nombres}}</option>
+                                @endforeach
+                            </select>                    
+                        </div>
+                        
+                        <div class="col-sm-4">
+                            <div class="row">
+                                <label class="col-sm-3  col-form-label text-right" for="estado">Estado:</label>
+                                <div class="col-sm-9">
+                                    <select class="custom-select select2" id="estado" name="estado" required>
+                                        <option value="3" @if(isset($prescripcionE)) @if($prescripcionE == 3) selected @endif @endif selected>Todas</option>
+                                        <option value="0" @if(isset($prescripcionE)) @if($prescripcionE == 0) selected @endif @endif>Anulados</option>
+                                        <option value="1" @if(isset($prescripcionE)) @if($prescripcionE == 1) selected @endif @else @endif>Atendidos</option>
+                                        <option value="2" @if(isset($prescripcionE)) @if($prescripcionE == 2) selected @endif @endif>Entregado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-5">
-                <div class="row">
-                    <label class="col-md-5  col-form-label text-right" for="estado">Estado:</label>
-                    <select class="col-md-7 custom-select select2" id="estado" name="estado" required>
-                        <option value="0" @if(isset($prescripcionE)) @if($prescripcionE == 0) selected @endif @endif>Anulados</option>
-                        <option value="1" @if(isset($prescripcionE)) @if($prescripcionE == 1) selected @endif @else selected @endif>Atendidos</option>
-                        <option value="2" @if(isset($prescripcionE)) @if($prescripcionE == 2) selected @endif @endif>Despachados</option>
-                    </select>
-                </div>
-            </div>
-            
         </div>
+        
         <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
             <thead>
                 <tr class="text-center neo-fondo-tabla">

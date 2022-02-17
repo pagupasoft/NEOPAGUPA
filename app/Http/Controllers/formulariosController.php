@@ -7,6 +7,7 @@ use App\Models\Detalle_RV;
 use App\Models\Empresa;
 use App\Models\Factura_Venta;
 use App\Models\Nota_Credito;
+use App\Models\Reporte_Tributario;
 use App\Models\Transaccion_Compra;
 use DateTime;
 use Illuminate\Http\Request;
@@ -43,12 +44,12 @@ class formulariosController extends Controller
             $valor4 = 0;
             $valor5 = 0;
             $valor6 = 0;
-            if($request->get('valor1')){$valor1 = $request->get('valor1');}
-            if($request->get('valor2')){$valor2 = $request->get('valor2');}
-            if($request->get('valor3')){$valor3 = $request->get('valor3');}
-            if($request->get('valor4')){$valor4 = $request->get('valor4');}
-            if($request->get('valor5')){$valor5 = $request->get('valor5');}
-            if($request->get('valor6')){$valor6 = $request->get('valor6');}
+            if($request->get('valor1')){$valor1 = str_replace(',','',$request->get('valor1'));}
+            if($request->get('valor2')){$valor2 = str_replace(',','',$request->get('valor2'));}
+            if($request->get('valor3')){$valor3 = str_replace(',','',$request->get('valor3'));}
+            if($request->get('valor4')){$valor4 = str_replace(',','',$request->get('valor4'));}
+            if($request->get('valor5')){$valor5 = str_replace(',','',$request->get('valor5'));}
+            if($request->get('valor6')){$valor6 = str_replace(',','',$request->get('valor6'));}
             if (isset($_POST['consultar'])){
                 return view('admin.sri.formularios.reporteTributario',['fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }
@@ -63,52 +64,7 @@ class formulariosController extends Controller
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             } 
             if (isset($_POST['guardar'])){
-                try{   
-                    DB::beginTransaction(); 
-                    $reporteTributario = new Reporte_Tributario(); 
-                    //VENTAS CON 12%       
-                    if(count($datos[0]) > 0){
-                        $reporteTributario->reporte_mes = $request->get('idNombre');            
-                        $reporteTributario->reporte_ano = $request->get('idPorcentaje');
-                        for ($i = 1; $i <= count($datos[0]); ++$i){
-                            $reporteTributario->reporte_tipo = $datos[0][$i]['porcentaje'];
-                            $reporteTributario->reporte_casillero = $datos[0][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[0][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[0][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[0][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[0][$i]['iva'];
-                            $reporteTributario->reporte_estado = 1;
-                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
-                            $reporteTributario->save();
-                        }
-                    }
-                    //VENTAS CON 0%       
-                    if(count($datos[1]) > 0){
-                        $reporteTributario->reporte_mes = $request->get('idNombre');            
-                        $reporteTributario->reporte_ano = $request->get('idPorcentaje');
-                        for ($i = 1; $i <= count($datos[0]); ++$i){
-                            $reporteTributario->reporte_tipo = $datos[0][$i]['porcentaje'];
-                            $reporteTributario->reporte_casillero = $datos[0][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[0][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[0][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[0][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[0][$i]['iva'];
-                            $reporteTributario->reporte_estado = 1;
-                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
-                            $reporteTributario->save();
-                        }
-                    }
-
-                    /*Inicio de registro de auditoria */
-                    $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Registro de Reporte Tributario: -> '.$request->get('idNombre'),'0','con el porcentaje'.$request->get('idPorcentaje').''.'en las cuentas'.$request->get('idDepreciacion').' '.$request->get('idGasto'));
-                    /*Fin de registro de auditoria */
-                    DB::commit();
-                    return redirect('reporteTributario')->with('success','Datos guardados exitosamente');
-                }catch(\Exception $ex){
-                    DB::rollBack();
-                    return redirect('reporteTributario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-                }
+                
             }   
         }catch(\Exception $ex){
             return redirect('reporteTributario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

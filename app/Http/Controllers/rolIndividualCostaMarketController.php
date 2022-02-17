@@ -303,20 +303,20 @@ class rolIndividualCostaMarketController extends Controller
 
 
             $diariocontabilizado = new Diario();
-            $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CCMR');
+            $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fechafinal'), 'CCMR');
  
             if ($request->get('tipo') == 'Transferencia') {
-            $diariocontabilizado->diario_fecha = $request->get('fechaactual');
+            $diariocontabilizado->diario_fecha = $request->get('fechafinal');
             }
             if ($request->get('tipo') == 'Cheque') {
-                $diariocontabilizado->diario_fecha = $request->get('fechaactual');
+                $diariocontabilizado->diario_fecha = $request->get('fechafinal');
             }
             $diariocontabilizado->diario_referencia = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES';
             $diariocontabilizado->diario_tipo_documento = 'CONTABILIZACION MENSUAL';
             $diariocontabilizado->diario_tipo = 'CCMR';
             $diariocontabilizado->diario_secuencial = substr($diario->diario_codigo, 8);
-            $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('m');
-            $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('Y');
+            $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('m');
+            $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechafinal'))->format('Y');
             $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES: '.$empleado->empleado_nombre;
                     
             $diariocontabilizado->diario_numero_documento = 0;

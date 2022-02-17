@@ -116,7 +116,8 @@
                                             <th width="40"></th>
                                             <th width="90">Cedula</th>
                                             <th width="90">Empleado</th>
-                                            <th width="120">Valor</th>  
+                                            <th width="120">Valor</th>
+                                            <th width="120">Estado</th>  
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -197,10 +198,23 @@ var id_item = 1;
                     linea = linea.replace(/{nombre}/g, data[i]["nombre"]);
                     linea = linea.replace(/{valor}/g, data[i]["valor"]);
                     linea = linea.replace(/{idalimento}/g, data[i]["idalim"]);
+                   
                     total=total+Number(data[i]["valor"]);
-                    if(data[i]["rol"]!=null){
-                        document.getElementById("guardarID").disabled = true;	
+                    if (data[i]["rol"]!=0) {
+                        linea = linea.replace(/{editable}/g, 'readonly');
+                        linea = linea.replace(/{rol}/g, '<span class="badge bg-danger"> Asignado </span>');
                     }
+                    else{
+                        if(data[i]["rolcm"]!=0){
+                            linea = linea.replace(/{editable}/g, 'readonly');
+                            linea = linea.replace(/{rol}/g, '<span class="badge bg-danger"> Asignado </span>');
+                        }
+                        else{
+                            linea = linea.replace(/{editable}/g, ' ');
+                            linea = linea.replace(/{rol}/g, '<span class="badge bg-success">Generado</span>');
+                        }
+                    }
+                    
                     $("#tablaalimentacion tbody").append(linea);
                     id_item= id_item+1;
             }       

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rubro;
 use App\Http\Controllers\Controller;
+use App\Models\Categoria_Rol;
 use App\Models\Cliente;
 use App\Models\Empresa;
 use App\Models\Punto_Emision;
@@ -27,7 +28,8 @@ class rubroController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $rubros = Rubro::rubros()->get();
-            return view('admin.recursosHumanos.rubro.index',['rubros'=>$rubros, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            $categorias = Categoria_Rol::Categorias()->get();    
+            return view('admin.recursosHumanos.rubro.index',['categorias'=>$categorias,'rubros'=>$rubros, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -107,6 +109,10 @@ class rubroController extends Controller
             $rubro->rubro_descripcion = $request->get('rubro_descripcion');
             $rubro->rubro_tipo = $request->get('rubro_tipo');
             $rubro->empresa_id = Auth::user()->empresa_id;
+            if($request->get('categoria')!=" "){
+                $rubro->categoria_id =$request->get('categoria'); 
+            }
+            $rubro->categoria_id = $request->get('categoria');
             $rubro->rubro_estado = 1;
             $rubro->save();
             /*Inicio de registro de auditoria */
@@ -156,8 +162,9 @@ class rubroController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $rubro = Rubro::rubro($id)->first();
+            $categorias = Categoria_Rol::Categorias()->get();    
             if($rubro){
-                return view('admin.recursosHumanos.rubro.editar', ['rubro'=>$rubro, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.recursosHumanos.rubro.editar', ['categorias'=>$categorias,'rubro'=>$rubro, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('/denegado');
             }
@@ -187,6 +194,10 @@ class rubroController extends Controller
             }else{
                 $rubro->rubro_estado = 0;
             }
+            if($request->get('categoria')!=" "){
+                $rubro->categoria_id =$request->get('categoria'); 
+            }
+            $rubro->categoria_id = $request->get('categoria');  
             $rubro->save();       
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

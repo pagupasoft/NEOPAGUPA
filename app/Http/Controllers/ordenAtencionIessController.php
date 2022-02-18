@@ -7,6 +7,7 @@ use App\Models\Arqueo_Caja;
 use App\Models\Bodega;
 use App\Models\Documento_Anulado;
 use App\Models\Documento_Orden_Atencion;
+use App\Models\Documento_Orden_Paciente;
 use App\Models\Empresa;
 use App\Models\Especialidad;
 use App\Models\Forma_Pago;
@@ -123,24 +124,25 @@ class ordenAtencionIessController extends Controller
             $auditoria->registrarAuditoria('Registro de orden de atencion -> '.$request->get('Codigo').' del Paciente -> '.$request->get('idPaciente'), '0', '');
             /*Fin de registro de auditoria */
 
-            $documento=Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get();
-            foreach ($documento as $documentos) {
-                $file='file-es'.$documentos->documento_id;
-                if (($request->get($file))) {
-                    if ($request->file($file)) {
-                        $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
-                        if (!is_dir($ruta)) {
-                            mkdir($ruta, 0777, true);
-                        }
-                        if ($request->file($file)->isValid()) {
-                            $name = $documentos->documento_nombre.'.'.$request->file($file)->getClientOriginalExtension();
-                            $path = $request->file($file)->move($ruta, $name);
-                            $documen_orden=new Documento_Orden_Atencion();
-                            $documen_orden->doccita_nombre=$name;
-                            $documen_orden->doccita_url=$ruta.'/'.$name;
-                            $documen_orden->doccita_estado='1';
-                            $documen_orden->orden_id=$ordenAtencion->orden_id;
-                        }
+            $documentos=Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get();
+            foreach ($documentos as $documento) {
+                $file='file-es'.$documento->documento_id;
+
+                if ($request->file($file)) {
+                    $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
+                    if (!is_dir($ruta)) {
+                        mkdir($ruta, 0777, true);
+                    }
+                    if ($request->file($file)->isValid()) {
+                        $name = $documento->documento_nombre.'.'.$request->file($file)->getClientOriginalExtension();
+                        $path = $request->file($file)->move($ruta, $name);
+                        $documento_orden_paciente=new Documento_Orden_Paciente();
+                        //$documen_orden_paciente->docpaciente_url=$name;
+                        $documento_orden_paciente->docpaciente_url=$ruta.'/'.$name;
+                        $documento_orden_paciente->docpaciente_estado='1';
+                        $documento_orden_paciente->orden_id=$ordenAtencion->orden_id;
+                        $documento_orden_paciente->documento_id=$documento->documento_id;
+                        $documento_orden_paciente->save();
                     }
                 }
             }

@@ -111,7 +111,7 @@ class entidadProcedimientoController extends Controller
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualizacion de entidad procedimientos con id -> ' . $idEntidad, '0', 'Los procedimientos asignadas fueron -> ' . $ProcedimientopeAsignados);
             /*Fin de registro de auditoria */
-            //DB::commit();
+            DB::commit();
             return redirect('entidadProcedimiento')->with('success', 'Datos guardados exitosamente');
         } catch (\Exception $ex) {
             DB::rollBack();

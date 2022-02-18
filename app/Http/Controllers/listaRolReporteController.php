@@ -51,7 +51,7 @@ class listaRolReporteController extends Controller
     public function store(Request $request)
     { 
             $rubro=$request->get('contador');
-            $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->distinct()->get();
+            $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();
             $datos=null;
             $count=1;
             if ($rubro) {

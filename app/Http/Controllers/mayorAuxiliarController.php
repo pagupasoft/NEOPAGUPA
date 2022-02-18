@@ -75,7 +75,7 @@ class mayorAuxiliarController extends Controller
                     $datos[$count]['act'] = doubleval($datos[$count-1]['act']) + doubleval($datos[$count]['deb']) - doubleval($datos[$count]['hab']);
                     $datos[$count]['ben'] = '';
                     $datos[$count]['dia'] = $detalle->diario->diario_codigo;
-                    $datos[$count]['com'] = $detalle->detalle_comentario;
+                    $datos[$count]['com'] = $detalle->diario->diario_comentario;                   
                     $datos[$count]['suc'] = $detalle->diario->sucursal->sucursal_nombre;
                     $datos[$count]['tot'] = '0';
                     $debe = $debe + doubleval($datos[$count]['deb']);

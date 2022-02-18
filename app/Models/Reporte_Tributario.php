@@ -28,7 +28,7 @@ class Reporte_Tributario extends Model
     protected $guarded =[
     ];   
     public function scopeReportributarios($query){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('reporte_estado','=','1')->orderBy('rubro_nombre','asc');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('reporte_estado','=','1');
     }
     public function scopeReporteTributario($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('reporte_id','=',$id);

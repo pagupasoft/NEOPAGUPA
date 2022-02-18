@@ -64,7 +64,507 @@ class formulariosController extends Controller
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             } 
             if (isset($_POST['guardar'])){                
-                
+                try{   
+                    DB::beginTransaction();
+                    $reporteTributarioEli = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->get();
+                    foreach($reporteTributarioEli as $tributario){
+                        $tributario->delete();          
+                    }                   
+                    //VENTAS CON 12%       
+                    if(count($datos[0]) > 0){
+                                     
+                        for ($i = 1; $i <= count($datos[0]); ++$i){
+                            $reporteTributario = new Reporte_Tributario(); 
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));          
+                            $reporteTributario->reporte_tipo = $datos[0][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = $datos[0][$i]['casillero'];
+                            $reporteTributario->reporte_vbruto = $datos[0][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[0][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[0][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[0][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }
+                    }
+                    //VENTAS CON 0%       
+                    if(count($datos[1]) > 0){                        
+                        for ($i = 1; $i <= count($datos[1]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                            $reporteTributario->reporte_tipo = $datos[1][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = $datos[1][$i]['casillero'];
+                            $reporteTributario->reporte_vbruto = $datos[1][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[1][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[1][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[1][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                        
+                    }
+
+                    if(count($datos[2]) > 0){                        
+                       
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 0;
+                        $reporteTributario->reporte_vbruto = $datos[2][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[2][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[2][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[2][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                              
+                    }
+
+                    if(count($datos[3]) > 0){                        
+                        for ($i = 1; $i <= count($datos[3]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                    
+                            $reporteTributario->reporte_tipo = $datos[3][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = 0;
+                            $reporteTributario->reporte_vbruto = $datos[3][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[3][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[3][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[3][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                        
+                    }
+
+                    if(count($datos[4]) > 0){                        
+                       
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 434;
+                        $reporteTributario->reporte_vbruto = $datos[4][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[4][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[4][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[4][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                              
+                    }
+                    if(count($datos[20]) > 0){                        
+                       
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 0;
+                        $reporteTributario->reporte_vbruto = $datos[20][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[20][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[20][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[20][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                              
+                    }
+                    if(count($datos[21]) > 0){                        
+                       
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 499;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = 0;
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                              
+                    }
+                    if(count($datos[5]) > 0){                        
+                        for ($i = 1; $i <= count($datos[5]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                    
+                            $reporteTributario->reporte_tipo = $datos[5][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = $datos[5][$i]['casillero'];
+                            $reporteTributario->reporte_vbruto = $datos[5][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[5][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[5][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[5][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                        
+                    }
+                    if(count($datos[6]) > 0){                        
+                        for ($i = 1; $i <= count($datos[6]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                    
+                            $reporteTributario->reporte_tipo = $datos[6][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = $datos[6][$i]['casillero'];
+                            $reporteTributario->reporte_vbruto = $datos[6][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[6][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[6][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[6][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                        
+                    }
+
+                    if(count($datos[7]) > 0){                        
+                        
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 0;
+                        $reporteTributario->reporte_vbruto = $datos[7][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[7][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[7][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[7][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                             
+                    }
+                    if(count($datos[8]) > 0){                        
+                        for ($i = 1; $i <= count($datos[8]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                    
+                            $reporteTributario->reporte_tipo = $datos[8][$i]['porcentaje'];
+                            $reporteTributario->reporte_casillero = $datos[8][$i]['casillero'];
+                            $reporteTributario->reporte_vbruto = $datos[8][$i]['compraBruta'];
+                            $reporteTributario->reporte_vnc = $datos[8][$i]['nc'];
+                            $reporteTributario->reporte_vneto = $datos[8][$i]['compraNeta'];
+                            $reporteTributario->reporte_viva = $datos[8][$i]['iva'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                        
+                    }
+                    if(count($datos[9]) > 0){                        
+                        
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 534;
+                        $reporteTributario->reporte_vbruto = $datos[9][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[9][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[9][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[9][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                             
+                    }
+                    if(count($datos[10]) > 0){                        
+                        
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 0;
+                        $reporteTributario->reporte_vbruto = $datos[10][1]['compraBruta'];
+                        $reporteTributario->reporte_vnc = $datos[10][1]['nc'];
+                        $reporteTributario->reporte_vneto = $datos[10][1]['compraNeta'];
+                        $reporteTributario->reporte_viva = $datos[10][1]['iva'];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                             
+                    }
+                    //if(count($datos[22]) > 0){                        
+                        
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 601;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $datos[22];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                             
+                    //}
+                   // if(count($datos[23]) > 0){                        
+                        
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 602;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $datos[23];
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                                             
+                   //}
+                        //codigo 605
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 605;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor1');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+
+                        //codigo 606
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 606;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor2');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+
+                        //codigo 609
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 609;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor3');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+                        //codigo 612
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 612;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor4');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+
+                        //codigo 615
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 612;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor5');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+
+                        //615
+                        //if(count($datos[23]) > 0){                        
+                        
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
+                                                    
+                            $reporteTributario->reporte_tipo = 0;
+                            $reporteTributario->reporte_casillero = 615;
+                            $reporteTributario->reporte_vbruto = 0;
+                            $reporteTributario->reporte_vnc = 0;
+                            $reporteTributario->reporte_vneto = 0;
+                            $reporteTributario->reporte_viva = $datos[23];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                                                 
+                        //}
+
+                        //codigo 617
+                        $reporteTributario = new Reporte_Tributario();
+                        $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                        $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                        $reporteTributario->reporte_tipo = 0;
+                        $reporteTributario->reporte_casillero = 617;
+                        $reporteTributario->reporte_vbruto = 0;
+                        $reporteTributario->reporte_vnc = 0;
+                        $reporteTributario->reporte_vneto = 0;
+                        $reporteTributario->reporte_viva = $request->get('valor6');
+                        $reporteTributario->reporte_estado = 1;
+                        $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                        $reporteTributario->save();
+
+                        if(count($datos[12]) > 0){                        
+                            for ($i = 1; $i <= count($datos[12]); ++$i){  
+                                $reporteTributario = new Reporte_Tributario();
+                                $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                                $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                                $reporteTributario->reporte_tipo = $datos[12][$i]['cantidad'];
+                                $reporteTributario->reporte_casillero = $datos[12][$i]['codigo'];
+                                $reporteTributario->reporte_vbruto = 0;
+                                $reporteTributario->reporte_vnc = 0;
+                                $reporteTributario->reporte_vneto = $datos[12][$i]['base'];
+                                $reporteTributario->reporte_viva = $datos[12][$i]['valor'];
+                                $reporteTributario->reporte_estado = 1;
+                                $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                                $reporteTributario->save();
+                            }
+                        }
+                            if(count($datos[13]) > 0){                        
+                                for ($i = 1; $i <= count($datos[13]); ++$i){  
+                                    $reporteTributario = new Reporte_Tributario();
+                                    $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                                    $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                                    $reporteTributario->reporte_tipo = 0;
+                                    $reporteTributario->reporte_casillero = 0;
+                                    $reporteTributario->reporte_vbruto = 0;
+                                    $reporteTributario->reporte_vnc = 0;
+                                    $reporteTributario->reporte_vneto = $datos[13][1]['base'];
+                                    $reporteTributario->reporte_viva = $datos[13][1]['valor'];
+                                    $reporteTributario->reporte_estado = 1;
+                                    $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                                    $reporteTributario->save();
+                                }                         
+                        }
+
+                        if(count($datos[14]) > 0){                        
+                            for ($i = 1; $i <= count($datos[14]); ++$i){  
+                                $reporteTributario = new Reporte_Tributario();
+                                $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                                $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                                $reporteTributario->reporte_tipo = $datos[14][$i]['cantidad'];
+                                $reporteTributario->reporte_casillero = $datos[14][$i]['codigo'];
+                                $reporteTributario->reporte_vbruto = 0;
+                                $reporteTributario->reporte_vnc = 0;
+                                $reporteTributario->reporte_vneto = $datos[14][$i]['base'];
+                                $reporteTributario->reporte_viva = $datos[14][$i]['valor'];
+                                $reporteTributario->reporte_estado = 1;
+                                $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                                $reporteTributario->save();
+                            }                         
+                    }
+
+                    $reporteTributario = new Reporte_Tributario();
+                    $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                    $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                    $reporteTributario->reporte_tipo = 0;
+                    $reporteTributario->reporte_casillero = 0;
+                    $reporteTributario->reporte_vbruto = 0;
+                    $reporteTributario->reporte_vnc = 0;
+                    $reporteTributario->reporte_vneto = $datos[15][1]['base'];
+                    $reporteTributario->reporte_viva = $datos[15][1]['valor'];
+                    $reporteTributario->reporte_estado = 1;
+                    $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                    $reporteTributario->save();
+
+                    if(count($datos[16]) > 0){                        
+                        for ($i = 1; $i <= count($datos[16]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                            $reporteTributario->reporte_tipo =$datos[16][$i]['cantidad'];
+                            $reporteTributario->reporte_casillero = $datos[16][$i]['codigo'];
+                            $reporteTributario->reporte_vbruto = 0;
+                            $reporteTributario->reporte_vnc = 0;
+                            $reporteTributario->reporte_vneto = $datos[16][$i]['base'];
+                            $reporteTributario->reporte_viva = $datos[16][$i]['valor'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                         
+                    }
+
+                    $reporteTributario = new Reporte_Tributario();
+                    $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                    $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                    $reporteTributario->reporte_tipo = 0;
+                    $reporteTributario->reporte_casillero = 0;
+                    $reporteTributario->reporte_vbruto = 0;
+                    $reporteTributario->reporte_vnc = 0;
+                    $reporteTributario->reporte_vneto = $datos[17][1]['base'];
+                    $reporteTributario->reporte_viva = $datos[17][1]['valor'];
+                    $reporteTributario->reporte_estado = 1;
+                    $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                    $reporteTributario->save();
+
+                    if(count($datos[18]) > 0){                        
+                        for ($i = 1; $i <= count($datos[18]); ++$i){  
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                            $reporteTributario->reporte_tipo = $datos[18][$i]['cantidad'];
+                            $reporteTributario->reporte_casillero = $datos[18][$i]['codigo'];
+                            $reporteTributario->reporte_vbruto = 0;
+                            $reporteTributario->reporte_vnc = 0;
+                            $reporteTributario->reporte_vneto = $datos[18][$i]['base'];
+                            $reporteTributario->reporte_viva = $datos[18][$i]['valor'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+                        }                         
+                    }
+
+                    $reporteTributario = new Reporte_Tributario();
+                    $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                    $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                    $reporteTributario->reporte_tipo = 0;
+                    $reporteTributario->reporte_casillero = 0;
+                    $reporteTributario->reporte_vbruto = 0;
+                    $reporteTributario->reporte_vnc = 0;
+                    $reporteTributario->reporte_vneto = $datos[19][1]['base'];
+                    $reporteTributario->reporte_viva = $datos[19][1]['valor'];
+                    $reporteTributario->reporte_estado = 1;
+                    $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                    $reporteTributario->save();
+
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Registro de Reporte Tributario: -> '.$request->get('idNombre'),'0','con el porcentaje'.$request->get('idPorcentaje').''.'en las cuentas'.$request->get('idDepreciacion').' '.$request->get('idGasto'));
+                    /*Fin de registro de auditoria */
+                    DB::commit();
+                    return redirect('reporteTributario')->with('success','Datos guardados exitosamente');
+                }catch(\Exception $ex){
+                    DB::rollBack();
+                    return redirect('reporteTributario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+                }
             }   
         }catch(\Exception $ex){
             return redirect('reporteTributario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<form class="form-horizontal" method="POST" action="{{ route('entidadProcedimiento.guardarProcedimientos', [$cliente->cliente_id]) }}">
+<form class="form-horizontal" onsubmit="return comprobarDatos();" method="POST" action="{{ route('entidadProcedimiento.guardarProcedimientos', [$cliente->cliente_id]) }}">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
@@ -87,11 +87,9 @@
             for(var i=0; i<cont; i++){
                 $("#row_"+i).remove();
             }
-            cargarProcedimiento();   
-        }else{
-            cargarProcedimiento(); 
-                      
         }
+
+        cargarProcedimiento(); 
     }      
      
     function cargarProcedimiento(){       
@@ -210,5 +208,22 @@
                 document.getElementById("Pcobertura"+id).value = "0";
             }
     }
+
+    function comprobarDatos(){
+        var nFilas = $("#cargarItemProcedimiento tbody tr").length;
+
+        for(f=0; f<nFilas; f++){
+            if ($("#Pcheckbox"+f).is(':checked')){
+                if(parseFloat($("#Pcobertura"+f).val())==0){
+                    alert("A marcar una casilla debe ingresar la información")
+                    $("#Pcobertura"+f).focus();
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
       
 </script>

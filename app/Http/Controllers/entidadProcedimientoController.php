@@ -61,7 +61,8 @@ class entidadProcedimientoController extends Controller
             $Pcobertura = $request->get('Pcobertura');
             $idEntidad = $request->get('entidad_id');
 
-            DB::beginTransaction();
+            
+            /*
             $ProcedimientopeAsignados = '';
             for($i = 1; $i < count($check); ++$i) {
                 if ($check[$i] == 1) {
@@ -84,15 +85,37 @@ class entidadProcedimientoController extends Controller
                     }
                 }         
             }  
+            */
+
+            DB::beginTransaction();
+            $ProcedimientopeAsignados = '';
+            for($i = 1; $i < count($check); $i++) {
+                if ($check[$i] >= 0) {
+                    $entidad_procedimiento = Entidad_Procedimiento::where('entidad_id', '=', $idEntidad)->where('procedimiento_id', '=', $procedimiento[$i])->delete();
+                }
+            }
+            for ($i = 1; $i < count($check); $i++){
+                if ($check[$i] > 0) {
+                    $entidad_procedimiento = new Entidad_Procedimiento();
+                    $entidad_procedimiento->ep_tipo = $tipo[$i];
+                    $entidad_procedimiento->ep_valor = $Pcobertura[$i];
+                    $entidad_procedimiento->ep_estado = 1;
+                    $entidad_procedimiento->procedimiento_id = $procedimiento[$i];
+                    $entidad_procedimiento->entidad_id =  $idEntidad;
+                    $entidad_procedimiento->save();
+                    $ProcedimientopeAsignados = $ProcedimientopeAsignados . ' - ' . $Pcodigo[$i];
+                }
+            }
+
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualizacion de entidad procedimientos con id -> ' . $idEntidad, '0', 'Los procedimientos asignadas fueron -> ' . $ProcedimientopeAsignados);
             /*Fin de registro de auditoria */
-            DB::commit();
+            //DB::commit();
             return redirect('entidadProcedimiento')->with('success', 'Datos guardados exitosamente');
         } catch (\Exception $ex) {
             DB::rollBack();
-            return redirect('entidadProcedimiento')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.');
+            return redirect('entidadProcedimiento')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.'.$ex);
         }
     }
     /**

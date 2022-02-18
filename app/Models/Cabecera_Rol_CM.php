@@ -47,7 +47,7 @@ class Cabecera_Rol_CM extends Model
         return $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('cabecera_rol_estado','=','1')->where('cabecera_rol_id','=',$id)->orderBy('empleado.empleado_nombre','asc');
     }
     public function scopeBuscar($query, $fechaI, $fechaF, $empleado){
-        $query->join('detalle_rol_cm','detalle_rol_cm.cabecera_rol_id','=','cabecera_rol_cm.cabecera_rol_id')->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id);
+        $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado.empleado_nombre','asc');
         if($empleado != '0'){
             $query->where('empleado.empleado_id','=',$empleado);
         }   

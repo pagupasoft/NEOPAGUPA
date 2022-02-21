@@ -66,6 +66,41 @@ class listaRolReporteController extends Controller
                             }
                         }
                     }
+                    for ($i = 0; $i < count($rubro); ++$i) {
+                        if ($rubro[$i]=='TerceroPagado' or $rubro[$i]=='ReservaPagado' or $rubro[$i]=='CuartoPagado') {
+                           
+                            if($rubro[$i]=="TerceroPagado"){
+                                $total=$total+$roles->cabecera_rol_decimotercero_acumula;
+                            }
+                            elseif($rubro[$i]=="ReservaPagado"){
+                                $total=$total+$roles->cabecera_rol_fr_acumula;
+                            }
+                            elseif($rubro[$i]=="CuartoPagado"){
+                                $total=$total+$roles->cabecera_rol_decimocuarto_acumula;
+                            }
+                           
+                        }
+                        else{
+                            $rub=Rubro::findOrFail($rubro[$i]);
+                            if ($rub->rubro_nombre=="decimoTercero") {
+                                $total=$total+$roles->cabecera_rol_decimotercero;
+                            } elseif ($rub->rubro_nombre==="decimoCuarto") {
+                                $total=$total+$roles->cabecera_rol_decimocuarto;
+                            } elseif ($rub->rubro_nombre==="fondoReserva") {
+                                $total=$total+$roles->cabecera_rol_fondo_reserva;
+                            } elseif ($rub->rubro_nombre==="viaticos") {
+                                $total=$total+$roles->cabecera_rol_viaticos;
+                            } elseif ($rub->rubro_nombre==="iece") {
+                                $total=$total+$roles->cabecera_rol_iece_secap;
+                            } elseif ($rub->rubro_nombre==="aportePatronal") {
+                                $total=$total+$roles->cabecera_rol_aporte_patronal;
+                            } elseif ($rub->rubro_nombre==="vacacion") {
+                                $total=$total+$roles->cabecera_rol_vacaciones;
+                            }
+                        }
+                       
+                        
+                    }
                     $datos[$count]["total"]=$total;
                     $count++;
                 }

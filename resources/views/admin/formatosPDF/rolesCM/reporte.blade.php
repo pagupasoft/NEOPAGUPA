@@ -9,7 +9,7 @@
     <table style="white-space: normal!important;" id="tabladetalle">
         <thead>
             <tr style="border: 1px solid black;" class="centrar letra12">
-                <th>Ruc</th>
+                <th>Cedula</th>
                 <th>Nombre</th>
                 <th>Total</th>
                 

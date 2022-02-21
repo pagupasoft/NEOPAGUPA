@@ -43,25 +43,64 @@
                     <tbody>
                     @foreach($rubros as $rubro)
                         <tr class="text-center">
-                            @if($rubro->rubro_tipo =='1' || $rubro->rubro_tipo =='2' )
-                            <td> 
-                                <input class="invisible" name="idrubro[]" value="{{ $rubro->rubro_id }}" />
-                                <div class="icheck-primary d-inline">
-                                    <input type="checkbox" id="item{{$rubro->rubro_id}}"  name="contador[]"  value="{{ $rubro->rubro_id }}" > 
-                                    <label for="item{{$rubro->rubro_id}}">
-                                    </label>
-                                </div>
-                            </td>
-                            <td>{{ $rubro->rubro_descripcion}}</td>     
-                            <td>
-                            @if($rubro->rubro_tipo =='1')EGRESOS 
-                                @elseif ($rubro->rubro_tipo =='2')INGRESOS 
-                                @elseif ($rubro->rubro_tipo =='3')PROVISIONES  
-                            @endif
-                            </td> 
-                            @endif  
-                        </tr>
-                    @endforeach                        
+                                <td>   
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="item{{$rubro->rubro_id}}"  name="contador[]"  value="{{ $rubro->rubro_id }}" > 
+                                        <label for="item{{$rubro->rubro_id}}">
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>{{ $rubro->rubro_descripcion}}</td>     
+                                <td>
+                                    @if($rubro->rubro_tipo =='1')EGRESOS 
+                                        @elseif ($rubro->rubro_tipo =='2')INGRESOS 
+                                        @elseif ($rubro->rubro_tipo =='3')PROVISIONES  
+                                        @elseif ($rubro->rubro_tipo =='4')OTROS  
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr class="text-center">
+                                @endforeach     
+                                <td> 
+                                  
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="ReservaPagado"  name="contador[]"  value="ReservaPagado" > 
+                                        <label for="ReservaPagado">
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>Fondo Reserva Pagado</td>     
+                                <td>
+                                    OTROS
+                                </td>   
+                            </tr> 
+                            <tr class="text-center">
+                                <td> 
+                                    
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="TerceroPagado"  name="contador[]"  value="TerceroPagado" > 
+                                        <label for="TerceroPagado">
+                                        </label>
+                                    </div>
+                                </td>    
+                                <td>Decimo Tercero Pagado</td>     
+                                <td>
+                                    OTROS
+                                </td> 
+                            </tr>
+                            <tr class="text-center">  
+                                <td>            
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="CuartoPagado"  name="contador[]"  value="CuartoPagado" > 
+                                        <label for="CuartoPagado">
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>Decimo Cuarto Pagado</td>     
+                                <td>
+                                    OTROS
+                                </td> 
+                            </tr>           
                     </tbody>
                 </table>
             </div>

@@ -160,6 +160,7 @@ use App\Http\Controllers\atencionCitasController;
 use App\Http\Controllers\atencionRecetasController;
 use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\categoriaCostoController;
+use App\Http\Controllers\categoriaRolController;
 use App\Http\Controllers\cierreMesController;
 use App\Http\Controllers\contabilizacionMensualController;
 use App\Http\Controllers\cuadreCajaAbiertaController;
@@ -210,6 +211,7 @@ use App\Http\Controllers\listaAsientosDiariosController;
 use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
 use App\Http\Controllers\listaRolCMController;
+use App\Http\Controllers\listaRolReporteController;
 use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
 use App\Http\Controllers\reporteUtilidadController;
@@ -326,7 +328,7 @@ Route::resource('analisisLaboratorio', analisis_LaboratorioController::class)->m
 Route::resource('categoriaCosto', categoriaCostoController::class)->middleware('auth');
 Route::resource('asignacionRol', asignacionRolController::class)->middleware('auth');
 Route::resource('listaRolCM', listaRolCMController::class)->middleware('auth');
-
+Route::resource('categoriaRol', categoriaRolController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -381,6 +383,7 @@ Route::resource('anularRetencion', anularRetencionesController::class)->middlewa
 Route::resource('rolindividualCM', rolIndividualCostaMarketController::class)->middleware('auth');
 Route::resource('rolConsolidadoCM', rolConsolidadoCostaMarketController::class)->middleware('auth');
 Route::resource('roloperativoCM', rolOperactivoCostaMarketController::class)->middleware('auth');
+Route::resource('reporteRol', listaRolReporteController::class)->middleware('auth');
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
 Route::resource('tipoExamen', tipoExamenController::class)->middleware('auth');
@@ -459,6 +462,7 @@ Route::get('/transportista/{id}/eliminar', [transportistaController::class, 'del
 Route::get('/rangoDocumento/{id}/eliminar', [rangoDocumentoController::class, 'delete'])->middleware('auth');
 Route::get('/cuenta/{id}/eliminar', [cuentaController::class, 'delete'])->middleware('auth');
 Route::get('/categoriaProducto/{id}/eliminar', [categoriaProductoController::class, 'delete'])->middleware('auth');
+Route::get('/categoriaRol/{id}/eliminar', [categoriaRolController::class, 'delete'])->middleware('auth');
 Route::get('/marcaProducto/{id}/eliminar', [marcaProductoController::class, 'delete'])->middleware('auth');
 Route::get('/tipoSujeto/{id}/eliminar', [tipoSujetoController::class, 'delete'])->middleware('auth');
 Route::get('/tipoIdentificacion/{id}/eliminar', [tipoIdentificacionController::class, 'delete'])->middleware('auth');

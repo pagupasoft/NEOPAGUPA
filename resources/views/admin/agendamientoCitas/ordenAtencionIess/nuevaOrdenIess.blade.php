@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<form class="form-horizontal" method="POST" action="{{url("ordenAtencionIess")}}" >
+<form class="form-horizontal" method="POST" action="{{url("ordenAtencionIess")}}" enctype="multipart/form-data">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
@@ -104,7 +104,7 @@
                     </div>
                     <label for="idServicio" class="col-sm-2 col-form-label">Fecha y Hora de la Cita :</label>
                     <div class="col-sm-2">
-                        <input id="idFechaHora" type="text" class="form-control" readonly required>
+                        <input id="idFechaHora" type="text" class="form-control"  autocomplete="off" required>
                         <input type="hidden" id="fechaCitaID" name="fechaCitaID" value="" required/>
                         <input type="hidden" id="horaCitaID" name="horaCitaID" value="" required/>
                     </div>
@@ -199,37 +199,41 @@
 <script src="{{ asset('admin/js/ajax/autocompletePacienteIess.js') }}"></script>
 @endsection
 <script>
-    function validararchivos() {
-            $(document).on('change','input[type="file"]',function(){
-
-        var fileName = this.files[0].name;
-        var fileSize = this.files[0].size;
-    
-        if(fileSize > 1000000){
-            alert('El tamaño maximo del archivo es de 1MB');
-            this.value = '';
-            this.files[0].name = '';
-        }else{
-            // recuperamos la extensión del archivo
-            var ext = fileName.split('.').pop();
-            
-            // Convertimos en minúscula porque 
-            // la extensión del archivo puede estar en mayúscula
-            ext = ext.toLowerCase();
-        
-            // console.log(ext);
-            switch (ext) {
-                case 'jpg':
-                case 'jpeg':
-                case 'png':
-                case 'pdf': break;
-                default:
-                    alert('Solo puede subir Imagenes o PDF');
-                    this.value = ''; // reset del valor
-                    this.files[0].name = '';
-            }
-        }
+    document.getElementById("idFechaHora").setAttribute('style','background-color: #e9ecef')
+    document.getElementById("idFechaHora").addEventListener("keypress", function(event){
+        event.preventDefault()
     });
+
+    function validararchivos() {
+        $(document).on('change','input[type="file"]',function(){
+            var fileName = this.files[0].name;
+            var fileSize = this.files[0].size;
+        
+            if(fileSize > 1000000){
+                alert('El tamaño maximo del archivo es de 1MB');
+                this.value = '';
+                this.files[0].name = '';
+            }else{
+                // recuperamos la extensión del archivo
+                var ext = fileName.split('.').pop();
+                
+                // Convertimos en minúscula porque 
+                // la extensión del archivo puede estar en mayúscula
+                ext = ext.toLowerCase();
+            
+                // console.log(ext);
+                switch (ext) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'pdf': break;
+                    default:
+                        alert('Solo puede subir Imagenes o PDF');
+                        this.value = ''; // reset del valor
+                        this.files[0].name = '';
+                }
+            }
+        });
     }
     function cargarOA(){  
         $.ajax({

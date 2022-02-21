@@ -580,6 +580,8 @@ Route::post('/excelAnticipoCliente', [anticipoClienteController::class, 'CargarE
 
 Route::get('/excelRubro', [RubroController::class, 'excelRubro'])->middleware('auth');
 Route::post('/excelRubro', [RubroController::class, 'CargarExcelRubro'])->middleware('auth');
+Route::get('/excelCheque', [listaChequeController::class, 'excelCheque'])->middleware('auth');
+Route::post('/excelCheque', [listaChequeController::class, 'CargarExcelCheque'])->middleware('auth');
 
 Route::get('/excelProveedor', [proveedorController::class, 'excelProveedor'])->middleware('auth');
 Route::post('/excelProveedor', [proveedorController::class, 'CargarExcelProveedor'])->middleware('auth');

@@ -77,7 +77,8 @@ class activoFijoController extends Controller
                     $validargrupo=trim($array[0][$i][2]);
                     $validarsucursal=trim($array[0][$i][1]);
                     $validacionp=Producto::ProductoCodigo($validarprodcuto)->first();
-                    $validaciong=Grupo_Activo::GrupoNombre($validargrupo, $validarsucursal)->first(); 
+                    $validaciong=Grupo_Activo::GrupoNombre($validargrupo, $validarsucursal)->first();
+                    
                     $activo=new Activo_Fijo();
                     $activo->activo_fecha_inicio=($array[0][$i][0]);
                     $activo->activo_fecha_documento=($array[0][$i][0]);
@@ -90,8 +91,11 @@ class activoFijoController extends Controller
                     $activo->activo_depreciacion_anual=($array[0][$i][10]);
                     $activo->activo_depreciacion_acumulada=($array[0][$i][11]);
                     $activo->activo_descripcion=($array[0][$i][12]);
-                    $activo->grupo_id =$validaciong->grupo_id;
-                    $activo->activo_depreciacion=$validaciong->grupo_porcentaje;
+                    $activo->activo_depreciacion=0;
+                    if($validaciong){
+                        $activo->grupo_id =$validaciong->grupo_id;
+                        $activo->activo_depreciacion=$validaciong->grupo_porcentaje;
+                    }
                     $activo->activo_estado='1';
                     $activo->producto_id =$validacionp->producto_id;
                     

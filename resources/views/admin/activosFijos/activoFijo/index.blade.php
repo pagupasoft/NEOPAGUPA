@@ -60,12 +60,12 @@
                         <a href="{{ url("activoFijo/{$activoFijo->activo_id}/eliminar")}}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                     </td>
                     <td>{{ $activoFijo->activo_fecha_inicio}}</td>
-                    <td><a href="{{ url("asientoDiario/ver/{$activoFijo->diario->diario_codigo}")}}" target="_blank">{{ $activoFijo->diario->diario_codigo}}</a></td>
+                    <td>@if(isset($activoFijo->diario_id))<a href="{{ url("asientoDiario/ver/{$activoFijo->diario->diario_codigo}")}}" target="_blank">{{ $activoFijo->diario->diario_codigo}}</a> @endif</td>
                     <td>{{ $activoFijo->producto->producto_nombre}}</td>
-                    <td>{{ $activoFijo->grupoActivo->grupo_nombre}}</td>
+                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_nombre}} @endif</td>
                     <td>{{ $activoFijo->activo_descripcion}}</td>
                     <td>{{ number_format($activoFijo->activo_valor,2)}}</td>
-                    <td>{{ $activoFijo->grupoActivo->grupo_porcentaje}}</td>
+                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_porcentaje}} @endif</td>
                     <td>{{ number_format($activoFijo->activo_base_depreciar,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_vida_util,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_valor_util,2)}}</td>

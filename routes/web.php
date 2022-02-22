@@ -573,6 +573,9 @@ Route::get('/excelTransportista', [transportistaController::class, 'excelTranspo
 Route::post('/excelTransportista', [transportistaController::class, 'CargarExcel'])->middleware('auth');
 Route::get('/excelAnticipoEmpleado', [anticipoEmpleadoController::class, 'excelAnticipoEmpleado'])->middleware('auth');
 Route::post('/excelAnticipoEmpleado', [anticipoEmpleadoController::class, 'CargarExcel'])->middleware('auth');
+Route::get('/excelActivoFijo', [activoFijoController::class, 'excelActivoFijo'])->middleware('auth');
+Route::post('/excelActivoFijo', [activoFijoController::class, 'CargarExcel'])->middleware('auth');
+
 Route::get('/excelAnticipoProveedor', [anticipoProveedorController::class, 'excelAnticipo'])->middleware('auth');
 Route::post('/excelAnticipoProveedor', [anticipoProveedorController::class, 'CargarExcel'])->middleware('auth');
 Route::get('/excelAnticipoCliente', [anticipoClienteController::class, 'excelAnticipo'])->middleware('auth');

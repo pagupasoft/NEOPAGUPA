@@ -158,6 +158,7 @@ use App\Http\Controllers\vacacionController;
 use App\Http\Controllers\signosVitalesController;
 use App\Http\Controllers\atencionCitasController;
 use App\Http\Controllers\atencionRecetasController;
+use App\Http\Controllers\cargarBalancesController;
 use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\categoriaCostoController;
 use App\Http\Controllers\categoriaRolController;
@@ -330,6 +331,7 @@ Route::resource('categoriaCosto', categoriaCostoController::class)->middleware('
 Route::resource('asignacionRol', asignacionRolController::class)->middleware('auth');
 Route::resource('listaRolCM', listaRolCMController::class)->middleware('auth');
 Route::resource('categoriaRol', categoriaRolController::class)->middleware('auth');
+Route::resource('cargaBalances', cargarBalancesController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -575,6 +577,9 @@ Route::get('/excelAnticipoEmpleado', [anticipoEmpleadoController::class, 'excelA
 Route::post('/excelAnticipoEmpleado', [anticipoEmpleadoController::class, 'CargarExcel'])->middleware('auth');
 Route::get('/excelActivoFijo', [activoFijoController::class, 'excelActivoFijo'])->middleware('auth');
 Route::post('/excelActivoFijo', [activoFijoController::class, 'CargarExcel'])->middleware('auth');
+
+Route::get('/excelBalances', [balanceComprobacionController::class, 'excelBalances'])->middleware('auth');
+Route::post('/excelBalances', [balanceComprobacionController::class, 'CargarExcel'])->middleware('auth');
 
 Route::get('/excelAnticipoProveedor', [anticipoProveedorController::class, 'excelAnticipo'])->middleware('auth');
 Route::post('/excelAnticipoProveedor', [anticipoProveedorController::class, 'CargarExcel'])->middleware('auth');

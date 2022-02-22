@@ -219,6 +219,7 @@ use App\Http\Controllers\repoteBancarioController;
 use App\Http\Controllers\rolConsolidadoCostaMarketController;
 use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
+use App\Http\Controllers\RolReporteDetalladoController;
 use App\Models\Cabecera_Rol_CM;
 use App\Models\Movimiento_Producto;
 use App\Models\Punto_Emision;
@@ -384,6 +385,7 @@ Route::resource('rolindividualCM', rolIndividualCostaMarketController::class)->m
 Route::resource('rolConsolidadoCM', rolConsolidadoCostaMarketController::class)->middleware('auth');
 Route::resource('roloperativoCM', rolOperactivoCostaMarketController::class)->middleware('auth');
 Route::resource('reporteRol', listaRolReporteController::class)->middleware('auth');
+Route::resource('rolreporteDetallado', RolReporteDetalladoController::class)->middleware('auth');
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
 Route::resource('tipoExamen', tipoExamenController::class)->middleware('auth');

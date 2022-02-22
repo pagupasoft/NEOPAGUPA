@@ -7,7 +7,7 @@
         <div class="card-header">
             <div class="row">
                 <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS - Documento</b></h2>
+                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS - Documentos</b></h2>
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">

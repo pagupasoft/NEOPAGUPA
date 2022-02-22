@@ -29,6 +29,10 @@ class Banco extends Model
         return $query->join('banco_lista', 'banco_lista.banco_lista_id','=','banco.banco_lista_id')->where('banco_lista.empresa_id','=',Auth::user()->empresa_id)->where('banco_id','=',$id);
         
     }
+    public function scopeBancoXbancolista($query, $id){
+        return $query->join('banco_lista', 'banco_lista.banco_lista_id','=','banco.banco_lista_id')->where('banco_lista.empresa_id','=',Auth::user()->empresa_id)->where('banco.banco_lista_id','=',$id);
+        
+    }
     public function bancoLista()
     {
         return $this->belongsTo(Banco_Lista::class, 'banco_lista_id', 'banco_lista_id');

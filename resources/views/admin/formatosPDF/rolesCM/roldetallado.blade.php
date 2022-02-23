@@ -85,7 +85,7 @@
                                 <td style="border: 1px solid black;">{{ number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>
                             @endif  
                         @endforeach
-                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['total']}}</td>
+                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['total'],2)}}</td>
                         
                     </tr>
                 @endfor

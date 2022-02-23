@@ -119,7 +119,8 @@ class RolReporteDetalladoController extends Controller
                 $matriz[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
                 $matriz[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
                 
-    
+                $matriz[$count]["Eviaticos"]='Pagado';
+                $matriz[$count]["viaticos"]=$roles->cabecera_rol_viaticos;
                 $matriz[$count]["Eiece"]='Pagado';
                 $matriz[$count]["iece"]=$roles->cabecera_rol_iece_secap;
                 $matriz[$count]["EaportePatronal"]='Pagado';
@@ -196,7 +197,8 @@ class RolReporteDetalladoController extends Controller
                 $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
                 $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
                 
-
+                $datos[$count]["Eviaticos"]='Pagado';
+                $datos[$count]["viaticos"]=$roles->cabecera_rol_viaticos;
                 $datos[$count]["Eiece"]='Pagado';
                 $datos[$count]["iece"]=$roles->cabecera_rol_iece_secap;
                 $datos[$count]["EaportePatronal"]='Pagado';
@@ -280,7 +282,8 @@ class RolReporteDetalladoController extends Controller
             $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
             $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
             
-
+            $datos[$count]["Eviaticos"]='Pagado';
+            $datos[$count]["viaticos"]=$roles->cabecera_rol_viaticos;
             $datos[$count]["Eiece"]='Pagado';
             $datos[$count]["iece"]=$roles->cabecera_rol_iece_secap;
             $datos[$count]["EaportePatronal"]='Pagado';

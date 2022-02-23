@@ -213,6 +213,7 @@ use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
 use App\Http\Controllers\listaRolCMController;
 use App\Http\Controllers\listaRolReporteController;
+use App\Http\Controllers\modificarRolController;
 use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
 use App\Http\Controllers\reporteUtilidadController;
@@ -388,6 +389,7 @@ Route::resource('rolConsolidadoCM', rolConsolidadoCostaMarketController::class)-
 Route::resource('roloperativoCM', rolOperactivoCostaMarketController::class)->middleware('auth');
 Route::resource('reporteRol', listaRolReporteController::class)->middleware('auth');
 Route::resource('rolreporteDetallado', RolReporteDetalladoController::class)->middleware('auth');
+Route::resource('modificacionRoles', modificarRolController::class)->middleware('auth');
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
 Route::resource('tipoExamen', tipoExamenController::class)->middleware('auth');

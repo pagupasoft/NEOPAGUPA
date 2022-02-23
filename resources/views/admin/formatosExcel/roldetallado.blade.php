@@ -63,17 +63,17 @@
                 <td >{{ $dato[$i]['nombre'] }}</td>
                 @foreach($rubros as $rubro)
                     @if($rubro->rubro_tipo =='2')
-                        <td >{{$dato[$i][$rubro->rubro_nombre]}}</td>  
+                        <td >{{number_format($dato[$i][$rubro->rubro_nombre],2)}}</td>  
                     @endif 
                 @endforeach
                 <td >{{ $dato[$i]['totalingresos'] }}</td>
                 @foreach($rubros as $rubro)
                     @if($rubro->rubro_tipo =='1')
-                        <td >{{$dato[$i][$rubro->rubro_nombre]}}</td>  
+                        <td >{{number_format($dato[$i][$rubro->rubro_nombre],2)}}</td>  
                     @endif 
                 @endforeach
-                <td >{{ $dato[$i]['totalegresos'] }}</td>
-                <td >{{ $dato[$i]['totalingresos']-$dato[$i]['totalegresos'] }}</td>
+                <td >{{ number_format($dato[$i]['totalegresos'],2) }}</td>
+                <td >{{ number_format($dato[$i]['totalingresos']-$dato[$i]['totalegresos'],2) }}</td>
                 @foreach($rubros as $rubro) 
                     @if($rubro->rubro_tipo =='3')
                     <?php $vari='E'.$rubro->rubro_nombre; ?>
@@ -82,10 +82,10 @@
                 @endforeach
                 @foreach($rubros as $rubro) 
                     @if($rubro->rubro_tipo =='4')
-                        <td >{{ $dato[$i][$rubro->rubro_nombre]}}</td>
+                        <td >{{ number_format($dato[$i][$rubro->rubro_nombre],2)}}</td>
                     @endif  
                 @endforeach
-                <td >{{ $dato[$i]['total']}}</td>
+                <td >{{ number_format($dato[$i]['total'],2)}}</td>
             </tr>
             @endfor
         @endif  

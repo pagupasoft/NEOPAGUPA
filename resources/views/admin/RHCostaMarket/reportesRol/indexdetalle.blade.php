@@ -9,8 +9,8 @@
         <form class="form-horizontal"  method="POST" action="{{ url("rolreporteDetallado") }} ">
         @csrf 
             <div class="float-right">
-                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>     
-                    <button type="submit" id="excel" name="excel" class="btn btn-primary"><i class="fas fa-print"></i></button>                 
+                            <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                            <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>               
             </div>   
             <div class="form-group row">
                 <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
@@ -35,7 +35,7 @@
                 </div>   
             </div>
             <div class="card-body table-responsive p-0" style="height: 600px;">
-                <table class="table table-bordered table-hover dataTable dtr-inline">
+                <table id="example33" class="table table-bordered table-hover table-responsive sin-salto">
                     <thead>
                         <tr class="text-center">
                         <th colspan="2"></th>

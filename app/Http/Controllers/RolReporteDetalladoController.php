@@ -26,7 +26,11 @@ class RolReporteDetalladoController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $empleado=Cabecera_Rol_CM::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
             $rubros=Rubro::Rubrostipos()->get();
-            return view('admin.RHCostaMarket.reportesRol.indexdetalle',['rubros'=>$rubros,'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
+            $ingre=count(Rubro::Rubrotipo('2')->get());
+            $egre=count(Rubro::Rubrotipo('1')->get());
+            $bene=count(Rubro::Rubrotipo('3')->get());
+            $otro=count(Rubro::Rubrotipo('4')->get());
+            return view('admin.RHCostaMarket.reportesRol.indexdetalle',['ingre'=>$ingre,'egre'=>$egre,'bene'=>$bene,'otros'=>$otro,'rubros'=>$rubros,'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

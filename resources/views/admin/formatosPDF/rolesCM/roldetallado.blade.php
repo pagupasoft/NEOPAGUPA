@@ -8,6 +8,25 @@
     <table style="white-space: normal!important;" id="tabladetalle">
         <thead>
             <tr style="border: 1px solid black;" class="centrar letra12">
+                <th colspan="2"></th>
+                @if($ingre>0)
+            
+                    <th colspan="{{$ingre+1}}">Ingresos</th>  
+                @endif
+                @if($egre>0)
+                    <th colspan="{{$egre+1}}">Egresos</th> 
+                @endif
+                <th ></th> 
+                @if($bene>0)
+                    <th colspan="{{$bene}}">Beneficios</th> 
+                @endif
+                @if($otros>0)
+                    <th colspan="{{$otros}}">Otros</th> 
+                @endif
+                <th ></th> 
+            </tr>
+            
+            <tr style="border: 1px solid black;" class="centrar letra12">
                 <th style="font-size: 7px;">Cedula</th>
                 <th style="font-size: 7px;">Nombre</th>
                 @foreach($rubros as $rubro)
@@ -44,28 +63,29 @@
                         <td style="border: 1px solid black;">{{ $datos[$i]['nombre'] }}</td>
                         @foreach($rubros as $rubro)
                             @if($rubro->rubro_tipo =='2')
-                                <td style="border: 1px solid black;">{{$datos[$i][$rubro->rubro_nombre]}}</td>  
+                                <td style="border: 1px solid black;">{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>  
                             @endif 
                         @endforeach
-                        <td style="border: 1px solid black;">{{ $datos[$i]['totalingresos'] }}</td>
+                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['totalingresos'],2) }}</td>
                         @foreach($rubros as $rubro)
                             @if($rubro->rubro_tipo =='1')
-                                <td style="border: 1px solid black;">{{$datos[$i][$rubro->rubro_nombre]}}</td>  
+                                <td style="border: 1px solid black;">{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>  
                             @endif 
                         @endforeach
-                        <td style="border: 1px solid black;">{{ $datos[$i]['totalegresos'] }}</td>
-                        <td style="border: 1px solid black;">{{ $datos[$i]['totalingresos']-$datos[$i]['totalegresos'] }}</td>
+                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['totalegresos'],2) }}</td>
+                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['totalingresos']-$datos[$i]['totalegresos'],2) }}</td>
                         @foreach($rubros as $rubro) 
                             @if($rubro->rubro_tipo =='3')
-                                <td style="border: 1px solid black;">{{ $datos[$i][$rubro->rubro_nombre]}}</td>
+                                <?php $vari='E'.$rubro->rubro_nombre; ?>
+                                <td  @if(isset($datos[$i][$vari]))  @if($datos[$i][$vari]=='Pagado')  style="background:  #70B1F7;" @endif  @if($datos[$i][$vari]=='Acumulado')  style="background:  #B1E2DD;" @endif @endif>  {{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>
                             @endif  
                         @endforeach
                         @foreach($rubros as $rubro) 
                             @if($rubro->rubro_tipo =='4')
-                                <td style="border: 1px solid black;">{{ $datos[$i][$rubro->rubro_nombre]}}</td>
+                                <td style="border: 1px solid black;">{{ number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>
                             @endif  
                         @endforeach
-                        <td style="border: 1px solid black;">{{ $datos[$i]['total']}}</td>
+                        <td style="border: 1px solid black;">{{ number_format($datos[$i]['total'],2)}}</td>
                         
                     </tr>
                 @endfor

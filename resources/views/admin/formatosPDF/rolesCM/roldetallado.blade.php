@@ -76,7 +76,8 @@
                         <td style="border: 1px solid black;">{{ $datos[$i]['totalingresos']-$datos[$i]['totalegresos'] }}</td>
                         @foreach($rubros as $rubro) 
                             @if($rubro->rubro_tipo =='3')
-                                <td style="border: 1px solid black;">{{ $datos[$i][$rubro->rubro_nombre]}}</td>
+                                <?php $vari='E'.$rubro->rubro_nombre; ?>
+                                <td  @if(isset($datos[$i][$vari]))  @if($datos[$i][$vari]=='Pagado')  style="background:  #70B1F7;" @endif  @if($datos[$i][$vari]=='Acumulado')  style="background:  #B1E2DD;" @endif @endif>  {{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>
                             @endif  
                         @endforeach
                         @foreach($rubros as $rubro) 

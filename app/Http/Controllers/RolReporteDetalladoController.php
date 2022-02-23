@@ -91,6 +91,10 @@ class RolReporteDetalladoController extends Controller
                     }
 
                 }
+                $matriz[$count]["fondoReserva"]=0.00;
+                $matriz[$count]["decimoTercero"]=0.00;
+    
+                $matriz[$count]["decimoCuarto"]=0.00;
                 if ($roles->cabecera_rol_fr_acumula>0) {
                     $matriz[$count]["EfondoReserva"]='Acumulado';
                     $matriz[$count]["fondoReserva"]=$roles->cabecera_rol_fr_acumula;
@@ -169,6 +173,10 @@ class RolReporteDetalladoController extends Controller
                     }
 
                 }
+                $datos[$count]["fondoReserva"]=0.00;
+                $datos[$count]["decimoTercero"]=0.00;
+    
+                $datos[$count]["decimoCuarto"]=0.00;
                 if ($roles->cabecera_rol_fr_acumula>0) {
                     $datos[$count]["EfondoReserva"]='Acumulado';
                     $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fr_acumula;
@@ -224,6 +232,7 @@ class RolReporteDetalladoController extends Controller
     
     public function buscar(Request $request)
     { 
+        try{
         $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
         $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
         
@@ -252,6 +261,11 @@ class RolReporteDetalladoController extends Controller
                 }
 
             }
+            $datos[$count]["fondoReserva"]=0.00;
+            $datos[$count]["decimoTercero"]=0.00;
+
+            $datos[$count]["decimoCuarto"]=0.00;
+
             $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
             $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
             if ($roles->cabecera_rol_fr_acumula>0) {
@@ -295,6 +309,9 @@ class RolReporteDetalladoController extends Controller
         } 
         
         return view('admin.RHCostaMarket.reportesRol.indexdetalle',['ingre'=>$ingre,'egre'=>$egre,'bene'=>$bene,'otros'=>$otro,'datos'=>$datos,'rubros'=>$rubros,'fechadesde'=>$request->get('fecha_desde'),'fechahasta'=>$request->get('fecha_hasta'),'nombre_empleado'=>$request->get('nombre_empleado'),'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
+        }catch(\Exception $ex){
+            return redirect('rolreporteDetallado')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
     
 

@@ -108,8 +108,10 @@
                                 @foreach($rubros as $rubro) 
                                     @if($rubro->rubro_tipo =='3')
                                         <?php $vari='E'.$rubro->rubro_nombre; ?>
-                                        <input type="hidden" value="{{$datos[$i][$vari]}}" >
-                                        <td  @if(isset($datos[$i][$vari]))  @if($datos[$i][$vari]=='Pagado')  style="background:  #70B1F7;" @endif  @if($datos[$i][$vari]=='Acumulado')  style="background:  #B1E2DD;" @endif @endif>{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td><input type="hidden" name="detalle[]" value="{{$datos[$i][$vari]}}"><input type="hidden" name="detalle[]" value="{{number_format($datos[$i][$rubro->rubro_nombre],2)}}">
+                                        @if(isset($datos[$i][$vari]))
+                                            <input type="hidden" value="{{$datos[$i][$vari]}}" >
+                                        @endif
+                                        <td  @if(isset($datos[$i][$vari]))  @if($datos[$i][$vari]=='Pagado')  style="background:  #70B1F7;" @endif  @if($datos[$i][$vari]=='Acumulado')  style="background:  #B1E2DD;" @endif @endif>  {{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td>
                                     @endif  
                                 @endforeach
                                 @foreach($rubros as $rubro) 

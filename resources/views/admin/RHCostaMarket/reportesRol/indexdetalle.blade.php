@@ -34,7 +34,17 @@
                 <button type="submit" id="buscar" name="buscar" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
                 </div>   
             </div>
+            
             <div class="card-body table-responsive p-0" style="height: 600px;">
+            <div class="d-flex flex-row justify-content-end">
+                <span class="mr-2">
+                <i class="fas fa-square text-pagado"></i> Pagado
+                </span>
+
+                <span>
+                <i class="fas fa-square text-acumulado"></i> Acumulado
+                </span>
+            </div>
                 <table id="example33" class="table table-bordered table-hover table-responsive sin-salto">
                     <thead>
                         <tr class="text-center">

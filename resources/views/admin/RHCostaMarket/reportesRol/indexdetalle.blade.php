@@ -9,9 +9,8 @@
         <form class="form-horizontal"  method="POST" action="{{ url("rolreporteDetallado") }} ">
         @csrf 
             <div class="float-right">
-                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
-
-                   
+                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>     
+                    <button type="submit" id="excel" name="excel" class="btn btn-primary"><i class="fas fa-print"></i></button>                 
             </div>   
             <div class="form-group row">
                 <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
@@ -36,67 +35,89 @@
                 </div>   
             </div>
             <div class="card-body table-responsive p-0" style="height: 600px;">
-                <table id="example1" class="table table-head-fixed text-nowrap">
+                <table class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                         <tr class="text-center">
+                        <th colspan="2"></th>
+                        @if($ingre>0)
+                       
+                            <th colspan="{{$ingre+1}}">Ingresos</th>  
+                        @endif
+                        @if($egre>0)
+                            <th colspan="{{$egre+1}}">Egresos</th> 
+                        @endif
+                        <th ></th> 
+                        @if($bene>0)
+                            <th colspan="{{$bene}}">Beneficios</th> 
+                        @endif
+                        @if($otros>0)
+                            <th colspan="{{$otros}}">Otros</th> 
+                        @endif
+                        <th ></th> 
+                        </tr>
+                        <tr class="text-center">
+                        <input type="hidden" name="contador[]" value="Cedula">
                             <th>Cedula</th>
+                            <input type="hidden" name="contador[]" value="Nombre">
                             <th>Nombre</th> 
                             @foreach($rubros as $rubro)
                                 @if($rubro->rubro_tipo =='2')
-                                <th>{{ $rubro->rubro_descripcion}}</th>  
+                                <th>{{ $rubro->rubro_descripcion}}</th><input type="hidden" name="contador[]" value="{{ $rubro->rubro_descripcion}}">  
                                 @endif 
                             @endforeach
-                            <th>Total Ingresos</th> 
+                            <th>Total Ingresos</th> <input type="hidden" name="contador[]" value="Total Ingresos">
                             @foreach($rubros as $rubro)
                                 @if($rubro->rubro_tipo =='1')
-                                <th>{{ $rubro->rubro_descripcion}}</th>  
+                                <th>{{ $rubro->rubro_descripcion}}</th> <input type="hidden" name="contador[]" value="{{ $rubro->rubro_descripcion}}">   
                                 @endif 
                             @endforeach
-                            <th>Total Egresos</th> 
-                            <th>Total</th>
+                            <th>Total Egresos</th> <input type="hidden" name="contador[]" value="Total Egresos">
+                            <th>Total</th><input type="hidden" name="contador[]" value="Total Egresos">
                             @foreach($rubros as $rubro) 
                                 @if($rubro->rubro_tipo =='3')
-                                <th>{{ $rubro->rubro_descripcion}}</th>  
+                                <th>{{ $rubro->rubro_descripcion}}</th><input type="hidden" name="contador[]" value="{{ $rubro->rubro_descripcion}}"> 
                                 @endif 
                             @endforeach
                             @foreach($rubros as $rubro) 
                                 @if($rubro->rubro_tipo =='4')
-                                    <th>{{ $rubro->rubro_descripcion}}</th>  
+                                    <th>{{ $rubro->rubro_descripcion}}</th>  <input type="hidden" name="contador[]" value="{{ $rubro->rubro_descripcion}}">
                                 @endif  
                             @endforeach
-                            <th>Total A Pagar</th> 
+                            <th>Total A Pagar</th> <input type="hidden" name="contador[]" value="Total A Pagar">
                         </tr>
                     </thead>
                     <tbody>
                         @if(isset($datos))
                             @for ($i = 1; $i <= count($datos); ++$i)  
                             <tr>  
-                                <td class="text-center">{{ $datos[$i]['cedula'] }}</td>
-                                <td class="text-center">{{ $datos[$i]['nombre'] }}</td>
+                                <td class="text-center">{{ $datos[$i]['cedula'] }}</td> <input type="hidden" name="detalle[]" value="{{ $datos[$i]['cedula'] }}">
+                                <td class="text-center">{{ $datos[$i]['nombre'] }}</td><input type="hidden" name="detalle[]" value="{{ $datos[$i]['nombre'] }}">
                                 @foreach($rubros as $rubro)
                                     @if($rubro->rubro_tipo =='2')
-                                        <td class="text-center">{{$datos[$i][$rubro->rubro_nombre]}}</td>  
+                                        <td class="text-center">{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i][$rubro->rubro_nombre],2)}}">  
                                     @endif 
                                 @endforeach
-                                <td class="text-center">{{ $datos[$i]['totalingresos'] }}</td>
+                                <td class="text-center">{{number_format($datos[$i]['totalingresos'],2) }}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i]['totalingresos'],2) }}">
                                 @foreach($rubros as $rubro)
                                     @if($rubro->rubro_tipo =='1')
-                                        <td class="text-center">{{$datos[$i][$rubro->rubro_nombre]}}</td>  
+                                        <td class="text-center">{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td> <input type="hidden" name="detalle[]" value="{{number_format($datos[$i][$rubro->rubro_nombre],2)}}"> 
                                     @endif 
                                 @endforeach
-                                <td class="text-center">{{ $datos[$i]['totalegresos'] }}</td>
-                                <td class="text-center">{{ $datos[$i]['totalingresos']-$datos[$i]['totalegresos'] }}</td>
+                                <td class="text-center">{{number_format($datos[$i]['totalegresos'] ,2)}}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i]['totalegresos'] ,2)}}">
+                                <td class="text-center">{{number_format($datos[$i]['totalingresos']-$datos[$i]['totalegresos'],2) }}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i]['totalingresos']-$datos[$i]['totalegresos'],2) }}">
                                 @foreach($rubros as $rubro) 
                                     @if($rubro->rubro_tipo =='3')
-                                        <td class="text-center">{{ $datos[$i][$rubro->rubro_nombre]}}</td>
+                                        <?php $vari='E'.$rubro->rubro_nombre; ?>
+                                        <input type="hidden" value="{{$datos[$i][$vari]}}" >
+                                        <td  @if(isset($datos[$i][$vari]))  @if($datos[$i][$vari]=='Pagado')  style="background:  #70B1F7;" @endif  @if($datos[$i][$vari]=='Acumulado')  style="background:  #B1E2DD;" @endif @endif>{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td><input type="hidden" name="detalle[]" value="{{$datos[$i][$vari]}}"><input type="hidden" name="detalle[]" value="{{number_format($datos[$i][$rubro->rubro_nombre],2)}}">
                                     @endif  
                                 @endforeach
                                 @foreach($rubros as $rubro) 
                                     @if($rubro->rubro_tipo =='4')
-                                        <td class="text-center">{{ $datos[$i][$rubro->rubro_nombre]}}</td>
+                                        <td class="text-center" >{{number_format($datos[$i][$rubro->rubro_nombre],2)}}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i][$rubro->rubro_nombre],2)}}">
                                     @endif  
                                 @endforeach
-                                <td class="text-center">{{ $datos[$i]['total']}}</td>
+                                <td class="text-center">{{number_format($datos[$i]['total'],2)}}</td><input type="hidden" name="detalle[]" value="{{number_format($datos[$i]['total'],2)}}">
                             </tr>
                             @endfor
                         @endif     

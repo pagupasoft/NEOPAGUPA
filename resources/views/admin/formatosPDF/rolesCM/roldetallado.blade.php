@@ -8,6 +8,25 @@
     <table style="white-space: normal!important;" id="tabladetalle">
         <thead>
             <tr style="border: 1px solid black;" class="centrar letra12">
+                <th colspan="2"></th>
+                @if($ingre>0)
+            
+                    <th colspan="{{$ingre+1}}">Ingresos</th>  
+                @endif
+                @if($egre>0)
+                    <th colspan="{{$egre+1}}">Egresos</th> 
+                @endif
+                <th ></th> 
+                @if($bene>0)
+                    <th colspan="{{$bene}}">Beneficios</th> 
+                @endif
+                @if($otros>0)
+                    <th colspan="{{$otros}}">Otros</th> 
+                @endif
+                <th ></th> 
+            </tr>
+            
+            <tr style="border: 1px solid black;" class="centrar letra12">
                 <th style="font-size: 7px;">Cedula</th>
                 <th style="font-size: 7px;">Nombre</th>
                 @foreach($rubros as $rubro)

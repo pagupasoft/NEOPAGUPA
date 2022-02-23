@@ -64,49 +64,88 @@ class RolReporteDetalladoController extends Controller
     public function excel(Request $request){
         try{ 
             $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();
+            $matriz=null;
             $datos=null;
-            $count=1;  
+            $count=1;
+            
+            $ingre=count(Rubro::Rubrotipo('2')->get());
+            $egre=count(Rubro::Rubrotipo('1')->get());
+            $bene=count(Rubro::Rubrotipo('3')->get());
+            $otro=count(Rubro::Rubrotipo('4')->get());
             $rubros=Rubro::Rubrostipos()->get();
-            $resultado=null;
-
             foreach ($rol as $roles) {
-                $datos[$count]["cedula"]=$roles->empleado->empleado_cedula;
-                $datos[$count]["nombre"]=$roles->empleado->empleado_nombre;
+                $matriz[$count]["cedula"]=$roles->empleado->empleado_cedula;
+                $matriz[$count]["nombre"]=$roles->empleado->empleado_nombre;
                 foreach ($rubros as $rubro) {
-                    $datos[$count]["tipo"]=$rubro->rubro_tipo;
+                    $matriz[$count]["tipo"]=$rubro->rubro_tipo;
                     $nombre=$rubro->rubro_nombre;
-                    $datos[$count][$nombre]=0;
+                    $matriz[$count][$nombre]=0;
                     foreach ($roles->detalles as $detalle) {
                         if ($detalle->rubro_id==$rubro->rubro_id) {
-                            $datos[$count][$nombre]=$detalle->detalle_rol_valor;
+                            $matriz[$count][$nombre]=$detalle->detalle_rol_valor;
                         }
                     }
 
                 }
-                $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
-                $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
-                $datos[$count]["ReservaPagado"]=$roles->cabecera_rol_fr_acumula;
-                $datos[$count]["TerceroPagado"]=$roles->cabecera_rol_decimotercero_acumula;
-                $datos[$count]["CuartoPagado"]=$roles->cabecera_rol_decimocuarto_acumula;
-                $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
-                $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
-                $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
-                $datos[$count]["iece"]=$roles->cabecera_rol_iece_secap;
-                $datos[$count]["aportePatronal"]=$roles->cabecera_rol_aporte_patronal;
-                $datos[$count]["vacacion"]=$roles->cabecera_rol_vacaciones;
-                $datos[$count]["total"]=$roles->cabecera_rol_pago;
+                if ($roles->cabecera_rol_fr_acumula>0) {
+                    $matriz[$count]["EfondoReserva"]='Acumulado';
+                    $matriz[$count]["fondoReserva"]=$roles->cabecera_rol_fr_acumula;
+                }
+                if ($roles->cabecera_rol_fondo_reserva>0) {
+                    $matriz[$count]["EfondoReserva"]='Pagado';
+                    $matriz[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
+                }
+                if ($roles->cabecera_rol_decimotercero_acumula>0) {
+                    $matriz[$count]["EdecimoTercero"]='Acumulado';
+                    $matriz[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero_acumula;
+                }
+                if ($roles->cabecera_rol_decimotercero>0) {
+                    $matriz[$count]["EdecimoTercero"]='Pagado';
+                    $matriz[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
+                }
+                if ($roles->cabecera_rol_decimocuarto_acumula>0) {
+                    $matriz[$count]["EdecimoCuarto"]='Acumulado';
+                    $matriz[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto_acumula;
+                }
+                if ($roles->cabecera_rol_decimocuarto>0) {
+                    $matriz[$count]["EdecimoCuarto"]='Pagado';
+                    $matriz[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
+                }
+    
+                $matriz[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
+                $matriz[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
+                
+    
+                $matriz[$count]["Eiece"]='Pagado';
+                $matriz[$count]["iece"]=$roles->cabecera_rol_iece_secap;
+                $matriz[$count]["EaportePatronal"]='Pagado';
+                $matriz[$count]["aportePatronal"]=$roles->cabecera_rol_aporte_patronal;
+                $matriz[$count]["Evacacion"]='Pagado';
+                $matriz[$count]["vacacion"]=$roles->cabecera_rol_vacaciones;
+                $matriz[$count]["total"]=$roles->cabecera_rol_pago;
+   
                 $count++;
             } 
-            $resultado[1]=$rubros;
-            $resultado[2]=$datos;
             
-            return Excel::download(new ViewExcel('admin.formatosExcel.roldetallado',$resultado),'NEOPAGUPA  Sistema Contable.xls');
+            $datos[1]=$rubros;
+            $datos[2]=$matriz;
+
+            $datos[3]=$ingre;
+            $datos[4]=$egre;
+            $datos[5]=$bene;
+            $datos[6]=$otro;
+
+            return Excel::download(new ViewExcel('admin.formatosExcel.roldetallado',$datos), 'NEOPAGUPA  Sistema Contable.xlsx');
         }catch(\Exception $ex){
             return redirect('rolreporteDetallado')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
     public function pdf(Request $request){
         try{ 
+            $ingre=count(Rubro::Rubrotipo('2')->get());
+            $egre=count(Rubro::Rubrotipo('1')->get());
+            $bene=count(Rubro::Rubrotipo('3')->get());
+            $otro=count(Rubro::Rubrotipo('4')->get());
             $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();
             $datos=null;
             $count=1;  
@@ -125,16 +164,40 @@ class RolReporteDetalladoController extends Controller
                     }
 
                 }
+                if ($roles->cabecera_rol_fr_acumula>0) {
+                    $datos[$count]["EfondoReserva"]='Acumulado';
+                    $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fr_acumula;
+                }
+                if ($roles->cabecera_rol_fondo_reserva>0) {
+                    $datos[$count]["EfondoReserva"]='Pagado';
+                    $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
+                }
+                if ($roles->cabecera_rol_decimotercero_acumula>0) {
+                    $datos[$count]["EdecimoTercero"]='Acumulado';
+                    $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero_acumula;
+                }
+                if ($roles->cabecera_rol_decimotercero>0) {
+                    $datos[$count]["EdecimoTercero"]='Pagado';
+                    $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
+                }
+                if ($roles->cabecera_rol_decimocuarto_acumula>0) {
+                    $datos[$count]["EdecimoCuarto"]='Acumulado';
+                    $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto_acumula;
+                }
+                if ($roles->cabecera_rol_decimocuarto>0) {
+                    $datos[$count]["EdecimoCuarto"]='Pagado';
+                    $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
+                }
+
                 $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
                 $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
-                $datos[$count]["ReservaPagado"]=$roles->cabecera_rol_fr_acumula;
-                $datos[$count]["TerceroPagado"]=$roles->cabecera_rol_decimotercero_acumula;
-                $datos[$count]["CuartoPagado"]=$roles->cabecera_rol_decimocuarto_acumula;
-                $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
-                $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
-                $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
+                
+
+                $datos[$count]["Eiece"]='Pagado';
                 $datos[$count]["iece"]=$roles->cabecera_rol_iece_secap;
+                $datos[$count]["EaportePatronal"]='Pagado';
                 $datos[$count]["aportePatronal"]=$roles->cabecera_rol_aporte_patronal;
+                $datos[$count]["Evacacion"]='Pagado';
                 $datos[$count]["vacacion"]=$roles->cabecera_rol_vacaciones;
                 $datos[$count]["total"]=$roles->cabecera_rol_pago;
                 $count++;
@@ -144,7 +207,7 @@ class RolReporteDetalladoController extends Controller
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
-            $view =  \View::make('admin.formatosPDF.rolesCM.roldetallado', ['rubros'=>$rubros,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa]);
+            $view =  \View::make('admin.formatosPDF.rolesCM.roldetallado', ['ingre'=>$ingre,'egre'=>$egre,'bene'=>$bene,'otros'=>$otro,'rubros'=>$rubros,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa]);
             $nombreArchivo = 'reporteroldetallado';
             return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
 
@@ -163,11 +226,15 @@ class RolReporteDetalladoController extends Controller
         $count=1;
         $empleado=Cabecera_Rol_CM::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
        
-        
+        $ingre=count(Rubro::Rubrotipo('2')->get());
+        $egre=count(Rubro::Rubrotipo('1')->get());
+        $bene=count(Rubro::Rubrotipo('3')->get());
+        $otro=count(Rubro::Rubrotipo('4')->get());
         $rubros=Rubro::Rubrostipos()->get();
         foreach ($rol as $roles) {
             $datos[$count]["cedula"]=$roles->empleado->empleado_cedula;
             $datos[$count]["nombre"]=$roles->empleado->empleado_nombre;
+            
             foreach ($rubros as $rubro) {
                 $datos[$count]["tipo"]=$rubro->rubro_tipo;
                 $nombre=$rubro->rubro_nombre;
@@ -181,20 +248,46 @@ class RolReporteDetalladoController extends Controller
             }
             $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
             $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
-            $datos[$count]["ReservaPagado"]=$roles->cabecera_rol_fr_acumula;
-            $datos[$count]["TerceroPagado"]=$roles->cabecera_rol_decimotercero_acumula;
-            $datos[$count]["CuartoPagado"]=$roles->cabecera_rol_decimocuarto_acumula;
-            $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
-            $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
-            $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
+            if ($roles->cabecera_rol_fr_acumula>0) {
+                $datos[$count]["EfondoReserva"]='Acumulado';
+                $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fr_acumula;
+            }
+            if ($roles->cabecera_rol_fondo_reserva>0) {
+                $datos[$count]["EfondoReserva"]='Pagado';
+                $datos[$count]["fondoReserva"]=$roles->cabecera_rol_fondo_reserva;
+            }
+            if ($roles->cabecera_rol_decimotercero_acumula>0) {
+                $datos[$count]["EdecimoTercero"]='Acumulado';
+                $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero_acumula;
+            }
+            if ($roles->cabecera_rol_decimotercero>0) {
+                $datos[$count]["EdecimoTercero"]='Pagado';
+                $datos[$count]["decimoTercero"]=$roles->cabecera_rol_decimotercero;
+            }
+            if ($roles->cabecera_rol_decimocuarto_acumula>0) {
+                $datos[$count]["EdecimoCuarto"]='Acumulado';
+                $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto_acumula;
+            }
+            if ($roles->cabecera_rol_decimocuarto>0) {
+                $datos[$count]["EdecimoCuarto"]='Pagado';
+                $datos[$count]["decimoCuarto"]=$roles->cabecera_rol_decimocuarto;
+            }
+
+            $datos[$count]["totalingresos"]=$roles->cabecera_rol_total_ingresos;
+            $datos[$count]["totalegresos"]=$roles->cabecera_rol_total_egresos;
+            
+
+            $datos[$count]["Eiece"]='Pagado';
             $datos[$count]["iece"]=$roles->cabecera_rol_iece_secap;
+            $datos[$count]["EaportePatronal"]='Pagado';
             $datos[$count]["aportePatronal"]=$roles->cabecera_rol_aporte_patronal;
+            $datos[$count]["Evacacion"]='Pagado';
             $datos[$count]["vacacion"]=$roles->cabecera_rol_vacaciones;
             $datos[$count]["total"]=$roles->cabecera_rol_pago;
             $count++;
         } 
         
-        return view('admin.RHCostaMarket.reportesRol.indexdetalle',['datos'=>$datos,'rubros'=>$rubros,'fechadesde'=>$request->get('fecha_desde'),'fechahasta'=>$request->get('fecha_hasta'),'nombre_empleado'=>$request->get('nombre_empleado'),'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
+        return view('admin.RHCostaMarket.reportesRol.indexdetalle',['ingre'=>$ingre,'egre'=>$egre,'bene'=>$bene,'otros'=>$otro,'datos'=>$datos,'rubros'=>$rubros,'fechadesde'=>$request->get('fecha_desde'),'fechahasta'=>$request->get('fecha_hasta'),'nombre_empleado'=>$request->get('nombre_empleado'),'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
     }
     
 

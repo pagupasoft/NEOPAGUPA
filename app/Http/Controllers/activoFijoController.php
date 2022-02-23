@@ -80,8 +80,12 @@ class activoFijoController extends Controller
                     $validaciong=Grupo_Activo::GrupoNombre($validargrupo, $validarsucursal)->first();
                     
                     $activo=new Activo_Fijo();
-                    $activo->activo_fecha_inicio=($array[0][$i][0]);
-                    $activo->activo_fecha_documento=($array[0][$i][0]);
+                    $Excel_date2 = $array[0][$i][0]; 
+                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
+                    $Excel_date2 = 25569 + ($unix_date2 / 86400);
+                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
+                    $activo->activo_fecha_inicio = gmdate("Y-m-d", $unix_date2);
+                    $activo->activo_fecha_documento=gmdate("Y-m-d", $unix_date2);
                     $activo->activo_valor=($array[0][$i][5]);
                     $activo->activo_valor2=($array[0][$i][5]);
                     $activo->activo_vida_util=($array[0][$i][6]);

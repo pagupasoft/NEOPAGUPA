@@ -84,6 +84,17 @@ class Orden_Atencion extends Model
     {
         return $this->belongsTo(Especialidad::class, 'especialidad_id', 'especialidad_id');
     }
+
+    public function scopeOrdenCitaDisponible($query, $medico_id, $especialidad_id, $fecha1, $fecha2){
+        return $query->where('medico_id','=',$medico_id
+                    )->where('especialidad_id','=',$especialidad_id
+                    )->where('orden_fecha', "=", "'$fecha1'"
+                    )->whereBetween('orden_hora', ["'$fecha1'","'$fecha2'"]);
+
+                    //->whereRaw('created_at >= DATE_SUB(NOW(), INTERVAL 3 HOUR)
+    }
+
+
     public function scopeOrdenesByFechaSuc($query,$fechaI,$fechaF,$sucursal){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
                     )->where('orden_fecha','>=',$fechaI

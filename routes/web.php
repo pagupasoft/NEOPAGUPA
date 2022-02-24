@@ -857,6 +857,7 @@ Route::get('/puntomision/searchN/{ide}', [puntoEmisionController::class, 'buscar
 Route::post('/procedimiento/searchN', [procedimientoEspecialidadController::class, 'buscarBy'])->middleware('auth');
 Route::post('/analisis/searchN', [examenController::class, 'buscarByExamen'])->middleware('auth');
 Route::get('/medicinas/searchN/{buscar}', [medicamentoController::class, 'buscarBy'])->middleware('auth');
+Route::get('/imagenes/searchN/{buscar}', [ImagenController::class, 'buscarBy'])->middleware('auth');
 
 Route::get('/nuevartencion/searchN/{ide}', [transaccionCompraController::class, 'buscarBy'])->middleware('auth');
 Route::get('/proveedores/searchN/{buscar}', [proveedorController::class, 'buscarByProveedor'])->middleware('auth');
@@ -877,6 +878,10 @@ Route::post('/servicios/searchN', [productoController::class, 'servicios'])->mid
 Route::get('/especilidadesPaciente/searchN/{id}', [pacienteController::class, 'buscarByidPaciente'])->middleware('auth');
 Route::get('/ordenes/searchN/{id}', [ordenAtencionController::class, 'buscarByFecha'])->middleware('auth');
 Route::get('/horas/searchN/{id}', [ordenAtencionController::class, 'buscarByDia'])->middleware('auth');
+
+Route::get('/horarios/getDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');
+Route::get('/horarios/getOrdenesMedico', [ordenAtencionIessController::class, 'getOrdenesMedico'])->middleware('auth');
+
 Route::get('/sucursales/searchN/{id}', [sucursalController::class, 'buscarByIdSucursal'])->middleware('auth');
 Route::get('/paciente/searchN/{buscar}', [pacienteController::class, 'buscarByNombrePaciente'])->middleware('auth');
 Route::post('/documentoAnulado/searchN', [documentoAnuladoController::class, 'buscarDocumento'])->middleware('auth');

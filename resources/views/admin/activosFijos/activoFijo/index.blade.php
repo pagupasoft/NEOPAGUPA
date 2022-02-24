@@ -177,7 +177,7 @@
                             </div>
                             <label for="idDiario" class="col-sm-1 col-form-label">#Diario</label>
                             <div class="col-sm-4">
-                                <select class="custom-select select2" id="idDiario" name="idDiario" onchange="cargarFechaDiario();">
+                                <select class="custom-select select2" id="idDiario" name="idDiario" onchange="cargarFechaDiario();" disabled>
                                     <option value="" label>--Seleccione un Diario--</option>
                                     @foreach($diarios as $diario)
                                         <option value="{{$diario->diario_id}}">{{$diario->diario_codigo}}</option>
@@ -352,6 +352,7 @@ function desactivarFactura(){
     document.getElementById("idBaseDepreciar").value = 0;
     document.getElementById("idVidaUtil").value = 0;    
     document.getElementById("idDepreciacionMensual").value = 0;
+    document.getElementById("idDiario").disabled = false;
 
 
 
@@ -367,8 +368,7 @@ function activarFactura(){
         document.getElementById("idVidaUtil").value = 0;
         document.getElementById("idDepreciacionMensual").value = 0;
         document.getElementById("idProveedor").disabled = false;
-        
-
+        document.getElementById("idDiario").disabled = true;
     }
 }
 function limpiarGrupo(){
@@ -386,11 +386,11 @@ function cargarFechaFactura(){
             buscar: document.getElementById("idFactura").value
         },        
         success: function(data3){
-            document.getElementById("idValor").value = Number(data3.transaccion_total).toFixed(2);
+            document.getElementById("idValor").value = Number(data3.transaccion_subtotal).toFixed(2);
             document.getElementById("idFecha").value = "";                                        
             document.getElementById("idFecha").value = data3.transaccion_fecha;
-            $('#idDiario').val(data3.diario_id);
-            $('#idDiario').trigger('change');
+           /* $('#idDiario').val(data3.diario_id);
+            $('#idDiario').trigger('change');*/
 
         },
     });

@@ -60,7 +60,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get(); 
             $banco=Banco_Lista::BancoListas()->get();
-            $empleados=Empleado::EmpleadosSucursal($request->get('sucursal_id'))->get();
+            $empleados=Empleado::EmpleadosBySucursal($request->get('sucursal_id'))->get();
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();
             return view('admin.recursosHumanos.empleado.index',['sucursales'=>Sucursal::sucursales()->get(),'sucursalC'=>$request->get('sucursal_id'),'parametrizacionContable'=>$parametrizacionContable,'empleados'=>$empleados,'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipos'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
      
@@ -259,7 +259,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get(); 
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::EmpleadoEstado($id)->first();   
+            $empleado=Empleado::Empleado($id)->first();   
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();     
             if($empleado){
                 return view('admin.recursosHumanos.empleado.editar',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado,'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -282,7 +282,6 @@ class empleadoController extends Controller
     {
         try{
             DB::beginTransaction();
-         
             $empleado = Empleado::findOrFail($id);
             $empleado->empleado_cedula = $request->get('idCedula');
             $empleado->empleado_nombre = $request->get('idNombre');
@@ -350,15 +349,9 @@ class empleadoController extends Controller
             }else{
                 $empleado->empleado_observacion = '';
             }
-           
-            if($request->get('idEstado')== "on"){
-                $empleado->empleado_estado ="1";
-            }else{
-                $empleado->empleado_estado ="0";
-            }
-
             $empleado->empleado_fecha_afiliacion = $request->get('idFechaAfi');
             $empleado->empleado_fecha_inicioFR = $request->get('idFechaIni');            
+            $empleado->empleado_estado=1;
             $empleado->empleado_cuenta_tipo = $request->get('idCuantaTipo');
             $empleado->empleado_cuenta_numero = $request->get('idCuenta');
             $empleado->cargo_id = $request->get('idCargo');

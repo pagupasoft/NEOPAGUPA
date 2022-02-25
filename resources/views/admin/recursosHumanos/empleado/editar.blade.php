@@ -433,9 +433,9 @@
                         <div class="col-sm-9">
                             <div class="col-form-label custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                                 @if($empleado->empleado_estado=="1")
-                                <input type="checkbox" class="custom-control-input" id="idEstado" name="idEstado" value="1" checked>
+                                <input type="checkbox" class="custom-control-input" id="idEstado" name="idEstado" checked>
                                 @else
-                                <input type="checkbox" class="custom-control-input" id="idEstado" name="idEstado" value="0">
+                                <input type="checkbox" class="custom-control-input" id="idEstado" name="idEstado">
                                 @endif
                                 <label class="custom-control-label" for="idEstado"></label>
                             </div>

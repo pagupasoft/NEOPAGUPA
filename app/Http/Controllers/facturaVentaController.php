@@ -836,8 +836,9 @@ class facturaVentaController extends Controller
                     $movimientoProducto->save();
                     $general->registrarAuditoria('Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> '.$cantidad[$i].' con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
                     /*********************************************************************/
+                
+                    $detalleFV->movimiento()->associate($movimientoProducto);
                 }
-                $detalleFV->movimiento()->associate($movimientoProducto);
                 $factura->detalles()->save($detalleFV);
                 $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> '.$cantidad[$i].' a un precio unitario de -> '.$pu[$i]);
 
@@ -849,7 +850,9 @@ class facturaVentaController extends Controller
                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                 $detalleDiario->detalle_conciliacion = '0';
                 $detalleDiario->detalle_estado = '1';
-                $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                if($inventarioResevado == false){
+                    $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                }
                 $detalleDiario->cuenta_id = $producto->producto_cuenta_venta;
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$producto->cuentaVenta->cuenta_numero.' en el haber por un valor de -> '.$total[$i]);
@@ -858,26 +861,38 @@ class facturaVentaController extends Controller
                     if($producto->producto_tipo == '1'){
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
-                        $detalleDiario->detalle_haber = $movimientoProducto->movimiento_costo_promedio;
+                        if($inventarioResevado == false){
+                            $detalleDiario->detalle_haber = $movimientoProducto->movimiento_costo_promedio;
+                        }else{
+                            $detalleDiario->detalle_haber = $producto->producto_precio_costo;
+                        }
                         $detalleDiario->detalle_comentario = 'P/R COSTO DE INVENTARIO POR VENTA DE PRODUCTO '.$producto->producto_codigo;
                         $detalleDiario->detalle_tipo_documento = 'FACTURA';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';
                         $detalleDiario->detalle_estado = '1';
                         $detalleDiario->cuenta_id = $producto->producto_cuenta_inventario;
-                        $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        if($inventarioResevado == false){
+                            $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        }
                         $diarioC->detalles()->save($detalleDiario);
                         $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el haber por un valor de -> '.$detalleDiario->detalle_haber);
                         
                         $detalleDiario = new Detalle_Diario();
-                        $detalleDiario->detalle_debe = $movimientoProducto->movimiento_costo_promedio;
+                        if($inventarioResevado == false){
+                            $detalleDiario->detalle_debe = $movimientoProducto->movimiento_costo_promedio;
+                        }else{
+                            $detalleDiario->detalle_debe = $producto->producto_precio_costo;
+                        }
                         $detalleDiario->detalle_haber = 0.00;
                         $detalleDiario->detalle_comentario = 'P/R COSTO DE INVENTARIO POR VENTA DE PRODUCTO '.$producto->producto_codigo;
                         $detalleDiario->detalle_tipo_documento = 'FACTURA';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';
                         $detalleDiario->detalle_estado = '1';
-                        $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        if($inventarioResevado == false){
+                            $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        }
                         $parametrizacionContable = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
                         $detalleDiario->cuenta_id = $parametrizacionContable->cuenta_id;
                         $diarioC->detalles()->save($detalleDiario);

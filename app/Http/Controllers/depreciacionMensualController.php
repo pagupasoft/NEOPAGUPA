@@ -80,7 +80,7 @@ class depreciacionMensualController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $activoFijos=Activo_Fijo::activoFijoxSucursal($request->get('idsucursal'))            
-            ->where('activo_fijo.activo_fecha_inicio','<=', $last_day)
+            ->where('activo_fijo.activo_fecha_inicio','<', $last_day)            
             ->where('activo_fijo.activo_estado','=','1')->get();           
             $count = 1;            
             $diarioexiste = Diario::DiarioDepreciacion("CDAF",date("m", strtotime($last_day)), date("Y", strtotime($last_day)), $request->get('idsucursal'))->first();
@@ -140,7 +140,11 @@ class depreciacionMensualController extends Controller
                         //Tabla de movimientos de caja 
                         $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;               
                         $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                        $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        if(isset($activoFijo->diario->diario_codigo)){
+                            $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        }else{
+                            $activosFijosMatriz[$count]['Diario'] = 'NO DIARIO';
+                        }  
                         $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                         $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                         $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;
@@ -165,7 +169,11 @@ class depreciacionMensualController extends Controller
                         //Tabla de movimientos de caja        
                         $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;        
                         $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                        $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        if(isset($activoFijo->diario->diario_codigo)){
+                            $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        }else{
+                            $activosFijosMatriz[$count]['Diario'] = 'NO DIARIO';
+                        }  
                         $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                         $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                         $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;
@@ -185,7 +193,11 @@ class depreciacionMensualController extends Controller
                         //Tabla de movimientos de caja 
                         $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;               
                         $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                        $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        if(isset($activoFijo->diario->diario_codigo)){
+                            $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                        }else{
+                            $activosFijosMatriz[$count]['Diario'] = 'NO DIARIO';
+                        }  
                         $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                         $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                         $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;
@@ -437,8 +449,7 @@ class depreciacionMensualController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $activoFijos=Activo_Fijo::activoFijoxSucursal($request->get('idsucursal'))           
-            ->where('activo_fijo.activo_fecha_inicio','<=', $last_day)
-            ->where('activo_fijo.activo_estado','=','1')->get();           
+            ->where('activo_fijo.activo_fecha_inicio','<=', $last_day)->get();           
             $count = 1;            
             foreach($activoFijos as $activoFijo){  
                 $rsDepreAcum = Depreciacion_Activo_Fijo::SumactivoDepreciacion($activoFijo->activo_id, $last_day)->first();
@@ -499,7 +510,11 @@ class depreciacionMensualController extends Controller
                 //Tabla de movimientos de caja 
                 $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;               
                 $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                if(isset($activoFijo->diario->diario_codigo)){
+                    $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
+                }else{
+                    $activosFijosMatriz[$count]['Diario'] = 'NO DIARIO';
+                }  
                 $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                 $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                 $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;

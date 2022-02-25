@@ -875,6 +875,7 @@ Route::get('/puntomision/searchN/{ide}', [puntoEmisionController::class, 'buscar
 Route::post('/procedimiento/searchN', [procedimientoEspecialidadController::class, 'buscarBy'])->middleware('auth');
 Route::post('/analisis/searchN', [examenController::class, 'buscarByExamen'])->middleware('auth');
 Route::get('/medicinas/searchN/{buscar}', [medicamentoController::class, 'buscarBy'])->middleware('auth');
+Route::get('/imagenes/searchN/{buscar}', [ImagenController::class, 'buscarBy'])->middleware('auth');
 
 Route::get('/nuevartencion/searchN/{ide}', [transaccionCompraController::class, 'buscarBy'])->middleware('auth');
 Route::get('/proveedores/searchN/{buscar}', [proveedorController::class, 'buscarByProveedor'])->middleware('auth');
@@ -970,6 +971,9 @@ Route::get('/anticipoProveedor/new/{id}', [anticipoProveedorController::class, '
 Route::get('/anticipoEmpleado/new/{id}', [anticipoEmpleadoController::class, 'nuevo'])->middleware('auth');
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 
+//BuscarOrarios
+Route::get('/horarios/getDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');
+Route::get('/horarios/getOrdenesMedico', [ordenAtencionIessController::class, 'getOrdenesMedico'])->middleware('auth');
 
 //Crear ROLES
 Route::get('/rolConsolidado/new/{id}', [rolConsolidadoController::class, 'nuevo'])->middleware('auth');

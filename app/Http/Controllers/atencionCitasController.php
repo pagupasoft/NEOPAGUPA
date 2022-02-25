@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Medico;
 use App\Models\Medico_Especialidad;
 use App\Models\Empleado;
+use App\Models\Empresa;
 use App\Models\Proveedor;
 use App\Models\Signos_Vitales;
 use App\Http\Controllers\Controller;
@@ -39,6 +40,9 @@ use App\Models\Sucursal;
 use App\Models\Tipo_Examen;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PDF;
+use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class atencionCitasController extends Controller
 {
@@ -291,10 +295,10 @@ class atencionCitasController extends Controller
 
             $atencion->orden_estado='4';
             $atencion->save();
-            $auditoria->registrarAuditoria('Actualizacion de Examen a estado Atendido Numero'.$atencion->orden_numero.' Con Expediente '.$request->get('expediente_id'),$atencion->orden_id, '');
             /*Inicio de registro de auditoria */
-            
+            $auditoria->registrarAuditoria('Actualizacion de Examen a estado Atendido Numero'.$atencion->orden_numero.' Con Expediente '.$request->get('expediente_id'),$atencion->orden_id, '');
             /*Fin de registro de auditoria */
+
             DB::commit();
             $redirect = redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
             
@@ -303,8 +307,6 @@ class atencionCitasController extends Controller
             if(isset($AnexoPdfDir)) $redirect->with('diario', $AnexoPdfDir);
 
             return $redirect;
-        }catch(\Exception $ex){
-            return redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
         } catch (\Exception $ex) {
             DB::rollBack();
             return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');

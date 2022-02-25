@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}">
+<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data">
 @csrf
 <div class="card card-secondary">
     <div class="card-header">
@@ -301,17 +301,36 @@
                             <!--Imagenes-->
                             <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
                                 <br>
+
+                                
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
                                         <div class="table-responsive">
-                                        @include ('admin.citasMedicas.atencionCitas.itemImagen')
+                                            @include ('admin.citasMedicas.atencionCitas.itemImagen')
+
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-5 col-lg-6" style="margin-bottom: 0px;">
+                                                    <label class="ml-5">Busqueda:</label>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-1 text-right">
+                                                                <input id="idImagen" name="idImagen" type="hidden" value="0">
+                                                                <buttom id="btAnadirImagen" class="btn btn-success btn-sm mt-1" onclick="agregarImagen()"><i class="fa fa-plus"></i></buttom>
+                                                            </div>
+                                                            <div class="col-md-10">
+                                                                <input id="buscarImagen" name="buscarImagen" type="text" class="form-control" placeholder="Buscar Imagen" >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <table id="cargarItemImagen" class="table table-striped table-hover" style="margin-bottom: 6px;">
                                                 <thead>
                                                     <tr class="letra-blanca fondo-azul-claro text-center">
                                                         <th></th>
                                                         <th>Imagenes</th>
                                                         <th>Indicaciones</th>
-                                                        <th><a class="btn btn-default btn-sm float-right" style="padding: 2px 8px;" data-toggle="modal" data-target="#modal-imagenes"><i class="fa fa-plus"></i></a></th>                                             
+                                                        <!--th><a class="btn btn-default btn-sm float-right" style="padding: 2px 8px;" data-toggle="modal" data-target="#modal-imagenes"><i class="fa fa-plus"></i></a></th-->
                                                         <th width="10"></th>
                                                     </tr>
                                                 </thead>
@@ -340,13 +359,14 @@
                                                                     <tbody>
                                                                         <?php $cont2 = 1;?>
                                                                         @foreach($imagenes as $imagen)
+                                                                            <?php $cont2 = $cont2 + 1;?>
+
                                                                             <tr class="text-left"  id="row_<?php echo $cont2; ?>">                                                                                
                                                                                 <td>
                                                                                     <a class="btn btn-success btn-sm" onclick="agregarItemImagen(<?php echo $cont2; ?>)"><i class="fa fa-plus"></i></a>&nbsp;&nbsp;{{ $imagen->imagen_nombre }}                                                                               
                                                                                     <input class="invisible"  id="imagenNombreAux_<?php echo $cont2; ?>" name="imagenNombreAux[]" value="{{ $imagen->imagen_nombre }}" />
                                                                                     <input class="invisible" id="imagenIdAux_<?php echo $cont2; ?>" name="imagenIdAux[]" value="{{ $imagen->imagen_id }}" />
                                                                                 </td>
-                                                                                <?php $cont2 = $cont2 + 1;?>                                   
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -374,66 +394,43 @@
                             
                             <div class="tab-pane fade show" id="subirimagenes" role="tabpanel" aria-labelledby="subirimagenes-tab">  
                                 <br> 
-                                <div class="col-12 col-sm-12">
+
                                 <div id="actions" class="row">
-                                    <div class="col-lg-6">
+                                    <div class="offset-md-2 col-lg-8">
                                         <div class="btn-group w-100">
-                                        <span class="btn btn-success col fileinput-button">
-                                            <i class="fas fa-plus"></i>
-                                            <span>Add files</span>
-                                        </span>
-                                        <button type="submit" class="btn btn-primary col start">
-                                            <i class="fas fa-upload"></i>
-                                            <span>Start upload</span>
-                                        </button>
-                                        <button type="reset" class="btn btn-warning col cancel">
-                                            <i class="fas fa-times-circle"></i>
-                                            <span>Cancel upload</span>
-                                        </button>
+                                            <span class="btn btn-success col fileinput-button">
+                                                <i class="fas fa-plus"></i>
+                                                <span>Para añadir imagenes del Portapapeles pulse:  Ctrl+V</span>
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6 d-flex align-items-center">
-                                        <div class="fileupload-process w-100">
-                                        <div id="total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                    <div class="table table-striped files" id="previews">
-                                    <div id="template" class="row mt-2">
-                                        <div class="col-auto">
-                                            <span class="preview"><img src="data:," alt="" data-dz-thumbnail /></span>
-                                        </div>
-                                        <div class="col d-flex align-items-center">
-                                            <p class="mb-0">
-                                            <span class="lead" data-dz-name></span>
-                                            (<span data-dz-size></span>)
-                                            </p>
-                                            <strong class="error text-danger" data-dz-errormessage></strong>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                            <div class="progress progress-striped active w-100" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                                        <div class="col-lg-6 d-flex align-items-center">
+                                            <div class="fileupload-process w-100">
+                                                <div id="total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                                    <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-auto d-flex align-items-center">
-                                        <div class="btn-group">
-                                            <button class="btn btn-primary start">
-                                            <i class="fas fa-upload"></i>
-                                            <span>Start</span>
-                                            </button>
-                                            <button data-dz-remove class="btn btn-warning cancel">
-                                            <i class="fas fa-times-circle"></i>
-                                            <span>Cancel</span>
-                                            </button>
-                                            <button data-dz-remove class="btn btn-danger delete">
-                                            <i class="fas fa-trash"></i>
-                                            <span>Delete</span>
-                                            </button>
+                                        
+                                        <div class="table table-striped files" id="previews">
+                                            <div id="template" style="visibility: hidden" class="mt-2">
+                                                <div class="col-md-12" id="marco:,">
+                                                    <div class="row">
+                                                        <button onclick="borrarMarcoImagen('marcodelete:,')" class="btn btn-xs btn-danger">  <i class="fa fa-trash" aria-hidden="true"></i>  </button>
+                                                        &nbsp&nbsp&nbsp
+                                                        <img style="max-height:45px; border: 1px solid" src="data:," alt="" data-dz-thumbnail />
+                                                        <div class="col d-flex align-items-center">
+                                                            <p class="mb-0">
+                                                            <span class="lead" data-dz-name></span>
+                                                            (<span>tamano:,</span>)
+                                                            </p>
+                                                            <strong class="error text-danger">error:,</strong>
+                                                        </div>
+
+                                                        <!--input type="file" name="imageFile[]" id="imageFile_0:," style="visibility: hidden"-->
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -457,63 +454,76 @@
 
 @section('scriptAjax')
 <script src="{{ asset('admin/js/ajax/autocompleteProductoMedicamento.js') }}"></script>
+<script src="{{ asset('admin/js/ajax/autocompleteImagen.js') }}"></script>
 
 @endsection
+
 <script>
-    function cargarmetodo(){
-                // DropzoneJS Demo Code Start
-        Dropzone.autoDiscover = false
+    cantidadImagenes=0;
 
-        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
-        var previewNode = document.querySelector("#template")
-        previewNode.id = ""
-        var previewTemplate = previewNode.parentNode.innerHTML
-        previewNode.parentNode.removeChild(previewNode)
+    //const fileInput = document.getElementById("tttt");
 
-        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-        url: "/target-url", // Set the url
-        thumbnailWidth: 80,
-        thumbnailHeight: 80,
-        parallelUploads: 20,
-        previewTemplate: previewTemplate,
-        autoQueue: false, // Make sure the files aren't queued until manually added
-        previewsContainer: "#previews", // Define the container to display the previews
-        clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
-        })
-
-        myDropzone.on("addedfile", function(file) {
-        // Hookup the start button
-        file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file) }
-        })
-
-        // Update the total progress bar
-        myDropzone.on("totaluploadprogress", function(progress) {
-        document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
-        })
-
-        myDropzone.on("sending", function(file) {
-        // Show the total progress bar when upload starts
-        document.querySelector("#total-progress").style.opacity = "1"
-        // And disable the start button
-        file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
-        })
-
-        // Hide the total progress bar when nothing's uploading anymore
-        myDropzone.on("queuecomplete", function(progress) {
-        document.querySelector("#total-progress").style.opacity = "0"
-        })
-
-        // Setup the buttons for all transfers
-        // The "add files" button doesn't need to be setup because the config
-        // `clickable` has already been specified.
-        document.querySelector("#actions .start").onclick = function() {
-        myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
-        }
-        document.querySelector("#actions .cancel").onclick = function() {
-        myDropzone.removeAllFiles(true)
-        }
+    function borrarMarcoImagen(id){
+        $("#"+id).remove();
     }
 
+    window.addEventListener('paste', e => {
+        cantidadImagenes++;
+        
+        var fileInput = document.createElement('input')
+        $(fileInput).attr('id', 'imagefile_'+cantidadImagenes)
+        $(fileInput).attr('name', 'imagefile[]')
+        $(fileInput).attr('type', 'file')
+        $(fileInput).css('visibility', 'hidden')
+
+        fileInput.files = e.clipboardData.files;
+        const file = e.clipboardData.files[0];
+        
+        
+        size=bytesToSize(file.size)
+        type=file.type
+
+        var linea = $("#template").html();
+
+        
+        if(type=="image/png" || type=="image/jpg"){
+            linea = linea.replace(/imageFile_0:,/g, 'imagefile_'+cantidadImagenes);
+            linea = linea.replace(/marcodelete:,/g, "marco"+cantidadImagenes);
+
+            fileInput.files = e.clipboardData.files;
+            const objectURL = window.URL.createObjectURL(fileInput.files[0])
+            linea = linea.replace(/data:,/g, objectURL);
+            linea = linea.replace(/tamano:,/g, size);
+            linea = linea.replace(/error:,/g, '');
+            linea = linea.replace(/marco:,/g, "marco"+cantidadImagenes);
+
+            $("#previews").append(linea);
+            $("#marco"+cantidadImagenes).append(fileInput);
+           
+            
+            
+            //console.log(bytesToSize(file));
+            //console.log(linea+"    "+JSON.stringify(e.clipboardData.files))
+        }
+        else{
+            linea = linea.replace(/tamano:,/g, '0.00Kb');
+            linea = linea.replace(/error:,/g, 'No es imagen!');
+        }
+
+        //console.log(linea)
+
+    });
+
+    function bytesToSize(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 Byte';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    }
+
+    
+</script>
+<script>
     var id_item = 0;       
     var idMed = 1;       
     function agregarItemDiagnostico(idDiag) {    
@@ -558,13 +568,13 @@
         }
     }
     function resetearCampos() {
-    document.getElementById("id_cantidad").value = 1;
-    document.getElementById("codigoProducto").value = "";
-    document.getElementById("idProductoID").value = "";
-    document.getElementById("buscarProducto").value = "";
-    document.getElementById("id_disponible").value = "0";
+        document.getElementById("id_cantidad").value = 1;
+        document.getElementById("codigoProducto").value = "";
+        document.getElementById("idProductoID").value = "";
+        document.getElementById("buscarProducto").value = "";
+        document.getElementById("id_disponible").value = "0";
 
-}
+    }
 
     var id_itemI = 0; 
     function agregarItemImagen(idImag) {    
@@ -578,6 +588,46 @@
         id_itemI = id_itemI + 1; 
         $('#modal-imagenes').modal('hide');
     }
+
+    function agregarImagen() { 
+        id=$("#idImagen").val();
+        nombreImagen=$("#buscarImagen").val();
+
+        if(parseInt(id)>0){
+
+            var linea = $("#plantillaItemImagen").html();
+            linea = linea.replace(/{ID}/g, id);
+            linea = linea.replace(/{ImagenNombre}/g, nombreImagen);
+            linea = linea.replace(/{ImagenId}/g, id);
+            linea = linea.replace(/{Iobservacion}/g, "");
+
+            $("#cargarItemImagen tbody").append(linea);
+            //id_itemI = id_itemI + 1; 
+            //$('#modal-imagenes').modal('hide');
+
+            $('#idImagen').val('0');
+            $('#buscarImagen').val('');
+        }
+    }
+
+    /*
+    <tbody id="plantillaItemImagen">
+        <tr class="text-center" id="row_{ID}">
+            <td>
+                <a onclick="eliminarItem({ID});" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a>
+            </td>
+            <td>
+                {ImagenNombre}<input class="invisible" name="ImagenNombre[]" value="{ImagenNombre}"/>
+                <input class="invisible" name="ImagenId[]" value="{ImagenId}"/>
+            </td>
+            <td>
+                <input class="form-control" name="Iobservacion[]" value="{Iobservacion}">
+            </td>           
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+    */
 
     var id_itemP = 0; 
     function agregarItemFacturacion(id_itemP) {    
@@ -596,4 +646,5 @@
 </script>
 
 @endsection
+
 

@@ -61,7 +61,7 @@ class activoFijoController extends Controller
     }
     public function CargarExcel(Request $request)
     {
-        //try{
+        try{
             DB::beginTransaction();
 
             if($request->file('excelEmpl')->isValid()){
@@ -80,12 +80,8 @@ class activoFijoController extends Controller
                     $validaciong=Grupo_Activo::GrupoNombre($validargrupo, $validarsucursal)->first();
                     
                     $activo=new Activo_Fijo();
-                    $Excel_date2 = $array[0][$i][0]; 
-                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
-                    $Excel_date2 = 25569 + ($unix_date2 / 86400);
-                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
-                    $activo->activo_fecha_inicio = gmdate("Y-m-d", $unix_date2);
-                    $activo->activo_fecha_documento=gmdate("Y-m-d", $unix_date2);
+                    $activo->activo_fecha_inicio = $array[0][$i][0]; 
+                    $activo->activo_fecha_documento=$array[0][$i][0]; 
                     $activo->activo_valor=($array[0][$i][5]);
                     $activo->activo_valor2=($array[0][$i][5]);
                     $activo->activo_vida_util=($array[0][$i][6]);
@@ -110,10 +106,10 @@ class activoFijoController extends Controller
             }
             DB::commit();
             return redirect('activoFijo')->with('success','Datos guardados exitosamente');
-        //}catch(\Exception $ex){
+        }catch(\Exception $ex){
             DB::rollBack();
-            //return redirect('excelActivoFijo')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        //}
+            return redirect('excelActivoFijo')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
+        }
         
     }
 
@@ -276,7 +272,12 @@ class activoFijoController extends Controller
                 }                
             }else{
                 $activoFijo->diario_id = $request->get('idDiario');
-            }                          
+            } 
+            if($request->get('idEstado')== "on"){
+                $activoFijo->activo_estado ="1";
+            }else{
+                $activoFijo->activo_estado ="0";
+            }                         
             $activoFijo->save();       
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

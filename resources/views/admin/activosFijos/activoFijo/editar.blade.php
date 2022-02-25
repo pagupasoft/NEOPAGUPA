@@ -299,6 +299,7 @@ function desactivarFactura(){
     document.getElementById("idBaseDepreciar").value = 0;
     document.getElementById("idVidaUtil").value = 0;    
     document.getElementById("idDepreciacionMensual").value = 0;
+    document.getElementById("idDiario").disabled = false;
 
 
 
@@ -314,7 +315,7 @@ function activarFactura(){
         document.getElementById("idVidaUtil").value = 0;
         document.getElementById("idDepreciacionMensual").value = 0;
         document.getElementById("idProveedor").disabled = false;
-        
+        document.getElementById("idDiario").disabled = true;        
 
     }
 }
@@ -333,11 +334,11 @@ function cargarFechaFactura(){
             buscar: document.getElementById("idFactura").value
         },        
         success: function(data3){
-            document.getElementById("idValor").value = Number(data3.transaccion_total).toFixed(2);
+            document.getElementById("idValor").value = Number(data3.transaccion_subtotal).toFixed(2);
             document.getElementById("idFecha").value = "";                                        
-            document.getElementById("idFecha").value = data3.transaccion_fecha;
-            $('#idDiario').val(data3.diario_id);
-            $('#idDiario').trigger('change');
+            document.getElementById("idFecha").value = data3.transaccion_fecha;            
+            /*('#idDiario').val(data3.diario_id);*/
+            /*$('#idDiario').trigger('change');*/
 
         },
     });

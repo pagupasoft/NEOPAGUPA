@@ -39,6 +39,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Categoria Consumo</label>
+                <div class="col-sm-10">
+                    <label class="form-control">@if(isset($rubro->categoria_id)) {{$rubro->categoria->categoria_nombre}} @endif</label>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">
                     @if($rubro->rubro_estado=="1")

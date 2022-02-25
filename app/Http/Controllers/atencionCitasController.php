@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Medico;
 use App\Models\Medico_Especialidad;
 use App\Models\Empleado;
-use App\Models\Empresa;
 use App\Models\Proveedor;
 use App\Models\Signos_Vitales;
 use App\Http\Controllers\Controller;
@@ -40,9 +39,6 @@ use App\Models\Sucursal;
 use App\Models\Tipo_Examen;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use PDF;
-use DateTime;
-use Illuminate\Support\Facades\Storage;
 
 class atencionCitasController extends Controller
 {
@@ -93,7 +89,8 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
+            DB::beginTransaction();
             $auditoria = new generalController();
             $atencion=Orden_Atencion::findOrFail($request->get('orden_id'));
             $bodega=Bodega::SucursalBodega($atencion->sucursal_id)->first();
@@ -193,8 +190,7 @@ class atencionCitasController extends Controller
 
                     /******************registro de movimiento de producto******************/
                     $movimientoProducto = new Movimiento_Producto();
-                    //$movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
-                    $movimientoProducto->movimiento_fecha=$atencion->orden_fecha;
+                    $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
                     $movimientoProducto->movimiento_cantidad=$Pcantidad[$i];
                     $movimientoProducto->movimiento_precio=0;
                     $movimientoProducto->movimiento_iva=0;
@@ -273,6 +269,7 @@ class atencionCitasController extends Controller
                 $ordenImagen->save();
                 $auditoria->registrarAuditoria('Ingreso de Imagenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
                 
+               
                 for ($i = 1; $i < count($ImagenId); ++$i) {
                     $detalleImagen = new Detalle_Imagen();
                     if ($Iobservacion[$i]) {
@@ -294,8 +291,9 @@ class atencionCitasController extends Controller
 
             $atencion->orden_estado='4';
             $atencion->save();
-            /*Inicio de registro de auditoria */
             $auditoria->registrarAuditoria('Actualizacion de Examen a estado Atendido Numero'.$atencion->orden_numero.' Con Expediente '.$request->get('expediente_id'),$atencion->orden_id, '');
+            /*Inicio de registro de auditoria */
+            
             /*Fin de registro de auditoria */
             DB::commit();
             $redirect = redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
@@ -306,8 +304,10 @@ class atencionCitasController extends Controller
 
             return $redirect;
         }catch(\Exception $ex){
+            return redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
+        } catch (\Exception $ex) {
             DB::rollBack();
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');
         }
     }
 
@@ -424,13 +424,14 @@ class atencionCitasController extends Controller
             $diagnosticos = Diagnostico::Diagnosticos()->get();
             $medicamentos = Medicamento::Medicamentos()->get();
             $enfermedades = Enfermedad::Enfermedades()->get();
-            
+           
             $imagenes = Imagen::Imagenes()->get();
             $sucursales = Sucursal::Sucursales()->get();
             $especialidades = Especialidad::Especialidades()->get();
             $examenes = Examen::Examenes()->get();
             $tipoExamenes = Tipo_Examen::TipoExamenes()->get();
             $productos = Producto::Productos()->get();
+            
 
             $medicos = Medico::medicos()->get();
             $medicoId = 0;
@@ -440,7 +441,6 @@ class atencionCitasController extends Controller
                     $medicoId = $medico->medico_id;
                 }
             }
-
             $medico = Medico::medico($medicoId)->first();
             $mespecialidadM = Medico_Especialidad::mespecialidadM($medicoId)->first();
             $ordenAtencion = Orden_Atencion::Orden($id)->first();

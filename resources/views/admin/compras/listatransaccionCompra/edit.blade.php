@@ -7,7 +7,7 @@
         <div class="card-header">
             <div class="row">
                 <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS - Documento</b></h2>
+                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS - Documentos</b></h2>
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
@@ -597,16 +597,16 @@
                                                     <tbody>  
                                                     @if(isset($compras->retencionCompra))
                                                         @foreach($compras->retencionCompra->detalles as $x)
-                                                        <tr class="text-center" id="rowRF_<?php echo $id_itemRF; ?>">
                                                             @if($x->detalle_tipo=='FUENTE')
-                                                            <td><a onclick="eliminarItemF({{$id_itemRF}}, '{{$x->detalle_valor}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
-                                                            <td>{{ $x->detalle_base}}<input class="invisible" name="DbaseRF[]" value="{{$x->detalle_base}}" /></td>  
-                                                            <td>{{ $x->conceptoRetencion->concepto_nombre}}<input class="invisible" name="DcodigoRF[]" value="{{$x->conceptoRetencion->concepto_nombre}}" /><input class="invisible" name="DRFID[]" value="{{$x->conceptoRetencion->concepto_id}}" /></td>  
-                                                            <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRF[]" value="{{ $x->detalle_porcentaje}}" /></td>  
-                                                            <td>{{ $x->detalle_valor}}<input class="invisible" name="DvalorRF[]" value="{{$x->detalle_valor}}" /></td> 
-                                                            <?php $id_itemRF++;?> 
-                                                            @endif        
-                                                        </tr>
+                                                            <tr class="text-center" id="rowRF_<?php echo $id_itemRF; ?>">
+                                                                <td><a onclick="eliminarItemF({{$id_itemRF}}, '{{$x->detalle_valor}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
+                                                                <td>{{ $x->detalle_base}}<input class="invisible" name="DbaseRF[]" value="{{$x->detalle_base}}" /></td>  
+                                                                <td>{{ $x->conceptoRetencion->concepto_nombre}}<input class="invisible" name="DcodigoRF[]" value="{{$x->conceptoRetencion->concepto_nombre}}" /><input class="invisible" name="DRFID[]" value="{{$x->conceptoRetencion->concepto_id}}" /></td>  
+                                                                <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRF[]" value="{{ $x->detalle_porcentaje}}" /></td>  
+                                                                <td>{{ $x->detalle_valor}}<input class="invisible" name="DvalorRF[]" value="{{$x->detalle_valor}}" /></td> 
+                                                                <?php $id_itemRF++;?> 
+                                                            </tr>
+                                                            @endif 
                                                         @endforeach
                                                     @endif
                                                     </tbody>
@@ -718,16 +718,16 @@
                                                     <tbody>
                                                     @if(isset($compras->retencionCompra))
                                                         @foreach($compras->retencionCompra->detalles as $x)
-                                                        <tr class="text-center"  id="rowRI_<?php echo $id_itemRI; ?>">
                                                             @if($x->detalle_tipo=='IVA')
-                                                            <td><a onclick="eliminarItemI({{$id_itemRI}}, '{{$x->detalle_valor}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
-                                                            <td>{{ $x->detalle_base}}<input class="invisible" name="DbaseRI[]" value="{{ $x->detalle_base}}" /></td>  
-                                                            <td>{{ $x->conceptoRetencion->concepto_nombre}}<input class="invisible" name="DcodigoRI[]" value="{{ $x->conceptoRetencion->concepto_nombre}}" /><input class="invisible" name="DRIID[]" value="{{ $x->conceptoRetencion->concepto_id}}" /></td>  
-                                                            <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRI[]" value="{{ $x->detalle_porcentaje}}" /></td>  
-                                                            <td>{{ $x->detalle_valor}}<input class="invisible" name="DvalorRI[]" value="{{ $x->detalle_valor}}" /></td> 
-                                                            <?php $id_itemRI++;?>             
-                                                            @endif   
-                                                        </tr>
+                                                            <tr class="text-center"  id="rowRI_<?php echo $id_itemRI; ?>">
+                                                                <td><a onclick="eliminarItemI({{$id_itemRI}}, '{{$x->detalle_valor}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
+                                                                <td>{{ $x->detalle_base}}<input class="invisible" name="DbaseRI[]" value="{{ $x->detalle_base}}" /></td>  
+                                                                <td>{{ $x->conceptoRetencion->concepto_nombre}}<input class="invisible" name="DcodigoRI[]" value="{{ $x->conceptoRetencion->concepto_nombre}}" /><input class="invisible" name="DRIID[]" value="{{ $x->conceptoRetencion->concepto_id}}" /></td>  
+                                                                <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRI[]" value="{{ $x->detalle_porcentaje}}" /></td>  
+                                                                <td>{{ $x->detalle_valor}}<input class="invisible" name="DvalorRI[]" value="{{ $x->detalle_valor}}" /></td> 
+                                                                <?php $id_itemRI++;?> 
+                                                            </tr>
+                                                            @endif  
                                                         @endforeach
                                                     @endif
                                                     </tbody>

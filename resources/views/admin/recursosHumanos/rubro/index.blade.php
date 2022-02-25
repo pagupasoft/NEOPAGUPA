@@ -17,8 +17,7 @@
                     <th></th>
                     <th>Nombre</th>     
                     <th>Tipo</th>    
-                    <th>Descripcion</th>    
-                    <th>Categoria Consumo</th>                                                          
+                    <th>Descripcion</th>                                                          
                 </tr>
             </thead>            
             <tbody>
@@ -34,8 +33,7 @@
                             @elseif ($rubro->rubro_tipo =='2')INGRESOS 
                             @elseif ($rubro->rubro_tipo =='3')PROVISIONES  
                         @endif</td>                   
-                    <td>{{ $rubro->rubro_descripcion}}</td>     
-                    <td>@if(isset($rubro->categoria_id)) {{$rubro->categoria->categoria_nombre}} @endif</td>                   
+                    <td>{{ $rubro->rubro_descripcion}}</td>                    
                 </tr>
                 @endforeach
             </tbody>
@@ -58,17 +56,11 @@
                 <div class="modal-body">
                     <div class="card-body">                        
                         <div class="form-group row">
-                            <label for="rubro_nombre" class="col-sm-3 col-form-label">Identificador</label>
+                            <label for="rubro_nombre" class="col-sm-3 col-form-label">Nombre</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="rubro_nombre" name="rubro_nombre" placeholder="Rubro" required>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="rubro_descripcion" class="col-sm-3 col-form-label">Descripcion</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="rubro_descripcion" name="rubro_descripcion" placeholder="Ingrese aqui una descripcion" required>
-                            </div>
-                        </div>  
                         <div class="form-group row">
                             <label for="rubro_tipo" class="col-sm-3 col-form-label">Tipo de Rubro</label>
                             <div class="col-sm-9">
@@ -82,17 +74,11 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="rubro_tipo" class="col-sm-3 col-form-label">Categoria Cosumo</label>
+                            <label for="rubro_descripcion" class="col-sm-3 col-form-label">Descripcion</label>
                             <div class="col-sm-9">
-                                <select class="custom-select" id="categoria" name="categoria" >
-                                    <option value=""  selected>--Seleccione una opcion--</option>
-                                    @foreach($categorias as $categoria)
-                                        <option value="{{$categoria->categoria_id}}">{{$categoria->categoria_nombre}}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" class="form-control" id="rubro_descripcion" name="rubro_descripcion" placeholder="Ingrese aqui una descripcion" required>
                             </div>
-                        </div>
-                                              
+                        </div>                        
                     </div>  
                 </div>
                 <div class="modal-footer justify-content-between">

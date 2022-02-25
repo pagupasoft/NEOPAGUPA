@@ -3,12 +3,14 @@
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title">Activos Fijos</h3>
-        <div class="float-right">
         <button class="btn btn-default btn-sm float-right" data-toggle="modal" data-target="#modal-nuevo"><i class="fa fa-plus"></i>&nbsp;Nuevo</button>
+<<<<<<< HEAD
         <a class="btn btn-info btn-sm" href="{{ asset('admin/archivos/FORMATO_ACTIVOSFIJOS.xlsx') }}" download="FORMATO ACTIVOS FIJOS"><i class="fas fa-file-excel"></i>&nbsp;Formato</a>
         <a class="btn btn-success btn-sm" href="{{ url("excelActivoFijo") }}"><i class="fas fa-file-excel"></i>&nbsp;Cargar Excel</a>
         
         </div>
+=======
+>>>>>>> parent of d99d2e0 (Merge branch 'main' of https://github.com/pagupasoft/NEOPAGUPA)
     </div>
     <div class="card-body">
         <form class="form-horizontal" method="POST" action="{{ url("ActivoBuscar") }}">
@@ -61,12 +63,12 @@
                         <a href="{{ url("activoFijo/{$activoFijo->activo_id}/eliminar")}}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                     </td>
                     <td>{{ $activoFijo->activo_fecha_inicio}}</td>
-                    <td>@if(isset($activoFijo->diario_id))<a href="{{ url("asientoDiario/ver/{$activoFijo->diario->diario_codigo}")}}" target="_blank">{{ $activoFijo->diario->diario_codigo}}</a> @endif</td>
+                    <td><a href="{{ url("asientoDiario/ver/{$activoFijo->diario->diario_codigo}")}}" target="_blank">{{ $activoFijo->diario->diario_codigo}}</a></td>
                     <td>{{ $activoFijo->producto->producto_nombre}}</td>
-                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_nombre}} @endif</td>
+                    <td>{{ $activoFijo->grupoActivo->grupo_nombre}}</td>
                     <td>{{ $activoFijo->activo_descripcion}}</td>
                     <td>{{ number_format($activoFijo->activo_valor,2)}}</td>
-                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_porcentaje}} @endif</td>
+                    <td>{{ $activoFijo->grupoActivo->grupo_porcentaje}}</td>
                     <td>{{ number_format($activoFijo->activo_base_depreciar,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_vida_util,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_valor_util,2)}}</td>
@@ -178,7 +180,7 @@
                             </div>
                             <label for="idDiario" class="col-sm-1 col-form-label">#Diario</label>
                             <div class="col-sm-4">
-                                <select class="custom-select select2" id="idDiario" name="idDiario" onchange="cargarFechaDiario();" disabled>
+                                <select class="custom-select select2" id="idDiario" name="idDiario" onchange="cargarFechaDiario();">
                                     <option value="" label>--Seleccione un Diario--</option>
                                     @foreach($diarios as $diario)
                                         <option value="{{$diario->diario_id}}">{{$diario->diario_codigo}}</option>
@@ -353,7 +355,6 @@ function desactivarFactura(){
     document.getElementById("idBaseDepreciar").value = 0;
     document.getElementById("idVidaUtil").value = 0;    
     document.getElementById("idDepreciacionMensual").value = 0;
-    document.getElementById("idDiario").disabled = false;
 
 
 
@@ -369,7 +370,8 @@ function activarFactura(){
         document.getElementById("idVidaUtil").value = 0;
         document.getElementById("idDepreciacionMensual").value = 0;
         document.getElementById("idProveedor").disabled = false;
-        document.getElementById("idDiario").disabled = true;
+        
+
     }
 }
 function limpiarGrupo(){
@@ -387,11 +389,11 @@ function cargarFechaFactura(){
             buscar: document.getElementById("idFactura").value
         },        
         success: function(data3){
-            document.getElementById("idValor").value = Number(data3.transaccion_subtotal).toFixed(2);
+            document.getElementById("idValor").value = Number(data3.transaccion_total).toFixed(2);
             document.getElementById("idFecha").value = "";                                        
             document.getElementById("idFecha").value = data3.transaccion_fecha;
-           /* $('#idDiario').val(data3.diario_id);
-            $('#idDiario').trigger('change');*/
+            $('#idDiario').val(data3.diario_id);
+            $('#idDiario').trigger('change');
 
         },
     });

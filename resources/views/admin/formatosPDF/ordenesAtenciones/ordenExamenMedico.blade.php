@@ -8,11 +8,12 @@
                     <td class="centrar letra12 negrita">RECLAMO N°: {{ $orden->orden_reclamo}}</td>
                     <td class="centrar letra12 negrita">ORDEN MEDICA N°: {{ $orden->orden_numero}}</td>
                 </tr>
-                <tr>
-                    <td class="text-center letra22 negrita">ORDEN PARA EXAMENES DE LABORATORIOS</td>
-                </tr>
             </table>
         </td>
+    </tr>
+    <tr style="width: 100%">
+        <h4 style="width: 100%; text-align:center; padding: 0px; margin: 0px" class="text-center">ORDEN DE EXAMENES</h4>
+    </tr>
     @endsection
     <table>
         <tr class="letra12">
@@ -48,35 +49,27 @@
 
 
     @foreach($tipos as $tipoE)
-        <table style="border-collapse: collapse;">
-            <thead style="border: 1px solid">
-                <tr class=""> 
-                    <th style="border: 0px"class="text-center">{{$tipoE}}</th>   
-                </tr>
-            </thead>
-            <tbody>
-                <?php $c=0; ?>
-                @foreach($ordenExamen->detalle as $fila)
-                    
-                    <?php
-                        $examen=$fila->examen($fila->examen_id)->first();
-                        $producto=$examen->producto($examen->producto_id)->first();
-                        $tipo=$examen->tipoExamen($examen->tipo_id)->first();
-                        $c++;
-                    ?>
-                    @if($tipoE==$tipo->tipo_nombre)
-                        <tr class="letra12" style="padding-left: 15px; border: 1px solid">                  
-                            <td style="padding-left: 15px; border: 1px solid"> {{$producto->producto_codigo}} - {{$producto->producto_nombre }}</td>
-                        </tr> 
-                    @endif
-                @endforeach  
-            </tbody>
-        </table>
+        <h4 style="margin: 0px; padding: 0px">-{{$tipoE}}</h4>
+        <?php $c=0 ?>
+        @foreach($ordenExamen->detalle as $fila)
+            
+            <?php
+                $examen=$fila->examen($fila->examen_id)->first();
+                $producto=$examen->producto($examen->producto_id)->first();
+                $tipo=$examen->tipoExamen($examen->tipo_id)->first();
+                $c++;
+            ?>
+            @if($tipoE==$tipo->tipo_nombre)
+                <h5 style="font-weight: normal; margin: 0px; padding: 0px">&nbsp;&nbsp;&nbsp;&nbsp; <strong>{{$c}}</strong>.- &nbsp;&nbsp;&nbsp;{{$producto->producto_codigo}} - {{$producto->producto_nombre }}</h5>
+            @endif
+        @endforeach
         <br><br>
     @endforeach
+    <br><br>
+
 
     <div class="col-md-12">
-        <span>Observacion:</span>
+        <span style="font-weight: bold">Observación:</span>
         <p>{{$ordenExamen->orden_otros}}</p>
     </div>
 @endsection 

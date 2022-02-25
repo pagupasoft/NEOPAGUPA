@@ -8,11 +8,12 @@
                     <td class="centrar letra12 negrita">RECLAMO N°: {{ $orden->orden_reclamo}}</td>
                     <td class="centrar letra12 negrita">ORDEN MEDICA N°: {{ $orden->orden_numero}}</td>
                 </tr>
-                <tr>
-                    <td class="text-center letra22 negrita">ORDEN DE TOMA DE IMAGENES ECOGRÁFICAS</td>
-                </tr>
             </table>
         </td>
+    </tr>
+    <tr style="width: 100%">
+        <h4 style="width: 100%; text-align:center; padding: 0px; margin: 0px" class="text-center">ORDEN DE ECOGRAFÍAS</h4>
+    </tr>
     @endsection
     <table>
         <tr class="letra12">
@@ -44,22 +45,17 @@
 
     <br>
 
-    <table style="white-space: normal!important;" id="tabladetalle">>
-        <thead>
-            <tr style="border: 1px solid black;" class="centrar letra10">                
-                <th class="letra12">Examen de Imagenes</th>
-            </tr>
-        </thead>
-        <tbody>           
-            @foreach($ordenImagen->detalleImagen as $fila)        
-            <tr class="letra12" style="border: 1px solid black;">                   
-                <td style="border: 0px" align="left">{{ $fila->imagen($fila->imagen_id)->first()->imagen_nombre }}
-                &nbsp; &nbsp;&nbsp; &nbsp;
-                {{ $fila->detalle_indicacion }}</td>
-            </tr>  
-            @endforeach  
-        </tbody>
-    </table>
+    
+                   
+    <h4 style="width: 100%; text-align:center; padding: 0px; margin: 0px">Imagenes Ecográficas a realizar</h4>
+    <br>
+    @foreach($ordenImagen->detalleImagen as $fila)        
+        &nbsp;&nbsp;&nbsp;&nbsp;- {{ $fila->imagen($fila->imagen_id)->first()->imagen_nombre }}
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $fila->detalle_indicacion }}<br><br>
+     
+    @endforeach  
+        
     <br><br>
     <div class="col-md-12">
         <span>Observacion:</span>

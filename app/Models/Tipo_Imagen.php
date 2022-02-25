@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class Tipo_Imagen extends Model
 {
@@ -29,11 +28,4 @@ class Tipo_Imagen extends Model
     public function empresa(){
         return $this->belongsTo(Empresa::class, 'empresa_id', 'empresa_id');
     } 
-
-    public function scopeBuscarImagenes($query, $buscar){
-        return $query->where('empresa_id', '=', Auth::user()->empresa_id
-                    )->where('tipo_estado','=','1'
-                    )->where(DB::raw('lower(tipo_nombre)'), 'like', '%'.strtolower($buscar).'%'
-                    )->orderBy('tipo_nombre','asc');
-    }
 }

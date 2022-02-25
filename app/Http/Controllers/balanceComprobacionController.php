@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuenta;
 use App\Models\Detalle_Diario;
+use App\Models\Diario;
 use App\Models\Empresa;
 use App\Models\Punto_Emision;
 use PDF;
@@ -11,6 +12,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 
 class balanceComprobacionController extends Controller
 {
@@ -34,6 +36,8 @@ class balanceComprobacionController extends Controller
             return $this->pdf($request);
         }
     }
+  
+
     public function buscar(Request $request){
         try{   
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();

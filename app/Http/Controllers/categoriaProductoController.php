@@ -174,7 +174,11 @@ class categoriaProductoController extends Controller
             
 
             $categoria = Categoria_Producto::findOrFail($id);
-            $categoria->categoriacosto->delete();
+
+            if (isset($categoria->categoriacosto)) {
+                $categoria->categoriacosto->delete();
+            }
+            
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Eliminacion de categoria producto-> '.$categoria->categoria_nombre.' Con id -> '.$categoria->categoriacosto->categoria_id,'0','');
             

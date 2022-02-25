@@ -315,7 +315,7 @@
                                     </td>
                                     <td id="Totalx"  name="Totalx" class="derecha-texto negrita">0</td>
                                     <input type="hidden"   name="DTotalx"  id="DTotalx" value="0" >     
-                                    
+                                  
                                                 
                                 </tr>
                                
@@ -354,7 +354,7 @@ function agregarcolumna() {
     linea   +=' <td class="text-center">'+anioactual+'</td> <td class="text-center">'+obtenerNombreMes(_mesactual)+'</td>';
     for (let step = (document.getElementById("tabla").rows[1].cells.length-1); step <= 62; step++) {
         if(diasMes>=step){
-        linea   +=' <td class="text-center"><input  class="form-control" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  onclick="accion('+step+');" onchange="accion('+step+');" onkeyup="accion('+step+');" value=""></td>';
+        linea   +=' <td class="text-center"><input  class="form-controltext2" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  onclick="accion('+step+');" onchange="accion('+step+');" onkeyup="accion('+step+');" value=""></td>';
         }else{
             linea   +=' <td class="invisible"><input  class="invisible" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  value="0"></td>';  
         }
@@ -374,6 +374,55 @@ function nuevo() {
     document.getElementById("addcolumn").disabled = true;
     
 }
+function existe(diasMes) {
+    var activa=false;
+   
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+       
+    $.ajax({
+        url: '{{ url("cargarControldias") }}',
+        dataType: "json",
+        async: false,
+        type: "POST",
+        data: {
+            buscar:  document.getElementById("empleado_id").value,
+            aniorubro : document.getElementById("anio").value,
+            mesrubro : document.getElementById("mes").value,
+        },
+        success: function(data){
+            var linea = $("#plantillaItem").html();
+            linea   = '<tr>';
+            linea   +=' <td class="text-center">'+data[0]+'</td> <td class="text-center">'+data[1]+'</td>';
+            for (var i=2; i<data.length; i++) {
+                    if((diasMes+1)>=i){
+                    linea   +=' <td class="text-center"><input  class="form-controltext2" type="text" id="Dia'+(i-1)+'"  name="Dia[]" maxlength="1"  onclick="accion('+(i-1)+');" onchange="accion('+(i-1)+');" onkeyup="accion('+(i-1)+');" value="'+data[i]+'"></td>';
+                    }else{
+                        linea   +=' <td class="invisible"><input  class="invisible" type="text" id="Dia'+(i-1)+'"  name="Dia[]" maxlength="1"  value="0"></td>';  
+                    }
+                activa=true; 
+            }  
+           
+            linea   += '</tr>';
+            $("#tabla tbody").append(linea); 
+            for (var i=2; i<data.length; i++) {
+              if ((diasMes+2)>=i) {
+                  accion(i-1);
+              }            
+            }
+           
+           
+           
+            
+           
+        },
+    });
+    return activa;
+}
+
 function obtenerNombreMes (numero) {
   let miFecha = new Date();
   if (0 < numero && numero <= 12) {
@@ -595,21 +644,22 @@ function dias(){
     linea   += '</tr>';
     $("#tabla thead").append(linea); 
     
-    var linea = $("#plantillaItem").html();
+    if(existe(diasMes)==false){
+        var linea = $("#plantillaItem").html();
 
-    linea   = '<tr>';
-    
-    linea   +=' <td class="text-center">'+anioactual+'</td> <td class="text-center">'+obtenerNombreMes(_mesactual)+'</td>';
-    for (let step = 1; step <= 31; step++) {
-        if(diasMes>=step){
-        linea   +=' <td class="text-center"><input  class="form-control" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  onclick="accion('+step+');" onchange="accion('+step+');" onkeyup="accion('+step+');" value=""></td>';
-        }else{
-            linea   +=' <td class="invisible"><input  class="invisible" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  value="0"></td>';  
-        }
-    }  
-    linea   += '</tr>';
-    $("#tabla tbody").append(linea); 
-
+        linea   = '<tr>';
+        
+        linea   +=' <td class="text-center">'+anioactual+'</td> <td class="text-center">'+obtenerNombreMes(_mesactual)+'</td>';
+        for (let step = 1; step <= 31; step++) {
+            if(diasMes>=step){
+            linea   +=' <td class="text-center"><input  class="form-controltext2" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  onclick="accion('+step+');" onchange="accion('+step+');" onkeyup="accion('+step+');" value=""></td>';
+            }else{
+                linea   +=' <td class="invisible"><input  class="invisible" type="text" id="Dia'+step+'"  name="Dia[]" maxlength="1"  value="0"></td>';  
+            }
+        }  
+        linea   += '</tr>';
+        $("#tabla tbody").append(linea); 
+    }
     if (_mesactual < 10) //ahora le agregas un 0 para el formato date
     {
     var mesactual = "0" + _mesactual;

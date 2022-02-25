@@ -196,4 +196,19 @@ class controlDiasController extends Controller
     public function PresentarEmpleado($id){
         return Control_Dia::PresentarEmpleado($id)->get();
     }
+    public function cargarControldias(Request $request){
+        $datos=null;
+        $mes=$request->get('mesrubro');
+        $anio=$request->get('aniorubro');
+        $contol=Control_Dia::ControldiaDetalle($request->get('buscar'),$mes,$anio)->first();
+        $count=2;
+        $datos[0]=$contol->control_ano;
+        $datos[1]=$contol->control_mes;
+        for ($i = 1; $i <= 31; ++$i) {
+            $vari='control_dia'.$i;
+            $datos[$count]=$contol->$vari;
+            $count++;
+        }
+        return $datos;
+    }
 }

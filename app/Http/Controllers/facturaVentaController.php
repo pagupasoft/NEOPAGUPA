@@ -586,6 +586,7 @@ class facturaVentaController extends Controller
             $pu = $request->get('Dpu');
             $total = $request->get('Dtotal');
             $descuento = $request->get('Ddescuento');
+            $inventarioResevado = false; 
             /********************cabecera de factura de venta ********************/
             $general = new generalController();
             $cierre = $general->cierre($request->get('factura_fecha'));          
@@ -784,6 +785,12 @@ class facturaVentaController extends Controller
                     $ordene= Orden_Despacho::findOrFail($orden[$j]["orden_id"]);
                     $ordene->Factura()->associate($factura);
                     $ordene->orden_estado="3";
+                    if($ordene->orden_reserva == '1' ){
+                        $inventarioResevado = true;
+                    }
+                    if($ordene->orden_reserva == '0' and $inventarioResevado == true){
+                        throw new Exception('Hay ordenes con reserva de inventario y hay ordenes sin reserva de inventario, verifique la informacion antes de facturar');
+                    }
                     $ordene->update();
                     $general->registrarAuditoria('Actualizacion de Orden de despacho -> '.$orden[$j]["orden_numero"],$orden[$j]["orden_numero"],'Actualizacion de Orden de despacho -> '.$orden[$j]["orden_numero"].' con Guia de remision -> '.$guias->gr_numero.' con Factura  -> '.$factura->factura_numero);        
                 }
@@ -792,9 +799,11 @@ class facturaVentaController extends Controller
             /********************detalle de factura de venta********************/
             for ($i = 1; $i < count($cantidad); ++$i){
                 $producto = Producto::findOrFail($isProducto[$i]);
-                if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
-                    if($producto->producto_stock < $cantidad[$i]){
-                        throw new Exception('Stock insuficiente de productos');
+                if($inventarioResevado == false){
+                    if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
+                        if($producto->producto_stock < $cantidad[$i]){
+                            throw new Exception('Stock insuficiente de productos');
+                        }
                     }
                 }
                 $detalleFV = new Detalle_FV();
@@ -806,6 +815,7 @@ class facturaVentaController extends Controller
                 $detalleFV->detalle_descripcion = $nombre[$i];
                 $detalleFV->detalle_estado = '1';
                 $detalleFV->producto_id = $isProducto[$i];
+                if($inventarioResevado == false){
                     /******************registro de movimiento de producto******************/
                     $movimientoProducto = new Movimiento_Producto();
                     $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
@@ -826,6 +836,7 @@ class facturaVentaController extends Controller
                     $movimientoProducto->save();
                     $general->registrarAuditoria('Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> '.$cantidad[$i].' con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
                     /*********************************************************************/
+                }
                 $detalleFV->movimiento()->associate($movimientoProducto);
                 $factura->detalles()->save($detalleFV);
                 $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> '.$cantidad[$i].' a un precio unitario de -> '.$pu[$i]);

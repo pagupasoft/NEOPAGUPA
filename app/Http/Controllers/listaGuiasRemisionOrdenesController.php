@@ -14,6 +14,7 @@ use App\Models\Rango_Documento;
 use App\Models\Tarifa_Iva;
 use App\Models\User;
 use App\Models\Vendedor;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -69,18 +70,32 @@ class listaGuiasRemisionOrdenesController extends Controller
             $coun = 1;    
             $cont = 1; 
             $banderaStock = '1';
+            $inventarioResevado = false; 
             for ($i = 0; $i < count($gr_id); ++$i) {
                 $guiadatos=Guia_Remision::GuiaOrden($gr_id[$i])->get()->first();
                 $puntoemeision = $guiadatos->rangoDocumento->puntoEmision;
                 $guias[$cont]['gr_id']=$gr_id[$i];
                 $guias[$cont]['gr_numero']=$guiadatos->gr_numero;;
                 $cont++;
-                $guia=Guia_Remision::GuiaDetalle($gr_id[$i])->get();        
+                $guia=Guia_Remision::GuiaDetalle($gr_id[$i])->get();  
+                $orden=Orden_Despacho::OrdenGuia($gr_id[$i])->get();
+                for ($j = 0; $j < count($orden); ++$j) {
+                    $ordene= Orden_Despacho::findOrFail($orden[$j]["orden_id"]);
+                    if($ordene->orden_reserva == '1' ){
+                        $inventarioResevado = true;
+                    }
+                    if($ordene->orden_reserva == '0' and $inventarioResevado == true){
+                        throw new Exception('Hay ordenes con reserva de inventario y hay ordenes sin reserva de inventario, verifique la informacion antes de facturar');
+                    }
+                   }
+
                 for ($j = 0; $j < count($guia); ++$j) {
                     $productoGuia = Producto::findOrFail($guia[$j]['producto_id']);
-                    if($productoGuia->producto_tipo == '1' and $productoGuia->producto_compra_venta == '3'){
-                        if($productoGuia->producto_stock < $guia[$j]['detalle_cantidad']){
-                            $banderaStock = '0';
+                    if($inventarioResevado == false){
+                        if($productoGuia->producto_tipo == '1' and $productoGuia->producto_compra_venta == '3'){
+                            if($productoGuia->producto_stock < $guia[$j]['detalle_cantidad']){
+                                $banderaStock = '0';
+                            }
                         }
                     }
                         $datos[$coun]['producto_id'] = $guia[$j]['producto_id'];

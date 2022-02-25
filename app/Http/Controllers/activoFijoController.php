@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activo_Fijo;
 use App\Models\Cuenta;
 use App\Models\Diario;
+use App\Models\Empresa;
 use App\Models\Grupo_Activo;
 use App\Models\Producto;
 use App\Models\Proveedor;
@@ -14,6 +15,8 @@ use App\Models\Transaccion_Compra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpParser\Node\Stmt\Return_;
 
 class activoFijoController extends Controller
 {
@@ -44,6 +47,74 @@ class activoFijoController extends Controller
         }catch(\Exception $ex){
             return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo');
         }
+    }
+    public function excelActivoFijo()
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            return view('admin.activosFijos.activoFijo.cargarExcel',['gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function CargarExcel(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+
+            if($request->file('excelEmpl')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelEmpl')->getClientOriginalExtension();
+                $path = $request->file('excelEmpl')->move(public_path().'\temp\ativosfijos', $name); 
+                $array = Excel::toArray(new Activo_Fijo(), $path); 
+                $general = new generalController(); 
+               
+                for ($i=1;$i < count($array[0]);$i++) {
+                  
+                    $validarprodcuto=trim($array[0][$i][3]);
+                    $validargrupo=trim($array[0][$i][2]);
+                    $validarsucursal=trim($array[0][$i][1]);
+                    $validacionp=Producto::ProductoCodigo($validarprodcuto)->first();
+                    $validaciong=Grupo_Activo::GrupoNombre($validargrupo, $validarsucursal)->first();
+                    
+                    $activo=new Activo_Fijo();
+                    $Excel_date2 = $array[0][$i][0]; 
+                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
+                    $Excel_date2 = 25569 + ($unix_date2 / 86400);
+                    $unix_date2 = ($Excel_date2 - 25569) * 86400;
+                    $activo->activo_fecha_inicio = gmdate("Y-m-d", $unix_date2);
+                    $activo->activo_fecha_documento=gmdate("Y-m-d", $unix_date2);
+                    $activo->activo_valor=($array[0][$i][5]);
+                    $activo->activo_valor2=($array[0][$i][5]);
+                    $activo->activo_vida_util=($array[0][$i][6]);
+                    $activo->activo_valor_util=($array[0][$i][7]);
+                    $activo->activo_base_depreciar=($array[0][$i][8]);
+                    $activo->activo_depreciacion_mensual=($array[0][$i][9]);
+                    $activo->activo_depreciacion_anual=($array[0][$i][10]);
+                    $activo->activo_depreciacion_acumulada=($array[0][$i][11]);
+                    $activo->activo_descripcion=($array[0][$i][12]);
+                    $activo->activo_depreciacion=0;
+                    if($validaciong){
+                        $activo->grupo_id =$validaciong->grupo_id;
+                        $activo->activo_depreciacion=$validaciong->grupo_porcentaje;
+                    }
+                    $activo->activo_estado='1';
+                    $activo->producto_id =$validacionp->producto_id;
+                    
+                    $activo->save();     
+                }
+              
+                
+            }
+            DB::commit();
+            return redirect('activoFijo')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('excelActivoFijo')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
+        }
+        
     }
 
     /**
@@ -81,10 +152,17 @@ class activoFijoController extends Controller
             $activoFijo->activo_depreciacion_acumulada = $request->get('idDepreciacionAcumulada');
             $activoFijo->activo_estado = 1;
             $activoFijo->grupo_id = $request->get('idGrupo');
-            $activoFijo->diario_id = $request->get('idDiario');
-            $activoFijo->producto_id = $request->get('idProducto');                
-            $activoFijo->proveedor_id = $request->get('idProveedor');
-            $activoFijo->transaccion_id = $request->get('idFactura');
+            $activoFijo->producto_id = $request->get('idProducto');
+            if($request->get('rdDocumento') == 'FACTURA'){
+                $activoFijo->proveedor_id = $request->get('idProveedor');
+                $activoFijo->transaccion_id = $request->get('idFactura');
+                $transacciondiario=Transaccion_Compra::findOrFail($request->get('idFactura'));
+                if(isset($transacciondiario->diario_id)){
+                    $activoFijo->diario_id = $transacciondiario->diario_id;
+                }                
+            }else{
+                $activoFijo->diario_id = $request->get('idDiario');
+            }                          
             $activoFijo->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
@@ -188,12 +266,17 @@ class activoFijoController extends Controller
             $activoFijo->activo_depreciacion_anual = str_replace(",","",$request->get('idDepreciacionAnual'));
             $activoFijo->activo_depreciacion_acumulada = str_replace(",","",$request->get('idDepreciacionAcumulada'));            
             $activoFijo->grupo_id = $request->get('idGrupo');
-            $activoFijo->diario_id = $request->get('idDiario');
             $activoFijo->producto_id = $request->get('idProducto');            
             if($request->get('rdDocumento') == 'FACTURA'){
                 $activoFijo->proveedor_id = $request->get('idProveedor');
                 $activoFijo->transaccion_id = $request->get('idFactura');
-            }                           
+                $transacciondiario=Transaccion_Compra::findOrFail($request->get('idFactura'));
+                if(isset($transacciondiario->diario_id)){
+                    $activoFijo->diario_id = $transacciondiario->diario_id;
+                }                
+            }else{
+                $activoFijo->diario_id = $request->get('idDiario');
+            }                          
             $activoFijo->save();       
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

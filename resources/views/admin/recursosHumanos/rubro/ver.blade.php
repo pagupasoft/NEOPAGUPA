@@ -8,11 +8,23 @@
     <!-- /.card-header -->
     <div class="card-body">        
         <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Nombre</label>
+            <label class="col-sm-2 col-form-label">Identificador</label>
             <div class="col-sm-10">
                 <label class="form-control">{{$rubro->rubro_nombre}}</label>
             </div>
-        </div>        
+        </div>    
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Descripcion</label>
+            <div class="col-sm-10">
+                <label class="form-control">{{$rubro->rubro_descripcion}}</label>
+            </div>
+        </div> 
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Categoria Consumo</label>
+            <div class="col-sm-10">
+                <label class="form-control">@if(isset($rubro->categoria_id)) {{$rubro->categoria->categoria_nombre}} @endif</label>
+            </div>
+        </div>   
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Tipo de Rubro</label>
             <div class="col-sm-10">
@@ -24,12 +36,7 @@
                 </label>
             </div>
         </div>    
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Descripcion</label>
-            <div class="col-sm-10">
-                <label class="form-control">{{$rubro->rubro_descripcion}}</label>
-            </div>
-        </div>
+        
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Estado</label>
             <div class="col-sm-10">

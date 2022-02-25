@@ -23,7 +23,12 @@
 .sin-salto{
   white-space: nowrap !important;
 }
-
+.text-pagado {
+  color: #70B1F7!important;
+}
+.text-acumulado {
+  color: #B1E2DD!important;
+}
 .form-controltext {
   display: block;
   width: 90px;

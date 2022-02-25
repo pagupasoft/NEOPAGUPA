@@ -16,8 +16,7 @@ class Rubro extends Model
         'rubro_nombre',
         'rubro_descripcion',
         'rubro_tipo',
-        'rubro_numero',    
-        'categoria_id',              
+        'rubro_numero',                  
         'empresa_id',
         'rubro_estado',         
     ];
@@ -28,9 +27,6 @@ class Rubro extends Model
     }
     public function scopeRubrosRH($query){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->orderBy('rubro_id','asc');
-    }
-    public function scopeRubrostipos($query){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->orderBy('rubro_numero','asc')->orderBy('rubro_tipo','asc');
     }
     public function scopeRubro($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_id','=',$id);
@@ -43,9 +39,6 @@ class Rubro extends Model
     }
     public function scopeexiste($query, $nomb){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_nombre','=',$nomb);
-    }
-    public function categoria(){
-        return $this->belongsTo(Categoria_Rol::class, 'categoria_id', 'categoria_id');
     }
     public function empresa(){
         return $this->belongsTo(Empresa::class, 'empresa_id', 'empresa_id');

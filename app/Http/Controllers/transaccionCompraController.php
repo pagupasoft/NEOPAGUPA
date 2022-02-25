@@ -1601,34 +1601,35 @@ class transaccionCompraController extends Controller
                         $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo, $transaccion->transaccion_numero, 'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$valorF[$i]);
                         /******************************************************************/
                     }
-                }
-                for ($i = 1; $i < count($baseI); ++$i) {
-                    if ($request->get('editret')=="on") {
-                        $detalleRC = new Detalle_RC();
-                        $detalleRC->detalle_tipo = 'IVA';
-                        $detalleRC->detalle_base = $baseI[$i];
-                        $detalleRC->detalle_porcentaje = $porcentajeI[$i];
-                        $detalleRC->detalle_valor = $valorI[$i];
-                        $detalleRC->detalle_asumida = '0';
-                        $detalleRC->detalle_estado = '1';
-                        $detalleRC->concepto_id = $idRetI[$i];
-                        $retencion->detalles()->save($detalleRC);
-                        $general->registrarAuditoria('Registro de detalle de retencion de compra numero -> '.$retencion->retencion_numero, $retencion->retencion_numero, 'Registro de detalle de retencion de compra, con base imponible -> '.$baseI[$i].' porcentaje -> '.$porcentajeI[$i].' valor de retencion -> '.$valorI[$i]);
+                    
+                    for ($i = 1; $i < count($baseI); ++$i) {
+                        if ($request->get('editret')=="on") {
+                            $detalleRC = new Detalle_RC();
+                            $detalleRC->detalle_tipo = 'IVA';
+                            $detalleRC->detalle_base = $baseI[$i];
+                            $detalleRC->detalle_porcentaje = $porcentajeI[$i];
+                            $detalleRC->detalle_valor = $valorI[$i];
+                            $detalleRC->detalle_asumida = '0';
+                            $detalleRC->detalle_estado = '1';
+                            $detalleRC->concepto_id = $idRetI[$i];
+                            $retencion->detalles()->save($detalleRC);
+                            $general->registrarAuditoria('Registro de detalle de retencion de compra numero -> '.$retencion->retencion_numero, $retencion->retencion_numero, 'Registro de detalle de retencion de compra, con base imponible -> '.$baseI[$i].' porcentaje -> '.$porcentajeI[$i].' valor de retencion -> '.$valorI[$i]);
+                        }
+                        /********************detalle de diario de compra*******************/
+                        $detalleDiario = new Detalle_Diario();
+                        $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($idRetI[$i])->first();
+                        $detalleDiario->detalle_debe = 0.00;
+                        $detalleDiario->detalle_haber = $valorI[$i];
+                        $detalleDiario->detalle_comentario = 'P/R RETENCION DE IVA '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
+                        $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE COMPRA';
+                        $detalleDiario->detalle_numero_documento = $retencion->retencion_numero;
+                        $detalleDiario->detalle_conciliacion = '0';
+                        $detalleDiario->detalle_estado = '1';
+                        $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_emitida_cuenta;
+                        $diario->detalles()->save($detalleDiario);
+                        $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo, $transaccion->transaccion_numero, 'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$valorI[$i]);
+                        /******************************************************************/
                     }
-                    /********************detalle de diario de compra*******************/
-                    $detalleDiario = new Detalle_Diario();
-                    $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($idRetI[$i])->first();
-                    $detalleDiario->detalle_debe = 0.00;
-                    $detalleDiario->detalle_haber = $valorI[$i];
-                    $detalleDiario->detalle_comentario = 'P/R RETENCION DE IVA '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
-                    $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE COMPRA';
-                    $detalleDiario->detalle_numero_documento = $retencion->retencion_numero;
-                    $detalleDiario->detalle_conciliacion = '0';
-                    $detalleDiario->detalle_estado = '1';
-                    $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_emitida_cuenta;
-                    $diario->detalles()->save($detalleDiario);
-                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo, $transaccion->transaccion_numero, 'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$valorI[$i]);
-                    /******************************************************************/
                 }
             }
             if($tipoComprobante->tipo_comprobante_codigo <> '04'){

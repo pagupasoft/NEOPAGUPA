@@ -73,9 +73,6 @@ class  Diario extends Model
     public function scopeDiarioDepreciacion($query, $tipo, $mes, $ano, $sucursal){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_tipo','=',$tipo)->where('diario_mes','=',$mes)->where('diario_ano','=',$ano)->where('sucursal_id','=',$sucursal);
     }
-    public function scopeDiarioTipoDocumento($query, $tipo){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_tipo','=',$tipo);
-    }
     public function scopeDiarioCodigo($query, $codigo){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_codigo','=',$codigo);
     }

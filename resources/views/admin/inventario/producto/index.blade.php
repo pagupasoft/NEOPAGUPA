@@ -520,8 +520,6 @@
                 document.getElementById("divGasto").classList.add('invisible');
 
                 document.getElementById("divVentas").classList.remove('invisible');
-                document.getElementById("divInventario").classList.remove('invisible');
-                document.getElementById("divGasto").classList.remove('invisible');
             }
             
         }

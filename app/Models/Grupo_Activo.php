@@ -28,9 +28,6 @@ class Grupo_Activo extends Model
     public function scopeGrupo($query, $id){
         return $query->join('sucursal','sucursal.sucursal_id','=','grupo_activo.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('grupo_id','=',$id);
     }
-    public function scopeGrupoNombre($query, $nombre, $sucursal){
-        return $query->join('sucursal','sucursal.sucursal_id','=','grupo_activo.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('grupo_nombre','=',$nombre)->where('sucursal_nombre','=',$sucursal);
-    }
     public function scopeGrupoxSucursal($query, $id){
         return $query->join('sucursal','sucursal.sucursal_id','=','grupo_activo.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('sucursal.sucursal_id','=',$id);
     }

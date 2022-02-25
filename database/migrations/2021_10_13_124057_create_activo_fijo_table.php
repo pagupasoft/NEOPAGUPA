@@ -15,10 +15,9 @@ class CreateActivoFijoTable extends Migration
     {
         Schema::create('activo_fijo', function (Blueprint $table) {
             $table->id('activo_id');
-            $table->date('activo_fecha_inicio');
-            $table->date('activo_fecha_fin');
-            $table->date('activo_fecha_documento');
-            $table->date('activo_descripcion');
+            $table->string('activo_fecha_inicio');
+            $table->string('activo_fecha_documento');
+            $table->string('activo_descripcion');
             $table->float('activo_valor');
             $table->float('activo_valor2');
             $table->float('activo_base_depreciar');
@@ -29,7 +28,7 @@ class CreateActivoFijoTable extends Migration
             $table->float('activo_depreciacion_anual');
             $table->float('activo_depreciacion_acumulada');            
             $table->string('activo_estado');
-            $table->bigInteger('grupo_id')->nullable();;
+            $table->bigInteger('grupo_id');
             $table->foreign('grupo_id')->references('grupo_id')->on('grupo_activo');
             $table->bigInteger('diario_id')->nullable();
             $table->foreign('diario_id')->references('diario_id')->on('diario');

@@ -129,7 +129,7 @@
                                                                 
                                                         </td>
                                                         <td> <input type="number" id="dias" name="dias" class="form-controltext "
-                                                        value="0" min="0" max="31" onclick="calculosueldo();" onkeyup="calculosueldo();" readonly required> </td>
+                                                        value="0" min="0" max="31" onclick="calculosueldo();" onkeyup="calculosueldo();"  required> </td>
                                                         
                                                         <td> <input type="number" id="sueldo" name="sueldo" class="form-controltext"
                                                         value="0.00" min="0"  step="0.01"   required readonly> </td>

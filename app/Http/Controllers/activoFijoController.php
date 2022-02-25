@@ -148,17 +148,10 @@ class activoFijoController extends Controller
             $activoFijo->activo_depreciacion_acumulada = $request->get('idDepreciacionAcumulada');
             $activoFijo->activo_estado = 1;
             $activoFijo->grupo_id = $request->get('idGrupo');
-            $activoFijo->producto_id = $request->get('idProducto');
-            if($request->get('rdDocumento') == 'FACTURA'){
-                $activoFijo->proveedor_id = $request->get('idProveedor');
-                $activoFijo->transaccion_id = $request->get('idFactura');
-                $transacciondiario=Transaccion_Compra::findOrFail($request->get('idFactura'));
-                if(isset($transacciondiario->diario_id)){
-                    $activoFijo->diario_id = $transacciondiario->diario_id;
-                }                
-            }else{
-                $activoFijo->diario_id = $request->get('idDiario');
-            }                          
+            $activoFijo->diario_id = $request->get('idDiario');
+            $activoFijo->producto_id = $request->get('idProducto');                
+            $activoFijo->proveedor_id = $request->get('idProveedor');
+            $activoFijo->transaccion_id = $request->get('idFactura');
             $activoFijo->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
@@ -262,17 +255,12 @@ class activoFijoController extends Controller
             $activoFijo->activo_depreciacion_anual = str_replace(",","",$request->get('idDepreciacionAnual'));
             $activoFijo->activo_depreciacion_acumulada = str_replace(",","",$request->get('idDepreciacionAcumulada'));            
             $activoFijo->grupo_id = $request->get('idGrupo');
+            $activoFijo->diario_id = $request->get('idDiario');
             $activoFijo->producto_id = $request->get('idProducto');            
             if($request->get('rdDocumento') == 'FACTURA'){
                 $activoFijo->proveedor_id = $request->get('idProveedor');
                 $activoFijo->transaccion_id = $request->get('idFactura');
-                $transacciondiario=Transaccion_Compra::findOrFail($request->get('idFactura'));
-                if(isset($transacciondiario->diario_id)){
-                    $activoFijo->diario_id = $transacciondiario->diario_id;
-                }                
-            }else{
-                $activoFijo->diario_id = $request->get('idDiario');
-            }                          
+            }                           
             $activoFijo->save();       
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

@@ -31,5 +31,10 @@ class Detalle_Imagen extends Model
                     )->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'
                     )->where('tipo_imagen.empresa_id','=',Auth::user()->empresa_id
                     )->where('detalle_imagen.detalle_id','=',$id);
-    }   
+    }
+
+    public function imagen()
+    {
+        return $this->hasMany(Imagen::class, 'imagen_id', 'imagen_id');
+    }
 }

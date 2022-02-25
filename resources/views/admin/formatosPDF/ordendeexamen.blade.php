@@ -57,11 +57,11 @@
 </table>
 
 <table>
-@foreach($etiquetas as $etiqueta)
-<tr style="min-width: 235px; height: 70px;background-color: #000000; color: rgb(255, 255, 255); text-align: center;">
-<td >{{$etiqueta->tipo_nombre }}<br>N° {{$analisis->analisis_numero}} <br> {{ $orden->expediente->ordenatencion->paciente->paciente_apellidos }} {{ $orden->expediente->ordenatencion->paciente->paciente_nombres}}</td>      
-</tr>
-@endforeach
+{{--@foreach($etiquetas as $etiqueta) --}}
+{{--<tr style="min-width: 235px; height: 70px;background-color: #000000; color: rgb(255, 255, 255); text-align: center;">--}}
+{{--<td >{{$etiqueta->tipo_nombre }}<br>N° {{$analisis->analisis_numero}} <br> {{ $orden->expediente->ordenatencion->paciente->paciente_apellidos }} {{ $orden->expediente->ordenatencion->paciente->paciente_nombres}}</td>      --}}
+{{--</tr>--}}
+{{--@endforeach--}}
 </table>
 
 

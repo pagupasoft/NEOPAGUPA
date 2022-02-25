@@ -189,8 +189,4 @@ class imagenController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
-
-    public function buscarBy($buscar){
-        return Imagen::buscarImagenes($buscar)->get();
-    }
 }

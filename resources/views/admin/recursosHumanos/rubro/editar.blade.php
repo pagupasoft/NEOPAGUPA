@@ -13,11 +13,18 @@
         </div>
         <div class="card-body">
             <div class="form-group row">
-                <label for="rubro_nombre" class="col-sm-2 col-form-label">Nombre</label>
+                <label for="rubro_nombre" class="col-sm-2 col-form-label">Identificador</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="rubro_nombre" name="rubro_nombre" placeholder="Rubro" value="{{$rubro->rubro_nombre}}" readonly required>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="rubro_descripcion" class="col-sm-2 col-form-label">Descripcion</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="rubro_descripcion" name="rubro_descripcion" placeholder="Ingrese aqui una descripcion" value="{{$rubro->rubro_descripcion}}" required>
+                </div>
+            </div>    
+
             <div class="form-group row">
                 <label for="rubro_tipo" class="col-sm-2 col-form-label">Tipo de Rubro</label>
                 <div class="col-sm-10">
@@ -30,11 +37,16 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="rubro_descripcion" class="col-sm-2 col-form-label">Descripcion</label>
+                <label for="rubro_tipo" class="col-sm-2 col-form-label">Categoria Cosumo</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rubro_descripcion" name="rubro_descripcion" placeholder="Ingrese aqui una descripcion" value="{{$rubro->rubro_descripcion}}" required>
+                    <select class="custom-select" id="categoria" name="categoria" value="{{$rubro->rubro_tipo}}" require>
+                    <option value=""  selected>--Seleccione una opcion--</option>
+                        @foreach($categorias as $categoria)
+                            <option value="{{$categoria->categoria_id}}" @if(isset($rubro->categoria_id))  @if($categoria->categoria_id==$rubro->categoria_id) selected  @endif @endif>{{$categoria->categoria_nombre}}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>                                                      
+            </div>                                            
             <div class="form-group row">
                 <label for="rubro_estado" class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">

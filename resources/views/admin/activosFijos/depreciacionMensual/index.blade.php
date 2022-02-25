@@ -68,8 +68,8 @@
                 @if(isset($activosFijosMatriz))
                     @for ($i = 1; $i <= count($activosFijosMatriz); ++$i)               
                     <tr class="text-center">
-                        <td>{{ $activosFijosMatriz[$i]['Fecha'] }}</td>
-                        <td><a href="{{ url("asientoDiario/ver/{$activosFijosMatriz[$i]['Diario']}")}}" target="_blank">{{ $activosFijosMatriz[$i]['Diario']}}</a></td>                        
+                        <td>{{ $activosFijosMatriz[$i]['Fecha'] }}</td>                        
+                        <td><a href="{{ url("asientoDiario/ver/{$activosFijosMatriz[$i]['Diario']}")}}" target="_blank">{{ $activosFijosMatriz[$i]['Diario']}}</a></td>                                     
                         <td>{{ $activosFijosMatriz[$i]['Producto']}}<input type="hidden" name="activoId[]" id="activoId[]" value="{{ $activosFijosMatriz[$i]['activo_id']}}"></td>
                         <td>{{ $activosFijosMatriz[$i]['TipoActivo']}}</td>
                         <td>{{ $activosFijosMatriz[$i]['Descripcion']}}</td>

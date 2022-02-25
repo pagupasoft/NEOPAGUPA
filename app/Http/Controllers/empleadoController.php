@@ -356,7 +356,7 @@ class empleadoController extends Controller
             }else{
                 $empleado->empleado_estado ="0";
             }
-
+          
             $empleado->empleado_fecha_afiliacion = $request->get('idFechaAfi');
             $empleado->empleado_fecha_inicioFR = $request->get('idFechaIni');            
             $empleado->empleado_cuenta_tipo = $request->get('idCuantaTipo');

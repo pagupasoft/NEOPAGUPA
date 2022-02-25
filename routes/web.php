@@ -973,7 +973,8 @@ Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'present
 
 //BuscarOrarios
 Route::get('/horarios/getDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');
-Route::get('/horarios/getOrdenesMedico', [ordenAtencionIessController::class, 'getOrdenesMedico'])->middleware('auth');
+Route::get('/horarios/getOrdenesMedico', [ordenAtencionController::class, 'getOrdenesMedico'])->middleware('auth');
+Route::get('/horarios/getOrdenesIessMedico', [ordenAtencionIessController::class, 'getOrdenesMedico'])->middleware('auth');
 
 //Crear ROLES
 Route::get('/rolConsolidado/new/{id}', [rolConsolidadoController::class, 'nuevo'])->middleware('auth');

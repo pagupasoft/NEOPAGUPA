@@ -209,6 +209,7 @@ use App\Http\Controllers\formulariosController;
 use App\Http\Controllers\inicializarCuentasCobrarController;
 use App\Http\Controllers\inicializarCuentasPagarController;
 use App\Http\Controllers\listaAsientosDiariosController;
+use App\Http\Controllers\listaControlDiaController;
 use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
 use App\Http\Controllers\listaRolCMController;
@@ -445,6 +446,7 @@ Route::resource('listanotaDebitoBancario', listaNotaDebitoBancoController::class
 Route::resource('cambioPlazo', diasPlazoController::class)->middleware('auth');
 Route::resource('listaAsientoDiario', listaAsientosDiariosController::class)->middleware('auth');
 
+Route::resource('listacontroldia', listaControlDiaController::class)->middleware('auth');
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');
@@ -505,6 +507,7 @@ Route::get('/tipoSeguro/{id}/eliminar', [tipoSeguroController::class, 'delete'])
 Route::get('/medico/{id}/eliminar', [medicoController::class, 'delete'])->middleware('auth');
 Route::get('/tipoMuestra/{id}/eliminar', [tipoMuestraController::class, 'delete'])->middleware('auth');
 Route::get('/tipoRecipiente/{id}/eliminar', [tipoRecipienteController::class, 'delete'])->middleware('auth');
+Route::get('/listacontroldia/{id}/eliminar', [listaControlDiaController::class, 'delete'])->middleware('auth');
 
 Route::get('/tipoMovimiento/{id}/eliminar', [tipoMovimientoegresoController::class, 'delete'])->middleware('auth');
 Route::get('/parametrizacionRol/{id}/eliminar', [parametrizarRolController::class, 'delete'])->middleware('auth');

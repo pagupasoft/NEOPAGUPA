@@ -104,11 +104,6 @@ class Empleado extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)
         ->where('empleado_estado','=','1')->orderBy('empleado_nombre','asc');
     }
-    public function scopeEmpleadosSucursal($query, $sucursal){
-        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
-        ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
-        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)->orderBy('empleado_nombre','asc');
-    }
     
     public function scopeEmpleadosBySucursalAdministrativo($query, $sucursal){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
@@ -122,10 +117,6 @@ class Empleado extends Model
     public function scopeEmpleado($query, $id){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')->where('empleado_id','=',$id);
-    }
-    public function scopeEmpleadoEstado($query, $id){
-        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
-        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_id','=',$id);
     } 
     public function scopeEmpleadoTipo($query, $id){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id'

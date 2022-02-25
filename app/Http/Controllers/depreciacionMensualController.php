@@ -115,11 +115,7 @@ class depreciacionMensualController extends Controller
                         //Tabla de movimientos de caja
                         $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;        
                         $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                        if(isset($activoFijo->diario->diario_codigo)){
-                            $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
-                        }else{
-                            $activosFijosMatriz[$count]['Diario'] = 'NO DIARIO';
-                        }                
+                        $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
                         $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                         $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                         $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;
@@ -473,11 +469,7 @@ class depreciacionMensualController extends Controller
                 //Tabla de movimientos de caja
                 $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;        
                 $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
-                if(isset($activoFijo->diario->diario_codigo)){
-                    $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
-                }else{
-                    $activosFijosMatriz[$count]['Diario'] = 'NO TIENE DIARIO';
-                }
+                $activosFijosMatriz[$count]['Diario'] = $activoFijo->diario->diario_codigo;
                 $activosFijosMatriz[$count]['Producto'] = $activoFijo->producto->producto_nombre;
                 $activosFijosMatriz[$count]['TipoActivo'] = $activoFijo->grupoActivo->grupo_nombre;
                 $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;

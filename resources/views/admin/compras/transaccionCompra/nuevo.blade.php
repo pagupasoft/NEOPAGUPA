@@ -98,7 +98,7 @@
                             <div class="form-group">
                                 <input id="proveedorID" name="proveedorID" type="hidden" @if(isset($poveedorXML)) value="{{$poveedorXML->proveedor_id}}" @endif>
                                 <input id="buscarProveedor" name="buscarProveedor" type="text" class="form-control"
-                                    placeholder="Proveedor" required @if(isset($poveedorXML)) value="{{$poveedorXML->proveedor_nombre}}" " @else disabled @endif>
+                                    placeholder="Proveedor" required @if(isset($poveedorXML)) value="{{$poveedorXML->proveedor_nombre}}" @else disabled @endif>
                             </div>
                         </div>
                         <div class="col-sm-1"><center><a href="{{ url("proveedor/create") }}" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-user"></i>&nbsp;Nuevo</a></center></div>
@@ -1275,23 +1275,4 @@ function OtraFactura(){
     }
 }
 </script>
-    @section('scriptCode')
-        if(!!document.getElementById("proveedorID").value){
-            $.ajax({
-                url: '{{ url("facturasCompra/searchN") }}' + '/' + document.getElementById("proveedorID").value,
-                dataType: "json",
-                type: "GET",
-                async: false,
-                data: {
-                    buscar: document.getElementById("proveedorID").value
-                },
-                success: function(data){
-                    document.getElementById("factura_id").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
-                    for (var i=0; i<data.length; i++) {
-                        document.getElementById("factura_id").innerHTML += "<option value='"+data[i].transaccion_id+"'>"+data[i].transaccion_numero+"</option>";
-                    }           
-                },
-            });
-        }
-    @endsection
 @endsection

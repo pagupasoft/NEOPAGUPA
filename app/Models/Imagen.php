@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Imagen extends Model
 {
@@ -29,5 +30,12 @@ class Imagen extends Model
         return $query->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'
                     )->where('tipo_imagen.empresa_id', '=', Auth::user()->empresa_id
                     )->where('imagen.imagen_id','=',$id);
-    }  
+    }
+
+    public function scopeBuscarImagenes($query, $buscar){
+        return $query->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'
+                    )->where('tipo_imagen.empresa_id', '=', Auth::user()->empresa_id
+                    )->where(DB::raw('lower(imagen_nombre)'), 'like', '%'.strtolower($buscar).'%'
+                    )->where('imagen.imagen_estado','=','1')->orderBy('imagen_nombre','asc');
+    }
 }

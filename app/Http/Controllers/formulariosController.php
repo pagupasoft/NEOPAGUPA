@@ -901,35 +901,33 @@ class formulariosController extends Controller
             ->where('transaccion_compra.transaccion_tarifa12','>',0)->groupBy('sustento_tributario.sustento_compra12')
             ->groupBy('sustento_tributario.sustento_credito')->groupBy('transaccion_porcentaje_iva')
             ->orderBy('sustento_tributario.sustento_compra12')->get() as $compra){
-                if($compra->sustento_compra12 != '535'){
-                    $datos[$count]['sustento'] = ''; 
-                    if($compra->sustento_compra12 == '500'){
-                        $datos[$count]['sustento'] ='Adquisiciones y pagos (excluye activos fijos) gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
-                    }
-                    if($compra->sustento_compra12 == '501'){
-                        $datos[$count]['sustento'] ='Adquisiciones locales de activos fijos gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
-                    }
-                    if($compra->sustento_compra12 == '502'){
-                        $datos[$count]['sustento'] ='Otras adquisiciones y pagos gravados tarifa diferente de cero (sin derecho a crédito tributario)'; 
-                    }
-                    $datos[$count]['porcentaje'] = $compra->transaccion_porcentaje_iva.'%'; 
-                    $datos[$count]['casillero'] = $compra->sustento_compra12; 
-                    $datos[$count]['compraBruta'] = $compra->tarifa12; 
-                    $datos[$count]['nc'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
-                    ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                    ->where('transaccion_porcentaje_iva','=',$compra->transaccion_porcentaje_iva)->where('tipo_comprobante.tipo_comprobante_codigo','=','04')
-                    ->where('sustento_tributario.sustento_compra12','=',$compra->sustento_compra12)->sum('transaccion_compra.transaccion_tarifa12'); 
-                    $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']); 
-                    $datos[$count]['iva'] = floatval($datos[$count]['compraNeta']) * (floatval($compra->transaccion_porcentaje_iva) / 100); 
-                    if($compra->sustento_credito == '1'){
-                        $totalConCredito = $totalConCredito + floatval($datos[$count]['iva']);
-                    }
-                    $total1 = $total1 + $datos[$count]['compraBruta'];
-                    $total2 = $total2 + $datos[$count]['nc'];
-                    $total3 = $total3 + $datos[$count]['compraNeta'];
-                    $total4 = $total4 + $datos[$count]['iva'];
-                    $count ++;
+                $datos[$count]['sustento'] = ''; 
+                if($compra->sustento_compra12 == '500'){
+                    $datos[$count]['sustento'] ='Adquisiciones y pagos (excluye activos fijos) gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
                 }
+                if($compra->sustento_compra12 == '501'){
+                    $datos[$count]['sustento'] ='Adquisiciones locales de activos fijos gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
+                }
+                if($compra->sustento_compra12 == '502'){
+                    $datos[$count]['sustento'] ='Otras adquisiciones y pagos gravados tarifa diferente de cero (sin derecho a crédito tributario)'; 
+                }
+                $datos[$count]['porcentaje'] = $compra->transaccion_porcentaje_iva.'%'; 
+                $datos[$count]['casillero'] = $compra->sustento_compra12; 
+                $datos[$count]['compraBruta'] = $compra->tarifa12; 
+                $datos[$count]['nc'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
+                ->where('transaccion_porcentaje_iva','=',$compra->transaccion_porcentaje_iva)->where('tipo_comprobante.tipo_comprobante_codigo','=','04')
+                ->where('sustento_tributario.sustento_compra12','=',$compra->sustento_compra12)->sum('transaccion_compra.transaccion_tarifa12'); 
+                $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']); 
+                $datos[$count]['iva'] = floatval($datos[$count]['compraNeta']) * (floatval($compra->transaccion_porcentaje_iva) / 100); 
+                if($compra->sustento_credito == '1'){
+                    $totalConCredito = $totalConCredito + floatval($datos[$count]['iva']);
+                }
+                $total1 = $total1 + $datos[$count]['compraBruta'];
+                $total2 = $total2 + $datos[$count]['nc'];
+                $total3 = $total3 + $datos[$count]['compraNeta'];
+                $total4 = $total4 + $datos[$count]['iva'];
+                $count ++;
             }
             $resultado[5]= $datos;
             /*************/
@@ -1011,37 +1009,6 @@ class formulariosController extends Controller
             $count = 1;
             $datos[$count]['sustento'] = 'Pagos Netos por reembolso como intermediario 0%'; 
             $datos[$count]['porcentaje'] = '0%'; 
-            $datos[$count]['casillero'] = '535'; 
-            $datos[$count]['compraBruta'] = 0; 
-            $datos[$count]['nc'] = 0;
-            $datos[$count]['compraNeta'] = 0; 
-            $datos[$count]['iva'] = 0; 
-            foreach(Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
-            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-            ->select('sustento_tributario.sustento_compra0','transaccion_porcentaje_iva',DB::raw('SUM(transaccion_compra.transaccion_tarifa0) as tarifa0')
-            ,DB::raw('SUM(transaccion_compra.transaccion_iva) as iva'))->where('tipo_comprobante.tipo_comprobante_codigo','<>','04')->where('sustento_compra0','=','535')
-            ->where('transaccion_compra.transaccion_tarifa0','>',0)->groupBy('sustento_tributario.sustento_compra0')->groupBy('transaccion_porcentaje_iva')
-            ->orderBy('sustento_tributario.sustento_compra0')->get() as $compra){
-
-                $datos[$count]['sustento'] = 'Pagos Netos por reembolso como intermediario 0%'; 
-                $datos[$count]['porcentaje'] = '0%'; 
-                $datos[$count]['casillero'] = $compra->sustento_compra0; 
-                $datos[$count]['compraBruta'] = $compra->tarifa0; 
-                $datos[$count]['nc'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
-                ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                ->where('transaccion_porcentaje_iva','=',$compra->transaccion_porcentaje_iva)->where('tipo_comprobante.tipo_comprobante_codigo','=','04')
-                ->where('sustento_tributario.sustento_compra0','=',$compra->sustento_compra0)->sum('transaccion_compra.transaccion_tarifa0'); 
-                $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']); 
-                $datos[$count]['iva'] =0; 
-                $total1 = $total1 + $datos[$count]['compraBruta'];
-                $total2 = $total2 + $datos[$count]['nc'];
-                $total3 = $total3 + $datos[$count]['compraNeta'];
-                $total4 = $total4 + $datos[$count]['iva'];
-                $count ++;
-                
-            }
-            /*$datos[$count]['sustento'] = 'Pagos Netos por reembolso como intermediario 0%'; 
-            $datos[$count]['porcentaje'] = '0%'; 
             $datos[$count]['casillero'] = ''; 
             $datos[$count]['compraBruta'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
             ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')
@@ -1059,46 +1026,10 @@ class formulariosController extends Controller
             $total2 = $total2 + $datos[$count]['nc'];
             $total3 = $total3 + $datos[$count]['compraNeta'];
             $total4 = $total4 + $datos[$count]['iva'];
-            $count ++;*/
+            $count ++;
             /*************/
             /*COMPRAS REEMBOLSO 12%*/
             $datos[$count]['sustento'] = 'Pagos Netos por reembolso como intermediario 12%'; 
-            $datos[$count]['porcentaje'] = '12%'; 
-            $datos[$count]['casillero'] = '535'; 
-            $datos[$count]['compraBruta'] = 0; 
-            $datos[$count]['nc'] = 0; 
-            $datos[$count]['compraNeta'] = 0; 
-            $datos[$count]['iva'] = 0; 
-            foreach(Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
-            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-            ->select('sustento_tributario.sustento_compra12','sustento_tributario.sustento_credito','transaccion_porcentaje_iva',DB::raw('SUM(transaccion_compra.transaccion_tarifa12) as tarifa12')
-            ,DB::raw('SUM(transaccion_compra.transaccion_iva) as iva'))->where('tipo_comprobante.tipo_comprobante_codigo','<>','04')
-            ->where('transaccion_compra.transaccion_tarifa12','>',0)->where('sustento_compra12','=','535')->groupBy('sustento_tributario.sustento_compra12')
-            ->groupBy('sustento_tributario.sustento_credito')->groupBy('transaccion_porcentaje_iva')
-            ->orderBy('sustento_tributario.sustento_compra12')->get() as $compra){
-
-                $datos[$count]['sustento'] ='Pagos Netos por reembolso como intermediario 12%'; 
-                $datos[$count]['porcentaje'] = $compra->transaccion_porcentaje_iva.'%'; 
-                $datos[$count]['casillero'] = $compra->sustento_compra12; 
-                $datos[$count]['compraBruta'] = $compra->tarifa12; 
-                $datos[$count]['nc'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
-                ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                ->where('transaccion_porcentaje_iva','=',$compra->transaccion_porcentaje_iva)->where('tipo_comprobante.tipo_comprobante_codigo','=','04')
-                ->where('sustento_tributario.sustento_compra12','=',$compra->sustento_compra12)->sum('transaccion_compra.transaccion_tarifa12'); 
-                $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']); 
-                $datos[$count]['iva'] = floatval($datos[$count]['compraNeta']) * (floatval($compra->transaccion_porcentaje_iva) / 100); 
-                if($compra->sustento_credito == '1'){
-                    $totalConCredito = $totalConCredito + floatval($datos[$count]['iva']);
-                }
-                $total1 = $total1 + $datos[$count]['compraBruta'];
-                $total2 = $total2 + $datos[$count]['nc'];
-                $total3 = $total3 + $datos[$count]['compraNeta'];
-                $total4 = $total4 + $datos[$count]['iva'];
-                $count ++;
-            }
-            $resultado[8]= $datos;
-
-            /*$datos[$count]['sustento'] = 'Pagos Netos por reembolso como intermediario 12%'; 
             $datos[$count]['porcentaje'] = '12%'; 
             $datos[$count]['casillero'] = ''; 
             $datos[$count]['compraBruta'] = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
@@ -1121,8 +1052,8 @@ class formulariosController extends Controller
             $total2 = $total2 + $datos[$count]['nc'];
             $total3 = $total3 + $datos[$count]['compraNeta'];
             $total4 = $total4 + $datos[$count]['iva'];
-            $count ++;*/
-           
+            $count ++;
+            $resultado[8]= $datos;
             /*************/
             /*TOTAL COMPRAS REEMBOLSO 12% Y 0%*/
             $datos = [];

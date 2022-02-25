@@ -7,6 +7,7 @@
         <button class="btn btn-default btn-sm float-right" data-toggle="modal" data-target="#modal-nuevo"><i class="fa fa-plus"></i>&nbsp;Nuevo</button>
         <a class="btn btn-info btn-sm" href="{{ asset('admin/archivos/FORMATO_ACTIVOSFIJOS.xlsx') }}" download="FORMATO ACTIVOS FIJOS"><i class="fas fa-file-excel"></i>&nbsp;Formato</a>
         <a class="btn btn-success btn-sm" href="{{ url("excelActivoFijo") }}"><i class="fas fa-file-excel"></i>&nbsp;Cargar Excel</a>
+        
         </div>
     </div>
     <div class="card-body">

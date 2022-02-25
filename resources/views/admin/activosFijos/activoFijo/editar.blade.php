@@ -200,6 +200,15 @@
                                     <textarea type="text" class="form-control" id="idDescripcion" name="idDescripcion" required>{{$activoFijo->activo_descripcion}}</textarea>
                                 </div>
                         </div>
+                        <div class="form-group row">
+                        <label for="idEstado" class="col-sm-3 col-form-label">Estado</label>
+                        <div class="col-sm-9">
+                            <div class="col-form-label custom-control custom-switch custom-switch-off-danger custom-switch-on-success"> 
+                                    <input type="checkbox" class="custom-control-input" id="idEstado" name="idEstado" @if($activoFijo->activo_estado=="1") checked @endif>
+                                <label class="custom-control-label" for="idEstado"></label>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
                     

@@ -60,7 +60,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get(); 
             $banco=Banco_Lista::BancoListas()->get();
-            $empleados=Empleado::EmpleadosBySucursal($request->get('sucursal_id'))->get();
+            $empleados=Empleado::EmpleadosRolSucursalTodos($request->get('sucursal_id'))->get();
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();
             return view('admin.recursosHumanos.empleado.index',['sucursales'=>Sucursal::sucursales()->get(),'sucursalC'=>$request->get('sucursal_id'),'parametrizacionContable'=>$parametrizacionContable,'empleados'=>$empleados,'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipos'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
      
@@ -231,7 +231,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get();      
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::Empleado($id)->first();
+            $empleado=Empleado::findOrFail($id);   
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();    
             if($empleado){
                 return view('admin.recursosHumanos.empleado.ver',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado, 'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -252,6 +252,7 @@ class empleadoController extends Controller
     public function edit($id)
     {
         try{
+           
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $cargos=Empleado_Cargo::EmpleadoCargos()->get();
@@ -259,7 +260,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get(); 
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::Empleado($id)->first();   
+            $empleado=Empleado::findOrFail($id);   
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();     
             if($empleado){
                 return view('admin.recursosHumanos.empleado.editar',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado,'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -349,9 +350,14 @@ class empleadoController extends Controller
             }else{
                 $empleado->empleado_observacion = '';
             }
+            $empleado->empleado_estado='0';
+            if ($request->get('idEstado') == "on") {
+                $empleado->empleado_estado='1';
+            }
+          
             $empleado->empleado_fecha_afiliacion = $request->get('idFechaAfi');
             $empleado->empleado_fecha_inicioFR = $request->get('idFechaIni');            
-            $empleado->empleado_estado=1;
+            
             $empleado->empleado_cuenta_tipo = $request->get('idCuantaTipo');
             $empleado->empleado_cuenta_numero = $request->get('idCuenta');
             $empleado->cargo_id = $request->get('idCargo');
@@ -359,7 +365,8 @@ class empleadoController extends Controller
             $empleado->empleado_cuenta_anticipo = $request->get('idCuentaAnti');
             $empleado->empleado_cuenta_prestamo = $request->get('idCuentaPres');
             $empleado->tipo_id = $request->get('idTipo');
-            $empleado->banco_lista_id = $request->get('idBanco');                        
+            $empleado->banco_lista_id = $request->get('idBanco');    
+                     
             $empleado->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
@@ -635,7 +642,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get();      
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::Empleado($id)->first();
+            $empleado=Empleado::findOrFail($id);   
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();    
             if($empleado){
                 return view('admin.recursosHumanos.empleado.eliminar',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado, 'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);

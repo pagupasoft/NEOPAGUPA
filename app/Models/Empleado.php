@@ -151,6 +151,14 @@ class Empleado extends Model
         ->where('empresa_departamento.sucursal_id','=',$sucursal)
         ->where('empleado_estado','=','1')->orderBy('empleado_nombre','asc');
     }
+    public function scopeEmpleadosRolSucursalTodos($query,$sucursal){
+        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->join('parametrizar_rol','parametrizar_rol.empresa_id','=','empleado_cargo.empresa_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('empresa_departamento.sucursal_id','=',$sucursal)
+        ->orderBy('empleado_nombre','asc');
+    }
     public function scopeEmpleadosRol($query){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
 

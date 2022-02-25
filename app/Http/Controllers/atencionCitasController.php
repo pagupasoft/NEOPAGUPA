@@ -227,7 +227,11 @@ class atencionCitasController extends Controller
                 }
             }
 
+            $OrdenExamenPdfDir = null;
+
             if (isset($laboratorio)) {
+                $tipos=[];
+
                 $ordenExamen = new Orden_Examen();                
                 if($request->get('otros_examenes')){ 
                     $ordenExamen->orden_otros = $request->get('otros_examenes');
@@ -237,15 +241,28 @@ class atencionCitasController extends Controller
                 $ordenExamen->save();  
                 $auditoria->registrarAuditoria('Ingreso de Examenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
             
-                for ($i = 1; $i < count($laboratorio); ++$i) {
+                for ($i = 0; $i < count($laboratorio); ++$i) {
                     $detalleExamen = new Detalle_Examen();
                     $detalleExamen->detalle_estado="1";
                     $detalleExamen->examen_id=$laboratorio[$i];
                     $detalleExamen->orden_id=$ordenExamen->orden_id;
                     $detalleExamen->save();
+
+                    $examen= $detalleExamen->examen($detalleExamen->examen_id)->first();
+                    $tipo=$examen->tipoExamen($examen->tipo_id)->first();
+                    
+                    $tipos[]= $tipo->tipo_nombre;
+                    $tipos = array_unique($tipos);
+
                     $auditoria->registrarAuditoria('Ingreso de Detalle Examenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con examen Id '.$laboratorio[$i]);
                 }
+
+                $OrdenExamenPdfDir=$this->crearOrdenExamenPdf($atencion, $ordenExamen, $tipos);
             }
+
+            
+            $OrdenImagenPdfDir=null;
+
             if (count($ImagenId)>1) {
                 $ordenImagen = new Orden_Imagen();
                 $ordenImagen->orden_estado = 1;
@@ -265,57 +282,15 @@ class atencionCitasController extends Controller
                     $detalleImagen->imagen_id = $ImagenId[$i];
 
                     $ordenImagen->detalleImagen()->save($detalleImagen);
-                   
                     $auditoria->registrarAuditoria('Ingreso de Detalle Imagenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Las imagenes asignadas fueron -> ' .$Iobservacion[$i]);
                 }
+
+                $OrdenImagenPdfDir=$this->crearOrdenImagenPdf($atencion, $ordenImagen, $request->file('imagefile'));
             }
-
-
-            $date=new DateTime("$atencion->orden_fecha");
-            $fecha=$date->format('d-m-Y');
-
-
-            $empresa = Empresa::empresa()->first();
-            $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero;
-            $imagenes=[];
-
-            if ($request->file('imagefile')) {
-                if (!is_dir(public_path().'/'.$ruta)) {
-                    mkdir(public_path().'/'.$ruta, 0777, true);
-                }
-                
-                $c=0;
-                foreach($request->file('imagefile') as $file){
-                    $c++;
-
-                    if($c>0){
-                        $name = 'imagen_temporal_'.$c.'.jpeg';
-
-                        $path = $file->move(public_path().'/'.$ruta, $name);
-                        $temp = [
-                            'num'=>$c,
-                            'ruta'=>$ruta,
-                            'nombre'=>$name,
-                            'path'=>$path
-                        ];
-
-                        $imagenes[] = $temp;
-                    }
-                }
-            }
-
-            $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenAtencionCitaPdf', ['ordenAtencion'=>$atencion, 'imagenes'=>$imagenes, 'empresa'=>$empresa]);
-            $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
-            if (!is_dir(public_path().'/'.$ruta)) {
-                mkdir(public_path().'/'.$ruta, 0777, true);
-            }
-            $nombreArchivo = 'ANEXOS_ATENCION';
-            PDF::loadHTML($view)->save(public_path().'/'.$ruta.'/'.$nombreArchivo.'.pdf');
-
-            //borrar las imagenes creadas arriba
-            foreach($imagenes as $foto){
-                $result = Storage::delete(public_path().'/'.$foto['ruta'].'/'.$foto['nombre']);
-            }
+            
+            if($request->file('imagefile')!=null) 
+                $AnexoPdfDir=$this->crearAnexoPdf($atencion, $request->file('imagefile'));
+            
 
             $atencion->orden_estado='4';
             $atencion->save();
@@ -323,11 +298,98 @@ class atencionCitasController extends Controller
             $auditoria->registrarAuditoria('Actualizacion de Examen a estado Atendido Numero'.$atencion->orden_numero.' Con Expediente '.$request->get('expediente_id'),$atencion->orden_id, '');
             /*Fin de registro de auditoria */
             DB::commit();
-            return redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
+            $redirect = redirect('atencionCitas')->with('success', 'Datos guardados exitosamente');
+            
+            if(isset($OrdenExamenPdfDir)) $redirect->with('pdf', $OrdenExamenPdfDir);
+            if(isset($OrdenImagenPdfDir)) $redirect->with('pdf2', $OrdenImagenPdfDir);
+            if(isset($AnexoPdfDir)) $redirect->with('diario', $AnexoPdfDir);
+
+            return $redirect;
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
+    }
+
+    private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
+        $empresa = Empresa::empresa()->first();
+        $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
+
+        $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenMedico', ['orden'=>$atencion, 'ordenExamen'=> $ordenExamen, 'tipos'=>$tipos, 'empresa'=>$empresa]);
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        if (!is_dir(public_path().'/'.$ruta)) {
+            mkdir(public_path().'/'.$ruta, 0777, true);
+        }
+        $nombreArchivo = 'ORDEN_EXAMENES';
+        PDF::loadHTML($view)->save(public_path().'/'.$ruta.'/'.$nombreArchivo.'.pdf');
+
+        return $ruta.'/'.$nombreArchivo.'.pdf';
+    }
+
+    private function crearOrdenImagenPdf($atencion, $ordenImagen, $imagefile){
+        $empresa = Empresa::empresa()->first();
+        $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
+
+        //$detalleImagen = Detalle_Imagen::DetalleImagen($ordenImagen->orden_id);
+
+        $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenImagen', ['orden'=>$atencion, 'ordenImagen'=> $ordenImagen, 'empresa'=>$empresa]);
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        if (!is_dir(public_path().'/'.$ruta)) {
+            mkdir(public_path().'/'.$ruta, 0777, true);
+        }
+        $nombreArchivo = 'ORDEN_IMAGENES';
+        PDF::loadHTML($view)->save(public_path().'/'.$ruta.'/'.$nombreArchivo.'.pdf');
+
+        return $ruta.'/'.$nombreArchivo.'.pdf';
+    }
+
+    private function crearAnexoPdf($atencion, $imagefile){
+        $imagenes=[];
+        $empresa = Empresa::empresa()->first();
+        $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
+
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+
+        if ($imagefile) {
+            if (!is_dir(public_path().'/'.$ruta)) {
+                mkdir(public_path().'/'.$ruta, 0777, true);
+            }
+            
+            $c=0;
+            foreach($imagefile as $file){
+                $c++;
+
+                if($c>0){
+                    $name = 'imagen_temporal_'.$c.'.jpeg';
+
+                    $path = $file->move(public_path().'/'.$ruta, $name);
+                    $temp = [
+                        'num'=>$c,
+                        'ruta'=>$ruta,
+                        'nombre'=>$name,
+                        'path'=>$path
+                    ];
+
+                    $imagenes[] = $temp;
+                }
+            }
+        }
+
+        
+        $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenAtencionCitaPdf', ['ordenAtencion'=>$atencion, 'imagenes'=>$imagenes, 'empresa'=>$empresa]);
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        if (!is_dir(public_path().'/'.$ruta)) {
+            mkdir(public_path().'/'.$ruta, 0777, true);
+        }
+        $nombreArchivo = 'ANEXOS_ATENCION';
+        PDF::loadHTML($view)->save(public_path().'/'.$ruta.'/'.$nombreArchivo.'.pdf');
+
+        //borrar las imagenes creadas arriba
+        foreach($imagenes as $foto){
+            $result = Storage::delete(public_path().'/'.$foto['ruta'].'/'.$foto['nombre']);
+        }
+
+        return $ruta.'/'.$nombreArchivo.'.pdf';
     }
 
     /**

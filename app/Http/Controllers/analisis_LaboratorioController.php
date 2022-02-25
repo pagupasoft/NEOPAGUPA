@@ -48,10 +48,11 @@ class analisis_LaboratorioController extends Controller
     { 
         try{
             $orden = Orden_Examen::findOrFail($id);
+            $analisis = Analisis_Laboratorio::findOrFail( $orden->analisis->analisis_laboratorio_id);
             $ordenes = Orden_Examen::Ordenanalisis($id)->get();
             $tipo= Orden_Examen::Ordenanalisis($id)->select('tipo_examen.tipo_id','tipo_examen.tipo_nombre')->distinct()->get();
             $empresa =  Empresa::empresa()->first();
-            $view =  \View::make('admin.formatosPDF.ordendeexamen', ['ordenes'=>$ordenes,'tipo'=>$tipo,'orden'=>$orden,'empresa'=>$empresa]);
+            $view =  \View::make('admin.formatosPDF.ordendeexamen', ['analisis'=>$analisis,'ordenes'=>$ordenes,'tipo'=>$tipo,'orden'=>$orden,'empresa'=>$empresa]);
             $ruta = public_path().'/ordenesExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $orden->analisis->analisis_fecha)->format('d-m-Y');
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);

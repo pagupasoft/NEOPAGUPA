@@ -34,7 +34,7 @@
 					$("#buscarImagen").val(ui.item.nombre)
 					$("#idImagen").val(ui.item.id)
 
-					$("#btAnadirImagen").click();
+					//$("#btAnadirImagen").click();
 
 					//$("#buscarProducto").val(ui.item.nombre)
 

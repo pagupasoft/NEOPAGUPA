@@ -47,6 +47,11 @@ class Examen extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id', 'producto_id');
+    }
+
+    public function tipoExamen()
+    {
+        return $this->belongsTo(Tipo_Examen::class, 'tipo_id', 'tipo_id');
     } 
      
 }

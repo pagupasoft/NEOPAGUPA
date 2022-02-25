@@ -58,6 +58,15 @@ class Control_Dia extends Model
         ->where('empleado_estado','=','1')->where('control_estado','=','1')
         ->where('empleado.empleado_id','=', $id)->where('control_dias.control_fecha','=', $fecha);
     }
+    public function scopeControldiaDetalle($query, $id,$mes,$anio){
+        return $query->join('detalle_control_dias', 'control_dias.control_id', '=', 'detalle_control_dias.control_id')->join('empleado', 'control_dias.empleado_id', '=', 'empleado.empleado_id')->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('empleado_estado','=','1')
+        ->where('control_estado','=','1')
+        ->where('empleado.empleado_id','=', $id)
+        ->where('control_mes','=', $mes)
+        ->where('control_ano','=', $anio);
+    }
     public function scopebuscarEmpleado($query, $id){
         return $query->join('empleado', 'control_dias.empleado_id', '=', 'empleado.empleado_id')->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)

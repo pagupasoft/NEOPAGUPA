@@ -550,7 +550,7 @@ Route::post('eliminarquincena', [quincenaConsolidadaController::class, 'eliminar
 
 Route::post('cargarIngreso', [rubroController::class, 'cargaringreso'])->middleware('auth');
 Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middleware('auth');
-
+Route::post('cargarControldias', [controlDiasController::class, 'cargarControldias'])->middleware('auth');
 
 /*RUTAS ADICIONALES*/
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');

@@ -65,19 +65,18 @@ class controlDiasController extends Controller
     {
         try{       
             DB::beginTransaction();
+           
             
             $general = new generalController();
             $cierre = $general->cierre($request->get('fecha'));          
             if($cierre){
                 return redirect('controldiario/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-
-           
-            if(Control_Dia::ControldiaExisteRol($request->get('empleado_id'),$request->get('fecha'))->first()){
+            if(count(Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->get())>0){
                 return redirect('controldiario/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que esta asignado a un rol');
             } 
-            if(Control_Dia::ControldiaExiste($request->get('empleado_id'),$request->get('fecha'))->first()){
-                $control=Control_Dia::ControldiaExiste($request->get('empleado_id'),$request->get('fecha'))->first();
+            if(Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->first()){
+                $control=Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->first();
                 $control_dia=Control_Dia::findOrFail($control->control_id);
                 foreach($control_dia->detalles as $detalle){
                     $detalle->delete();
@@ -188,7 +187,21 @@ class controlDiasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $general = new generalController();
+            $control_dia=Control_Dia::findOrFail($id);
+            foreach($control_dia->detalles as $detalle){
+                $detalle->delete();
+                $general->registrarAuditoria('Eliminacion de Detalle de Control de dias con el empleado -> '.$control_dia->empleado->empleado_nombre,'0','');
+            }
+            $control_dia->delete();
+            $general->registrarAuditoria('Eliminacion de Control de dias con el empleado -> '.$control_dia->empleado->empleado_nombre,'0','');
+        }
+        catch(\Exception $ex){
+        DB::rollBack();
+        return redirect('listacontroldia')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
     public function buscarByEmpleado($id){
         return Control_Dia::buscarEmpleado($id)->get();

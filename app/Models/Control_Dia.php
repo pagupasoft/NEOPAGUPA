@@ -40,6 +40,16 @@ class Control_Dia extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('control_estado','=','1')->orderBy('empleado_nombre','asc');
     }
+    public function scopeControldiasbuscar($query, $empleado,$mes,$anio){
+        return $query->join('empleado', 'control_dias.empleado_id', '=', 'empleado.empleado_id')->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->orderBy('empleado_nombre','asc');
+        if($empleado != '0'){
+            $query->where('empleado.empleado_id','=',$empleado);
+        }   
+        $query->where('control_mes','=',$mes)->where('control_ano','=',$anio);
+        return $query;
+    }
     public function scopeControldia($query, $id){
         return $query->join('empleado', 'control_dias.empleado_id', '=', 'empleado.empleado_id')->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)

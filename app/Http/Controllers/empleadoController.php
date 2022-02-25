@@ -231,7 +231,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get();      
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::Empleado($id)->first();
+            $empleado=Empleado::findOrFail($id);
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();    
             if($empleado){
                 return view('admin.recursosHumanos.empleado.ver',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado, 'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -259,7 +259,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get(); 
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::EmpleadoEstado($id)->first();   
+            $empleado=Empleado::findOrFail($id);
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();     
             if($empleado){
                 return view('admin.recursosHumanos.empleado.editar',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado,'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -350,13 +350,10 @@ class empleadoController extends Controller
             }else{
                 $empleado->empleado_observacion = '';
             }
-           
+            $empleado->empleado_estado ="0";
             if($request->get('idEstado')== "on"){
                 $empleado->empleado_estado ="1";
-            }else{
-                $empleado->empleado_estado ="0";
             }
-
             $empleado->empleado_fecha_afiliacion = $request->get('idFechaAfi');
             $empleado->empleado_fecha_inicioFR = $request->get('idFechaIni');            
             $empleado->empleado_cuenta_tipo = $request->get('idCuantaTipo');
@@ -642,7 +639,7 @@ class empleadoController extends Controller
             $cuentas=Cuenta::CuentasMovimiento()->get(); 
             $tipo=Tipo_Empleado::Tipos()->get();      
             $banco=Banco_Lista::BancoListas()->get();
-            $empleado=Empleado::Empleado($id)->first();
+            $empleado=Empleado::findOrFail($id);
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();    
             if($empleado){
                 return view('admin.recursosHumanos.empleado.eliminar',['parametrizacionContable'=>$parametrizacionContable,'empleado'=>$empleado, 'PE'=>Punto_Emision::puntos()->get(),'cargos'=>$cargos,'departamentos'=>$departamentos,'cuentas'=>$cuentas, 'tipo'=>$tipo, 'banco'=>$banco,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);

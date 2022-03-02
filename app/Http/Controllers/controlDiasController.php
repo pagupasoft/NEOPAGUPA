@@ -65,17 +65,15 @@ class controlDiasController extends Controller
     {
         try{       
             DB::beginTransaction();
-           
-            
             $general = new generalController();
             $cierre = $general->cierre($request->get('fecha'));          
             if($cierre){
                 return redirect('controldiario/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-            if(count(Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->get())>0){
+            if(count(Control_Dia::ControldiaDetalleRol($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->get())>0){
                 return redirect('controldiario/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que esta asignado a un rol');
             } 
-            if(Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->first()){
+            if(count(Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->get())>0){
                 $control=Control_Dia::ControldiaDetalle($request->get('empleado_id'),$request->get('mes'),$request->get('anio'))->first();
                 $control_dia=Control_Dia::findOrFail($control->control_id);
                 foreach($control_dia->detalles as $detalle){
@@ -187,20 +185,22 @@ class controlDiasController extends Controller
      */
     public function destroy($id)
     {
-        try {
+        try{
             DB::beginTransaction();
-            $general = new generalController();
-            $control_dia=Control_Dia::findOrFail($id);
-            foreach($control_dia->detalles as $detalle){
-                $detalle->delete();
-                $general->registrarAuditoria('Eliminacion de Detalle de Control de dias con el empleado -> '.$control_dia->empleado->empleado_nombre,'0','');
+            $auditoria=new generalController();
+            $controldia=Control_Dia::findOrFail($id);
+            foreach($controldia->detalles as $control){
+                $control->delete();
+                $auditoria->registrarAuditoria('Eliminar el control de Detalle de dias con el empleado -> '.$controldia->empleado->empleado_nombre,$controldia->control_id,'');
             }
-            $control_dia->delete();
-            $general->registrarAuditoria('Eliminacion de Control de dias con el empleado -> '.$control_dia->empleado->empleado_nombre,'0','');
+            $controldia->delete();
+            $auditoria->registrarAuditoria('Eliminar el control de dias con el empleado -> '.$controldia->empleado->empleado_nombre,$controldia->control_id,'');
+            DB::commit();
+            return redirect('listacontroldia')->with('success','Datos Eliminados exitosamente');
         }
         catch(\Exception $ex){
-        DB::rollBack();
-        return redirect('listacontroldia')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            DB::rollBack();      
+            return redirect('listacontroldia')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
     public function buscarByEmpleado($id){

@@ -54,10 +54,14 @@ class listaControlDiaController extends Controller
             
             $anio = $temp->format('Y');
             $mes=strftime("%B", strtotime($request->get('fechames').'-01'));
+
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $empleado=Control_Dia::Controldias()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+           
+           
             $controldia=Control_Dia::Controldiasbuscar($request->get('nombre_empleado'),$mes,$anio)->get();
+            
             return view('admin.recursosHumanos.listaControlDia.index',['controles'=>$controldia,'fechames'=>$request->get('fechames'),'nombre_empleado'=>$request->get('nombre_empleado'),'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
         }
         catch(\Exception $ex){      
@@ -144,6 +148,6 @@ class listaControlDiaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

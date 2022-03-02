@@ -19,7 +19,7 @@
                 <label for="nombre_empleado" class="col-sm-1 col-form-label"><center>empleado:</center></label>
                 <div class="col-sm-5">
                     <select class="custom-select select2" id="nombre_empleado" name="nombre_empleado" >
-                        <option value="--TODOS--" label>--TODOS--</option>                       
+                        <option value="0" label>--TODOS--</option>                       
                         @foreach($empleado as $empleado)
                             <option id="{{$empleado->empleado_nombre}}" name="{{$empleado->empleado_nombre}}" value="{{$empleado->empleado_id}}">{{$empleado->empleado_nombre}}</option>
                         @endforeach
@@ -34,21 +34,23 @@
                 <thead>
                     <tr class="text-center">
                         <th></th>
-                        <th>Empleado</th>
                         <th>Mes</th>
                         <th>Año</th>
-                        <th>Rol</th>
+                        <th>Empleado</th>
+                      
+
                     </tr>
                 </thead>
                 <tbody>
                     @if(isset($controles))
                    @foreach($controles as $control)
                    <tr>
-                            <td class="text-center">@if(isset($control->rolcm)) <a href="{{url("listacontroldia/{$control->control_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif</td>                         
-                            <td class="text-center">{{ $control->empleado_nombre}}</td>
+                            <td class="text-center">@if($control->control_estado=='1') <a href="{{url("listacontroldia/{$control->control_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif</td>                         
                             <td class="text-center">{{ $control->control_mes}}</td>
                             <td class="text-center">{{ $control->control_ano}}</td>
-                            <td class="text-center"> @if(isset($control->rolcm)) {{$control->control_numero}} @endif</td>
+                            <td class="text-center">{{ $control->empleado_nombre}}</td>
+                           
+                       
                     </tr>
                    @endforeach
                    @endif

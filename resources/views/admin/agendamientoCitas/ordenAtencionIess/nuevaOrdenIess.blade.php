@@ -728,7 +728,7 @@
 
         $.ajax({
             async: false,
-            url: '{{ url("horarios/getOrdenesMedico") }}',
+            url: '{{ url("horarios/getOrdenesIessMedico") }}',
             dataType: "json",
             type: "GET",
             data: {

@@ -974,10 +974,16 @@ Route::get('/anticipoProveedor/new/{id}', [anticipoProveedorController::class, '
 Route::get('/anticipoEmpleado/new/{id}', [anticipoEmpleadoController::class, 'nuevo'])->middleware('auth');
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 
-//BuscarOrarios
-Route::get('/horarios/getDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');
+//BuscarHorarios
+Route::get('/horarios/getCitaDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');
 Route::get('/horarios/getOrdenesMedico', [ordenAtencionController::class, 'getOrdenesMedico'])->middleware('auth');
 Route::get('/horarios/getOrdenesIessMedico', [ordenAtencionIessController::class, 'getOrdenesMedico'])->middleware('auth');
+
+//ordenes de examen
+Route::get('/examenes/testOrden', [atencionCitasController::class, 'pruebaOrden'])->middleware('auth');
+Route::get('/examenes/testGetOrdenes', [atencionCitasController::class, 'pruebaGetOrdenes'])->middleware('auth');
+Route::get('/examenes/testGetOrden', [atencionCitasController::class, 'pruebaGetOrden'])->middleware('auth');
+Route::get('/examenes/testGetOrdenPdf', [atencionCitasController::class, 'pruebaGetOrdenPdf'])->middleware('auth');
 
 //Crear ROLES
 Route::get('/rolConsolidado/new/{id}', [rolConsolidadoController::class, 'nuevo'])->middleware('auth');

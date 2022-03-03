@@ -125,7 +125,7 @@
                                                     <tr class="editable">
 
                                                         <td >{{ $detalles[$i]['Descripcion'] }} </td>
-                                                        <td >{{ $detalles[$i]['Valor'] }} </td> 
+                                                        <td >{{ number_format($detalles[$i]['Valor'],2) }} </td> 
                                                     </tr> 
                                                     @endif
                                                     @endfor
@@ -175,7 +175,7 @@
                                                         <tr class="editable">
 
                                                             <td >{{ $detalles[$i]['Descripcion'] }} </td>
-                                                            <td >{{ $detalles[$i]['Valor'] }} </td> 
+                                                            <td >{{ number_format($detalles[$i]['Valor'],2) }} </td> 
                                                         </tr> 
                                                         @endif
                                                         @endfor
@@ -234,7 +234,7 @@
                                                         <td class="text-center-encabesado">{{ $detalles[$i]['fechafin'] }} </td>
                                                         <td class="text-center-encabesado">100 </td>
                                                         <td class="text-center-encabesado">30 </td>
-                                                        <td class="text-center-encabesado">{{ $detalles[$i]['Valor'] }} </td> 
+                                                        <td class="text-center-encabesado">{{ number_format($detalles[$i]['Valor'],2) }} </td> 
                                                     </tr> 
                                                     @endif
                                                     @endfor

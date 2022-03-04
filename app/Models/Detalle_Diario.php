@@ -43,6 +43,10 @@ class Detalle_Diario extends Model
     public function scopeDetalleDiario($query, $id){
         return $query->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('detalle_id','=',$id);
     }
+    public function scopeEmpleadodiario($query, $id,$empleado){
+        return $query->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_id','=',$id)->where('empleado_id','=',$empleado);
+    }
+
     public function scopeDetalleDiarioXdiario($query, $id){
         return $query->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_id','=',$id);
     }

@@ -654,7 +654,12 @@ class anticipoProveedorController extends Controller
                         $anticipo->anticipo_estado = '1';
                     }
                     $anticipo->update();
-                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
+                    if (isset($descuento->transaccionCompra->cuentaPagar)) {
+                        $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
+                    }
+                    if (!isset($descuento->transaccionCompra->cuentaPagar)) {
+                        $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                    }
                 }
             }
             DB::commit();

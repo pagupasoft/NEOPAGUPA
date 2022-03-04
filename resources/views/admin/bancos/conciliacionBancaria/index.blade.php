@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class=" row">
-                        <div class="col-lg-6 col-md-6">
+                        <div class="col-lg-5 col-md-5">
                             <div class=" row">
                                 <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Saldo Anterior Contable :</label>
                                 <div class="col-lg-5 col-md-5">
@@ -90,64 +90,139 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6">
+                        <div class="col-lg-7 col-md-7">
                             <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label"></label>
-                                <div class="col-lg-3 col-md-3"><center><label for="idDesde">Conciliado</label></center></div>
-                                <div class="col-lg-3 col-md-3"><center><label for="idDesde">No Conciliado</label></center></div>
-                            </div>
-                            <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;+ Depositos :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[0],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[1],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;+ Notas de Crédito :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[2],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[3],2) }}' @else value='0.00' @endif readonly>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label"></label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4"><center><label for="idDesde">Conciliado</label></center></div>
+                                                <div class="col-lg-4 col-md-4"><center><label for="idDesde">No Conciliado</label></center></div>
+                                                <div class="col-lg-4 col-md-4"><center><label for="idDesde">Conciliado Otros</label></center></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;- Notas de Débito :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[4],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[5],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;- Cheques Egresos :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[6],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[7],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;- Transferencias Egresos :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[8],2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[9],2) }}' @else value='0.00' @endif readonly>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;+ Depositos :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($depositosConciliados)) value='{{ number_format($depositosConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($depositosNoConciliados)) value='{{ number_format($depositosNoConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($depositosConciliadosOtros)) value='{{ number_format($depositosConciliadosOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <label for="idDesde" class="col-lg-5 col-md-5 col-form-label">&nbsp;&nbsp;+ Transferencias Ingresos :</label>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[10],2) }}' @else value='0.00' @endif readonly>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;+ Notas de Crédito :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($ncConciliado)) value='{{ number_format($ncConciliado,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($ncNoConciliado)) value='{{ number_format($ncNoConciliado,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                <input type="text" class="form-control derecha-texto" @if(isset($ncConciliadoOtros)) value='{{ number_format($ncConciliadoOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($resumen)) value='{{ number_format($resumen[11],2) }}' @else value='0.00' @endif readonly>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;- Notas de Débito :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($ndConciliado)) value='{{ number_format($ndConciliado,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($ndNoConciliado)) value='{{ number_format($ndNoConciliado,2) }}' @else value='0.00' @endif readonly>    
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($ndConciliadoOtros)) value='{{ number_format($ndConciliadoOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;- Cheques Egresos :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($chequesConciliados)) value='{{ number_format($chequesConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($chequesNoConciliados)) value='{{ number_format($chequesNoConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($chequesConciliadosOtros)) value='{{ number_format($chequesConciliadosOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;- Transferencias Egresos :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciasEgresosConciliadas)) value='{{ number_format($transferenciasEgresosConciliadas,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciasEgresosNoConciliadas)) value='{{ number_format($transferenciasEgresosNoConciliadas,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciasEgresosConciliadasOtros)) value='{{ number_format($transferenciasEgresosConciliadasOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label for="idDesde" class="col-lg-4 col-md-4 col-form-label">&nbsp;&nbsp;+ Transferencias Ingresos :</label>
+                                        <div class="col-lg-8 col-md-8">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciaIngresosConciliados)) value='{{ number_format($transferenciaIngresosConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciaIngresosNoConciliados)) value='{{ number_format($transferenciaIngresosNoConciliados,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4">
+                                                    <input type="text" class="form-control derecha-texto" @if(isset($transferenciaIngresosConciliadosOtros)) value='{{ number_format($transferenciaIngresosConciliadosOtros,2) }}' @else value='0.00' @endif readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -155,42 +230,49 @@
                 </div>
             </div>
             <hr>
-            <table class="table table-bordered table-hover table-responsive sin-salto">
+            <?php $saldo = 0; ?>
+            <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
                     <tr class="text-center">
                         <th>Cons.</th>
                         <th>Fecha</th>
+                        <th>Fecha Cons.</th>
                         <th>Tipo</th>
                         <th>Numero</th>
                         <th>Crédito</th>
                         <th>Débito</th>
+                        <th>Saldo</th>
                         <th>Diario</th>
                         <th>Beneficiario</th>
-                        <th>Referencia</th>
-                        <th>Fecha Cons.</th>                        
+                        <th>Referencia</th>                                               
                     </tr>
                 </thead>
-                <tbody>
-                    @if(isset($movimientos))
-                        @foreach($movimientos as $movimiento)
-                            <tr>
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $movimiento->detalle_id }}" name="chk-{{ $movimiento->detalle_id }}" @if($movimiento->detalle_conciliacion == 1) checked @endif >
-                                        <label for="chk-{{ $movimiento->detalle_id }}" class="custom-control-label"></label>
-                                    </div>
-                                </td>
-                                <td>{{ $movimiento->diario->diario_fecha }}</td>
-                                <td>{{ $movimiento->detalle_tipo_documento }}</td>
-                                <td>{{ $movimiento->diario->diario_numero_documento }}</td>
-                                <td>{{ number_format($movimiento->detalle_debe, 2) }}</td>
-                                <td>{{ number_format($movimiento->detalle_haber, 2) }}</td>
-                                <td><a href="{{ url("asientoDiario/ver/{$movimiento->diario->diario_codigo}")}}" target="_blank">{{ $movimiento->diario->diario_codigo }}</a></td>
-                                <td>{{ $movimiento->diario->diario_beneficiario }}</td>
-                                <td>{{ $movimiento->detalle_comentario }}</td>
-                                <td>{{ $movimiento->detalle_fecha_conciliacion }}</td>
-                            </tr>
-                        @endforeach
+                <tbody>                   
+                    @if(isset($conciliacionBancariaMatriz))
+                        @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
+                        <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
+                        <tr class="text-center">
+                            <td>
+                                <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
+                                @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
+                                    <label for="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
+                                </div>
+                                @endif
+                            </td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
+                            <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
+                            <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>    
+                            <td>{{ $saldo}}</td>                           
+                            <td>{{ $conciliacionBancariaMatriz[$i]['diario']}}</td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['Beneficiario']}}</td>
+                            <td>{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
+                        </tr>
+                        @endfor
                     @endif
                 </tbody>
             </table>
@@ -201,38 +283,42 @@
                     <tr class="text-center">
                         <th>Cons.</th>
                         <th>Fecha</th>
+                        <th>Fecha Cons.</th>
                         <th>Tipo</th>
                         <th>Numero</th>
                         <th>Crédito</th>
                         <th>Débito</th>
+                        <th>Saldo</th>
                         <th>Diario</th>
                         <th>Beneficiario</th>
-                        <th>Referencia</th>
-                        <th>Fecha Cons.</th>                        
+                        <th>Referencia</th>                                               
                     </tr>
                 </thead>
                 <tbody>
-                    @if(isset($movimientosOtros))
-                        @foreach($movimientosOtros as $movimiento)
-                            <tr>
-                                <td>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $movimiento->detalle_id }}" name="chk-{{ $movimiento->detalle_id }}" @if($movimiento->detalle_conciliacion == 1) checked @endif >
-                                        <label for="chk-{{ $movimiento->detalle_id }}" class="custom-control-label"></label>
-                                    </div>
-                                </td>
-                                <td>{{ $movimiento->diario->diario_fecha }}</td>
-                                <td>{{ $movimiento->detalle_tipo_documento }}</td>
-                                <td></td>
-                                <td>{{ number_format($movimiento->detalle_debe, 2) }}</td>
-                                <td>{{ number_format($movimiento->detalle_haber, 2) }}</td>
-                                <td>{{ $movimiento->diario->diario_codigo }}</td>
-                                <td></td>
-                                <td>{{ $movimiento->detalle_comentario }}</td>
-                                <td>{{ $movimiento->detalle_fecha_conciliacion }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
+                @if(isset($otrasconciliacionesBancariaMatriz))
+                        @for ($c = 0; $c < count($otrasconciliacionesBancariaMatriz); ++$c)      
+                        <?php $saldo = $saldo + $otrasconciliacionesBancariaMatriz[$c]['credito'] - $otrasconciliacionesBancariaMatriz[$c]['debito']; ?>         
+                        <tr class="text-center">
+                            <td>
+                                <input type="hidden" name="idonciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}"/>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" name="chkConciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion'] == true) checked @endif >
+                                    <label for="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" class="custom-control-label"></label>
+                                </div>
+                            </td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>
+                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['credito'],2)}}</td>
+                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['debito'],2)}}</td>    
+                            <td>{{ $saldo}}</td>                              
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['Beneficiario']}}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['referencia']}}</td>                            
+                        </tr>
+                        @endfor
+                    @endif                    
                 </tbody>
             </table>
         </div>

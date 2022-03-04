@@ -242,7 +242,7 @@ class cuentaBancariaController extends Controller
             
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Configuracion de Impresion del Cheque perteneciente al ->'.$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'0','');
+            $auditoria->registrarAuditoria('Configuracion de Impresion del Cheque perteneciente al -> '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.' -> '.$cuentaBancaria->cuenta_bancaria_numero,'0','');
             /*Fin de registro de auditoria */
             DB::commit();
             return redirect('cuentaBancaria')->with('success','Datos guardados exitosamente');

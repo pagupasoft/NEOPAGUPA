@@ -305,6 +305,34 @@
         });
     });
     $(function() {
+        $("#tableCons1").DataTable({
+            "responsive": false,
+            "lengthChange": false,
+            "autoWidth": false,
+            "bSort": false,
+            "ordering": false,
+            "bPaginate":false,
+            //"scrollY":500,
+            "deferRender":true,
+            //"scroller":true,
+            "buttons": ["copy", "excel"]
+        }).buttons().container().appendTo('#tableCons1_wrapper .col-md-6:eq(0)');
+    });
+    $(function() {
+        $("#tableCons2").DataTable({
+            "responsive": false,
+            "lengthChange": false,
+            "autoWidth": false,
+            "bSort": false,
+            "ordering": false,
+            "bPaginate":false,
+           // "scrollY":500,
+            "deferRender":true,
+            //"scroller":true,
+            "buttons": ["copy", "excel"]
+        }).buttons().container().appendTo('#tableCons2_wrapper .col-md-6:eq(0)');
+    });
+    $(function() {
         $('[data-toggle="tooltip"]').tooltip()
     });
     var toggler = document.getElementsByClassName("caret");

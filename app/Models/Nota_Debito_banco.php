@@ -23,7 +23,9 @@ class Nota_Debito_banco extends Model
         'nota_estado',  
         'diario_id',
         'cuenta_bancaria_id',     
-        'rango_id',        
+        'rango_id',
+        'nota_conciliacion',
+        'nota_fecha_conciliacion',          
     ];
     protected $guarded =[
     ];
@@ -32,6 +34,12 @@ class Nota_Debito_banco extends Model
     }
     public function scopeNotaCreditoBanco($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','nota_debito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_id','=',$id);
+    }
+    public function scopeNDbancoByCuenta($query, $id){
+        return $query->join('rango_documento','rango_documento.rango_id','=','nota_debito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_debito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_debito_banco.nota_fecha');
+    }
+    public function scopeNDbancoOtrosByCuenta($query, $id){
+        return $query->join('rango_documento','rango_documento.rango_id','=','nota_debito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_debito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_debito_banco.nota_fecha');
     }
     public function scopeSecuencial($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','nota_debito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('rango_documento.rango_id','=',$id);

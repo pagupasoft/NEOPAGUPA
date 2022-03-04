@@ -39,6 +39,9 @@ class Egreso_Banco extends Model
     public function scopeEgresoBanco($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','egreso_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('egreso_id','=',$id);
     }
+    public function scopeEgresoBancoByCuenta($query, $id, $fechaInicio, $fechaFin){
+        return $query->join('rango_documento','rango_documento.rango_id','=','egreso_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('egreso_banco.cuenta_bancaria_id','=',$id)->where('egreso_banco.egreso_fecha','>=',$fechaInicio)->where('egreso_banco.egreso_fecha','<=',$fechaFin)->orderby('egreso_banco.egreso_fecha');
+    }
     public function scopeSecuencial($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','egreso_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('rango_documento.rango_id','=',$id);
 

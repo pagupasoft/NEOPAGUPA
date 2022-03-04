@@ -13,16 +13,16 @@
     </div>
     <div class="card-body">
         <div class="form-group">
-            <div id="id1" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 500px;cursor:pointer;width:400px;height:50px;">Juan Piwabe Ortiz</div>
+            <div id="id1" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 500px;cursor:pointer;width:400px;height:50px; font-weight: bold;">JUAN PIWABE ORTIZ</div>
             <input id="idBeneficiariox" name="idBeneficiariox" type="hidden">
             <input id="idBeneficiarioy" name="idBeneficiarioy" type="hidden">
-            <div id="id2" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 550px;cursor:pointer;width:100px;height:50px;">15805.89</div>
+            <div id="id2" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 550px;cursor:pointer;width:100px;height:50px; font-weight: bold;">15805.89</div>
             <input id="idValorx" name="idValorx" type="hidden">
             <input id="idValory" name="idValory" type="hidden">
-            <div id="id3" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 600px;cursor:pointer;width:100px;height:50px;">27/12/2021</div>
+            <div id="id3" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 600px;cursor:pointer;width:200px;height:18px; font-weight: bold;">MACHALA, 27/12/2021</div>
             <input id="idFechax" name="idFechax" type="hidden">
             <input id="idFechay" name="idFechay" type="hidden">
-            <div id="id4" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 650px;cursor:pointer;width:450px;height:50px;">Quince mil ochocientos cinco con 89/100 dolares</div>
+            <div id="id4" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 650px;cursor:pointer;width:450px;height:50px; font-weight: bold;">QUINCE MIL OCHOCIENTOS CINCO CON 89/100</div>
             <input id="idLetrasx" name="idLetrasx" type="hidden">
             <input id="idLetrasy" name="idLetrasy" type="hidden">
 

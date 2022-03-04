@@ -623,21 +623,19 @@ class anticipoProveedorController extends Controller
                     }
                     if(isset($descuento->transaccionCompra->cuentaPagar)){
                         $cxpAux = $descuento->transaccionCompra->cuentaPagar;
-                        $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                        if($cxpAux->cuenta_saldo == 0){
-                            $cxpAux->cuenta_estado = '2';
-                        }else{
-                            $cxpAux->cuenta_estado = '1';
-                        }
-                        $cxpAux->update();
-                         $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
                     }
                     foreach($diario->detalles as $detalle){
                         $detalle->delete();
                         $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por pagar');  
                     }
                     $descuento->delete();
-                    
+                    $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                    if($cxpAux->cuenta_saldo == 0){
+                        $cxpAux->cuenta_estado = '2';
+                    }else{
+                        $cxpAux->cuenta_estado = '1';
+                    }
+                    $cxpAux->update();
                     if(is_null($anticipo->anticipo_documento)){
                         $anticipo->anticipo_saldo = $anticipo->anticipo_saldo + $valorDescuento;
                     }else{
@@ -650,9 +648,7 @@ class anticipoProveedorController extends Controller
                         $anticipo->anticipo_estado = '1';
                     }
                     $anticipo->update();
-                    if (!isset($descuento->transaccionCompra->cuentaPagar)) {
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
-                    }
+                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
                 }
             }
             DB::commit();

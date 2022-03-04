@@ -100,8 +100,13 @@ class listaAnticipoProveedorController extends Controller
                             $datos[$count]['pag'] = $descuento->descuento_valor;
                             $datos[$count]['fep'] = $descuento->descuento_fecha; 
                             $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
-                            $datos[$count]['tip'] = ''; 
-                            $datos[$count]['fac'] = $descuento->transaccionCompra->transaccion_numero; 
+                            $datos[$count]['tip'] = '';
+                            if(isset($descuento->transaccionCompra)){
+                                $datos[$count]['fac'] = $descuento->transaccionCompra->transaccion_numero; 
+                            }else{
+                                $datos[$count]['fac'] = $descuento->descuento_descripcion;
+                            }
+                            
                             $datos[$count]['tot'] = '2'; 
                             $count ++;
                         }

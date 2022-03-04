@@ -543,7 +543,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $detalleDiario->cuenta_id = $tipo->cuenta_debe;
                 $detalleDiario->empleado_id = $idempleado;
                 $diariocontabilizado->detalles()->save($detalleDiario);
-                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$fondoreserva);
+                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_haber.' con el valor de: -> '.$fondoreserva);
             } 
             if (floatval($Dtercero)>0) {
                 $detalleDiario = new Detalle_Diario();
@@ -558,7 +558,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $detalleDiario->cuenta_id = $tipo->cuenta_debe;
                 $detalleDiario->empleado_id = $idempleado;
                 $diariocontabilizado->detalles()->save($detalleDiario);
-                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dtercero);
+                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dtercero);
             }
             if (floatval($Dcuarto)>0) {
                 $detalleDiario = new Detalle_Diario();
@@ -573,7 +573,7 @@ class rolOperactivoCostaMarketController extends Controller
                 $detalleDiario->cuenta_id = $tipo->cuenta_debe;
                 $detalleDiario->empleado_id = $idempleado;
                 $diariocontabilizado->detalles()->save($detalleDiario);
-                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dcuarto);
+                $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$tipo->cuenta_haber.' con el valor de: -> '.$Dcuarto);
             }
             if (floatval($cabecera_rol->cabecera_rol_aporte_patronal)>0) {
                 $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'aportePatronal')->first();
@@ -823,7 +823,7 @@ class rolOperactivoCostaMarketController extends Controller
                         $detalleDiario->cuenta_id = $matriz[$k]["idcuenta"];
                         $detalleDiario->empleado_id = $idempleado;
                         $diariocontabilizado->detalles()->save($detalleDiario);
-                        $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Haber -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["debe"]);
+                        $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, '0', 'En la cuenta del Debe -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["debe"]);
         
                     }
                     if($matriz[$k]["tipo"]=="HABER"){
@@ -960,14 +960,14 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $count=1;
             foreach ($rol2->anticiposcm as $anticipos) {
-                $anticipo[$count]['descuento_fecha']=$anticipos->descuento_fecha;
+                $anticipo[$count]['descuento_fecha']=$anticipos->anticipo->anticipo_fecha;
                 $anticipo[$count]['descuento_valor']=$anticipos->descuento_valor;
                 $anticipo[$count]['Valor_Anticipó']=$anticipos->anticipo->anticipo_valor;
                 $count++;
             }
             $count=1;
             foreach ($rol2->quincenacm as $quincena) {
-                $quincenas[$count]['descuento_fecha']=$quincena->descuento_fecha;
+                $quincenas[$count]['descuento_fecha']=$quincena->quincena->quincena_fecha;
                 $quincenas[$count]['descuento_valor']=$quincena->descuento_valor;
                 $quincenas[$count]['Valor_Anticipó']=$quincena->quincena->quincena_valor;
                 $count++;
@@ -1065,14 +1065,14 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $count=1;
             foreach ($rol2->anticiposcm as $anticipos) {
-                $anticipo[$count]['descuento_fecha']=$anticipos->descuento_fecha;
+                $anticipo[$count]['descuento_fecha']=$anticipos->anticipo->anticipo_fecha;
                 $anticipo[$count]['descuento_valor']=$anticipos->descuento_valor;
                 $anticipo[$count]['Valor_Anticipó']=$anticipos->anticipo->anticipo_valor;
                 $count++;
             }
             $count=1;
             foreach ($rol2->quincenacm as $quincena) {
-                $quincenas[$count]['descuento_fecha']=$quincena->descuento_fecha;
+                $quincenas[$count]['descuento_fecha']=$quincena->quincena->quincena_fecha;
                 $quincenas[$count]['descuento_valor']=$quincena->descuento_valor;
                 $quincenas[$count]['Valor_Anticipó']=$quincena->quincena->quincena_valor;
                 $count++;
@@ -1177,14 +1177,14 @@ class rolOperactivoCostaMarketController extends Controller
             }
             $count=1;
             foreach ($rol2->anticiposcm as $anticipos) {
-                $anticipo[$count]['descuento_fecha']=$anticipos->descuento_fecha;
+                $anticipo[$count]['descuento_fecha']=$anticipos->anticipo->anticipo_fecha;
                 $anticipo[$count]['descuento_valor']=$anticipos->descuento_valor;
                 $anticipo[$count]['Valor_Anticipó']=$anticipos->anticipo->anticipo_valor;
                 $count++;
             }
             $count=1;
             foreach ($rol2->quincenacm as $quincena) {
-                $quincenas[$count]['descuento_fecha']=$quincena->descuento_fecha;
+                $quincenas[$count]['descuento_fecha']=$quincena->quincena->quincena_fecha;
                 $quincenas[$count]['descuento_valor']=$quincena->descuento_valor;
                 $quincenas[$count]['Valor_Anticipó']=$quincena->quincena->quincena_valor;
                 $count++;
@@ -1359,18 +1359,18 @@ class rolOperactivoCostaMarketController extends Controller
                 foreach ($rol->diariopago->detalles as $detalle) {
                     $detalles = Detalle_Diario::findOrFail($detalle->detalle_id);
                     $detalles->delete();
-                    $auditoria->registrarAuditoria('Eliminacion de Detalle diario de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                    $auditoria->registrarAuditoria('Eliminacion de Detalle diario de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
                 }
                 if(isset($cheques)){
                     $cheques->delete();
-                    $auditoria->registrarAuditoria('Eliminacion de Cheque -> '.$cheques->cheque_numero.' de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                    $auditoria->registrarAuditoria('Eliminacion de Cheque -> '.$cheques->cheque_numero.' de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
                 }
                 if(isset($transferencias)){
                     $transferencias->delete();
-                    $auditoria->registrarAuditoria('Eliminacion de Tranferencia de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                    $auditoria->registrarAuditoria('Eliminacion de Tranferencia de pago de Rol tipo -> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
                 }
                 $rol->diariopago->delete();
-                $auditoria->registrarAuditoria('Eliminacion de Diario de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
+                $auditoria->registrarAuditoria('Eliminacion de Diario de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
                 
             }
             if (isset($rol->diariocontabilizacion)) {
@@ -1381,7 +1381,7 @@ class rolOperactivoCostaMarketController extends Controller
                     $auditoria->registrarAuditoria('Eliminacion de Detalle diario contabilizado de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
                 }
                 $rol->diariocontabilizacion->delete();
-                $auditoria->registrarAuditoria('Eliminacion de Diario contabilizado de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
+                $auditoria->registrarAuditoria('Eliminacion de Diario contabilizado de rol de pago tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago, '0', '');
 
 
             }
@@ -1389,13 +1389,13 @@ class rolOperactivoCostaMarketController extends Controller
             foreach ($rol->detalles as $detalle) {
                 $detalles = Detalle_Rol_CM::findOrFail($detalle->detalle_rol_id);
                 $detalles->delete();
-                $auditoria->registrarAuditoria('Eliminacion de Detalle Rol de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
+                $auditoria->registrarAuditoria('Eliminacion de Detalle Rol de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
             }
             
             
             
             $rol->delete();
-            $auditoria->registrarAuditoria('Eliminacion de  de rol  tipo -> '.$rol->cabecera_rol_tipo.' con valor '.$rol->cabecera_rol_pago ,'0','');
+            $auditoria->registrarAuditoria('Eliminacion de  de rol  tipo -> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' con valor '.$rol->cabecera_rol_pago ,'0','');
             /*Fin de registro de auditoria */
            
          

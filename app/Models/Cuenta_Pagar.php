@@ -56,6 +56,9 @@ class Cuenta_Pagar extends Model
             ->groupBy('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_descripcion','cuenta_pagar.cuenta_valor_factura','cuenta_pagar.cuenta_saldo','cuenta_pagar.cuenta_fecha','proveedor.proveedor_nombre','proveedor.proveedor_ruc','proveedor.proveedor_id')
             ->orderBy('cuenta_pagar.cuenta_fecha','asc');
     }
+    public function scopeCuentaByFacturaMigrada($query, $facturaMigrada){
+        return $query->join('proveedor','proveedor.proveedor_id','=','cuenta_pagar.proveedor_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','proveedor.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_descripcion','like','%'.$facturaMigrada.'%');
+    }
     public function scopeCuenta($query, $id){
         return $query->join('proveedor','proveedor.proveedor_id','=','cuenta_pagar.proveedor_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','proveedor.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_id','=',$id)->orderBy('proveedor.proveedor_nombre','asc');
     }

@@ -364,6 +364,14 @@ class conciliacionBancariaController extends Controller
                     ->orwhere(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO DE CHEQUE');                  
             })->sum('deposito_valor');
 
+            $depositosConciliadosOtros = Deposito::DepositosByCuenta($request->get('cuenta_id'))           
+            ->where(function($query){
+                $query->where(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO')
+                    ->orwhere(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO DE CHEQUE');                  
+            })->where('deposito.deposito_fecha','<',$request->get('idDesde'))
+            ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
+            ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
+
             $ndConciliado = Nota_Debito_banco::NDbancoByCuenta($request->get('cuenta_id'))
             ->where('nota_debito_banco.nota_fecha','>=',$request->get('idDesde'))->where('nota_debito_banco.nota_fecha','<=',$request->get('idHasta'))            
             ->where('nota_debito_banco.nota_conciliacion','=', true)->where('nota_debito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))->sum('nota_debito_banco.nota_valor');
@@ -372,13 +380,23 @@ class conciliacionBancariaController extends Controller
             ->where('nota_debito_banco.nota_fecha','>=',$request->get('idDesde'))->where('nota_debito_banco.nota_fecha','<=',$request->get('idHasta')) 
             ->where('nota_debito_banco.nota_conciliacion','=', false)->sum('nota_debito_banco.nota_valor');
 
+            $ndConciliadoOtros = Nota_Debito_banco::NDbancoByCuenta($request->get('cuenta_id'))
+            ->where('nota_debito_banco.nota_fecha','<',$request->get('idDesde'))
+            ->where('nota_debito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
+            ->where('nota_debito_banco.nota_conciliacion','=', true)->sum('nota_debito_banco.nota_valor');
+
             $ncConciliado = Nota_Credito_banco::NCbancoByCuenta($request->get('cuenta_id'))
             ->where('nota_credito_banco.nota_fecha','>=',$request->get('idDesde'))->where('nota_credito_banco.nota_fecha','<=',$request->get('idHasta'))            
             ->where('nota_credito_banco.nota_conciliacion','=', true)->where('nota_credito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))->sum('nota_credito_banco.nota_valor');
 
             $ncNoConciliado = Nota_Credito_banco::NCbancoByCuenta($request->get('cuenta_id'))   
             ->where('nota_credito_banco.nota_fecha','>=',$request->get('idDesde'))->where('nota_credito_banco.nota_fecha','<=',$request->get('idHasta'))
-            ->where('nota_credito_banco.nota_conciliacion','=', false)->sum('nota_credito_banco.nota_valor'); 
+            ->where('nota_credito_banco.nota_conciliacion','=', false)->sum('nota_credito_banco.nota_valor');
+            
+            $ncConciliadoOtros = Nota_Credito_banco::NCbancoByCuenta($request->get('cuenta_id'))
+            ->where('nota_credito_banco.nota_fecha','<',$request->get('idDesde'))
+            ->where('nota_credito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
+            ->where('nota_credito_banco.nota_conciliacion','=', true)->sum('nota_credito_banco.nota_valor');
 
             $chequesConciliados = Cheque::ChequeByCuenta($request->get('cuenta_id'))->where('cheque.cheque_fecha_emision','>=',$request->get('idDesde'))
             ->where('cheque.cheque_fecha_emision','<=',$request->get('idHasta'))->where('cheque.cheque_conciliacion','=', true)
@@ -387,8 +405,10 @@ class conciliacionBancariaController extends Controller
             $chequesNoConciliados = Cheque::ChequeByCuenta($request->get('cuenta_id'))->where('cheque.cheque_fecha_emision','>=',$request->get('idDesde'))
             ->where('cheque.cheque_fecha_emision','<=',$request->get('idHasta'))->where('cheque.cheque_conciliacion','=', false)->sum('cheque_valor');
 
-            /*ejemplo*/$chequesConciliadosOtros = Cheque::ChequeByCuenta($request->get('cuenta_id'))->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))
-            ->where('cheque.cheque_fecha_conciliacion','=',$request->get('idHasta'))->where('cheque.cheque_conciliacion','=', true)->sum('cheque_valor');
+            /*ejemplo*/$chequesConciliadosOtros = Cheque::ChequeByCuenta($request->get('cuenta_id'))
+            ->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))
+            ->where('cheque.cheque_fecha_conciliacion','=',$request->get('idHasta'))
+            ->where('cheque.cheque_conciliacion','=', true)->sum('cheque_valor');
 
             $transferenciasEgresosConciliadas = Transferencia::TransferenciaByCuenta($request->get('cuenta_id'))
             ->where('transferencia.transferencia_fecha','>=',$request->get('idDesde'))->where('transferencia.transferencia_fecha','<=',$request->get('idHasta'))
@@ -398,8 +418,10 @@ class conciliacionBancariaController extends Controller
             ->where('transferencia.transferencia_fecha','>=',$request->get('idDesde'))->where('transferencia.transferencia_fecha','<=',$request->get('idHasta'))
             ->where('transferencia.transferencia_conciliacion','=', false)->sum('transferencia_valor');
 
-            /*ejemplo*/$transferenciasEgresosConciliadasOtros = Transferencia::TransferenciaByCuenta($request->get('cuenta_id'))->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))
-            ->where('transferencia.transferencia_fecha_conciliacion','=',$request->get('idHasta'))->where('transferencia.transferencia_conciliacion','=', true)->sum('transferencia_valor');
+            /*ejemplo*/$transferenciasEgresosConciliadasOtros = Transferencia::TransferenciaByCuenta($request->get('cuenta_id'))
+            ->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))
+            ->where('transferencia.transferencia_fecha_conciliacion','=',$request->get('idHasta'))
+            ->where('transferencia.transferencia_conciliacion','=', true)->sum('transferencia_valor');
 
             $transferenciaIngresosConciliados = Deposito::DepositosByCuenta($request->get('cuenta_id'))
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))->where('deposito.deposito_fecha','<=',$request->get('idHasta'))
@@ -410,6 +432,12 @@ class conciliacionBancariaController extends Controller
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))->where('deposito.deposito_fecha','<=',$request->get('idHasta'))
             ->where('deposito.deposito_tipo','=', 'TRANSFERENCIA')            
             ->where('deposito.deposito_conciliacion','=', false)->sum('deposito_valor');
+
+             /*ejemplo*/$transferenciaIngresosConciliadosOtros = Deposito::DepositosByCuenta($request->get('cuenta_id'))
+             ->where('deposito.deposito_tipo','=', 'TRANSFERENCIA')      
+             ->where('deposito.deposito_fecha','<',$request->get('idDesde'))   
+             ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))               
+            ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
             /*------------FIN---------------------------------------------------*/
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
@@ -670,10 +698,13 @@ class conciliacionBancariaController extends Controller
             'chequeGiradoNoCobrado'=>$chequeGiradoNoCobrado,
             'depositosConciliados'=>$depositosConciliados,
             'depositosNoConciliados'=>$depositosNoConciliados,
+            'depositosConciliadosOtros'=>$depositosConciliadosOtros,
             'ndConciliado'=>$ndConciliado,
             'ndNoConciliado'=>$ndNoConciliado,
             'ncConciliado'=>$ncConciliado,
             'ncNoConciliado'=>$ncNoConciliado,
+            'ncConciliadoOtros'=>$ncConciliadoOtros,
+            'ndConciliadoOtros'=>$ndConciliadoOtros,
             'chequesConciliados'=>$chequesConciliados,
             'chequesNoConciliados'=>$chequesNoConciliados,
             'chequesConciliadosOtros'=>$chequesConciliadosOtros,
@@ -682,6 +713,7 @@ class conciliacionBancariaController extends Controller
             'transferenciasEgresosConciliadasOtros'=>$transferenciasEgresosConciliadasOtros,
             'transferenciaIngresosConciliados'=>$transferenciaIngresosConciliados,
             'transferenciaIngresosNoConciliados'=>$transferenciaIngresosNoConciliados,
+            'transferenciaIngresosConciliadosOtros' =>$transferenciaIngresosConciliadosOtros,
             'cuentaBancaria'=>$cuentaBancaria,
             'conciliacionBancariaMatriz'=>$conciliacionBancariaMatriz,
             'otrasconciliacionesBancariaMatriz'=>$otrasconciliacionesBancariaMatriz,

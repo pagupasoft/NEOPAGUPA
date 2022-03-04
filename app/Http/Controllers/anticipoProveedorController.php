@@ -479,7 +479,7 @@ class anticipoProveedorController extends Controller
                     }
                 }
                 $count ++;
-                foreach(Descuento_Anticipo_Proveedor::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_proveedor.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_proveedor.diario_id','descuento_anticipo_proveedor.transaccion_id')->get() as $descuento){
+                foreach(Descuento_Anticipo_Proveedor::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_proveedor.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_proveedor.diario_id','descuento_anticipo_proveedor.transaccion_id','descuento_descripcion')->get() as $descuento){
                     $datos[$count]['cod'] = $descuento->descuento_id;
                     $datos[$count]['ben'] = ''; 
                     $datos[$count]['mon'] = ''; 
@@ -623,13 +623,19 @@ class anticipoProveedorController extends Controller
                     }
                     if(isset($descuento->transaccionCompra->cuentaPagar)){
                         $cxpAux = $descuento->transaccionCompra->cuentaPagar;
+                    }else{
+                        $cxpAux = Cuenta_Pagar::CuentaByFacturaMigrada($descuento->descuento_descripcion)->first();
                     }
                     foreach($diario->detalles as $detalle){
                         $detalle->delete();
                         $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por pagar');  
                     }
                     $descuento->delete();
-                    $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                    if(isset($cxpAux->transaccionCompra->transaccion_id)){
+                        $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                    }else{
+                        $cxpAux->cuenta_saldo = $cxpAux->cuenta_saldo + $valorDescuento;
+                    }
                     if($cxpAux->cuenta_saldo == 0){
                         $cxpAux->cuenta_estado = '2';
                     }else{

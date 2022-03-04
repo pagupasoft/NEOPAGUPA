@@ -92,7 +92,7 @@ class listaAnticipoProveedorController extends Controller
                         array_pop($datos);
                         $count = $count - 1;
                     }else{
-                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipo($anticipo->anticipo_id, $request->get('idCorte'))->select('descuento_valor','descuento_fecha','descuento_anticipo_proveedor.diario_id','descuento_anticipo_proveedor.transaccion_id')->get() as $descuento){
+                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipo($anticipo->anticipo_id, $request->get('idCorte'))->select('descuento_valor','descuento_fecha','descuento_anticipo_proveedor.diario_id','descuento_anticipo_proveedor.transaccion_id','descuento_descripcion')->get() as $descuento){
                             $datos[$count]['ben'] = ''; 
                             $datos[$count]['mon'] = ''; 
                             $datos[$count]['sal'] = ''; 

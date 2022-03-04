@@ -557,190 +557,192 @@ class pagosProveedoresController extends Controller
                             $jo=true; 
                         }
                         if($jo){
-                            foreach($diario->detalles as $detalle){
-                                if(isset($detalle->cheque)){
-                                    foreach($detalle->cheque->detalleDiario as $detalleCheque){
-                                        if(isset($detalleCheque->diario)){
-                                            $pago2 = $detalleCheque->diario->pagocuentapagar;
-                                            $diario2 = $detalleCheque->diario;
-                                            $bandera2=false;
-                                            if($pago2->pago_tipo == 'EFECTIVO'){
+                            if($pago->pago_tipo <> 'NDB'){
+                                foreach($diario->detalles as $detalle){
+                                    if(isset($detalle->cheque)){
+                                        foreach($detalle->cheque->detalleDiario as $detalleCheque){
+                                            if(isset($detalleCheque->diario)){
+                                                $pago2 = $detalleCheque->diario->pagocuentapagar;
+                                                $diario2 = $detalleCheque->diario;
+                                                $bandera2=false;
+                                                if($pago2->pago_tipo == 'EFECTIVO'){
 
-                                                $cajaAbierta2=Arqueo_Caja::ArqueoCajaxid($pago2->arqueo_id)->first();
-                                                if(isset($cajaAbierta2->arqueo_id)){
-                                                    $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id, $pago2->diario_id)->first();
-                                                    $movimientoCaja->delete();
-                                                    $bandera2=true;
-                                                }else{                            
-                                                    $cajaAbierta2=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-                                                    if ($cajaAbierta2){
-                                                        /**********************movimiento caja****************************/
-                                                        $movimientoCaja = new Movimiento_Caja();          
-                                                        $movimientoCaja->movimiento_fecha=date("Y")."-".date("m")."-".date("d");
-                                                        $movimientoCaja->movimiento_hora=date("H:i:s");
-                                                        $movimientoCaja->movimiento_tipo="ENTRADA";
-                                                        $movimientoCaja->movimiento_descripcion= 'P/R ELIMINACION DE PAGO DE PROVEEDOR :'.$pago2->pago_descripcion;
-                                                        $movimientoCaja->movimiento_valor= $pago2->pago_valor;
-                                                        $movimientoCaja->movimiento_documento="P/R ELIMINACION DE PAGO EN EFECTIVO";
-                                                        $movimientoCaja->movimiento_numero_documento= 0;
-                                                        $movimientoCaja->movimiento_estado = 1;
-                                                        $movimientoCaja->arqueo_id = $cajaAbierta2->arqueo_id;                                
-                                                        $movimientoCaja->save();
-                                                        
-                                                        $movimientoAnterior = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id,$pago2->diario_id)->first();
-                                                        $movimientoAnterior->diario_id = null;
-                                                        $movimientoAnterior->update();
-                        
+                                                    $cajaAbierta2=Arqueo_Caja::ArqueoCajaxid($pago2->arqueo_id)->first();
+                                                    if(isset($cajaAbierta2->arqueo_id)){
+                                                        $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id, $pago2->diario_id)->first();
+                                                        $movimientoCaja->delete();
                                                         $bandera2=true;
-                                                    /*********************************************************************/                               
-                                                    }else{
-                                                        $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque no dispone de CAJA ABIERTA';                               
+                                                    }else{                            
+                                                        $cajaAbierta2=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
+                                                        if ($cajaAbierta2){
+                                                            /**********************movimiento caja****************************/
+                                                            $movimientoCaja = new Movimiento_Caja();          
+                                                            $movimientoCaja->movimiento_fecha=date("Y")."-".date("m")."-".date("d");
+                                                            $movimientoCaja->movimiento_hora=date("H:i:s");
+                                                            $movimientoCaja->movimiento_tipo="ENTRADA";
+                                                            $movimientoCaja->movimiento_descripcion= 'P/R ELIMINACION DE PAGO DE PROVEEDOR :'.$pago2->pago_descripcion;
+                                                            $movimientoCaja->movimiento_valor= $pago2->pago_valor;
+                                                            $movimientoCaja->movimiento_documento="P/R ELIMINACION DE PAGO EN EFECTIVO";
+                                                            $movimientoCaja->movimiento_numero_documento= 0;
+                                                            $movimientoCaja->movimiento_estado = 1;
+                                                            $movimientoCaja->arqueo_id = $cajaAbierta2->arqueo_id;                                
+                                                            $movimientoCaja->save();
+                                                            
+                                                            $movimientoAnterior = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id,$pago2->diario_id)->first();
+                                                            $movimientoAnterior->diario_id = null;
+                                                            $movimientoAnterior->update();
+                            
+                                                            $bandera2=true;
+                                                        /*********************************************************************/                               
+                                                        }else{
+                                                            $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque no dispone de CAJA ABIERTA';                               
+                                                        }
                                                     }
+                                                }else{
+                                                    $bandera2=true;
                                                 }
-                                            }else{
-                                                $bandera2=true;
+                                                if($bandera2){
+                                                
+                                                    foreach ($pago2->detalles as $detallePago) {
+                                                        if($detallePago->cuentaPagar){
+                                                            $cxpAux2 = $detallePago->cuentaPagar;
+                                                            $valorPago = $detallePago->detalle_pago_valor;
+                                                            $detallePago->delete();
+                                                            $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
+                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                            }else{
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
+                                                            }
+                                                            if($cxpAux2->cuenta_saldo == 0){
+                                                                $cxpAux2->cuenta_estado = '2';
+                                                            }else{
+                                                                $cxpAux2->cuenta_estado = '1';
+                                                            }
+                                                            $cxpAux2->update();
+                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
+                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
+                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
+                                                            }else{
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                            }
+                                                        }
+                                                    }
+                                                    $pago2->delete();
+                                                    foreach($diario2->detalles as $detalleDiario2){
+                                                        $detalleDiario2->delete();
+                                                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de detalle de diario por eliminacion de pago de cuentas por pagar');  
+                                                    }
+                                                    $diario2->delete();
+                                                    $auditoria->registrarAuditoria('Eliminacion de diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de diario por eliminacion de pago de cuentas por pagar');  
+                                                }
                                             }
-                                            if($bandera2){
+                                        }   
+                                        if($bandera2){
+                                            if($request->get('anularChequeID') == 'no'){
+                                                $detalle->cheque->delete();
+                                            }else{
+                                                $che = $detalle->cheque;
+                                                $che->cheque_estado = '2';
+                                                $che->update();
+                                            }
                                             
-                                                foreach ($pago2->detalles as $detallePago) {
-                                                    if($detallePago->cuentaPagar){
-                                                        $cxpAux2 = $detallePago->cuentaPagar;
-                                                        $valorPago = $detallePago->detalle_pago_valor;
-                                                        $detallePago->delete();
-                                                        $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
-                                                        if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                                                        }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                        }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                        }else{
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
-                                                        }
-                                                        if($cxpAux2->cuenta_saldo == 0){
-                                                            $cxpAux2->cuenta_estado = '2';
-                                                        }else{
-                                                            $cxpAux2->cuenta_estado = '1';
-                                                        }
-                                                        $cxpAux2->update();
-                                                        if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
-                                                        }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
-                                                        }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
-                                                        }else{
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
-                                                        }
-                                                    }
-                                                }
-                                                $pago2->delete();
-                                                foreach($diario2->detalles as $detalleDiario2){
-                                                    $detalleDiario2->delete();
-                                                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de detalle de diario por eliminacion de pago de cuentas por pagar');  
-                                                }
-                                                $diario2->delete();
-                                                $auditoria->registrarAuditoria('Eliminacion de diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de diario por eliminacion de pago de cuentas por pagar');  
-                                            }
                                         }
-                                    }   
-                                    if($bandera2){
-                                        if($request->get('anularChequeID') == 'no'){
-                                            $detalle->cheque->delete();
-                                        }else{
-                                            $che = $detalle->cheque;
-                                            $che->cheque_estado = '2';
-                                            $che->update();
-                                        }
-                                        
                                     }
-                                }
-                                if(isset($detalle->transferencia)){
-                                    foreach($detalle->transferencia->detalleDiario as $detalleTransferencia){
-                                        if(isset($detalleTransferencia->diario)){
-                                            $pago2 = $detalleTransferencia->diario->pagocuentapagar;
-                                            $diario2 = $detalleTransferencia->diario;
-                                            $bandera2=false;
-                                            if($pago2->pago_tipo == 'EFECTIVO'){
-                                                $cajaAbierta2=Arqueo_Caja::ArqueoCajaxid($pago2->arqueo_id)->first();
-                                                if(isset($cajaAbierta2->arqueo_id)){
-                                                    $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id, $pago2->diario_id)->first();
-                                                    $movimientoCaja->delete();
-                                                    $bandera2=true;
-                                                }else{                            
-                                                    $cajaAbierta2=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-                                                    if ($cajaAbierta2){
-                                                        /**********************movimiento caja****************************/
-                                                        $movimientoCaja = new Movimiento_Caja();          
-                                                        $movimientoCaja->movimiento_fecha=date("Y")."-".date("m")."-".date("d");
-                                                        $movimientoCaja->movimiento_hora=date("H:i:s");
-                                                        $movimientoCaja->movimiento_tipo="ENTRADA";
-                                                        $movimientoCaja->movimiento_descripcion= 'P/R ELIMINACION DE PAGO DE PROVEEDOR :'.$pago2->pago_descripcion;
-                                                        $movimientoCaja->movimiento_valor= $pago2->pago_valor;
-                                                        $movimientoCaja->movimiento_documento="P/R ELIMINACION DE PAGO EN EFECTIVO";
-                                                        $movimientoCaja->movimiento_numero_documento= 0;
-                                                        $movimientoCaja->movimiento_estado = 1;
-                                                        $movimientoCaja->arqueo_id = $cajaAbierta2->arqueo_id;                                
-                                                        $movimientoCaja->save();
-                                                        
-                                                        $movimientoAnterior = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id,$pago2->diario_id)->first();
-                                                        $movimientoAnterior->diario_id = null;
-                                                        $movimientoAnterior->update();
-                        
+                                    if(isset($detalle->transferencia)){
+                                        foreach($detalle->transferencia->detalleDiario as $detalleTransferencia){
+                                            if(isset($detalleTransferencia->diario)){
+                                                $pago2 = $detalleTransferencia->diario->pagocuentapagar;
+                                                $diario2 = $detalleTransferencia->diario;
+                                                $bandera2=false;
+                                                if($pago2->pago_tipo == 'EFECTIVO'){
+                                                    $cajaAbierta2=Arqueo_Caja::ArqueoCajaxid($pago2->arqueo_id)->first();
+                                                    if(isset($cajaAbierta2->arqueo_id)){
+                                                        $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id, $pago2->diario_id)->first();
+                                                        $movimientoCaja->delete();
                                                         $bandera2=true;
-                                                    /*********************************************************************/                               
-                                                    }else{
-                                                        $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque no dispone de CAJA ABIERTA';                               
-                                                    }
-                                                }
-                                            }else{
-                                                $bandera2=true;
-                                            }
-                                            if($bandera2){
-                                                foreach ($pago2->detalles as $detallePago) {
-                                                    if($detallePago->cuentaPagar){
-                                                        $cxpAux2 = $detallePago->cuentaPagar;
-                                                        $valorPago = $detallePago->detalle_pago_valor;
-                                                        $detallePago->delete();
-                                                        $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
-                                                        if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                                                        }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                        }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                    }else{                            
+                                                        $cajaAbierta2=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
+                                                        if ($cajaAbierta2){
+                                                            /**********************movimiento caja****************************/
+                                                            $movimientoCaja = new Movimiento_Caja();          
+                                                            $movimientoCaja->movimiento_fecha=date("Y")."-".date("m")."-".date("d");
+                                                            $movimientoCaja->movimiento_hora=date("H:i:s");
+                                                            $movimientoCaja->movimiento_tipo="ENTRADA";
+                                                            $movimientoCaja->movimiento_descripcion= 'P/R ELIMINACION DE PAGO DE PROVEEDOR :'.$pago2->pago_descripcion;
+                                                            $movimientoCaja->movimiento_valor= $pago2->pago_valor;
+                                                            $movimientoCaja->movimiento_documento="P/R ELIMINACION DE PAGO EN EFECTIVO";
+                                                            $movimientoCaja->movimiento_numero_documento= 0;
+                                                            $movimientoCaja->movimiento_estado = 1;
+                                                            $movimientoCaja->arqueo_id = $cajaAbierta2->arqueo_id;                                
+                                                            $movimientoCaja->save();
+                                                            
+                                                            $movimientoAnterior = Movimiento_Caja::MovimientoCajaxarqueo($pago2->arqueo_id,$pago2->diario_id)->first();
+                                                            $movimientoAnterior->diario_id = null;
+                                                            $movimientoAnterior->update();
+                            
+                                                            $bandera2=true;
+                                                        /*********************************************************************/                               
                                                         }else{
-                                                            $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
-                                                        }
-                                                        if($cxpAux2->cuenta_saldo == 0){
-                                                            $cxpAux2->cuenta_estado = '2';
-                                                        }else{
-                                                            $cxpAux2->cuenta_estado = '1';
-                                                        }
-                                                        $cxpAux2->update();
-                                                        if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
-                                                        }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
-                                                        }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
-                                                        }else{
-                                                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                            $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque no dispone de CAJA ABIERTA';                               
                                                         }
                                                     }
+                                                }else{
+                                                    $bandera2=true;
                                                 }
-                                                $pago2->delete();
-                                                foreach($diario2->detalles as $detalleDiario2){
-                                                    $detalleDiario2->delete();
-                                                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de detalle de diario por eliminacion de pago de cuentas por pagar');  
+                                                if($bandera2){
+                                                    foreach ($pago2->detalles as $detallePago) {
+                                                        if($detallePago->cuentaPagar){
+                                                            $cxpAux2 = $detallePago->cuentaPagar;
+                                                            $valorPago = $detallePago->detalle_pago_valor;
+                                                            $detallePago->delete();
+                                                            $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
+                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                            }else{
+                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
+                                                            }
+                                                            if($cxpAux2->cuenta_saldo == 0){
+                                                                $cxpAux2->cuenta_estado = '2';
+                                                            }else{
+                                                                $cxpAux2->cuenta_estado = '1';
+                                                            }
+                                                            $cxpAux2->update();
+                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
+                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
+                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
+                                                            }else{
+                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                            }
+                                                        }
+                                                    }
+                                                    $pago2->delete();
+                                                    foreach($diario2->detalles as $detalleDiario2){
+                                                        $detalleDiario2->delete();
+                                                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de detalle de diario por eliminacion de pago de cuentas por pagar');  
+                                                    }
+                                                    $diario2->delete();
+                                                    $auditoria->registrarAuditoria('Eliminacion de diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de diario por eliminacion de pago de cuentas por pagar');  
                                                 }
-                                                $diario2->delete();
-                                                $auditoria->registrarAuditoria('Eliminacion de diario  N°'.$diario2->diario_codigo,$diario2->diario_codigo,'Eliminacion de diario por eliminacion de pago de cuentas por pagar');  
                                             }
+                                        }   
+                                        if($bandera2){
+                                            $detalle->transferencia->delete();
                                         }
-                                    }   
-                                    if($bandera2){
-                                        $detalle->transferencia->delete();
                                     }
                                 }
                             }
@@ -748,7 +750,11 @@ class pagosProveedoresController extends Controller
                     }
                 }
                 if($jo){
-                  
+                    if($pago->pago_tipo == 'NDB'){
+                        $notaDebitoBanco = Nota_Debito_banco::NotaDebitoBancoByDiario($diario->diario_id)->first();
+                        $notaDebitoBanco->delete();
+                        $auditoria->registrarAuditoria('Eliminacion del nota de debito bancaria de pago cuentas por pagar con diario '.$diario->diario_codigo,'','');  
+                    }
                     foreach ($pago->detalles as $detalle) {
                         $detalle->delete();
                         $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detalle->cuentaPagar->cuenta_descripcion,'','');  

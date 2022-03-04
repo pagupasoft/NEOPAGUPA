@@ -445,6 +445,9 @@ Route::resource('listanotaDebitoBancario', listaNotaDebitoBancoController::class
 Route::resource('cambioPlazo', diasPlazoController::class)->middleware('auth');
 Route::resource('listaAsientoDiario', listaAsientosDiariosController::class)->middleware('auth');
 
+Route::resource('individualrol', cabeceraRolAdministrativoController::class)->middleware('auth');
+Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
+
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');
@@ -1011,6 +1014,8 @@ Route::post('/factura/proforma', [facturaproformaController::class, 'guardarfact
 //Editar Proforma
 Route::get('/proforma/edit/{id}', [proformaController::class, 'editar'])->middleware('auth');
 
+Route::get('/operativorol/new/{id}', [cabeceraRolController::class, 'nuevo'])->middleware('auth');
+Route::get('/individualrol/new/{id}', [cabeceraRolAdministrativoController::class, 'nuevo'])->middleware('auth');
 
 //Guias de remision
 Route::get('/guiaRemision/new/{id}', [guiaremisionController::class, 'nuevo'])->middleware('auth');

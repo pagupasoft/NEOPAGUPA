@@ -57,16 +57,11 @@
                     </div>
                     <div class=" row">
                         <div class="col-lg-5 col-md-5">
+                            <div class=" row"><label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;</label></div>
                             <div class=" row">
                                 <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Saldo Anterior Contable :</label>
                                 <div class="col-lg-5 col-md-5">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoAntCont)) value='{{ number_format($saldoAntCont,2) }}' @else value='0.00' @endif readonly>
-                                </div>
-                            </div>
-                            <div class=" row">
-                                <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Saldo Anterior Estado de Cuenta :</label>
-                                <div class="col-lg-5 col-md-5">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoAntCuenta)) value='{{ number_format($saldoAntCuenta,2) }}' @else value='0.00' @endif readonly>
+                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoAnteriorContable)) value='{{ number_format($saldoAnteriorContable,2) }}' @else value='0.00' @endif readonly>
                                 </div>
                             </div>
                             <hr>
@@ -80,13 +75,13 @@
                             <div class=" row">
                                 <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Saldo Contable Actual :</label>
                                 <div class="col-lg-5 col-md-5">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoActCont)) value='{{ number_format($saldoActCont,2) }}' @else value='0.00' @endif readonly>
+                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoContableActual)) value='{{ number_format($saldoContableActual,2) }}' @else value='0.00' @endif readonly>
                                 </div>
                             </div>
                             <div class=" row">
                                 <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Saldo Estado de Cuenta :</label>
                                 <div class="col-lg-5 col-md-5">
-                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoActCuenta)) value='{{ number_format($saldoActCuenta,2) }}' @else value='0.00' @endif readonly>
+                                    <input type="text" class="form-control derecha-texto" @if(isset($saldoEstadoCuenta)) value='{{ number_format($saldoEstadoCuenta,2) }}' @else value='0.00' @endif readonly>
                                 </div>
                             </div>
                         </div>

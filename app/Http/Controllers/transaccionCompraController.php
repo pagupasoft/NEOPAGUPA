@@ -1741,7 +1741,9 @@ class transaccionCompraController extends Controller
             $tipoComprobante = Tipo_Comprobante::tipo($transaccion->tipo_comprobante_id)->first();
             $general = new generalController();
             if($tipoComprobante->tipo_comprobante_codigo == '04'){
-            
+                if($transaccion->transaccion_tipo_pago <> 'EN EFECTIVO'){
+                    $jo = true;
+                }
                 if(isset($transaccion->diario->anticipoproveedor)){
                     $anticipo=Anticipo_Proveedor::findOrFail($transaccion->diario->anticipoproveedor->anticipo_id);
                     $anticipo->delete();
@@ -1888,7 +1890,7 @@ class transaccionCompraController extends Controller
                 $general->registrarAuditoria('Eliminacion de diario: -> '.$diarioTransaccion->diario_codigo, $diarioTransaccion->diario_codigo,'Con Proveedor '.$aux->proveedor->proveedor_nombre.' con un total de -> '.$aux->transaccion_total );
             }
             DB::commit();
-            return redirect('/listatransaccionCompra')->with('success','Transaccion registrada exitosamente');
+            return redirect('/listatransaccionCompra')->with('success','Transaccion eliminada exitosamente');           
         }
         catch(\Exception $ex){
             DB::rollBack();      

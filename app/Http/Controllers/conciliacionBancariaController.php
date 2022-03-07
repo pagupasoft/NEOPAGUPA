@@ -344,7 +344,12 @@ class conciliacionBancariaController extends Controller
             $transferenciasEgresosConciliadas =0;
             $transferenciasEgresosNoConciliadas =0;
             $transferenciaIngresosConciliados = 0;
-            $transferenciaIngresosNoConciliados =0;           
+            $transferenciaIngresosNoConciliados =0;
+            $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();        
+
+            $saldoAnteriorContable = Detalle_Diario::SaldoAnteriorCuenta($cuentaBancaria->cuenta_id,$request->get('idDesde'))->sum('detalle_debe') - Detalle_Diario::SaldoAnteriorCuenta($cuentaBancaria->cuenta_id,$request->get('idDesde'))->sum('detalle_haber');
+            $saldoContableActual = Detalle_Diario::SaldoActualCuenta($cuentaBancaria->cuenta_id,$request->get('idHasta'))->sum('detalle_debe') - Detalle_Diario::SaldoActualCuenta($cuentaBancaria->cuenta_id,$request->get('idHasta'))->sum('detalle_haber');
+
             $chequeGiradoNoCobrado = Cheque::ChequeSumaByCuenta($request->get('cuenta_id'),$request->get('idHasta'))
             ->where('cheque.cheque_conciliacion','=', false)->sum('cheque_valor');
 
@@ -438,13 +443,14 @@ class conciliacionBancariaController extends Controller
              ->where('deposito.deposito_fecha','<',$request->get('idDesde'))   
              ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))               
             ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
+            //SALDO DEL ESTADO DE CUENTA BANCO
+            $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado)+ floatval($transferenciasEgresosNoConciliadas)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
             /*------------FIN---------------------------------------------------*/
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             
-            $conciliacionBancariaMatriz = null;
-            $otrasconciliacionesBancariaMatriz = null;
-            $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();            
+            $conciliacionBancariaMatriz = [];
+            $otrasconciliacionesBancariaMatriz = [];
             //POR CONCILIAR FECHA CONSULTADA            
             $depositos = Deposito::DepositosByCuenta($request->get('cuenta_id'))
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))->where('deposito.deposito_fecha','<=',$request->get('idHasta'))->get();
@@ -578,7 +584,9 @@ class conciliacionBancariaController extends Controller
                 }   
                 $count = $count + 1;
             }
-            $conciliacionBancariaMatriz = $this->OrdenarMatrizColumna($conciliacionBancariaMatriz, 'fecha', 'ASC');
+            if(count($conciliacionBancariaMatriz) > 0){
+                $conciliacionBancariaMatriz = $this->OrdenarMatrizColumna($conciliacionBancariaMatriz, 'fecha', 'ASC');
+            }
             //POR CONCILIAR EN OTROS MESES
             $depositosOtros = Deposito::DepositosOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
                 $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false);
@@ -691,10 +699,15 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $ncBanco->nota_conciliacion;                           
                 $count2 = $count2 + 1;
             }
-            $otrasconciliacionesBancariaMatriz = $this->OrdenarMatrizColumna($otrasconciliacionesBancariaMatriz, 'fecha', 'ASC');
+            if(count($otrasconciliacionesBancariaMatriz) > 0){
+                $otrasconciliacionesBancariaMatriz = $this->OrdenarMatrizColumna($otrasconciliacionesBancariaMatriz, 'fecha', 'ASC');
+            }
             //return($otrasconciliacionesBancariaMatriz);
             return view('admin.bancos.conciliacionBancaria.index',
             ['bancoC'=>$cuentaBancaria->banco,
+            'saldoAnteriorContable'=>$saldoAnteriorContable,
+            'saldoContableActual'=>$saldoContableActual,
+            'saldoEstadoCuenta'=>$saldoEstadoCuenta,
             'chequeGiradoNoCobrado'=>$chequeGiradoNoCobrado,
             'depositosConciliados'=>$depositosConciliados,
             'depositosNoConciliados'=>$depositosNoConciliados,

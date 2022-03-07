@@ -108,6 +108,7 @@ class Control_Dia extends Model
         ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('empresa_departamento.sucursal_id','=',$id)
+        ->where('empleado_estado','=','1')
         ->where('control_estado','=','1')
         ->orderBy('empleado_nombre','asc');
     }

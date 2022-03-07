@@ -209,6 +209,7 @@ use App\Http\Controllers\formulariosController;
 use App\Http\Controllers\inicializarCuentasCobrarController;
 use App\Http\Controllers\inicializarCuentasPagarController;
 use App\Http\Controllers\listaAsientosDiariosController;
+use App\Http\Controllers\listaControlDiaController;
 use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
 use App\Http\Controllers\listaRolCMController;
@@ -333,6 +334,7 @@ Route::resource('asignacionRol', asignacionRolController::class)->middleware('au
 Route::resource('listaRolCM', listaRolCMController::class)->middleware('auth');
 Route::resource('categoriaRol', categoriaRolController::class)->middleware('auth');
 Route::resource('cargaBalances', cargarBalancesController::class)->middleware('auth');
+Route::resource('listacontroldia', listaControlDiaController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');

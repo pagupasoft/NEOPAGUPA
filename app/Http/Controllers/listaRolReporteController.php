@@ -24,8 +24,9 @@ class listaRolReporteController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $empleado=Cabecera_Rol_CM::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+            $sucursales=Cabecera_Rol_CM::EmpleadosSucursal()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
             $rubros=Rubro::Rubrostipos()->get();
-            return view('admin.RHCostaMarket.reportesRol.index',['rubros'=>$rubros,'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
+            return view('admin.RHCostaMarket.reportesRol.index',['sucursales'=>$sucursales,'rubros'=>$rubros,'empleado'=>$empleado,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -51,8 +52,10 @@ class listaRolReporteController extends Controller
     public function store(Request $request)
     { 
             $rubro=$request->get('contador');
-            $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();
+            $rol=Cabecera_Rol_CM::Buscar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('sucursal'))->get();
             $datos=null;
+            $rubros=null;
+            $coun=1;
             $count=1;
             if ($rubro) {
                 foreach ($rol as $roles) {
@@ -63,31 +66,21 @@ class listaRolReporteController extends Controller
                         for ($i = 0; $i < count($rubro); ++$i) {
                             if ($detalle->rubro_id==$rubro[$i]) {
                                 $total=$total+$detalle->detalle_rol_valor;
+                                
                             }
                         }
                     }
                     for ($i = 0; $i < count($rubro); ++$i) {
-                        if ($rubro[$i]=='TerceroPagado' or $rubro[$i]=='ReservaPagado' or $rubro[$i]=='CuartoPagado') {
-                           
-                            if($rubro[$i]=="TerceroPagado"){
-                                $total=$total+$roles->cabecera_rol_decimotercero_acumula;
-                            }
-                            elseif($rubro[$i]=="ReservaPagado"){
-                                $total=$total+$roles->cabecera_rol_fr_acumula;
-                            }
-                            elseif($rubro[$i]=="CuartoPagado"){
-                                $total=$total+$roles->cabecera_rol_decimocuarto_acumula;
-                            }
-                           
-                        }
-                        else{
                             $rub=Rubro::findOrFail($rubro[$i]);
                             if ($rub->rubro_nombre=="decimoTercero") {
                                 $total=$total+$roles->cabecera_rol_decimotercero;
+                                $total=$total+$roles->cabecera_rol_decimotercero_acumula;
                             } elseif ($rub->rubro_nombre==="decimoCuarto") {
                                 $total=$total+$roles->cabecera_rol_decimocuarto;
+                                $total=$total+$roles->cabecera_rol_decimocuarto_acumula;
                             } elseif ($rub->rubro_nombre==="fondoReserva") {
                                 $total=$total+$roles->cabecera_rol_fondo_reserva;
+                                $total=$total+$roles->cabecera_rol_fr_acumula;
                             } elseif ($rub->rubro_nombre==="viaticos") {
                                 $total=$total+$roles->cabecera_rol_viaticos;
                             } elseif ($rub->rubro_nombre==="iece") {
@@ -97,12 +90,15 @@ class listaRolReporteController extends Controller
                             } elseif ($rub->rubro_nombre==="vacacion") {
                                 $total=$total+$roles->cabecera_rol_vacaciones;
                             }
-                        }
-                       
-                        
                     }
                     $datos[$count]["total"]=$total;
                     $count++;
+                    
+                }
+                for ($i = 0; $i < count($rubro); ++$i) {
+                    $rub=Rubro::findOrFail($rubro[$i]);
+                    $rubros[$coun]=$rub->rubro_descripcion;
+                    $coun++;
                 }
             }
             $empresa =  Empresa::empresa()->first();
@@ -110,7 +106,7 @@ class listaRolReporteController extends Controller
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
-            $view =  \View::make('admin.formatosPDF.rolesCM.reporte', ['datos'=>$datos,'desde'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d/m/Y'),'hasta'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d/m/Y'),'empresa'=>$empresa]);
+            $view =  \View::make('admin.formatosPDF.rolesCM.reporte', ['rubros'=>$rubros,'datos'=>$datos,'desde'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d/m/Y'),'hasta'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d/m/Y'),'empresa'=>$empresa]);
             $nombreArchivo = 'ReproteRol';
             return PDF::loadHTML($view)->save('roles/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
         

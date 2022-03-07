@@ -34,7 +34,17 @@
                 <button type="submit" id="buscar" name="buscar" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
                 </div>   
             </div>
-            
+            <div class="form-group row">
+            <label for="sucursal" class="col-sm-1 col-form-label"><center>sucursales:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="sucursal" name="sucursal" >
+                        <option value="0" >--TODOS--</option> 
+                        @foreach($sucursales as $sucursal)
+                            <option  value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div> 
+            </div>
             <div class="card-body table-responsive p-0" style="height: 600px;">
             <div class="d-flex flex-row justify-content-end">
                 <span class="mr-2">
@@ -158,7 +168,11 @@
          document.getElementById("nombre_empleado").value='<?php echo($nombre_empleado); ?>';
          <?php
     }
-   
-    ?>
+    if (isset($sucursalid)) {
+        ?>
+    document.getElementById("sucursal").value='<?php echo($sucursalid); ?>';
+         <?php
+        }
+          ?>
 </script>
 @endsection

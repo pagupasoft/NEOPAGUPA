@@ -36,7 +36,7 @@ class Rubro extends Model
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_id','=',$id);
     }
     public function scopeRubrotipo($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->where('rubro_tipo','=',$id);
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->orderBy('rubro_numero','asc')->where('rubro_tipo','=',$id);
     }
     public function scopeRubrotipoorder($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('rubro_estado','=','1')->orderBy('rubro_numero','asc')->where('rubro_tipo','=',$id);

@@ -23,16 +23,15 @@ class listarquincenaController extends Controller
      */
     public function index()
     {
-        try {
+        
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $quincena=null;
             $estados=Quincena::Estados()->select('quincena_estado')->distinct()->get();
-            $empleado=Empleado::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
-            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>null,'fecha_hasta'=>null,'fecha_todo'=>null,'nombre_empleado'=>null,'estadoactual'=>null,'estados'=>$estados,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('incio')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+            $empleado=Quincena::EmpleadoQuincena()->orderBy('empleado_nombre','asc')->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+            $sucursales=Quincena::EmpleadoQuincena()->orderBy('sucursal_nombre','asc')->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
+            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>null,'fecha_hasta'=>null,'fecha_todo'=>null,'nombre_empleado'=>null,'estadoactual'=>null,'sucursales'=>$sucursales,'estados'=>$estados,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        
     }
 
     /**
@@ -58,35 +57,13 @@ class listarquincenaController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $quincena=null;
             $esta_quin=Quincena::Estados()->select('quincena_estado')->distinct()->get();
-            $empleado=Empleado::EmpleadosRol()->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') == "--TODOS--") {
-                $quincena=Quincena::Estados()->get();
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') != "--TODOS--") {
-                
-                $quincena=Quincena::QuincenasDiferente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('estados'))->get();
+            $empleado=Quincena::EmpleadoQuincena()->orderBy('empleado_nombre','asc')->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
+            $sucursales=Quincena::EmpleadoQuincena()->orderBy('sucursal_nombre','asc')->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
+               
+                $quincena=Quincena::QuincenasDiferente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('estados'),$request->get('sucursal'))->get();
                         
-            }             
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') == "--TODOS--") {
-                $quincena=Quincena::Quincenasfecha($request->get('fecha_desde'),$request->get('fecha_hasta'))->get();
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') == "--TODOS--") {
-                $quincena=Quincena::QuincenasEmpleado($request->get('nombre_empleado'))->get();
-                            
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') != "--TODOS--") {
-                $quincena=Quincena::Quincenasestado($request->get('estados'))->get();               
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') == "--TODOS--") {
-                $quincena=Quincena::QuincenasFechaEmpleado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'))->get();               
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_empleado') == "--TODOS--" && $request->get('estados') != "--TODOS--") {
-                $quincena=Quincena::QuincenasFechaEstado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'))->get();               
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_empleado') != "--TODOS--" && $request->get('estados') != "--TODOS--") {
-                $quincena=Quincena::QuincenasEmpleadoEstado($request->get('nombre_empleado'),$request->get('estados'))->get();               
-            }   
-            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'estadoactual'=>$request->get('estados'),'estados'=>$esta_quin,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            
+            return view('admin.recursosHumanos.quincena.view',['sucursales'=>$sucursales,'sucursalid'=>$request->get('sucursal'),'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'estadoactual'=>$request->get('estados'),'estados'=>$esta_quin,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

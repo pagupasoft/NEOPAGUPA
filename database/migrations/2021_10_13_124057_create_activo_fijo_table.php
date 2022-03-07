@@ -18,7 +18,7 @@ class CreateActivoFijoTable extends Migration
             $table->date('activo_fecha_inicio');
             $table->date('activo_fecha_fin');
             $table->date('activo_fecha_documento');
-            $table->date('activo_descripcion');
+            $table->text('activo_descripcion');
             $table->float('activo_valor');
             $table->float('activo_valor2');
             $table->float('activo_base_depreciar');

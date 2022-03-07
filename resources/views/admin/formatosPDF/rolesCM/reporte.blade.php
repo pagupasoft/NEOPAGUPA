@@ -1,9 +1,21 @@
 @extends ('admin.layouts.formatoPDF')
 @section('contenido')
     @section('titulo')
-        <tr><td colspan="2" class="centrar letra15 negrita">Rerpote Empleados</td></tr>
-        <tr><td colspan="2" class="centrar letra15 borde-gris">FECHA :  {{ $desde }}  AL {{ $hasta }} </td></tr>
+        <tr><td colspan="2" class="centrar letra15 negrita">Rerpote de Empleados</td></tr>
+        <tr><td colspan="2" class="centrar letra15 borde-gris">Fecha:  {{ $desde }}  AL {{ $hasta }} </td></tr>
     @endsection
+    <table>
+        <tr class="letra12">
+            <td class="negrita"width="10%">Rubros:</td>
+            <td>@if(isset($rubros))
+                    @for ($i = 1; $i <= count($rubros); ++$i) 
+                    {{ $rubros[$i]}},
+                    @endfor
+                @endif       
+            </td>
+          
+        </tr>
+    </table>
     <br>
     <?php $total=0;?> 
     <table style="white-space: normal!important;" id="tabladetalle">

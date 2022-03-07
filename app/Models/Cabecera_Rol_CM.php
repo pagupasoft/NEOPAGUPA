@@ -46,10 +46,17 @@ class Cabecera_Rol_CM extends Model
     public function scopeRol($query,$id){
         return $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('cabecera_rol_estado','=','1')->where('cabecera_rol_id','=',$id)->orderBy('empleado.empleado_nombre','asc');
     }
-    public function scopeBuscar($query, $fechaI, $fechaF, $empleado){
-        $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado.empleado_nombre','asc');
+    public function scopeBuscar($query, $fechaI, $fechaF, $empleado, $sucursal){
+        $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')
+        ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento', 'empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->join('sucursal', 'sucursal.sucursal_id','=','empresa_departamento.sucursal_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado.empleado_nombre','asc');
         if($empleado != '0'){
             $query->where('empleado.empleado_id','=',$empleado);
+        }  
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id','=',$sucursal);
         }   
         $query->where('cabecera_rol_fecha','>=',$fechaI)->where('cabecera_rol_fecha','<=',$fechaF);
         return $query;
@@ -60,6 +67,15 @@ class Cabecera_Rol_CM extends Model
         ->join('empresa','empresa.empresa_id','=','empleado_cargo.empresa_id')
         ->where('cabecera_rol_estado','=','1')
         ->where('empresa.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado_nombre','asc');
+    }
+    public function scopeEmpleadosSucursal($query){
+        return $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')
+        ->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento', 'empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->join('sucursal', 'sucursal.sucursal_id','=','empresa_departamento.sucursal_id')
+        ->join('empresa','empresa.empresa_id','=','empleado_cargo.empresa_id')
+        ->where('cabecera_rol_estado','=','1')
+        ->where('empresa.empresa_id','=',Auth::user()->empresa_id)->orderBy('sucursal_nombre','asc');
     }
     public function scopeRolesValidar($query,$fecha,$empleado_id){
         return $query->join('detalle_rol_cm','detalle_rol_cm.cabecera_rol_id','=','cabecera_rol_cm.cabecera_rol_id')->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)

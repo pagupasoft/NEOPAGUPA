@@ -84,13 +84,22 @@ class Quincena extends Model
     public function scopeSecuencial($query, $id){
         return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('quincena.rango_id','=',$id);
     }
-    public function scopeQuincenasDiferente($query,$fechadesde,$fechahasta,$empleado_id,$estado){
-        return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)
-        ->where('quincena_fecha', '>=', $fechadesde)
-        ->where('quincena_fecha', '<=', $fechahasta)
-        ->where('empleado_id', '=', $empleado_id)
-        ->where('quincena_estado','=',$estado)
-        ->orderBy('quincena_fecha','asc');
+    public function scopeQuincenasDiferente($query,$fechadesde,$fechahasta,$empleado_id,$estado,$sucursal){
+         $query->join('empleado','empleado.empleado_id','=','quincena.empleado_id')
+         ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+         ->join('empresa_departamento', 'empresa_departamento.departamento_id','=','empleado.departamento_id')
+         ->join('sucursal', 'sucursal.sucursal_id','=','empresa_departamento.sucursal_id')
+         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id);
+        if($empleado_id != '0'){
+            $query->where('empleado.empleado_id', '=', $empleado_id);
+        }
+        if($estado != '0'){
+        $query->where('quincena_estado','=',$estado);
+        }
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id','=',$sucursal);
+        }
+        $query->where('quincena_fecha','>=',$fechadesde)->where('quincena_fecha','<=',$fechahasta)->orderBy('quincena_fecha','asc');
     }
     public function scopeQuincenasEmpleado($query,$empleado_id){
         return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)
@@ -108,6 +117,14 @@ class Quincena extends Model
         ->where('quincena_estado','=',$estado)
         ->orderBy('quincena_fecha','asc');
     }
+    public function scopeEmpleadoQuincena($query){
+        return $query->join('empleado','empleado.empleado_id','=','quincena.empleado_id')
+        ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento', 'empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->join('sucursal', 'sucursal.sucursal_id','=','empresa_departamento.sucursal_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id);
+    }
+    
     public function diario()
     {
         return $this->belongsTo(Diario::class, 'diario_id', 'diario_id');

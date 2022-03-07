@@ -24,12 +24,23 @@
                 <label for="nombre_empleado" class="col-sm-1 col-form-label"><center>empleado:</center></label>
                 <div class="col-sm-5">
                     <select class="custom-select select2" id="nombre_empleado" name="nombre_empleado" >
-                        <option value="0" label>--TODOS--</option>                       
+                        <option value="0" >--TODOS--</option>                       
                         @foreach($empleado as $empleado)
                             <option  value="{{$empleado->empleado_id}}">{{$empleado->empleado_nombre}}</option>
                         @endforeach
                     </select>                                     
                 </div>  
+            </div>
+            <div class="form-group row">
+            <label for="sucursal" class="col-sm-1 col-form-label"><center>sucursales:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="sucursal" name="sucursal" >
+                        <option value="0" >--TODOS--</option> 
+                        @foreach($sucursales as $sucursal)
+                            <option  value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div> 
             </div>
             <div class="card-body table-responsive p-0" style="height: 600px;">
                 <table id="tablaingresos" class="table table-head-fixed text-nowrap">
@@ -121,6 +132,9 @@
     }
     if (isset($fecha_hasta)) {
         echo('document.getElementById("fecha_hasta").value=').$fecha_hasta; 
+    }
+    if (isset($sucursalid)) {
+        echo('document.getElementById("sucursal").value=').$sucursalid; 
     }
     ?>
 

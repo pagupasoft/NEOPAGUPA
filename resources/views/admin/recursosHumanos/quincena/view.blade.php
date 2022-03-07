@@ -19,18 +19,13 @@
                 <div class="col-sm-2">
                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"  value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
                 </div>
-                <div class="col-sm-1">
-                    <div class="icheck-secondary">
-                        <input type="checkbox" id="fecha_todo" name="fecha_todo">
-                        <label for="fecha_todo" class="custom-checkbox"><center>Todo</center></label>
-                    </div>                    
-                </div>
-                <label for="nombre_empleado" class="col-sm-1 col-form-label"><center>empleado:</center></label>
+                
+                <label for="nombre_empleado" class="col-sm-1 col-form-label"><center>Empleado:</center></label>
                 <div class="col-sm-5">
                     <select class="custom-select select2" id="nombre_empleado" name="nombre_empleado" >
-                        <option value="--TODOS--" label>--TODOS--</option>                       
+                        <option value="0" label>--TODOS--</option>                       
                         @foreach($empleado as $empleado)
-                            <option id="{{$empleado->empleado_nombre}}" name="{{$empleado->empleado_nombre}}" value="{{$empleado->empleado_id}}">{{$empleado->empleado_nombre}}</option>
+                            <option  value="{{$empleado->empleado_id}}">{{$empleado->empleado_nombre}}</option>
                         @endforeach
                     </select>                                     
                 </div>
@@ -38,10 +33,10 @@
             <div class="form-group row">
                 <label for="estados" class="col-sm-1 col-form-label"><center>Estados:</center></label>
                 <div class="col-sm-4">
-                    <select class="custom-select" id="estados" name="estados" >  
-                        <option value="--TODOS--" label>--TODOS--</option>                     
+                    <select class="custom-select select2" id="estados" name="estados" >  
+                        <option value="0" label>--TODOS--</option>                     
                         @foreach($estados as $estado)
-                            <option id="{{$estado->quincena_estado}}" name="{{$estado->quincena_estado}}" value="{{$estado->quincena_estado}}">
+                            <option  value="{{$estado->quincena_estado}}">
                             @if ($estado->quincena_estado ==0)
                                 Anulado
                             @endif
@@ -56,6 +51,15 @@
                         @endforeach
                     </select>                                     
                 </div> 
+                <label for="sucursal" class="col-sm-1 col-form-label"><center>Sucursales:</center></label>
+                <div class="col-sm-5">
+                    <select class="custom-select select2" id="sucursal" name="sucursal" >
+                        <option value="0" label>--TODOS--</option>                       
+                        @foreach($sucursales as $sucursal)
+                            <option value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div>
             </div>
             <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
@@ -130,7 +134,9 @@
     if('<?php echo($fecha_hasta); ?>'){  
         document.getElementById("fecha_hasta").value='<?php echo($fecha_hasta); ?>';
     }
-    
+    if('<?php echo($sucursalid); ?>'){  
+        document.getElementById("sucursal").value='<?php echo($sucursalid); ?>';
+    }
     
 </script>
 

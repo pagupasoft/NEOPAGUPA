@@ -19,21 +19,27 @@
                 <div class="col-sm-2">
                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"  value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' >
                 </div>
-                <div class="col-sm-1">
-                    <div class="icheck-secondary">
-                        <input type="checkbox" id="fecha_todo" name="fecha_todo">
-                        <label for="fecha_todo" class="custom-checkbox"><center>Todo</center></label>
-                    </div>                    
-                </div>
                 <label for="nombre_empleado" class="col-sm-1 col-form-label"><center>empleado:</center></label>
                 <div class="col-sm-5">
                     <select class="custom-select select2" id="nombre_empleado" name="nombre_empleado" >
-                        <option value="--TODOS--" label>--TODOS--</option>                       
+                        <option value="0" label>--TODOS--</option>                       
                         @foreach($empleado as $empleado)
                             <option id="{{$empleado->empleado_nombre}}" name="{{$empleado->empleado_nombre}}" value="{{$empleado->empleado_id}}">{{$empleado->empleado_nombre}}</option>
                         @endforeach
                     </select>                                     
                 </div>
+               
+            </div>
+            <div class="form-group row">
+            <label for="sucursal" class="col-sm-1 col-form-label"><center>Sucursales:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="sucursal" name="sucursal" >
+                        <option value="0" >--TODOS--</option> 
+                        @foreach($sucursales as $sucursal)
+                            <option  value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div> 
             </div>
             <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
@@ -42,7 +48,6 @@
                         <th>Tipo de Rol</th>
                         <th>Empleado</th>
                         <th>Fecha</th>
-                        <th>Dias Trabajados</th>
                         <th>Sueldo</th>
                         <th>Pago</th>  
                     </tr>
@@ -67,8 +72,8 @@
                             <td class="text-center">{{ $datos[$i]["tipo"]}}</td>                         
                             <td class="text-center">{{ $datos[$i]["nombre"]}}</td>
                             <td class="text-center">{{ $datos[$i]["fecha"]}}</td>
-                            <td class="text-center">{{ $datos[$i]["dias"]}}</td>
-                            <td class="text-center">{{ $datos[$i]["sueldo"]}}</td>
+
+                            <td class="text-center">{{ number_format($datos[$i]["sueldo"],2)}}</td>
                             <td class="text-center">{{ $datos[$i]["pago"]}}</td>    
                         
                             
@@ -94,6 +99,9 @@
     }
     if('<?php echo($fecha_hasta); ?>'){  
         document.getElementById("fecha_hasta").value='<?php echo($fecha_hasta); ?>';
+    }
+    if('<?php echo($sucursalid); ?>'){  
+        document.getElementById("sucursal").value='<?php echo($sucursalid); ?>';
     }
     
     

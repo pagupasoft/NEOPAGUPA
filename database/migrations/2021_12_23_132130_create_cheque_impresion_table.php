@@ -17,12 +17,16 @@ class CreateChequeImpresionTable extends Migration
             $table->id('chequei_id');           
             $table->float('chequei_valorx');
             $table->float('chequei_valory');
+            $table->float('chequei_valorfont');
             $table->float('chequei_beneficiariox');
             $table->float('chequei_beneficiarioy');
+            $table->float('chequei_beneficiariofont');
             $table->float('chequei_letrasx');
             $table->float('chequei_letrasy');
+            $table->float('chequei_letrasfont');
             $table->float('chequei_fechax');
             $table->float('chequei_fechay');
+            $table->float('chequei_fechafont');
             $table->bigInteger('cuenta_bancaria_id');
             $table->foreign('cuenta_bancaria_id')->references('cuenta_bancaria_id')->on('cuenta_bancaria');
             $table->string('chequei_estado');

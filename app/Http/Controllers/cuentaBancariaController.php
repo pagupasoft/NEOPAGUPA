@@ -230,12 +230,20 @@ class cuentaBancariaController extends Controller
             $chequeImpresion= new Cheque_Impresion();
             $chequeImpresion->chequei_valorx = $request->get('idValorx');
             $chequeImpresion->chequei_valory = $request->get('idValory');
+            $chequeImpresion->chequei_valorfont = $request->get('idValorfont');
+
             $chequeImpresion->chequei_beneficiariox = $request->get('idBeneficiariox');
             $chequeImpresion->chequei_beneficiarioy = $request->get('idBeneficiarioy');
+            $chequeImpresion->chequei_beneficiariofont = $request->get('idBeneficiariofont');
+            
             $chequeImpresion->chequei_letrasx = $request->get('idLetrasx');
             $chequeImpresion->chequei_letrasy = $request->get('idLetrasy');
+            $chequeImpresion->chequei_letrasfont = $request->get('idLetrasfont');
+
             $chequeImpresion->chequei_fechax = $request->get('idFechax');
             $chequeImpresion->chequei_fechay = $request->get('idFechay');
+            $chequeImpresion->chequei_fechafont = $request->get('idFechafont');
+
             $chequeImpresion->cuenta_bancaria_id = $id;
             $chequeImpresion->chequei_estado=1;
             $chequeImpresion->save();  

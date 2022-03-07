@@ -6,27 +6,32 @@
         <div class="card-header">
             <h3 class="card-title">Configuracion de Cheque</h3>
             <div class="float-right">
+                <button type="button" onclick='negrita();' class="btn btn-default btn-sm"><i class="fa fa-bold"></i>&nbsp;Negrita</button>
                 <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
                 <button type="button" onclick='window.location = "{{ url("cuentaBancaria") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+               
             </div>
         </div>
     </div>
     <div class="card-body">
         <div class="form-group">
-            <div id="id1" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 500px;cursor:pointer;width:400px;height:50px; font-weight: bold;">JUAN PIWABE ORTIZ</div>
+            <div id="id1" class="click" draggable="true"  ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 500px;cursor:pointer;width:400px;height:50px; ">JUAN PIWABE ORTIZ</div>
             <input id="idBeneficiariox" name="idBeneficiariox" type="hidden">
             <input id="idBeneficiarioy" name="idBeneficiarioy" type="hidden">
-            <div id="id2" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 550px;cursor:pointer;width:100px;height:50px; font-weight: bold;">15805.89</div>
+            <input id="idBeneficiariofont" name="idBeneficiariofont" type="hidden">
+            <div id="id2" class="click" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 550px;cursor:pointer;width:100px;height:50px; font-weight: bold;">15805.89</div>
             <input id="idValorx" name="idValorx" type="hidden">
             <input id="idValory" name="idValory" type="hidden">
-            <div id="id3" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 600px;cursor:pointer;width:200px;height:18px; font-weight: bold;">MACHALA, 27/12/2021</div>
+            <input id="idValorfont" name="idValorfont" type="hidden">
+            <div id="id3" class="click" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 600px;cursor:pointer;width:200px;height:18px; font-weight: bold;">MACHALA, 27/12/2021</div>
             <input id="idFechax" name="idFechax" type="hidden">
             <input id="idFechay" name="idFechay" type="hidden">
-            <div id="id4" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 650px;cursor:pointer;width:450px;height:50px; font-weight: bold;">QUINCE MIL OCHOCIENTOS CINCO CON 89/100</div>
+            <input id="idFechafont" name="idFechafont" type="hidden">
+            <div id="id4" class="click" draggable="true" ondragstart="onDragStart(event)" style="position:absolute;left:650px;top: 650px;cursor:pointer;width:450px;height:50px; font-weight: bold;">QUINCE MIL OCHOCIENTOS CINCO CON 89/100</div>
             <input id="idLetrasx" name="idLetrasx" type="hidden">
             <input id="idLetrasy" name="idLetrasy" type="hidden">
-
-            <div id="contenedor" style="position:absolute;left:5px;top:90px;border:2px solid #91A9C9; cursor:pointer;width: 99%;height: 250%;" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"></div>
+            <input id="idLetrasfont" name="idLetrasfont" type="hidden">
+            <div id="contenedor"  style="position:absolute;left:5px;top:90px;border:2px solid #91A9C9; cursor:pointer;width: 99%;height: 250%;" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"></div>
 
         </div>            
     </div>   
@@ -35,7 +40,7 @@
     let offsetX;
     let offsetY;
     var objeto=''; 
-
+    var ide='';
     @if(isset($chequeImpresion)) 
         @if($chequeImpresion)
             /*beneficiario*/
@@ -43,12 +48,15 @@
             xAnterior = Number(xAnterior);
             yAnterior = '<?=$chequeImpresion->chequei_beneficiarioy?>';
             yAnterior = Number(yAnterior);
+            fontAnterior = '<?=$chequeImpresion->chequei_beneficiariofont?>';
             document.getElementById("idBeneficiariox").value = xAnterior;
             document.getElementById("idBeneficiarioy").value = yAnterior;
+            document.getElementById("idBeneficiariofont").value = fontAnterior;
             var d = document.getElementById('id1');
             d.style.position = "absolute";
             d.style.left = xAnterior+'px';
             d.style.top = yAnterior+'px';
+            d.style.fontWeight = fontAnterior;
             contenedor.appendChild(document.getElementById("id1"));  
             /*************/   
             /*valor*/
@@ -56,12 +64,15 @@
             xAnterior = Number(xAnterior);
             yAnterior = '<?=$chequeImpresion->chequei_valory?>';
             yAnterior = Number(yAnterior);
+            fontAnterior = '<?=$chequeImpresion->chequei_valorfont?>';
             document.getElementById("idValorx").value = xAnterior;
             document.getElementById("idValory").value = yAnterior;
+            document.getElementById("idValorfont").value = fontAnterior;
             var d = document.getElementById('id2');
             d.style.position = "absolute";
             d.style.left = xAnterior+'px';
             d.style.top = yAnterior+'px';
+            d.style.fontWeight = fontAnterior;
             contenedor.appendChild(document.getElementById("id2"));  
             /*************/ 
             /*fecha*/
@@ -69,12 +80,15 @@
             xAnterior = Number(xAnterior);
             yAnterior = '<?=$chequeImpresion->chequei_fechay?>';
             yAnterior = Number(yAnterior);
+            fontAnterior = '<?=$chequeImpresion->chequei_fechafont?>';
             document.getElementById("idFechax").value = xAnterior;
             document.getElementById("idFechay").value = yAnterior;
+            document.getElementById("idFechafont").value = fontAnterior;
             var d = document.getElementById('id3');
             d.style.position = "absolute";
             d.style.left = xAnterior+'px';
             d.style.top = yAnterior+'px';
+            d.style.fontWeight = fontAnterior;
             contenedor.appendChild(document.getElementById("id3"));  
             /*************/ 
             /*letras*/
@@ -82,12 +96,15 @@
             xAnterior = Number(xAnterior);
             yAnterior = '<?=$chequeImpresion->chequei_letrasy?>';
             yAnterior = Number(yAnterior);
+            fontAnterior = '<?=$chequeImpresion->chequei_letrasfont?>';
             document.getElementById("idLetrasx").value = xAnterior;
             document.getElementById("idLetrasy").value = yAnterior;
+            document.getElementById("idLetrasfont").value = fontAnterior;
             var d = document.getElementById('id4');
             d.style.position = "absolute";
             d.style.left = xAnterior+'px';
             d.style.top = yAnterior+'px';
+            d.style.fontWeight = fontAnterior;
             contenedor.appendChild(document.getElementById("id4"));  
             /*************/   
         @endif
@@ -148,6 +165,40 @@
             alert('entro');
             contenedor.append(document.getElementById("id1"));
         }
+    }
+    function negrita(){
+        var test = document.getElementById(ide);
+        var fontw='';
+        if(ide=='id1'){
+            fontw='idBeneficiariofont';
+        }
+        if(ide=='id2'){
+            fontw='idValorfont';
+        }
+        if(ide=='id3'){
+            fontw='idFechafont';
+        }
+        if(ide=='id4'){
+            fontw='idLetrasfont';
+        }
+        if(test.style.fontWeight=='bold'){
+            document.getElementById(ide).style.fontWeight = "normal";
+            document.getElementById(fontw).value = "normal";    
+        }
+        else{
+            document.getElementById(ide).style.fontWeight = "bold";
+            document.getElementById(fontw).value = "bold";    
+        }    
+    }
+    function cargarmetodo(){
+        document.querySelectorAll(".click").forEach(el => {
+        el.addEventListener("click", e => {
+            const id = e.target.getAttribute("id");
+            ide=id;
+
+        });
+        });
+       
     }
 </script>
 @endsection

@@ -94,6 +94,15 @@ class Orden_Atencion extends Model
                     //->whereRaw('created_at >= DATE_SUB(NOW(), INTERVAL 3 HOUR)
     }
 
+    public function scopeOrdenCitaDisponibleHora($query, $medico_id, $especialidad_id, $fecha){
+        return $query->where('medico_id','=',$medico_id
+                    )->where('especialidad_id','=',$especialidad_id
+                    )->where('orden_fecha', "=", "'$fecha'"
+                    )->where('orden_hora', "=", "'$fecha'");
+
+                    //->whereRaw('created_at >= DATE_SUB(NOW(), INTERVAL 3 HOUR)
+    }
+
     public function scopeOrdenesByFechaSuc($query,$fechaI,$fechaF,$sucursal){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
                     )->where('orden_fecha','>=',$fechaI

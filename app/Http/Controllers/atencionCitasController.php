@@ -493,4 +493,320 @@ class atencionCitasController extends Controller
     {
         //
     }
+
+    //api orion
+    public function pruebaOrden(){
+        $fecha = date('Y-m-d h:i:s');
+        $paciente = (object) array(
+            'tipo' =>'CED',
+            'numero_identificacion'=>0705052470,
+            'nombres'=>'Cristhian Manuel',
+            'apellidos'=>'Armijos Jimenez',
+            'fecha_nacimiento'=>'1988-06-15',
+            'sexo'=>'M',
+            'correo'=>'armijos@gmail.com',
+            'telefono'=>'0984092819'
+        );
+
+        $medico = (object) array(
+            "id_externo"=> '27',
+            "numero_identificacion"=> '0728394859',
+            "nombres"=> 'WILSON ALEXANDER',
+            "apellidos"=> 'BELDUMA MORA'
+        );
+
+        $examenes = array(
+            (object) array(
+                "id_externo"=> 'COL',
+                "muestra_pendiente"=> 0,
+                //"precio"=> 0
+            ),
+            (object) array(
+                "id_externo"=> 'TRI',
+                "muestra_pendiente"=> 0,
+                //"precio"=> 0
+            ),
+        );
+
+        //return json_encode($examenes);
+
+        $result = $this->postCrearOrden(234, $fecha, $paciente, $medico, $examenes);
+
+        
+
+        echo json_encode($result,JSON_PRETTY_PRINT);
+    }
+
+    public function pruebaGetOrdenes(){
+        $fecha = date('Y-m-d');
+
+        //$result = $this->getOrdenes(234, $fecha);
+        $result = $this->getOrdenes(234);
+
+        echo '<pre>';
+        echo json_encode($result,JSON_PRETTY_PRINT);
+        echo '</pre>';
+    }
+
+    public function pruebaGetOrden(){
+        $result = $this->getOrden(5929);
+
+        echo '<pre>';
+        echo json_encode($result,JSON_PRETTY_PRINT);
+        echo '</pre>';
+    }
+
+    public function pruebaGetOrdenPdf(){
+        $result = $this->getOrdenPdf(5929);
+
+        //echo '<pre>';
+        //echo json_encode($result,JSON_PRETTY_PRINT);
+        //echo '</pre>';
+
+        if($result->codigo="200"){ //mostrar pdf en una ventana
+            return $result->resultado;
+        }
+    }
+
+    
+
+    private function postCrearOrden($orden_numero, $fecha, $paciente, $medico, $examenes){
+        $sucursal_id=1;
+        $categoria_id=6;
+
+        $json_fields = array(
+            "sucursal_id"=> $sucursal_id,
+            "categoria_id"=> $categoria_id,
+            //"plan_salud_id"=> 0,
+            //"usuario_ingresa_id"=> 0,
+            //"usuario_ingresa_id_externo"=> "string",
+            //"embarazada"=> true,
+            "numero_orden_externa"=> $orden_numero,
+            "fecha_orden"=> $fecha,
+            //"valor_total"=> 0,
+            //"valor_descuento"=> 0,
+            //"valor_abono"=> 0,
+            //"forma_pago_abono"=> "string",
+            "paciente"=> array(
+                "tipo_identificacion"=> $paciente->tipo,
+                "numero_identificacion"=> $paciente->numero_identificacion,
+                "nombres"=> $paciente->nombres,
+                "apellidos"=> $paciente->apellidos,
+                "fecha_nacimiento"=> $paciente->fecha_nacimiento,
+                "sexo"=> $paciente->sexo,
+                //"numero_historia_clinica"=> "string",
+                "correo"=> $paciente->correo,
+                "telefono_celular"=> $paciente->telefono
+            ),
+            "medico"=> array(
+                "ìd_externo"=> $medico->id_externo,
+                "numero_identificacion"=> $medico->numero_identificacion,
+                "nombres"=> $medico->nombres,
+                "apellidos"=> $medico->apellidos
+            ),
+            "examenes"=> $examenes
+            /*[
+                array(
+                "id_externo"=> "string",
+                "muestra_pendiente"=> true,
+                "precio"=> 0
+                )
+            ]*/
+        );
+
+        //return $json_fields;
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json_fields));
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        
+        return (Object) array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>$result);
+    }
+
+    private function getOrdenes($orden_numero_externo = null, $fecha1=null, $fecha2=null, $identificacion=null, $estado=null){
+        $filtro='';
+
+        if(isset($orden_numero_externo)) $filtro='&filtrar[numero_orden_externa]='.$orden_numero_externo;
+
+        if(isset($fecha1)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[fecha_orden_desde]='.$fecha1;
+            else
+                $filtro='filtrar[fecha_orden_desde]='.$fecha1;
+        }
+
+        if(isset($fecha2)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[fecha_orden_hasta]='.$fecha2;
+            else
+                $filtro='filtrar[fecha_orden_hasta]='.$fecha2;
+        }
+
+        if(isset($identificacion)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[paciente.numero_identificacion]='.$identificacion;
+            else
+                $filtro='filtrar[paciente.numero_identificacion]='.$identificacion;
+        }
+
+        if(isset($estado)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[examenes.estado]='.$estado;
+            else
+                $filtro='filtrar[examenes.estado]='.$estado;
+        }
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes?incluir=paciente,examenes'.$filtro);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        return array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result));
+    }
+
+    private function getOrden($orden_numero_id){
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes/'.$orden_numero_id.'?incluir=paciente,examenes');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        return array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result));
+    }
+
+    private function getOrdenPdf($orden_numero_id){
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes/'.$orden_numero_id.'/resultados/pdf');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        $headers = array();
+        $headers[] = 'Accept: application/pdf';
+        //$headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        return (Object) array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result));
+    }
+
+
+
+    private function agregarCodigo($httpcode){
+        $mensaje='';
+
+        switch ($httpcode){
+            case 200:{
+                $mensaje='OK - Peticion exitosa';
+                break;
+            }
+            case 201:{
+                $mensaje='OK - Peticion Creada Exitosamente';
+                break;
+            }
+            case 204:{
+                $mensaje='OK - Peticion fué exitosa (eliminar/anular)';
+                break;
+            }
+            case 401:{
+                $mensaje='ERROR - No Autorizado';
+                break;
+            }
+            case 404:{
+                $mensaje='ERROR - No Encontrado';
+                break;
+            }
+            case 422:{
+                $mensaje='ERROR - Fallo en la Validación';
+                break;
+            }
+            case 429:{
+                $mensaje='ERROR - Límite de Peticiones excedido, intente más tarde';
+                break;
+            }
+            case 500:{
+                $mensaje='ERROR - Error Interno (API)';
+                break;
+            }
+            case 503:{
+                $mensaje='ERROR - Servidor en Mantenimiento';
+                break;
+            }
+        }
+
+        return $mensaje;
+    }
+
+    public function getNotifications(Request $request){
+        $token = $request->bearerToken();
+
+        return $token;
+    }
 }

@@ -9,15 +9,21 @@ use App\Models\Cliente;
 use App\Models\Cuenta_Cobrar;
 use App\Models\Detalle_Analisis;
 use App\Models\Detalle_Diario;
+use App\Models\Detalle_Examen;
 use App\Models\Detalle_FV;
 use App\Models\Detalle_Laboratorio;
 use App\Models\Detalle_Pago_CXC;
 use App\Models\Diario;
+use App\Models\Empleado;
 use App\Models\Empresa;
 use App\Models\Examen;
+use App\Models\Expediente;
 use App\Models\Factura_Venta;
+use App\Models\Medico;
 use App\Models\Movimiento_Producto;
+use App\Models\Orden_Atencion;
 use App\Models\Orden_Examen;
+use App\Models\Paciente;
 use App\Models\Pago_CXC;
 use App\Models\Parametrizacion_Contable;
 use App\Models\Producto;
@@ -261,7 +267,6 @@ class examenController extends Controller
             $pu = $request->get('DCopago');
             $total = $request->get('DCopago');
 
-                  
            
             $banderaP = false;
             for ($i = 1; $i < count($cantidad); ++$i){
@@ -528,7 +533,7 @@ class examenController extends Controller
                 $factura->update();
             }
            
-
+            //return $request;
         
             $puntoEmision = Punto_Emision::PuntoSucursalUser(Rango_Documento::rango($request->get('rango_id'))->first()->puntoEmision->sucursal_id,Auth::user()->user_id)->first();
             $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Analisis de Laboratorio')->first();
@@ -536,7 +541,8 @@ class examenController extends Controller
             $analisis=new Analisis_Laboratorio();
             if($rangoDocumento){
                 $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
-                if($secuencialAux){$secuencial=$secuencialAux+1;  
+                if($secuencialAux){
+                    $secuencial=$secuencialAux+1;  
                 }
                
                 $analisis->analisis_numero=$request->get('Codigo').'-'.substr(str_repeat(0, 9).$secuencial, - 9);
@@ -566,9 +572,34 @@ class examenController extends Controller
             }
             $orden = Orden_Examen::findOrFail($request->get('orden_id'));
             $ordenes = Orden_Examen::Ordenanalisis($request->get('orden_id'))->get();
-           
+            
             $orden->orden_estado = '3';
+
+            ///////////enviar orden al Laboratorio externo/////////////////////////////////////////////////////////////
+            $resultadoEnvio = $this->postCrearOrden($orden);
+            //DB::rollBack();
+
+            //echo $resultadoEnvio->resultado['data']['id'].'<br>';
+            //return json_encode($resultadoEnvio);
+
+            
+            if($resultadoEnvio->codigo==201){ //////exito
+                $orden->orden_estado = '4';
+                $orden->orden_id_referencia=$resultadoEnvio->resultado['data']['id'];
+                $orden->orden_numero_referencia=$resultadoEnvio->resultado['data']['numero_orden'];
+            }
+            //////////  error al enviar orden
+            else{
+                DB::rollBack();
+                return $resultadoEnvio;
+            }
+            
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
             $orden->update();
+            
+            
+            
             $tipo= Orden_Examen::Ordenanalisis($request->get('orden_id'))->select('tipo_examen.tipo_id','tipo_examen.tipo_nombre')->distinct()->get();
             $etiquetas= Orden_Examen::Ordenetiquetas($request->get('orden_id'))->select('tipo_recipiente.tipo_recipiente_id','tipo_recipiente.tipo_nombre')->distinct()->get();
 
@@ -599,5 +630,153 @@ class examenController extends Controller
     }
     public function buscarByanalisis($id){
         return Examen::BuscarProductoslaboratorio($id)->get();
+    }
+
+    private function postCrearOrden($orden_examen){
+        $examenes = [];
+
+        $detalle_examen=$orden_examen->detalle;
+        //echo $orden_examen->orden_id.'<br>';
+
+        //return $detalle_examen;
+        foreach($detalle_examen as $detalle){
+            $examenes[] = array(
+                "id_externo"=> $detalle->examen->producto->producto_codigo_referencia,
+                "muestra_pendiente"=> 0,
+            );
+        }
+
+        $expediente = Expediente::expediente($orden_examen->expediente_id)->first();
+        $medico = Medico::medico($expediente->medico_id)->first();
+        $medico_data = Empleado::empleadoById($medico->empleado_id)->first();
+
+        $paciente_data = Paciente::paciente($expediente->paciente_id)->first();
+
+        //return $paciente_data;
+        $sucursal_id=1;
+        $categoria_id=6;
+
+        $medico_nombre = explode(" ", $medico_data->empleado_nombre);
+
+        $json_fields = array(
+            "sucursal_id"=> $sucursal_id,
+            "categoria_id"=> $categoria_id,
+            //"plan_salud_id"=> 0,
+            //"usuario_ingresa_id"=> 0,
+            //"usuario_ingresa_id_externo"=> "string",
+            //"embarazada"=> true,
+            "numero_orden_externa"=> $orden_examen->orden_id,
+            "fecha_orden"=> date("Y-m-d h:m:s", strtotime($orden_examen->created_at)),
+            //"valor_total"=> 0,
+            //"valor_descuento"=> 0,
+            //"valor_abono"=> 0,
+            //"forma_pago_abono"=> "string",
+            "paciente"=> array(
+                "tipo_identificacion"=> $paciente_data->tipo_identificacion_id==2? 'CED': 'PASS',
+                "numero_identificacion"=> $paciente_data->paciente_cedula,
+                "nombres"=> $paciente_data->paciente_nombres,
+                "apellidos"=> $paciente_data->paciente_apellidos,
+                "fecha_nacimiento"=> $paciente_data->paciente_fecha_nacimiento,
+                "sexo"=> $paciente_data->paciente_sexo=='Masculino' ? 'M': 'F' ,
+                //"numero_historia_clinica"=> "string",
+                "correo"=> $paciente_data->paciente_email,
+                "telefono_celular"=> $paciente_data->paciente_celular
+            ),
+            "medico"=> array(
+                "ìd_externo"=> $medico->medico_id,
+                "numero_identificacion"=> $medico_data->empleado_cedula,
+                "nombres"=> $medico_nombre[2].' '.$medico_nombre[3],
+                "apellidos"=> $medico_nombre[0].' '.$medico_nombre[1]
+            ),
+            "examenes"=> $examenes
+            /*[
+                array(
+                "id_externo"=> "string",
+                "muestra_pendiente"=> true,
+                "precio"=> 0
+                )
+            ]*/
+        );
+
+        //return json_encode($json_fields);
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json_fields));
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        //echo $result;
+        //return '';
+        return (Object)array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result, true));
+    }
+
+    private function agregarCodigo($httpcode){
+        $mensaje='';
+
+        switch ($httpcode){
+            case 200:{
+                $mensaje='OK - Peticion exitosa';
+                break;
+            }
+            case 201:{
+                $mensaje='OK - Peticion Creada Exitosamente';
+                break;
+            }
+            case 204:{
+                $mensaje='OK - Peticion fué exitosa (eliminar/anular)';
+                break;
+            }
+            case 401:{
+                $mensaje='ERROR - No Autorizado';
+                break;
+            }
+            case 404:{
+                $mensaje='ERROR - No Encontrado';
+                break;
+            }
+            case 422:{
+                $mensaje='ERROR - Fallo en la Validación';
+                break;
+            }
+            case 429:{
+                $mensaje='ERROR - Límite de Peticiones excedido, intente más tarde';
+                break;
+            }
+            case 500:{
+                $mensaje='ERROR - Error Interno (API)';
+                break;
+            }
+            case 503:{
+                $mensaje='ERROR - Servidor en Mantenimiento';
+                break;
+            }
+        }
+
+        return $mensaje;
+    }
+
+    public function getNotifications(Request $request){
+        $token = $request->bearerToken();
+
+        return $token;
     }
 }

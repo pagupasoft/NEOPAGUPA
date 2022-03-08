@@ -121,8 +121,8 @@ class ordenAtencionController extends Controller
      */
     public function store(Request $request)
     { 
-        try {
-            DB::beginTransaction();
+        //try {
+        //    DB::beginTransaction();
            
          
          
@@ -498,12 +498,11 @@ class ordenAtencionController extends Controller
             } else {
                 return redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente')->with('diario',$url)->with('error2', 'ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
             }
-        }
-        catch(\Exception $ex){    
-            DB::rollBack();  
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        } 
-        
+        //}
+        //catch(\Exception $ex){    
+        //   DB::rollBack();  
+        //    return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
     }
     public function imprimirorden($id)
     {

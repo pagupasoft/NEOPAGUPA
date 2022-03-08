@@ -32,7 +32,7 @@ class Orden_Examen extends Model
                     )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
                     )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
                     )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                    )->where('orden_fecha','=',date("Y-m-d")
+                    )->where('orden_fecha','=', date("Y-m-d")
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id       
                     )->where('orden_examen.orden_estado','=','1');               
     }

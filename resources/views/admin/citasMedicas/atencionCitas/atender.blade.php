@@ -5,7 +5,7 @@
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title negrita">
-           Atencion de cita
+           Atencion de citas
         </h3>
         <div class="float-right">
             <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>

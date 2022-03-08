@@ -278,21 +278,20 @@
                                         ?>
                                         @if(isset($datos))
                                             @for ($i = 1; $i <= count($datos); ++$i)  
-                                        
-                                        <tr id="row_{{ $count }}">
-                                            <td>1<input class="invisible" name="Dcantidad[]" value="{{ $datos[$i]['cantidad'] }}" /></td>
-                                            <td>{{ $datos[$i]['codigo'] }}<input class="invisible" name="DprodcutoID[]" value="{{ $datos[$i]['idproducto'] }}" /><input class="invisible" name="Dcodigo[]" value="{{$datos[$i]['codigo']}}" /></td>
-                                            <td>{{ $datos[$i]['nombre']  }}<input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['nombre']  }}" /></td>
-                                            <td><?php echo '$' . number_format($datos[$i]['valor'], 2) ?><input class="invisible" name="Dvalor[]" value="{{ $datos[$i]['valor'] }}" /></td>
-                                            <td>{{ $datos[$i]['%Cobertura'] }}<input class="invisible" name="D%Cobertura[]" value="{{ $datos[$i]['%Cobertura'] }}"/></td>
-                                            <td><?php echo '$' . number_format($datos[$i]['Cobertura'], 2) ?><input class="invisible" name="DCobertura[]" value="{{ $datos[$i]['Cobertura'] }}" /></td>
-                                            <td><?php echo '$' . number_format($datos[$i]['Copago'], 2) ?><input class="invisible" name="DCopago[]" value="$datos[$i]['Copago']" /></td>
-                                        
-                                            <td><a onclick="eliminarItem({{$count}},{{$datos[$i]['Copago']}});" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
-                                        </tr>
-                                    
-                                        <?php $count = $count + 1; ?>
-                                        @endfor
+                                                <tr id="row_{{ $count }}">
+                                                    <td>1<input class="invisible" name="Dcantidad[]" value="{{ $datos[$i]['cantidad'] }}" /></td>
+                                                    <td>{{ $datos[$i]['codigo'] }}<input class="invisible" name="DprodcutoID[]" value="{{ $datos[$i]['idproducto'] }}" /><input class="invisible" name="Dcodigo[]" value="{{$datos[$i]['codigo']}}" /></td>
+                                                    <td>{{ $datos[$i]['nombre']  }}<input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['nombre']  }}" /></td>
+                                                    <td><?php echo '$' . number_format($datos[$i]['valor'], 2) ?><input class="invisible" name="Dvalor[]" value="{{ $datos[$i]['valor'] }}" /></td>
+                                                    <td>{{ $datos[$i]['%Cobertura'] }}<input class="invisible" name="D%Cobertura[]" value="{{ $datos[$i]['%Cobertura'] }}"/></td>
+                                                    <td><?php echo '$' . number_format($datos[$i]['Cobertura'], 2) ?><input class="invisible" name="DCobertura[]" value="{{ $datos[$i]['Cobertura'] }}" /></td>
+                                                    <td><?php echo '$' . number_format($datos[$i]['Copago'], 2) ?><input class="invisible" name="DCopago[]" value="{{$datos[$i]['Copago']}}" /></td>
+                                                
+                                                    <td><a onclick="eliminarItem({{$count}},{{$datos[$i]['Copago']}});" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
+                                                </tr>
+                                            
+                                                <?php $count = $count + 1; ?>
+                                            @endfor
                                         @endif
                                     
                                     </tbody>
@@ -369,7 +368,32 @@ id_item = Number(id_item);
 
 
     function agregarItem() {
-       
+        paso=true
+
+        if(document.getElementById("codigoProducto").value==""){
+            alert('Busque un examen para agregarlo en la lista')
+            paso=false
+        }
+        else{
+            var filas = $("#cargarItemFactura tbody tr").length;
+
+            for(i=1; i<=filas; i++){
+                celda= jQuery("#row_"+i).find("td:eq(1)");
+                
+                id= celda.children().eq(0).val()
+
+                if(id==document.getElementById("idProductoID").value){
+                    alert("Este item ya esta en la Lista")
+                    return false
+                }
+                else if(parseFloat(document.getElementById("id_Precio").value) <=0){
+                    alert("Este item no está aún configurado, debe tener un Precio establecido")
+                    return false
+                }
+            }
+        }
+            
+        if(paso){
             total = Number(document.getElementById("id_Copagos").value);
            
             var linea = $("#plantillaItemFactura").html();
@@ -388,8 +412,14 @@ id_item = Number(id_item);
             id_item = id_item + 1;
             cargarTotales(total);
             resetearCampos();
+        }
         
     }
+
+    function eliminarTodo(){
+
+    }
+
     function cargarOA(){  
         $.ajax({
             url: '{{ url("sucursales/searchN") }}'+ '/' +document.getElementById("idSucursal").value,
@@ -419,15 +449,15 @@ id_item = Number(id_item);
         document.getElementById("idTotal").value = Ttotal;
         document.getElementById("idTotalFactura").value = (Number(Ttotal)).toFixed(2);
     }
+
     function calculatotales () {
         var total=  Number(document.getElementById("id_Precio").value);
         var cober=  Number(document.getElementById("id_Cobertura").value);
         Ttotal=cober+total;
         document.getElementById("id_Copagos").value = (Number(Ttotal)).toFixed(2);
-        cargarTotales (Ttotal)
+        //cargarTotales (Ttotal)
         
     }
-
 
     function eliminarItem(id, total) {
         cargarTotales(total * (-1));

@@ -1,11 +1,11 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<form class="form-horizontal" method="POST" action="{{ url("ordenAtencion") }}" enctype="multipart/form-data">
+<form class="form-horizontal" method="POST" action="{{ url("ordenAtencion") }}" enctype="multipart/form-data" onsubmit="return validarInformacion()">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
-            <h3 class="card-title">Nueva Orden de Atencion</h3>
+            <h3 class="card-title">Nueva Orden de Atencionff</h3>
             <div class="float-right">
                 <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
                 <button type="button" onclick='window.location = "{{ url("ordenAtencion") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
@@ -331,38 +331,54 @@
 <script>
     semana_actual = 0;
     var Calendar
+    fecha_seleccionada='';
 
     function validararchivos() {
-            $(document).on('change','input[type="file"]',function(){
+        $(document).on('change','input[type="file"]',function(){
 
-        var fileName = this.files[0].name;
-        var fileSize = this.files[0].size;
-    
-        if(fileSize > 1000000){
-            alert('El tamaño maximo del archivo es de 1MB');
-            this.value = '';
-            this.files[0].name = '';
-        }else{
-            // recuperamos la extensión del archivo
-            var ext = fileName.split('.').pop();
-            
-            // Convertimos en minúscula porque 
-            // la extensión del archivo puede estar en mayúscula
-            ext = ext.toLowerCase();
+            var fileName = this.files[0].name;
+            var fileSize = this.files[0].size;
         
-            // console.log(ext);
-            switch (ext) {
-                case 'jpg':
-                case 'jpeg':
-                case 'png':
-                case 'pdf': break;
-                default:
-                    alert('Solo puede subir Imagenes o PDF');
-                    this.value = ''; // reset del valor
-                    this.files[0].name = '';
+            if(fileSize > 1000000){
+                alert('El tamaño maximo del archivo es de 1MB');
+                this.value = '';
+                this.files[0].name = '';
+            }else{
+                // recuperamos la extensión del archivo
+                var ext = fileName.split('.').pop();
+                
+                // Convertimos en minúscula porque 
+                // la extensión del archivo puede estar en mayúscula
+                ext = ext.toLowerCase();
+            
+                // console.log(ext);
+                switch (ext) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'pdf': break;
+                    default:
+                        alert('Solo puede subir Imagenes o PDF');
+                        this.value = ''; // reset del valor
+                        this.files[0].name = '';
+                }
             }
+        });
+    }
+
+    function validarInformacion(){
+        if($("#clienteID").val()==""){
+            alert('Seleccione un Cliente para continuar con el proceso')
+            return false;
         }
-    });
+        else if(getCitaDisponible()){
+            alert('¡Este Horario ya esta registrado para el Medico seleccionado, actualice la página e intente nuevamente!')
+            return false;
+        }
+        else
+            console.log('sadsadasdas')
+
+        return true;
     }
     function cargarOA(){  
         $.ajax({
@@ -693,12 +709,14 @@
                     fecha_rango2 = new Date(y, m, d + valor, f2.getHours(),f2.getMinutes()-1)
 
                     //console.log("fecha1 "+fecha_rango1+"    fecha 2 "+fecha_rango2)
+
+                    //console.log("medico "+data[i].medico_id)
                     ordenes  =getOrdenesAtencion(data[i].medico_id,
                                                   data[i].especialidad_id,  
                                                   moment(fecha_rango1).format('YYYY-MM-DD HH:mm:ss'),
                                                   moment(fecha_rango2).format('YYYY-MM-DD HH:mm:ss'))
 
-                    console.log(data[i].medico_id+" "+data[i].especialidad_id+"      "+JSON.stringify(ordenes))
+                    //console.log(data[i].medico_id+" "+data[i].especialidad_id+"      "+JSON.stringify(ordenes))
 
                     for(var tur = 0; tur < turnos*horasTurno; tur++){
                         fechaPost.setMinutes(fechaPost.getMinutes() + data[i].especialidad_duracion);
@@ -723,6 +741,7 @@
                                 }
                             }
                         else{
+                            titulo = ''
                             color = '#58704e'
                             funcion =  "javascript:errorSeleccionar2()"
                             
@@ -800,8 +819,8 @@
                 fecha2
             },                      
             success: function(data){    
-                console.log("dentro del ajax ordenes")
-                console.log(data)
+                //console.log("dentro del ajax ordenes")
+                //console.log(data)
                 
                 f= data
             },
@@ -811,6 +830,34 @@
         });
 
         return f
+    }
+
+    function getCitaDisponible(){
+        response=false;
+        especialidad_id=document.getElementById("especialidad_id").value;
+        medico_id=document.getElementById("idMespecialidad").value;
+
+        
+        $.ajax({
+            async: false,
+            url: '{{ url("horarios/getCitaDisponible") }}',
+            dataType: "json",
+            type: "GET",
+            data: {
+                medico_id,
+                especialidad_id,
+                fecha: fecha_seleccionada
+            },                      
+            success: function(data){    
+                if(data.ocupada=='1')
+                    response=true;
+            },
+            error: function(data) { 
+                console.log(data);       
+            },
+        });
+        
+        return response;
     }
 
     function seleccionarHora(fechaHora){
@@ -859,6 +906,8 @@
         document.getElementById("horaCitaID").value= fechaHora.toLocaleTimeString();
        
         document.getElementById("idFechaHora").value= fecha_cita+'   '+Hora+' hs.';
+
+        fecha_seleccionada=moment(fechaHora).format('YYYY-MM-DD HH:mm:ss');
     }
 
     function cargarDatosDependencia(){

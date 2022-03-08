@@ -211,18 +211,17 @@ class ordenAtencionIessController extends Controller
     }
 
     public function getCitaMedicaDisponible(Request $request){
-        $medico_id=$request->get('medico_id');
+        $medico_especialidad=$request->get('medico_id');
         $especialidad_id=$request->get('especialidad_id');
-        $fecha1=$request->get('fecha1');
-        $fecha2=$request->get('fecha2');
+        $fecha=$request->get('fecha');
 
-        
-        
-        $ordenAtencion = Orden_Atencion::ordenCitaDisponible($medico_id, $especialidad_id, $fecha1, $fecha2)->get();
+        $medico_id = Medico_Especialidad::mEspecialidad($medico_especialidad)->first()->medico_id;
+        $ordenAtencion = Orden_Atencion::ordenCitaDisponibleHora($medico_id, $especialidad_id, $fecha)->get();
+
         //return $ordenAtencion;
 
         if(count($ordenAtencion)>0)
-            return array(['ocupada'=> '1']);
+            return array('ocupada'=> '1');
         else
             return array(['ocupada'=> '0']);
 

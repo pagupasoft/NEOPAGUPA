@@ -224,6 +224,7 @@ use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
 use App\Models\Cabecera_Rol_CM;
+use App\Models\Imagen;
 use App\Models\Movimiento_Producto;
 use App\Models\Punto_Emision;
 use Illuminate\Support\Facades\Auth;
@@ -525,7 +526,7 @@ Route::get('/caja/{id}/eliminar', [cajaController::class, 'delete'])->middleware
 Route::get('/tipoImagen/{id}/eliminar', [tipoImagenController::class, 'delete'])->middleware('auth');
 Route::get('/tipoExamen/{id}/eliminar', [tipoExamenController::class, 'delete'])->middleware('auth');
 Route::get('/tipoMedicamento/{id}/eliminar', [tipoMedicamentoController::class, 'delete'])->middleware('auth');
-Route::get('/imagen/{id}/eliminar', [imagenController::class, 'delete'])->middleware('auth');
+Route::get('/imagenes/{id}/eliminar', [imagenController::class, 'delete'])->middleware('auth');
 Route::get('/examen/{id}/eliminar', [examenController::class, 'delete'])->middleware('auth');
 Route::get('/enfermedad/{id}/eliminar', [enfermedadController::class, 'delete'])->middleware('auth');
 Route::get('/medicamento/{id}/eliminar', [medicamentoController::class, 'delete'])->middleware('auth');
@@ -986,6 +987,10 @@ Route::get('/examenes/testOrden', [atencionCitasController::class, 'pruebaOrden'
 Route::get('/examenes/testGetOrdenes', [atencionCitasController::class, 'pruebaGetOrdenes'])->middleware('auth');
 Route::get('/examenes/testGetOrden', [atencionCitasController::class, 'pruebaGetOrden'])->middleware('auth');
 Route::get('/examenes/testGetOrdenPdf', [atencionCitasController::class, 'pruebaGetOrdenPdf'])->middleware('auth');
+Route::post('/examenes/getNotifications', [atencionCitasController::class, 'getNotifications']);
+
+//Buscar Examenes de Imagen
+Route::get('/imagenes/searchN/{buscar}', [ImagenController::class, 'buscarBy'])->middleware('auth');;
 
 //Crear ROLES
 Route::get('/rolConsolidado/new/{id}', [rolConsolidadoController::class, 'nuevo'])->middleware('auth');

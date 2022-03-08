@@ -269,31 +269,32 @@ class rolOperactivoCostaMarketController extends Controller
             
             }
             $diario = new Diario();
-            $diario->diario_codigo = $general->generarCodigoDiario($request->get('fechaactual'), 'CPRP');
-
-            $diario->diario_fecha = $request->get('fechaactual');
-            $diario->diario_referencia = 'COMPROBANTE DE PAGO DE ROL DE EMPLEADO';
-
-            $diario->diario_tipo_documento = 'ROL OPERATIVO';
-
-            $diario->diario_tipo = 'CPRP';
-
-            $diario->diario_secuencial = substr($diario->diario_codigo, 8);
-            $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('m');
-            $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fechaactual'))->format('Y');
-            $diario->diario_comentario = 'PAGO DEL ROL DEL '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
-           
             if ($request->get('tipo') == 'Transferencia') {
+                $diario->diario_codigo = $general->generarCodigoDiario($request->get('idFechatrasnfer'), 'CPRP');
+                $diario->diario_fecha = $request->get('idFechatrasnfer');
+                $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechatrasnfer'))->format('m');
+                $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFechatrasnfer'))->format('Y');     
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
                 $diario->diario_fecha = $request->get('idFechatrasnfer');
                 $diario->diario_numero_documento =0;
             }
             if ($request->get('tipo') == 'Cheque') {
+                $diario->diario_codigo = $general->generarCodigoDiario($request->get('idFechaCheque'), 'CPRP');
+                $diario->diario_fecha = $request->get('idFechaCheque');
+                $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechaCheque'))->format('m');
+                $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFechaCheque'))->format('Y');    
                 $diario->diario_tipo_documento = 'CHEQUE';
-                $diario->diario_numero_documento =$request->get('idNcheque');
-               
+                $diario->diario_numero_documento =$request->get('idNcheque');    
                 $diario->diario_fecha = $request->get('idFechaCheque');
             }
+            
+            $diario->diario_referencia = 'COMPROBANTE DE PAGO DE ROL DE EMPLEADO';
+            $diario->diario_tipo_documento = 'ROL OPERATIVO';
+            $diario->diario_tipo = 'CPRP';
+            $diario->diario_secuencial = substr($diario->diario_codigo, 8);
+            $diario->diario_comentario = 'PAGO DEL ROL DEL '.DateTime::createFromFormat('Y-m-d',$request->get('fecha'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d',$request->get('fechafinal'))->format('d-m-Y');
+           
+            
             $diario->diario_beneficiario =$empleado->empleado_nombre;
             $diario->diario_cierre = '0';
             $diario->diario_estado = '1';

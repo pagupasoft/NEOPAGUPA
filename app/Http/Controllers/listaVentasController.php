@@ -21,8 +21,8 @@ class listaVentasController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $puntoEmisiones = Punto_Emision::puntos()->get();
             $clientes = Factura_Venta::ClienteDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();
-            $bodegas = Factura_Venta::BodegaDistinsc()->select('bodega_nombre')->distinct()->get();        
-            $surcursal = Factura_Venta::SurcusalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $bodegas = Factura_Venta::BodegaDistinsc()->select('bodega.bodega_id','bodega.bodega_nombre')->distinct()->get();        
+            $surcursal = Factura_Venta::SurcusalDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
             $reporteVentas=null;
             $total=0;
             return view('admin.ventas.listaVentas.index',['total'=>$total,'surcursal'=>$surcursal,'reporteVentas'=>$reporteVentas,'clientes'=>$clientes, 'bodegas'=>$bodegas,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -47,14 +47,15 @@ class listaVentasController extends Controller
                 $valor_bodega=$request->get('nombre_bodega');
                 $valor_emision=$request->get('nombre_emision');
                 $clientes = Factura_Venta::ClienteDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();
-                $bodegas = Factura_Venta::BodegaDistinsc()->select('bodega_nombre')->distinct()->get();        
-                $surcursal = Factura_Venta::SurcusalDistinsc()->select('sucursal_nombre')->distinct()->get();
+                $bodegas = Factura_Venta::BodegaDistinsc()->select('bodega.bodega_id','bodega.bodega_nombre')->distinct()->get();        
+                $surcursal = Factura_Venta::SurcusalDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
                 $puntoEmisiones = Punto_Emision::puntos()->get();
                 $suma=null;
                 $fechatodo=0;
                 if($request->get('fecha_todo')){
                     $fechatodo=$request->get('fecha_todo');
                 }
+               
                 $reporteVentas=Factura_Venta::busqueda($request->get('fecha_todo'),$request->get('fecha_desde'),$request->get('fecha_hasta'), $request->get('nombre_cliente'), $request->get('nombre_bodega'), $request->get('sucursal'))->get();
                 $reportedetalle=Factura_Venta::Busquedadetalle($request->get('fecha_todo'),$request->get('fecha_desde'),$request->get('fecha_hasta'), $request->get('nombre_cliente'), $request->get('nombre_bodega'), $request->get('sucursal'))->select('grupo_nombre',DB::raw("SUM(detalle_total) as total"))->groupBy('grupo_nombre')->get();
                 $count=1;

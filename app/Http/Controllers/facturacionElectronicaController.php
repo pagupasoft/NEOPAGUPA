@@ -1627,7 +1627,7 @@ class facturacionElectronicaController extends Controller
             xmlwriter_end_element($xml); 
             /**********************/
             xmlwriter_start_element($xml, 'totalSinImpuestos');
-            xmlwriter_text($xml, number_format($nc->nc_subtotal,2, '.', ''));
+            xmlwriter_text($xml, number_format(($nc->nc_tarifa12+$nc->nc_tarifa0),2, '.', ''));
             xmlwriter_end_element($xml);  
             /**********************/
             xmlwriter_start_element($xml, 'valorModificacion');

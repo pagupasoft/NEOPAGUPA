@@ -367,7 +367,7 @@ function agregarItem(IDPorudcto, codigoProducto, nombreProducto, cantidad, pu, d
         linea = linea.replace(/{Dtotal2}/g, Number(total).toFixed(2));
         if (tieneIva) {
             linea = linea.replace(/{Diva}/g, "SI");
-            linea = linea.replace(/{DViva}/g, Number((total - descuento) * porcentajeIva).toFixed(2));
+            linea = linea.replace(/{DViva}/g, Number((total) * porcentajeIva).toFixed(2));
             iva = "SI";
         } else {
             linea = linea.replace(/{Diva}/g, "NO");
@@ -376,7 +376,7 @@ function agregarItem(IDPorudcto, codigoProducto, nombreProducto, cantidad, pu, d
         }
         linea = linea.replace(/{Dpu}/g, Number(pu).toFixed(2));
         linea = linea.replace(/{Ddescuento}/g, Number(descuento).toFixed(2));
-        linea = linea.replace(/{Dtotal}/g, Number(total - descuento).toFixed(2));
+        linea = linea.replace(/{Dtotal}/g, Number(total).toFixed(2));
         $("#cargarItemnc tbody").append(linea);
         id_item = id_item + 1;
         cargarTotales(iva, total, descuento);
@@ -391,7 +391,7 @@ function cargarTotales(iva, total, descuento) {
     var tarifa12 = Number(Number(document.getElementById("tarifa12").innerHTML) + Number(total) - Number(descuento)).toFixed(2);
     var tarifa0 = Number(Number(document.getElementById("tarifa0").innerHTML) + Number(total) - Number(descuento)).toFixed(2);
 
-    var descuento = Number(Number(document.getElementById("descuento").innerHTML) + descuento).toFixed(2);
+    var descuento = Number(Number(document.getElementById("descuento").innerHTML) + Number(descuento)).toFixed(2);
     document.getElementById("descuento").innerHTML = descuento;
     document.getElementById("idDescuento").value = descuento;
 

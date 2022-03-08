@@ -57,6 +57,53 @@ class Factura_Venta extends Model
     public function scopeFacturas($query){
         return $query->join('cliente','cliente.cliente_id','=','factura_venta.cliente_id')->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('factura_estado','=','1')->orderBy('factura_numero','desc');
     }
+    public function scopeBusqueda($query, $fechatodo, $desde, $hasta, $cliente, $bodega, $sucursal){
+        $query->join('cliente', 'cliente.cliente_id', '=', 'factura_venta.cliente_id')
+        ->join('bodega', 'bodega.bodega_id', '=', 'factura_venta.bodega_id')
+        ->join('sucursal', 'sucursal.sucursal_id', '=', 'bodega.sucursal_id')
+        ->join('rango_documento', 'rango_documento.rango_id', '=', 'factura_venta.rango_id')
+        ->join('punto_emision', 'punto_emision.punto_id', '=', 'rango_documento.punto_id')
+        ->where('sucursal.empresa_id', '=', Auth::user()->empresa_id)
+        ->where('factura_venta.factura_estado','<>','2');
+        if($fechatodo != 'on'){
+            $query ->where('factura_fecha', '>=', $desde)->where('factura_fecha', '<=', $hasta);
+        }  
+        if($bodega != '0'){
+            $query ->where('bodega.bodega_id', '=', $bodega);
+        } 
+        if($sucursal != '0'){
+            $query ->where('sucursal.sucursal_id', '=', $sucursal);
+        }
+        if($cliente != '0'){
+            $query->where('cliente.cliente_id', '=', $cliente);
+        }   
+        return $query;
+    }
+    public function scopeBusquedadetalle($query, $fechatodo, $desde, $hasta, $cliente, $bodega, $sucursal){
+        $query->join('detalle_fv', 'detalle_fv.factura_id', '=', 'factura_venta.factura_id')
+        ->join('producto', 'producto.producto_id', '=', 'detalle_fv.producto_id')
+        ->join('grupo_producto', 'grupo_producto.grupo_id', '=', 'producto.grupo_id')
+        ->join('cliente', 'cliente.cliente_id', '=', 'factura_venta.cliente_id')
+        ->join('bodega', 'bodega.bodega_id', '=', 'factura_venta.bodega_id')
+        ->join('sucursal', 'sucursal.sucursal_id', '=', 'bodega.sucursal_id')
+        ->join('rango_documento', 'rango_documento.rango_id', '=', 'factura_venta.rango_id')
+        ->join('punto_emision', 'punto_emision.punto_id', '=', 'rango_documento.punto_id')
+        ->where('sucursal.empresa_id', '=', Auth::user()->empresa_id)
+        ->where('factura_venta.factura_estado','<>','2');
+        if($fechatodo != 'on'){
+            $query ->where('factura_fecha', '>=', $desde)->where('factura_fecha', '<=', $hasta);
+        }  
+        if($bodega != '0'){
+            $query ->where('bodega.bodega_id', '=', $bodega);
+        } 
+        if($sucursal != '0'){
+            $query ->where('sucursal.sucursal_id', '=', $sucursal);
+        }
+        if($cliente != '0'){
+            $query->where('cliente.cliente_id', '=', $cliente);
+        }   
+        return $query;
+    }
     public function scopeFactura($query, $id){
         return $query->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('factura_id','=',$id);
     }
@@ -174,6 +221,9 @@ class Factura_Venta extends Model
     }
     public function retencion(){
         return $this->hasOne(Retencion_Venta::class, 'factura_id', 'factura_id');
+    }
+    public function retencionRecibida(){
+        return $this->belongsTo(Retencion_Venta::class, 'factura_id', 'factura_id');
     }
     public function ordenDespacho(){
         return $this->hasOne(Orden_Despacho::class, 'factura_id', 'factura_id');

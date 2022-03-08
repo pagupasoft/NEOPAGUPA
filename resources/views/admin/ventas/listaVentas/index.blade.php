@@ -13,9 +13,9 @@
                         <label for="nombre_cliente" class="col-sm-2 col-form-label"><center>Cliente:</center></label>
                         <div class="col-sm-8">
                             <select class="custom-select select2" id="nombre_cliente" name="nombre_cliente" >
-                                <option value="--TODOS--" label>--TODOS--</option>           
+                                <option value="0" label>--TODOS--</option>           
                                     @foreach($clientes as $cliente)
-                                        <option id="{{$cliente->cliente_nombre}}" name="{{$cliente->cliente_nombre}}" value="{{$cliente->cliente_nombre}}">{{$cliente->cliente_nombre}}</option>
+                                        <option  value="{{$cliente->cliente_id}}">{{$cliente->cliente_nombre}}</option>
                                     @endforeach
                             </select>                                     
                         </div>
@@ -39,9 +39,9 @@
                         <label for="nombre_bodega" class="col-sm-2 col-form-label"><center>Bodega:</center></label>
                         <div class="col-sm-8">
                             <select class="custom-select select2" id="nombre_bodega" name="nombre_bodega" >
-                                <option value="--TODOS--" label>--TODOS--</option>           
+                                <option value="0" label>--TODOS--</option>           
                                 @foreach($bodegas as $bodega)
-                                    <option id="{{$bodega->bodega_nombre}}" name="{{$bodega->bodega_nombre}}" value="{{$bodega->bodega_nombre}}">{{$bodega->bodega_nombre}}</option>
+                                    <option  value="{{$bodega->bodega_id}}">{{$bodega->bodega_nombre}}</option>
                                 @endforeach
                             </select>                                    
                         </div>
@@ -50,9 +50,9 @@
                         <label for="sucursal" class="col-sm-2 col-form-label"><center>Sucursal:</center></label>
                         <div class="col-sm-8">
                             <select class="custom-select select2" id="sucursal" name="sucursal" >
-                                <option  value="--TODOS--" label>--TODOS--</option>           
+                                <option  value="0" label>--TODOS--</option>           
                                 @foreach($surcursal as $surcursales)
-                                    <option id="{{$surcursales->sucursal_nombre}}" name="{{$surcursales->sucursal_nombre}}" value="{{$surcursales->sucursal_nombre}}">{{$surcursales->sucursal_nombre}}</option>
+                                    <option  value="{{$surcursales->sucursal_id}}">{{$surcursales->sucursal_nombre}}</option>
                                 @endforeach
                             </select>                                       
                         </div>
@@ -115,6 +115,7 @@
                         <th>Descuento</th>
                         <th>IVA</th> 
                         <th>Total</th> 
+                        <th>Retencion</th> 
                     </tr>
                 </thead>
                 <?php $cont = $sub_total = $tarifa0 = $tarifa12 = $desc = $iva = $total = 0.00;?> 
@@ -138,6 +139,7 @@
                             <td> <?php echo '$' . number_format($desc, 2) ?> </td>
                             <td> <?php echo '$' . number_format($iva, 2) ?> </td>
                             <td> <?php echo '$' . number_format($total, 2) ?> </td>
+                            <th></th>
                         </tr>
                         @foreach($reporteVentas as $x)
                             <tr class="text-center">
@@ -154,7 +156,13 @@
                                 <td> <?php echo '$' . number_format($x->factura_tarifa12, 2)?> </td>
                                 <td> <?php echo '$' . number_format($x->factura_descuento, 2)?> </td>
                                 <td> <?php echo '$' . number_format($x->factura_iva, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_total, 2)?> </td>                            
+                                <td> <?php echo '$' . number_format($x->factura_total, 2)?> </td>
+                                @if(isset($x->retencion->factura_id)) 
+                                    <td>{{ $x->retencion->retencion_numero}}</td>
+                                @else 
+                                    <td>                                        
+                                    </td>
+                                @endif                           
                             </tr>
                         @endforeach
                     @endif

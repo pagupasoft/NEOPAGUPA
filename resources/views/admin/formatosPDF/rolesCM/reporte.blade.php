@@ -1,7 +1,7 @@
 @extends ('admin.layouts.formatoPDF')
 @section('contenido')
     @section('titulo')
-        <tr><td colspan="2" class="centrar letra15 negrita">Rerpote de Empleados</td></tr>
+        <tr><td colspan="2" class="centrar letra15 negrita">Reporte de Empleados</td></tr>
         <tr><td colspan="2" class="centrar letra15 borde-gris">Fecha:  {{ $desde }}  AL {{ $hasta }} </td></tr>
     @endsection
     <table>

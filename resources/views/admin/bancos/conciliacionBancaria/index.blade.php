@@ -66,7 +66,7 @@
                             </div>
                             <hr>
                             <div class=" row">
-                                <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Cheques Girados y No Cobraos :</label>
+                                <label for="idDesde" class="col-lg-7 col-md-7 col-form-label">&nbsp;&nbsp;Cheques Girados y No Cobrados :</label>
                                 <div class="col-lg-5 col-md-5">
                                     <input type="text" class="form-control derecha-texto" @if(isset($chequeGiradoNoCobrado)) value='{{ number_format($chequeGiradoNoCobrado,2) }}' @else value='0.00' @endif readonly>
                                 </div>
@@ -226,7 +226,8 @@
             </div>
             <hr>
             <?php $saldo = 0; ?>
-            <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
+            <div class="card-body table-responsive p-0" style="height: 400px;">
+            <table id="example4" class="table table-head-fixed text-nowrap">
                 <thead>
                     <tr class="text-center">
                         <th>Cons.</th>
@@ -271,9 +272,11 @@
                     @endif
                 </tbody>
             </table>
+            </div>
             <hr>
             <center><h3><b>POR CONCILIAR EN OTROS MESES</b><h3></center>
-            <table class="table table-bordered table-hover table-responsive sin-salto">
+            <div class="card-body table-responsive p-0" style="height: 400px;">
+            <table class="table table-head-fixed text-nowrap">
                 <thead>
                     <tr class="text-center">
                         <th>Cons.</th>
@@ -316,6 +319,7 @@
                     @endif                    
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </form>

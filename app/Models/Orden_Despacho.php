@@ -357,13 +357,21 @@ class Orden_Despacho extends Model
     public function scopeSucursalOrdeneGuiasDistinsc($query){
         return $query->join('guia_remision','guia_remision.gr_id','=','orden_despacho.gr_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('sucursal_nombre','asc');;
     }
-    public function scopeGuiasTodosDiferentes($query,$fechadesde,$fechahasta,$estado,$cliente,$sucursal){
-        return $query->join('guia_remision','guia_remision.gr_id','=','orden_despacho.gr_id')->join('transportista','transportista.transportista_id','=','guia_remision.transportista_id')->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
-        ->where('guia_remision.gr_fecha', '>=', $fechadesde)
-        ->where('guia_remision.gr_fecha', '<=', $fechahasta)
-        ->where('cliente_nombre', '=', $cliente)
-        ->where('guia_remision.gr_estado', '=', $estado)
-        ->where('sucursal_nombre', '=', $sucursal);
+    public function scopeGuiasTodosDiferentes($query,$fechatodo,$fechadesde,$fechahasta,$estado,$cliente,$sucursal){
+        $query->join('guia_remision','guia_remision.gr_id','=','orden_despacho.gr_id')->join('transportista','transportista.transportista_id','=','guia_remision.transportista_id')->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id);
+        if($fechatodo != 'on'){
+            $query->where('guia_remision.gr_fecha', '>=', $fechadesde)->where('guia_remision.gr_fecha', '<=', $fechahasta);
+        }  
+        if($estado != '--TODOS--'){
+            $query->where('guia_remision.gr_estado', '=', $estado);
+        } 
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id', '=', $sucursal);
+        }
+        if($cliente != '0'){
+            $query->where('cliente.cliente_id', '=', $cliente);
+        }   
+        return $query;
     }
     public function scopeGuiasFecha($query,$fechadesde,$fechahasta){
         return $query->join('guia_remision','guia_remision.gr_id','=','orden_despacho.gr_id')->join('transportista','transportista.transportista_id','=','guia_remision.transportista_id')->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)

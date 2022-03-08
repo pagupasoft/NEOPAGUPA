@@ -38,7 +38,7 @@ class guiaremisionController extends Controller
             $puntoEmisiones = Punto_Emision::puntos()->get();   
             $clientes = Guia_Remision::ClientesDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();
             $estados=Guia_Remision::EstadoDistinsc()->select('gr_estado')->distinct()->get();
-            $sucursales=Guia_Remision::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $sucursales=Guia_Remision::SucursalDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
             return view('admin.ventas.guiaremision.view',['sucursales'=>$sucursales,'estados'=>$estados,'clientes'=>$clientes, 'puntoEmisiones'=>$puntoEmisiones,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             return redirect('/denegado');
         }
@@ -391,59 +391,14 @@ class guiaremisionController extends Controller
             $puntoEmisiones = Punto_Emision::puntos()->get();   
             $clientes = Guia_Remision::ClientesDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();  
             $estados=DB::table('guia_remision')->select('gr_estado')->distinct()->get();
-            $sucursales=Guia_Remision::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $sucursales=Guia_Remision::SucursalDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
             $guias=null;
-          
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--"  && $request->get('estados') == "--TODOS--"  && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasTodos()->get();
+            $fechatodo=0;
+           
+            if($request->get('fecha_todo')){
+                $fechatodo=$request->get('fecha_todo');
             }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasTodosDiferentes($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('gr_estado'),$request->get('sucursal'))->get();
-            }             
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))->get();
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasCliente($request->get('nombre_cliente'))->get();                     
-            }  
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasEstado($request->get('estados'))->get();         
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--"  && $request->get('estados') == "--TODOS--"  && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasSucursal()->get();
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasEstadosurcursal($request->get('estados'),$request->get('sucursal'))->get();           
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasEstadoCliente($request->get('estados'),$request->get('nombre_cliente'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechaEstado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'))->get();              
-            } 
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechaEstadoCliente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('estados'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechaEstadosurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechaClientesurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechaCliente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Guia_Remision::GuiasFechasurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasEstadoClientesurcursal($request->get('estados'),$request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Guia_Remision::GuiasClientesurcursal($request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
-
-
+            $guias=Guia_Remision::GuiasTodosDiferentes($fechatodo,$request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('estados'),$request->get('sucursal'))->get();
 
             return view('admin.ventas.guiaremision.view', ['idsucursal'=>$request->get('sucursal'),'sucursales'=>$sucursales,'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_cliente'=>$request->get('nombre_cliente'),'valorestados'=>$request->get('estados'),'estados'=>$estados,'guias'=>$guias, 'puntoEmisiones'=>$puntoEmisiones, 'clientes'=>$clientes,  'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);      
         }catch(\Exception $ex){

@@ -36,7 +36,7 @@ class listaGuiasRemisionOrdenesController extends Controller
             $clientes = Orden_Despacho::ClientesOrdeneGuiasDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();
             $guias=null;
             $estados=Orden_Despacho::EstadoOrdeneGuiasDistinsc()->select('gr_estado')->distinct()->get();
-            $sucursales=Orden_Despacho::SucursalOrdeneGuiasDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $sucursales=Orden_Despacho::SucursalOrdeneGuiasDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
             return view('admin.ventas.guiaremision.vieworden',['sucursales'=>$sucursales,'estados'=>$estados,'guias'=>$guias,'clientes'=>$clientes, 'puntoEmisiones'=>$puntoEmisiones,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             return redirect('/denegado');
         }
@@ -183,60 +183,14 @@ class listaGuiasRemisionOrdenesController extends Controller
             $clientes = Orden_Despacho::ClientesOrdeneGuiasDistinsc()->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get();
             $guias=null;
             $estados=Orden_Despacho::EstadoOrdeneGuiasDistinsc()->select('gr_estado')->distinct()->get();
-            $sucursales=Orden_Despacho::SucursalOrdeneGuiasDistinsc()->select('sucursal_nombre')->distinct()->get();
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--"  && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasTodos()->select('guia_remision.gr_id','guia_remision.gr_numero','guia_remision.gr_fecha','cliente_nombre','guia_remision.gr_punto_partida','guia_remision.gr_punto_destino','transportista_nombre','guia_remision.factura_id','guia_remision.gr_estado','guia_remision.gr_autorizacion')->distinct()->get();
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasTodosDiferentes($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'),$request->get('nombre_cliente'),$request->get('sucursal'))->select('guia_remision.gr_id','guia_remision.gr_numero','guia_remision.gr_fecha','cliente_nombre','guia_remision.gr_punto_partida','guia_remision.gr_punto_destino','transportista_nombre','guia_remision.factura_id','guia_remision.gr_estado','guia_remision.gr_autorizacion')->distinct()->get();
-                        
-            }             
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))->get();
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasCliente($request->get('nombre_cliente'))->get();
-                            
-            }  
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--" ) {
-                $guias=Orden_Despacho::GuiasEstado($request->get('estados'))->get();         
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--" ) {
-                $guias=Orden_Despacho::GuiasSucursal($request->get('estados'))->get();         
-            }    
-            
-            
+            $sucursales=Orden_Despacho::SucursalOrdeneGuiasDistinsc()->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
+            $fechatodo=0;
 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Orden_Despacho::GuiasEstadosurcursal($request->get('estados'),$request->get('sucursal'))->get();           
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasEstadoCliente($request->get('estados'),$request->get('nombre_cliente'))->get();              
+          
+            if($request->get('fecha_todo')){
+                $fechatodo=$request->get('fecha_todo');
             }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechaEstado($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'))->get();              
-            } 
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechaEstadoCliente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('estados'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechaEstadosurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechaClientesurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechaCliente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_cliente'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_cliente') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $guias=Orden_Despacho::GuiasFechasurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Orden_Despacho::GuiasEstadoClientesurcursal($request->get('estados'),$request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_cliente') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $guias=Orden_Despacho::GuiasClientesurcursal($request->get('nombre_cliente'),$request->get('sucursal'))->get();              
-            }
+            $guias=Orden_Despacho::GuiasTodosDiferentes($fechatodo,$request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'),$request->get('nombre_cliente'),$request->get('sucursal'))->select('guia_remision.gr_id','guia_remision.gr_numero','guia_remision.gr_fecha','cliente_nombre','guia_remision.gr_punto_partida','guia_remision.gr_punto_destino','transportista_nombre','guia_remision.factura_id','guia_remision.gr_estado','guia_remision.gr_autorizacion')->distinct()->get();
             return view('admin.ventas.guiaremision.vieworden', ['sucursales'=>$sucursales,'idsucursal'=>$request->get('sucursal'),'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_cliente'=>$request->get('nombre_cliente'),'valorestados'=>$request->get('estados'),'estados'=>$estados,'guias'=>$guias, 'puntoEmisiones'=>$puntoEmisiones, 'clientes'=>$clientes,  'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);      
         }
         catch(\Exception $ex){      

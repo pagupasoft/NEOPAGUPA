@@ -52,7 +52,7 @@ class cargarBalancesController extends Controller
                     
                     $detalleDiario->detalle_debe = floatval(floatval($array[0][$i][1]));
                     $detalleDiario->detalle_haber = 0.00;
-                    $detalleDiario->detalle_comentario =  '';
+                    $detalleDiario->detalle_comentario =  'P/R ASIENTO INICIAL BALANCE GENERAL';
                     $detalleDiario->detalle_tipo_documento = '';
                     $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                     $detalleDiario->detalle_conciliacion = '0';
@@ -65,7 +65,7 @@ class cargarBalancesController extends Controller
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
                         $detalleDiario->detalle_haber = floatval($array[0][$i][2]);
-                        $detalleDiario->detalle_comentario =  '';
+                        $detalleDiario->detalle_comentario =  'P/R ASIENTO INICIAL BALANCE GENERAL';
                         $detalleDiario->detalle_tipo_documento = '';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';

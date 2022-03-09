@@ -13,6 +13,8 @@ use App\Models\Detalle_Examen;
 use App\Models\Detalle_FV;
 use App\Models\Detalle_Laboratorio;
 use App\Models\Detalle_Pago_CXC;
+use App\Models\Detalles_Analisis_Valores;
+use App\Models\Detalles_Analisis_Test;
 use App\Models\Diario;
 use App\Models\Empleado;
 use App\Models\Empresa;
@@ -471,9 +473,9 @@ class examenController extends Controller
                 $movimientoProducto->save();
                 $general->registrarAuditoria('Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> 1 con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
                 /*********************************************************************/
-            $detalleFV->movimiento()->associate($movimientoProducto);
-            $factura->detalles()->save($detalleFV);
-            $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> 1 a un precio unitario de -> '.floatval($total[$i]));
+                $detalleFV->movimiento()->associate($movimientoProducto);
+                $factura->detalles()->save($detalleFV);
+                $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> 1 a un precio unitario de -> '.floatval($total[$i]));
                 
                 $producto = Producto::findOrFail($isProducto[$i]);
                 $detalleDiario = new Detalle_Diario();
@@ -563,6 +565,10 @@ class examenController extends Controller
                     $detalleanalisis=new Detalle_Analisis();
                     $detalleanalisis->detalle_estado='1';
                     $detalleanalisis->producto_id=$isProducto[$i];
+
+                    $producto = Producto::findOrFail($isProducto[$i]);
+                    $detalleanalisis->id_externo=$producto->producto_codigo_referencia;
+
                     $analisis->detalles()->save($detalleanalisis);
                     $detalleanalisis->save();
                 }
@@ -775,8 +781,81 @@ class examenController extends Controller
     }
 
     public function getNotifications(Request $request){
+        //guardar el mensaje en la base de datos
+        $test = new Detalles_Analisis_Test();
+        $test->mensaje=$request->getContent();
+        $test->save();
+        /////////////////////////////////////////
+
+
         $token = $request->bearerToken();
 
-        return $token;
+        //echo $request->id.'<br>';
+        //echo $request->numero_orden_externa.'<br>';
+        //echo count($request->examenes).'<br>';
+        //echo json_encode($request->examenes[0]['id']).'...<br><br>';
+        
+        //return $request;
+
+        if($token=='ASk34344R65_Q089A98DHYAS9suygty=89aaUQPELYN'){
+            if($request->estado=='R' || $request->estado=='V'){
+
+                echo 'buscando '.$request->numero_orden_externa.'<br>';
+
+                try{
+                    DB::beginTransaction();
+                    $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
+                        
+                    foreach($request->examenes as $detalle_array){
+                        $detalleRequest = (Object) $detalle_array;
+                        
+                        //echo 'buscando detalle '.$analisis->analisis_laboratorio_id.'     '.$detalleRequest->id_externo.'<br>';
+                        $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id ,$detalleRequest->id_externo)->first();
+
+                        //return $detalleRequest;
+
+                        
+                        $detalle_analisis->tecnica="$detalleRequest->tecnica";
+                        
+                        $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
+                        $detalle_analisis->fecha_reporte="$detalleRequest->fecha_reporte";
+                        $detalle_analisis->fecha_validacion="$detalleRequest->fecha_validacion";
+
+                        $detalle_analisis->usuario_validacion="$detalleRequest->usuario_validacion";
+                        $detalle_analisis->estado=$detalleRequest->estado;
+
+                        $detalle_analisis->save();
+
+                        foreach($detalleRequest->resultados as $resultado_array){
+                            $resultadoObject=(Object) $resultado_array;
+                            $valores = new Detalles_Analisis_Valores();
+
+                            $valores->detalle_id=$detalle_analisis->detalle_id;
+                            $valores->id_externo_parametro=$resultadoObject->id_externo_parametro;
+                            $valores->nombre_parametro=$resultadoObject->nombre_parametro;
+                            $valores->resultado=$resultadoObject->resultado;
+                            $valores->unidad_medida=$resultadoObject->unidad_medida;
+
+                            $valores->valor_minimo=$resultadoObject->valor_minimo;
+                            $valores->valor_maximo=$resultadoObject->valor_maximo;
+                            $valores->valor_normal=$resultadoObject->valor_normal;
+
+                            $valores->interpretacion=$resultadoObject->interpretacion;
+                            $valores->comentario=$resultadoObject->comentario;
+
+                            $valores->save();
+                        }
+                    }
+                    DB::commit();
+                    return json_encode(array('result'=>'OK', 'mensaje'=>'informacion recibida correctamente'));
+                }
+                catch(\Exception $e){
+                    DB::rollBack();
+                    return json_encode(array('result'=>'Error', 'mensaje'=>$e->getMessage()));
+                }
+            }
+        }
+        else
+            DB::commit();return json_encode(array('result'=>'Error', 'mensaje'=>'la session ha expirado'));
     }
 }

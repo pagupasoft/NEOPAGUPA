@@ -106,13 +106,50 @@ class AtsController extends Controller
             $ta0 = 0;
             $ta12 = 0;
             $iv = 0;
-            $factura = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->select(DB::raw('COUNT(factura_id) as cantidad'), DB::raw('SUM(factura_tarifa0) as tarifa0'), DB::raw('SUM(factura_tarifa12) as tarifa12'), DB::raw('SUM(factura_iva) as iva'))->first();
+            $countFactura = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','not like','%REEMBOLSO DE GASTO%')
+            ->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+            $facturas = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','not like','%REEMBOLSO DE GASTO%')
+            ->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
             $tabla2[$count]['cod'] = "18";
             $tabla2[$count]['tra'] = "DOCUMENTOS AUTORIZADOS EN VENTAS EXCEPTO ND Y NC";
-            $tabla2[$count]['can'] = $factura->cantidad;
-            $tabla2[$count]['0'] = $factura->tarifa0;
-            $tabla2[$count]['12'] = $factura->tarifa12;
-            $tabla2[$count]['iva'] = $factura->iva;
+            $tabla2[$count]['can'] = $countFactura->cantidad;
+            $tabla2[$count]['12'] = 0;
+            $tabla2[$count]['0'] = 0;
+            $tabla2[$count]['iva'] = 0;
+            foreach($facturas as $factura){
+                if(floatval($factura->detalle_iva) > 0){
+                    $tabla2[$count]['12'] = $tabla2[$count]['12'] + floatval($factura->detalle_total);
+                }else{
+                    $tabla2[$count]['0'] = $tabla2[$count]['0'] + floatval($factura->detalle_total);
+                }          
+                $tabla2[$count]['iva'] = $tabla2[$count]['iva'] + floatval($factura->detalle_iva);
+            }
+            $ta0 = $ta0 + $tabla2[$count]['0'];
+            $ta12 = $ta12 + $tabla2[$count]['12'];
+            $iv = $iv + $tabla2[$count]['iva'];
+            $count = $count +1;
+            $countFacturaR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+            ->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+            $facturasR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+            ->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
+            $tabla2[$count]['cod'] = "41";
+            $tabla2[$count]['tra'] = "COMPROBANTE DE VENTA EMITIDO POR REEMBOLSO";
+            $tabla2[$count]['can'] = $countFacturaR->cantidad;
+            $tabla2[$count]['12'] = 0;
+            $tabla2[$count]['0'] = 0;
+            $tabla2[$count]['iva'] = 0;
+            foreach($facturasR as $factura){
+                if(floatval($factura->detalle_iva) > 0){
+                    $tabla2[$count]['12'] = $tabla2[$count]['12'] + floatval($factura->detalle_total);
+                }else{
+                    $tabla2[$count]['0'] = $tabla2[$count]['0'] + floatval($factura->detalle_total);
+                }          
+                $tabla2[$count]['iva'] = $tabla2[$count]['iva'] + floatval($factura->detalle_iva);
+            }
             $ta0 = $ta0 + $tabla2[$count]['0'];
             $ta12 = $ta12 + $tabla2[$count]['12'];
             $iv = $iv + $tabla2[$count]['iva'];
@@ -257,13 +294,50 @@ class AtsController extends Controller
             $ta0 = 0;
             $ta12 = 0;
             $iv = 0;
-            $factura = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->select(DB::raw('COUNT(factura_id) as cantidad'), DB::raw('SUM(factura_tarifa0) as tarifa0'), DB::raw('SUM(factura_tarifa12) as tarifa12'), DB::raw('SUM(factura_iva) as iva'))->first();
+            $countFactura = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','not like','%REEMBOLSO DE GASTO%')
+            ->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+            $facturas = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','not like','%REEMBOLSO DE GASTO%')
+            ->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
             $tabla2[$count]['cod'] = "18";
             $tabla2[$count]['tra'] = "DOCUMENTOS AUTORIZADOS EN VENTAS EXCEPTO ND Y NC";
-            $tabla2[$count]['can'] = $factura->cantidad;
-            $tabla2[$count]['0'] = $factura->tarifa0;
-            $tabla2[$count]['12'] = $factura->tarifa12;
-            $tabla2[$count]['iva'] = $factura->iva;
+            $tabla2[$count]['can'] = $countFactura->cantidad;
+            $tabla2[$count]['12'] = 0;
+            $tabla2[$count]['0'] = 0;
+            $tabla2[$count]['iva'] = 0;
+            foreach($facturas as $factura){
+                if(floatval($factura->detalle_iva) > 0){
+                    $tabla2[$count]['12'] = $tabla2[$count]['12'] + floatval($factura->detalle_total);
+                }else{
+                    $tabla2[$count]['0'] = $tabla2[$count]['0'] + floatval($factura->detalle_total);
+                }          
+                $tabla2[$count]['iva'] = $tabla2[$count]['iva'] + floatval($factura->detalle_iva);
+            }
+            $ta0 = $ta0 + $tabla2[$count]['0'];
+            $ta12 = $ta12 + $tabla2[$count]['12'];
+            $iv = $iv + $tabla2[$count]['iva'];
+            $count = $count +1;
+            $countFacturaR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+            ->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+            $facturasR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+            ->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
+            $tabla2[$count]['cod'] = "41";
+            $tabla2[$count]['tra'] = "COMPROBANTE DE VENTA EMITIDO POR REEMBOLSO";
+            $tabla2[$count]['can'] = $countFacturaR->cantidad;
+            $tabla2[$count]['12'] = 0;
+            $tabla2[$count]['0'] = 0;
+            $tabla2[$count]['iva'] = 0;
+            foreach($facturasR as $factura){
+                if(floatval($factura->detalle_iva) > 0){
+                    $tabla2[$count]['12'] = $tabla2[$count]['12'] + floatval($factura->detalle_total);
+                }else{
+                    $tabla2[$count]['0'] = $tabla2[$count]['0'] + floatval($factura->detalle_total);
+                }          
+                $tabla2[$count]['iva'] = $tabla2[$count]['iva'] + floatval($factura->detalle_iva);
+            }
             $ta0 = $ta0 + $tabla2[$count]['0'];
             $ta12 = $ta12 + $tabla2[$count]['12'];
             $iv = $iv + $tabla2[$count]['iva'];
@@ -693,6 +767,26 @@ class AtsController extends Controller
                             xmlwriter_text($xml, number_format($detalle->detalle_valor, 2, '.', ''));
                             xmlwriter_end_element($xml);
                             // final 'valRetAir'
+
+                            if($detalle->conceptoRetencion->concepto_codigo == '327' or $detalle->conceptoRetencion->concepto_codigo == '330' or
+                            $detalle->conceptoRetencion->concepto_codigo == '504A' or $detalle->conceptoRetencion->concepto_codigo == '504D'){
+                            
+                                //fechaPagoDiv
+                                xmlwriter_start_element($xml, 'fechaPagoDiv');
+                                xmlwriter_text($xml, DateTime::createFromFormat('Y-m-d', $transaccion->transaccion_fecha)->format('d/m/Y'));
+                                xmlwriter_end_element($xml);
+                                // final 'fechaPagoDiv'
+                                //imRentaSoc
+                                xmlwriter_start_element($xml, 'imRentaSoc');
+                                xmlwriter_text($xml, number_format(0.00, 2, '.', '')); //revisar
+                                xmlwriter_end_element($xml);
+                                // final 'imRentaSoc'
+                                //anioUtDiv
+                                xmlwriter_start_element($xml, 'anioUtDiv');
+                                xmlwriter_text($xml, DateTime::createFromFormat('Y-m-d', $transaccion->transaccion_fecha)->format('Y'));
+                                xmlwriter_end_element($xml);
+                                // final 'anioUtDiv'
+                            }
                             xmlwriter_end_element($xml);
                             // final 'detalleAir'
                         }

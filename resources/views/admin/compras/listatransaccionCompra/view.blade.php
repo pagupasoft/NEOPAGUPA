@@ -354,7 +354,7 @@
                                                         <tr class="text-center">
                                                             @if($x->detalle_tipo=='FUENTE')
                                                             <td>{{ $x->detalle_base}}</td>  
-                                                            <td>{{ $x->conceptoRetencion->concepto_nombre}}</td>  
+                                                            <td>{{ $x->conceptoRetencion->concepto_codigo.' - '.$x->conceptoRetencion->concepto_nombre}}</td>  
                                                             <td>{{ $x->detalle_porcentaje}}</td>  
                                                             <td>{{ $x->detalle_valor}}</td> 
                                                             @endif   
@@ -409,7 +409,7 @@
                                                         <tr class="text-center">
                                                             @if($x->detalle_tipo=='IVA')
                                                             <td>{{ $x->detalle_base}}</td>  
-                                                            <td>{{ $x->conceptoRetencion->concepto_nombre}}</td>  
+                                                            <td>{{ $x->conceptoRetencion->concepto_codigo.' - '.$x->conceptoRetencion->concepto_nombre}}</td>  
                                                             <td>{{ $x->detalle_porcentaje}}</td>  
                                                             <td>{{ $x->detalle_valor}}</td> 
                                                             @endif   

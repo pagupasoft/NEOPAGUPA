@@ -987,7 +987,7 @@ Route::get('/examenes/testOrden', [atencionCitasController::class, 'pruebaOrden'
 Route::get('/examenes/testGetOrdenes', [atencionCitasController::class, 'pruebaGetOrdenes'])->middleware('auth');
 Route::get('/examenes/testGetOrden', [atencionCitasController::class, 'pruebaGetOrden'])->middleware('auth');
 Route::get('/examenes/testGetOrdenPdf', [atencionCitasController::class, 'pruebaGetOrdenPdf'])->middleware('auth');
-Route::post('/examenes/getNotifications', [atencionCitasController::class, 'getNotifications']);
+Route::post('/examenes/getNotifications', [examenController::class, 'getNotifications']);
 
 //Buscar Examenes de Imagen
 Route::get('/imagenes/searchN/{buscar}', [ImagenController::class, 'buscarBy'])->middleware('auth');;

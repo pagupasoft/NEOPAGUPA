@@ -693,6 +693,26 @@ class AtsController extends Controller
                             xmlwriter_text($xml, number_format($detalle->detalle_valor, 2, '.', ''));
                             xmlwriter_end_element($xml);
                             // final 'valRetAir'
+
+                            if($detalle->conceptoRetencion->concepto_codigo == '327' or $detalle->conceptoRetencion->concepto_codigo == '330' or
+                            $detalle->conceptoRetencion->concepto_codigo == '504A' or $detalle->conceptoRetencion->concepto_codigo == '504D'){
+                            
+                                //fechaPagoDiv
+                                xmlwriter_start_element($xml, 'fechaPagoDiv');
+                                xmlwriter_text($xml, DateTime::createFromFormat('Y-m-d', $transaccion->transaccion_fecha)->format('d/m/Y'));
+                                xmlwriter_end_element($xml);
+                                // final 'fechaPagoDiv'
+                                //imRentaSoc
+                                xmlwriter_start_element($xml, 'imRentaSoc');
+                                xmlwriter_text($xml, number_format(0.00, 2, '.', '')); //revisar
+                                xmlwriter_end_element($xml);
+                                // final 'imRentaSoc'
+                                //anioUtDiv
+                                xmlwriter_start_element($xml, 'anioUtDiv');
+                                xmlwriter_text($xml, DateTime::createFromFormat('Y-m-d', $transaccion->transaccion_fecha)->format('Y'));
+                                xmlwriter_end_element($xml);
+                                // final 'anioUtDiv'
+                            }
                             xmlwriter_end_element($xml);
                             // final 'detalleAir'
                         }

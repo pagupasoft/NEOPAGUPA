@@ -46,6 +46,9 @@
                             @if($egresoBanco->cheque_id!=Null)
                             <a href="{{ url("listaEgresoBanco/{$egresoBanco->egreso_id}/anular") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Anular"><i class="fa fa-ban" aria-hidden="true"></i></a>                        
                             @endif
+                            @if(isset($egresoBanco->cheque))
+                                <a href="{{ url("/cheque/imprimir/{$egresoBanco->cheque->cheque_id}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt" aria-hidden="true"></i></a>                        
+                            @endif 
                         </td>
                             <td class="text-center">{{ $egresoBanco->egreso_fecha}}</td>
                             @if(is_null($egresoBanco->cheque_id))

@@ -44,6 +44,11 @@
                             <a href="{{ url("listaIngresoBanco/{$ingresoBanco->ingreso_id}")}}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             <a href="{{ url("listaIngresoBanco/{$ingresoBanco->ingreso_id}/eliminar")}}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                            
+                           
+                            @if(isset($ingresoBanco->cheque))
+                                <a href="{{ url("/cheque/imprimir/{$ingresoBanco->cheque->cheque_id}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt" aria-hidden="true"></i></a>                        
+                            @endif   
+                        
                         </td>
                             <td class="text-center">{{ $ingresoBanco->ingreso_fecha}}</td>
                             

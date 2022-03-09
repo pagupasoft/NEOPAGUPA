@@ -231,9 +231,8 @@ class anticipoEmpleadoController extends Controller
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
             $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('m');
             $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('Y');
-            $diario->diario_comentario = 'COMPROBANTE DE ANTICIPO A EMPLEADO: '.$empleado->empleado_nombre;
+            $diario->diario_comentario = $request->get('idMensaje');
             if($request->get('idTipo') == "Cheque"){
-                $diario->diario_comentario = 'COMPROBANTE DE ANTICIPO A EMPLEADO: '.$empleado->empleado_nombre.' CHEQUE : '.$cheque->cheque_numero;
                 $diario->diario_tipo_documento = 'ANTICIPO DE EMPLEADO';
                 $diario->diario_numero_documento = $cheque->cheque_numero;
             }

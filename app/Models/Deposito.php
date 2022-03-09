@@ -30,10 +30,10 @@ class Deposito extends Model
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('deposito.deposito_id','=',$id);
     }
     public function scopeDepositosByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('deposito.cuenta_bancaria_id','=',$id)->orderby('deposito.deposito_fecha');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('deposito.cuenta_bancaria_id','=',$id)->orderby('deposito.deposito_id','asc');
     }    
     public function scopeDepositosOtrosByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('deposito.cuenta_bancaria_id','=',$id)->orderby('deposito.deposito_fecha');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('deposito.cuenta_bancaria_id','=',$id)->orderby('deposito.deposito_id', 'asc');
     }
     public function detalleDiario(){
         return $this->hasMany(Detalle_Diario::class, 'deposito_id', 'deposito_id');

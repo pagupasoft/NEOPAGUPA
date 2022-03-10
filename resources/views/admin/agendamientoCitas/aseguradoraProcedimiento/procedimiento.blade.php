@@ -211,17 +211,23 @@
     function comprobarDatos(){
         var nFilas = $("#cargarItemProcedimiento tbody tr").length;
 
-        for(f=0; f<nFilas; f++){
-            if ($("#Pcheckbox"+f).is(':checked')){
-                if(parseFloat($("#Pcosto"+f).val())==0){
-                    alert("A marcar una casilla debe ingresar la información");
-                    $("#Pcosto"+f).focus();
-                    return false;
-                }
-                if(parseFloat($("#PcodigoT"+f).val())==0){
-                    alert("A marcar una casilla debe ingresar la información")
-                    $("#PcodigoT"+f).focus();
-                    return false;
+        if(nFilas==0){
+            alert("Al menos debe marcar un item de Lista de Procedimientos");
+            return false;
+        }
+        else{
+            for(f=0; f<nFilas; f++){
+                if ($("#Pcheckbox"+f).is(':checked')){
+                    if(parseFloat($("#Pcosto"+f).val())==0){
+                        alert("A marcar una casilla debe ingresar la información");
+                        $("#Pcosto"+f).focus();
+                        return false;
+                    }
+                    if(parseFloat($("#PcodigoT"+f).val())==0){
+                        alert("A marcar una casilla debe ingresar la información")
+                        $("#PcodigoT"+f).focus();
+                        return false;
+                    }
                 }
             }
         }

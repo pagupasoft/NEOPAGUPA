@@ -974,6 +974,8 @@ Route::get('/ingresoBanco/new/{id}', [ingresoBancoController::class, 'nuevo'])->
 Route::get('/anticipoCliente/new/{id}', [anticipoClienteController::class, 'nuevo'])->middleware('auth');
 Route::get('/anticipoProveedor/new/{id}', [anticipoProveedorController::class, 'nuevo'])->middleware('auth');
 Route::get('/anticipoEmpleado/new/{id}', [anticipoEmpleadoController::class, 'nuevo'])->middleware('auth');
+Route::get('/decimoC/new/{id}', [decimoCuartoController::class, 'nuevo'])->middleware('auth');
+
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 
 

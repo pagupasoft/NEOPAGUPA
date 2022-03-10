@@ -21,24 +21,27 @@
                                 <th></th>
                                 <th>Empleado</th>
                                 <th>Fecha</th>
-
                                 <th>Pago</th>   
+                                <th>Numero Cheque</th>   
                             </tr>
                         </thead>
                         <tbody>
-                            @if(isset($decimo))
-                                @foreach($decimo as $x)
+                            @if(isset($datos))
+                                @for ($i = 1; $i <= count($datos); ++$i)  
                                 <tr>  
                                     <td class="text-center"> 
-                                   <a href="{{ url("decimoCuarto/{$x->decimo_id}/imprimir") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Rol"><i class="fa fa-print"></i></a>                   
-                                   <a href="{{ url("diarioCuarto/{$x->decimo_id}/imprimir") }}" target="_blank" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Imprimir Diario"><i class="fa fa-print"></i></a>                   
-                                     
-                                    </td>                               
-                                    <td class="text-center">{{ $x->empleado->empleado_nombre}}</td>
-                                    <td class="text-center">{{ $x->decimo_fecha}}</td>
-                                    <td class="text-center">{{ $x->decimo_valor}}</td>                              
+                                    <a href="{{ url("diarioCuarto/{$datos[$i]["id"]}/imprimir") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Diaro"><i class="fa fa-print"></i></a>                   
+                                    <a href="{{ url("decimoCuarto/{$datos[$i]["id"]}/imprimir") }}" target="_blank" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Imprimir Comprabante"><i class="fa fa-print"></i></a>                                             
+                                    @if($datos[$i]["tipo"]=='Cheque')
+                                    <a href="{{ url("/cheque/imprimir/{$datos[$i]["cheque"]}") }}" target="_blank" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt"></i></a>                   
+                                    @endif
+                                </td>                          
+                                    <td class="text-center">{{ $datos[$i]["nombre"]}}</td>
+                                    <td class="text-center">{{$datos[$i]["fecha"]}}</td>
+                                    <td class="text-center">{{ $datos[$i]["valor"]}}</td>  
+                                    <td class="text-center">{{ $datos[$i]["ncheque"]}}</td>                              
                                 </tr>
-                                @endforeach
+                                @endfor
                             @endif 
                         </tbody>
                     </table>

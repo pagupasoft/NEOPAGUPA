@@ -30,9 +30,9 @@
              @IF($cuarto->decimo_tipo == 'Efectivo') EFECTIVO @ENDIF 
              @IF($cuarto->decimo_tipo == 'Cheque') CHEQUE N°  
                 @foreach($cuarto->diario->detalles as $detalle)
-                    @foreach($detalle->cheque as $cheque)
-                        {{$cheque->cheque_numero}}
-                    @endforeach
+                    @if(isset($detalle->cheque)) 
+                        {{$detalle->cheque->cheque_numero}}
+                    @endif
                 @endforeach
             @ENDIF
              @IF($cuarto->decimo_tipo == 'Transferencia') TRANFERENCIA @ENDIF 

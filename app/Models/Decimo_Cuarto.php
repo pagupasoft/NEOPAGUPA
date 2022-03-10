@@ -35,8 +35,12 @@ class Decimo_Cuarto extends Model
         return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('decimo_estado','=','1')
         ->where('decimo_fecha', '=', $fechadesde);
     }
-    public function scopeExtraerDecimoCuarto($query,$fecha){
-        return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+    public function scopeExtraerDecimoCuarto($query,$fecha,$sucursal){
+        return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')
+        ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+        ->where('tipo_empleado.sucursal_id','=',$sucursal)
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('decimo_estado','=','1')
         ->where('decimo_fecha', '=', $fecha)
         ->orderBy('empleado.empleado_nombre','asc');

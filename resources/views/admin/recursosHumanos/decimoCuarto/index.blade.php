@@ -10,26 +10,36 @@
         <div class="form-group row">
             <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
                 <div class="col-sm-2">
-                    <input type="month" name="fecha_desde" id="fecha_desde" class="form-control" value='<?php echo(date("Y")."-".date("12")); ?>'>
+                    <input type="month" name="fecha_desde" id="fecha_desde" class="form-control" value='<?php echo((date("Y")-1)."-".date("03")); ?>'>
                 </div>
                 <div class="col-sm-2">
-                    <input type="month" name="fecha_hasta" id="fecha_hasta" class="form-control" value='<?php echo((date("Y")+1)."-".date("11")); ?>'> 
+                    <input type="month" name="fecha_hasta" id="fecha_hasta" class="form-control" value='<?php echo((date("Y"))."-".date("02")); ?>'> 
                 </div>
-                <div>            
+                <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Succursal:</center></label>
+                <input id="punto_id" name="punto_id" value="{{ $rangoDocumento->puntoEmision->punto_id }}" type="hidden">
+                <input id="rango_id" name="rango_id" value="{{ $rangoDocumento->rango_id }}"
+                    type="hidden">
+                <input type="hidden" id="sucursal_id" name="sucursal_id" value="{{ $rangoDocumento->puntoEmision->sucursal->sucursal_id }}" >
+                <div class="col-sm-2">
+                    <input  class="form-control" value="{{ $rangoDocumento->puntoEmision->sucursal->sucursal_nombre }}"
+                    type="text" readonly>
+                </div>
+                <div class="col-sm-1">         
                 <button type="submit" id="extraer" name="extraer" class="btn btn-success float-right"><i class="fa fa-search"></i><span> Buscar Rol</span></button>                   
                 </div>
             <br>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="example5" class="table table-bordered table-hover table-responsive sin-salto">
+                <table id="example5" name="example5" class="table table-bordered table-hover table-responsive sin-salto" style="height: 600px;">
                     <thead>
                    
                         <tr class="letra-blanca fondo-azul-claro">
-                            <th></th>
+                            <th><div class="icheck-primary d-inline"><input type="checkbox" id="checkboxPrimary1" value="select" onClick="SELECTITEMS()" checked>
+                                <label for="checkboxPrimary1"></div> </th>
                             <th  class="text-center-encabesado">Cédula </th>
                             <th class="text-center-encabesado">Nombre </th>
-                        
+                          <!-- /.card-body 
                             <th class="text-center-encabesado">Dias trabajados</th>
 
                             <th class="text-center-encabesado">Sueldo </th>
@@ -37,6 +47,7 @@
                             <th class="text-center-encabesado">Horas Extras </th>
                             <th class="text-center-encabesado">Horas Suplementarias </th>                        
                             <th class="text-center-encabesado">otros Ingresos </th>
+                            -->
                             <th class="text-center-encabesado">Liquido a Recibir </th>
                         </tr>
                     </thead>
@@ -44,15 +55,19 @@
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)  
                         <tr>
-                            <td width="150">{{ $datos[$i]['IDE'] }} <input type="hidden"   name="ide[]" value="{{ $datos[$i]['IDE'] }}" > </td>
+                            <td> 
+                                    <input class="invisible" name="ide[]" value="{{ $datos[$i]['IDE'] }}" />
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="item{{$datos[$i]['count']}}"  name="contador[]"  value="{{ $datos[$i]['count'] }}" checked> 
+                                        <label for="item{{$datos[$i]['count']}}">
+                                        </label>
+                                    </div>
+                            </td>
+                         
                             <td width="150">{{ $datos[$i]['cedula'] }} <input type="hidden"   name="cedula[]" value="{{ $datos[$i]['cedula'] }}" ></td>
                             <td width="150">{{ $datos[$i]['nombre'] }} <input type="hidden"   name="nombre[]" value="{{ $datos[$i]['nombre'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['dias'] }} <input type="hidden"   name="dias[]" value="{{ $datos[$i]['dias'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['sueldo'] }} <input type="hidden"   name="sueldo[]" value="{{ $datos[$i]['sueldo'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['he'] }} <input type="hidden"   name="he[]" value="{{ $datos[$i]['he'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['bonificaciones'] }} <input type="hidden"   name="bonificaciones[]" value="{{ $datos[$i]['bonificaciones'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['otros'] }} <input type="hidden"   name="otros[]" value="{{ $datos[$i]['otros'] }}" ></td>
-                            <td width="150">{{ $datos[$i]['decimo'] }} <input type="hidden"   name="decimo[]" value="{{ $datos[$i]['decimo'] }}" ></td>
+                          
+                            <td width="150"> <input type="number" class="form-control" step="any" name="decimo[]" value="{{ $datos[$i]['decimo'] }}" ></td>
                            
                         </tr>
                         @endfor
@@ -175,7 +190,7 @@ function cajaActivar(){
     if(document.getElementById("idTipo").value=="Transferencia"){
         document.getElementById("banco_id").disabled = false;
         document.getElementById("cuenta_id").disabled = false;
-        document.getElementById("idFechaCheque").disabled = true;
+        document.getElementById("idFechaCheque").disabled = false;
         document.getElementById("idNcheque").disabled = true;
         document.getElementById("idCuentaContable").disabled = false;
         document.getElementById("idCuentaContable").innerHTML = "";         

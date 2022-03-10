@@ -104,6 +104,12 @@ class Empleado extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)
         ->where('empleado_estado','=','1')->orderBy('empleado_nombre','asc');
     }
+    public function scopeEmpleadosDecimoCuarto($query, $sucursal){
+        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)
+        ->where('empleado_estado','=','1')->where('empleado_decimo_cuarto','=','0')->orderBy('empleado_nombre','asc');
+    }
     public function scopeEmpleadosSucursal($query, $sucursal){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
@@ -112,6 +118,7 @@ class Empleado extends Model
     public function scopeEmpleadosBySucursalAdministrativo($query, $sucursal){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+        ->join('parametrizar_rol','parametrizar_rol.empresa_id','=','empleado_cargo.empresa_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')
         ->where('tipo_empleado.sucursal_id','=',$sucursal)
         ->where('tipo_empleado.tipo_categoria','!=','OPERATIVO CONTROL DIAS')

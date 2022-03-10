@@ -337,6 +337,33 @@
                                             </a>
                                         </li>
                                         @endif
+                                        @if(str_replace('D/E', '', $permiso->permiso_ruta) == 'operativorol' and $rango->tipoComprobante->tipo_comprobante_codigo == 'DS22')
+                                        <li class="nav-item">
+                                            <!--<a href="{{ url("{$ruta}/new/{$p->punto_id}") }}" class="nav-link">-->
+                                            <a href="{{str_replace('D/E', '', $permiso->permiso_ruta)}}/new/{{ $p->punto_id}}" class="nav-link">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>{{ $rango->rango_descripcion.' - '.$p->sucursal->sucursal_codigo.$p->punto_serie }}</p>
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @if(str_replace('D/E', '', $permiso->permiso_ruta) == 'individualrol' and $rango->tipoComprobante->tipo_comprobante_codigo == 'DS22')
+                                        <li class="nav-item">
+                                            <!--<a href="{{ url("{$ruta}/new/{$p->punto_id}") }}" class="nav-link">-->
+                                            <a href="{{str_replace('D/E', '', $permiso->permiso_ruta)}}/new/{{ $p->punto_id}}" class="nav-link">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>{{ $rango->rango_descripcion.' - '.$p->sucursal->sucursal_codigo.$p->punto_serie }}</p>
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @if(str_replace('D/E', '', $permiso->permiso_ruta) == 'decimoC' and $rango->tipoComprobante->tipo_comprobante_codigo == 'DS22')
+                                        <li class="nav-item">
+                                            <!--<a href="{{ url("{$ruta}/new/{$p->punto_id}") }}" class="nav-link">-->
+                                            <a href="{{str_replace('D/E', '', $permiso->permiso_ruta)}}/new/{{ $p->punto_id}}" class="nav-link">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>{{ $rango->rango_descripcion.' - '.$p->sucursal->sucursal_codigo.$p->punto_serie }}</p>
+                                            </a>
+                                        </li>
+                                        @endif
                                         @endforeach
                                     @endif
                                 @endif

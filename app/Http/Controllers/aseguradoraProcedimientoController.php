@@ -58,8 +58,6 @@ class aseguradoraProcedimientoController extends Controller
     }
 
     public function guardarProcedimiento(Request $request, $id){
-        
-
             $procedimiento = $request->get('Pprocedimiento');
             $Pcosto = $request->get('Pcosto');
             $PcodigoT = $request->get('PcodigoT');

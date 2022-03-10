@@ -24,16 +24,24 @@ class actualizarCostosController extends Controller
         }
     }
     public function actualizar(Request $request){
+        try{
+            $this->actualizarPrecioCosto($request->get('fecha_desde'), $request->get('fecha_hasta'));
+            return redirect('actualizarCostos')->with('success','Datos actualizados exitosamente');
+        }catch(\Exception $ex){
+            return redirect('actualizarCostos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function actualizarPrecioCosto($fechaDesde, $fechaHasta){
         try{           
             DB::beginTransaction();
             $productos = Producto::Productos()->where('producto_compra_venta','=','3')->get();
             foreach($productos as $producto){
                 $general = new generalController();
-                $cierre = $general->cierre($request->get('fecha_desde'));          
+                $cierre = $general->cierre($fechaDesde);          
                 if($cierre){
                     return redirect('actualizarCostos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
                 }
-                $cierre = $general->cierre($request->get('fecha_hasta'));          
+                $cierre = $general->cierre($fechaHasta);          
                 if($cierre){
                     return redirect('actualizarCostos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
                 }
@@ -47,8 +55,8 @@ class actualizarCostosController extends Controller
                 $datos[$count]['can2'] = 0;
                 $datos[$count]['pre2'] = 0;
                 $datos[$count]['tot2'] = 0;
-                $datos[$count]['can3'] = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")) )->where('movimiento_tipo','=','ENTRADA')->sum('movimiento_cantidad')-Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")) )->where('movimiento_tipo','=','SALIDA')->sum('movimiento_cantidad');
-                $costoPromedio = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->orderBy('movimiento_fecha','desc')->orderBy('movimiento_id','desc')->first();
+                $datos[$count]['can3'] = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaDesde."- 1 days")) )->where('movimiento_tipo','=','ENTRADA')->sum('movimiento_cantidad')-Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaDesde."- 1 days")) )->where('movimiento_tipo','=','SALIDA')->sum('movimiento_cantidad');
+                $costoPromedio = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaDesde."- 1 days")))->orderBy('movimiento_fecha','desc')->orderBy('movimiento_id','desc')->first();
                 $datos[$count]['pre3'] = 0;
                 if($costoPromedio){
                     $datos[$count]['pre3'] = $costoPromedio->movimiento_costo_promedio;
@@ -57,7 +65,7 @@ class actualizarCostosController extends Controller
                 $datos[$count]['cos'] = '';
                 $count ++;
                 /***********************************************************/
-                foreach(Movimiento_Producto::MovProductoByFecha($producto->producto_id,$request->get('fecha_desde'),$request->get('fecha_hasta'))->orderBy('movimiento_fecha','asc')->orderBy('movimiento_id','asc')->get() as $movimiento){
+                foreach(Movimiento_Producto::MovProductoByFecha($producto->producto_id,$fechaDesde,$fechaHasta)->orderBy('movimiento_fecha','asc')->orderBy('movimiento_id','asc')->get() as $movimiento){
                     $bandera2 = false;
                     if($movimiento->movimiento_motivo != "ANULACION"){
                         if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
@@ -159,7 +167,6 @@ class actualizarCostosController extends Controller
                 }
             }
             DB::commit();
-            return redirect('actualizarCostos')->with('success','Datos actualizados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('actualizarCostos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

@@ -355,7 +355,7 @@
                                             </a>
                                         </li>
                                         @endif
-                                        @if(str_replace('D/E', '', $permiso->permiso_ruta) == 'decimoC' and $rango->tipoComprobante->tipo_comprobante_codigo == 'DS22')
+                                        @if(str_replace('D/E', '', $permiso->permiso_ruta) == 'decimoC' and $rango->tipoComprobante->tipo_comprobante_codigo == 'DS23')
                                         <li class="nav-item">
                                             <!--<a href="{{ url("{$ruta}/new/{$p->punto_id}") }}" class="nav-link">-->
                                             <a href="{{str_replace('D/E', '', $permiso->permiso_ruta)}}/new/{{ $p->punto_id}}" class="nav-link">

@@ -449,7 +449,11 @@ class anticipoClienteController extends Controller
                     $datos[$count]['fep'] = $descuento->descuento_fecha; 
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
-                    $datos[$count]['fac'] = $descuento->factura->factura_numero; 
+                    if(isset($descuento->factura->factura_numero)){
+                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->factura->factura_numero; 
+                    }else{
+                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
+                    }
                     $datos[$count]['chk'] = '1'; 
                     $datos[$count]['tot'] = '3'; 
                     $count ++;
@@ -469,15 +473,7 @@ class anticipoClienteController extends Controller
     public function eliminar(Request $request){
         try {     
             DB::beginTransaction();
-            $general = new generalController();
-            $seleccion = $request->get('checkbox');
-            for ($i = 0; $i < count($seleccion); ++$i){
-                $anticipo = Anticipo_Cliente::findOrFail($seleccion[$i]);
-                $cierre = $general->cierre($anticipo->anticipo_fecha);
-                if($cierre){
-                    return redirect('eliminatAntCli')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-                }
-            }            
+            $general = new generalController();          
             $auditoria = new generalController();   
             $noTienecaja =null;
             $jo=false;
@@ -485,6 +481,10 @@ class anticipoClienteController extends Controller
                 $seleccion = $request->get('checkbox');
                 for ($i = 0; $i < count($seleccion); ++$i) {
                     $anticipo = Anticipo_Cliente::findOrFail($seleccion[$i]);
+                    $cierre = $general->cierre($anticipo->anticipo_fecha);
+                    if($cierre){
+                        return redirect('eliminatAntCli')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
                     $diario = null;
                     if(isset($anticipo->diario)){
                         $diario = $anticipo->diario;
@@ -548,34 +548,34 @@ class anticipoClienteController extends Controller
                         }
                     }
                 }
-                if($request->get('checkbox2')){
-                    $seleccion2 = $request->get('checkbox2');
-                    for ($i = 0; $i < count($seleccion2); ++$i) {
-                        $descuento =  Descuento_Anticipo_Cliente::findOrFail($seleccion2[$i]);
-                        $diario = null;
-                        $cxcAux = null;
-                        if(isset($descuento->diario)){
-                            $diario = $descuento->diario;
-                        }
-                        if(isset($descuento->factura->cuentaCobrar)){
-                            $cxcAux = $descuento->factura->cuentaCobrar;
-                        }
-                        foreach($diario->detalles as $detalle){
-                            $detalle->delete();
-                            $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por cobrar');  
-                        }
-                        $descuento->delete();
-                        $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
-                        if($cxcAux->cuenta_saldo == 0){
-                            $cxcAux->cuenta_estado = '2';
-                        }else{
-                            $cxcAux->cuenta_estado = '1';
-                        }
-                        $cxcAux->update();
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
-                    }
-                }                                        
             }
+            if($request->get('checkbox2')){
+                $seleccion2 = $request->get('checkbox2');
+                for ($i = 0; $i < count($seleccion2); ++$i) {
+                    $descuento =  Descuento_Anticipo_Cliente::findOrFail($seleccion2[$i]);
+                    $diario = null;
+                    $cxcAux = null;
+                    if(isset($descuento->diario)){
+                        $diario = $descuento->diario;
+                    }
+                    if(isset($descuento->factura->cuentaCobrar)){
+                        $cxcAux = $descuento->factura->cuentaCobrar;
+                    }
+                    foreach($diario->detalles as $detalle){
+                        $detalle->delete();
+                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por cobrar');  
+                    }
+                    $descuento->delete();
+                    $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
+                    if($cxcAux->cuenta_saldo == 0){
+                        $cxcAux->cuenta_estado = '2';
+                    }else{
+                        $cxcAux->cuenta_estado = '1';
+                    }
+                    $cxcAux->update();
+                    $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
+                }
+            }                                        
             DB::commit();
             if(isset($noTienecaja)){
                 return redirect('eliminatAntCli')->with('success','Datos eliminados exitosamente')->with('error2',$noTienecaja);

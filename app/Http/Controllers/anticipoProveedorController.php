@@ -490,9 +490,9 @@ class anticipoProveedorController extends Controller
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
                     if(isset($descuento->transaccionCompra)){
-                        $datos[$count]['fac'] = $descuento->transaccionCompra->transaccion_numero; 
+                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->transaccionCompra->transaccion_numero; 
                     }else{
-                        $datos[$count]['fac'] = $descuento->descuento_descripcion;
+                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
                     }
                     $datos[$count]['chk'] = '1'; 
                     $datos[$count]['tot'] = '3'; 

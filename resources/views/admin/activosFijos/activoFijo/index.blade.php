@@ -33,13 +33,12 @@
     <div class="card-body">
         <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
             <thead>
-                <tr class="text-center neo-fondo-tabla">  
+                <tr>  
                     <th></th>
                     <th>Fecha</th>
                     <th>Diario</th>
                     <th>Producto</th>
-                    <th>Tipo de Activo</th>
-                    <th>Descripcion</th>
+                    <th>Tipo de Activo</th>                   
                     <th>Valor</th>
                     <th>% Depreciacion</th>
                     <th>Base depreciar</th>
@@ -48,6 +47,7 @@
                     <th>Depreciacion Mensual</th>
                     <th>Depreciacion Anual</th>
                     <th>Depreciacion Acumulada</th>
+                    <th>Descripcion</th>
                 </tr>
             </thead>            
             <tbody>
@@ -62,8 +62,7 @@
                     <td>{{ $activoFijo->activo_fecha_inicio}}</td>
                     <td>@if(isset($activoFijo->diario_id))<a href="{{ url("asientoDiario/ver/{$activoFijo->diario->diario_codigo}")}}" target="_blank">{{ $activoFijo->diario->diario_codigo}}</a> @endif</td>
                     <td>{{ $activoFijo->producto->producto_nombre}}</td>
-                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_nombre}} @endif</td>
-                    <td>{{ $activoFijo->activo_descripcion}}</td>
+                    <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_nombre}} @endif</td>                    
                     <td>{{ number_format($activoFijo->activo_valor,2)}}</td>
                     <td>@if(isset($activoFijo->grupo_id)) {{ $activoFijo->grupoActivo->grupo_porcentaje}} @endif</td>
                     <td>{{ number_format($activoFijo->activo_base_depreciar,2)}}</td>
@@ -72,6 +71,7 @@
                     <td>{{ number_format($activoFijo->activo_depreciacion_mensual,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_depreciacion_anual,2)}}</td>
                     <td>{{ number_format($activoFijo->activo_depreciacion_acumulada,2)}}</td>
+                    <td class="text-left">{{ $activoFijo->activo_descripcion}}</td>
                 </tr>
                 @endforeach
             @endif

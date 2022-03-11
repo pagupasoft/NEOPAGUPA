@@ -314,30 +314,30 @@ class depreciacionMensualController extends Controller
                 $activo = Activo_Fijo::findOrFail($activos[$i]);
                 if($i == 0){
                     $cuentasDebe[$countDebe][1] = $activo->grupoActivo->cuentaGasto->cuenta_id;
-                    $cuentasDebe[$countDebe][2] = $valores[$i];
+                    $cuentasDebe[$countDebe][2] = floatval($valores[$i]);
                     $cuentasHaber[$countHaber][1] = $activo->grupoActivo->cuentaDepreciacion->cuenta_id;
-                    $cuentasHaber[$countHaber][2] = $valores[$i];
+                    $cuentasHaber[$countHaber][2] = floatval($valores[$i]);
                     $countDebe ++;
                     $countHaber ++;
                 }else{
                     if($cuentasDebe[$countDebe-1][1] != $activo->grupoActivo->cuentaGasto->cuenta_id){
                         $cuentasDebe[$countDebe][1] = $activo->grupoActivo->cuentaGasto->cuenta_id;
-                        $cuentasDebe[$countDebe][2] = $valores[$i];
+                        $cuentasDebe[$countDebe][2] = floatval($valores[$i]);
                         $countDebe ++;
                     }else{
-                        $cuentasDebe[$countDebe-1][2] = floatval($cuentasDebe[$countDebe-1][2]) + floatval( $valores[$i]);
+                        $cuentasDebe[$countDebe-1][2] = floatval($cuentasDebe[$countDebe-1][2]) + floatval($valores[$i]);
                     }
                     if($cuentasHaber[$countHaber-1][1] != $activo->grupoActivo->cuentaDepreciacion->cuenta_id){
                         $cuentasHaber[$countHaber][1] = $activo->grupoActivo->cuentaDepreciacion->cuenta_id;
-                        $cuentasHaber[$countHaber][2] = $valores[$i];
+                        $cuentasHaber[$countHaber][2] = floatval($valores[$i]);
                         $countHaber ++;
-                    }else{
-                        $cuentasHaber[$countHaber-1][2] = floatval($cuentasHaber[$countDebe-1][2]) + floatval($valores[$i]);
+                    }else{                        
+                        $cuentasHaber[$countHaber-1][2] = floatval($cuentasHaber[$countDebe-1][2]) + floatval($valores[$i]);                    
                     }
                 }
                 $DepreciacionActivoFijo = new Depreciacion_Activo_Fijo();
                 $DepreciacionActivoFijo->depreciacion_fecha = $last_day;
-                $DepreciacionActivoFijo->depreciacion_valor = str_replace(',','',$valores[$i]);
+                $DepreciacionActivoFijo->depreciacion_valor =  floatval($valores[$i]);
                 $DepreciacionActivoFijo->depreciacion_estado = 1;           
                 $DepreciacionActivoFijo->activo_id = $activos[$i];
                 $DepreciacionActivoFijo->diario()->associate($diario);
@@ -383,7 +383,7 @@ class depreciacionMensualController extends Controller
             return redirect('depreciacionMensual')->with('success','Datos guardados exitosamente')->with('diario',$url);
         }catch(\Exception $ex){
             DB::rollBack();
-           return redirect('depreciacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+         return redirect('depreciacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
     public function store(Request $request)

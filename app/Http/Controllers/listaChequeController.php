@@ -120,12 +120,15 @@ class listaChequeController extends Controller
                     $cheque->cheque_fecha_pago = gmdate("Y-m-d", $unix_date3);
                     $cheque->cheque_valor =  $array[0][$i][5];
                     $cheque->cheque_valor_letras =  $formatter->toInvoice($array[0][$i][5], 2, 'Dolares');
-                    $bancoLista = Banco_Lista::BancoListaByNom($array[0][$i][7])->first();
-                    $banco = Banco::BancoXbancolista($bancoLista->banco_lista_id)->first();
-                    $cuentaBancaria = Cuenta_Bancaria::CuentaBancariasBanco($banco->banco_id)->first();
-                    if($cuentaBancaria->cuenta_bancaria_numero == $array[0][$i][6]){
-                        $cheque->cuenta_bancaria_id =  $cuentaBancaria->cuenta_bancaria_id;
-                    }                   
+                    $bancoLista = Banco_Lista::BancoListaByNom($array[0][$i][7])->first();                    
+                    $banco = Banco::BancoXbancolista($bancoLista->banco_lista_id)->first();                    
+                    $cuentaBancarias = Cuenta_Bancaria::CuentaBancariasBanco($banco->banco_id)->get();                    
+                    foreach($cuentaBancarias as $cuentaBancaria){                        
+                        if($cuentaBancaria->cuenta_bancaria_numero == $array[0][$i][6]){
+                            return($cuentaBancaria->cuenta_bancaria_numero);
+                            $cheque->cuenta_bancaria_id =  $cuentaBancaria->cuenta_bancaria_id;
+                        } 
+                    }                                      
                     $cheque->cheque_estado = '1';
                     $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                     $cheque->save();
@@ -136,12 +139,12 @@ class listaChequeController extends Controller
                 
                 }
                 DB::commit();
-                return redirect('rubro')->with('success','Datos guardados exitosamente');
+                return redirect('excelCheque')->with('success','Datos guardados exitosamente');
             }
         }
         catch(\Exception $ex){ 
             DB::rollBack();     
-            return redirect('rubro')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('excelCheque')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 

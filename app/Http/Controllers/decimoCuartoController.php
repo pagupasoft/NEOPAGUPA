@@ -172,7 +172,7 @@ class decimoCuartoController extends Controller
                 
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
                 $diario->diario_numero_documento = 0;
-                $diario->diario_beneficiario = "DECIMO CAURTO CONSOLIDADO DE EMPELADOS";
+                $diario->diario_beneficiario = "DECIMO CUARTO CONSOLIDADO DE EMPELADOS";
                 $diario->diario_tipo = 'CPDC';
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechaemision'))->format('m');
@@ -309,7 +309,7 @@ class decimoCuartoController extends Controller
                         $detalleDiario->detalle_haber =  0.00;
                         $detalleDiario->detalle_comentario = 'TRANSFERENCIA AL EMPLEADO '.$nombre[$contador[$i]].' CUENTA No '.$empleado->empleado_cuenta_numero;
                         
-                        $detalleDiario->detalle_tipo_documento = 'DECIMO CAURTO';
+                        $detalleDiario->detalle_tipo_documento = 'DECIMO CUARTO';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';
                         $detalleDiario->detalle_estado = '1';

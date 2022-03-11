@@ -229,14 +229,14 @@
             <div class="card-body table-responsive p-0" style="height: 400px;">
                 <table class="table table-head-fixed text-nowrap">
                     <thead>
-                        <tr class="text-center">
-                            <th>Cons.</th>
-                            <th>Fecha</th>
-                            <th>Fecha Cons.</th>
+                        <tr class="text-center">                            
+                            <th>Fecha</th>                           
                             <th>Tipo</th>
                             <th>Numero</th>
                             <th>Crédito</th>
                             <th>Débito</th>
+                            <th>Conc.</th>
+                            <th>Fecha Conc.</th>
                             <th>Saldo</th>
                             <th>Diario</th>
                             <th>Beneficiario</th>
@@ -247,7 +247,12 @@
                         @if(isset($conciliacionBancariaMatriz))
                             @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
                             <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
-                            <tr class="text-center">
+                            <tr class="text-center">                                
+                                <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>                                
+                                <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
+                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
+                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>
                                 <td>
                                     <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
                                     @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
@@ -256,13 +261,8 @@
                                         <label for="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
                                     </div>
                                     @endif
-                                </td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
-                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
-                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>    
+                                </td> 
+                                <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
                                 <td>{{ $saldo}}</td>                           
                                 <td>{{ $conciliacionBancariaMatriz[$i]['diario']}}</td>
                                 <td>{{ $conciliacionBancariaMatriz[$i]['Beneficiario']}}</td>
@@ -279,13 +279,13 @@
             <table class="table table-head-fixed text-nowrap">
                 <thead>
                     <tr class="text-center">
-                        <th>Cons.</th>
                         <th>Fecha</th>
-                        <th>Fecha Cons.</th>
                         <th>Tipo</th>
                         <th>Numero</th>
                         <th>Crédito</th>
                         <th>Débito</th>
+                        <th>Cons.</th>
+                        <th>Fecha Conc.</th>
                         <th>Saldo</th>
                         <th>Diario</th>
                         <th>Beneficiario</th>
@@ -296,7 +296,12 @@
                 @if(isset($otrasconciliacionesBancariaMatriz))
                         @for ($c = 0; $c < count($otrasconciliacionesBancariaMatriz); ++$c)      
                         <?php $saldo = $saldo + $otrasconciliacionesBancariaMatriz[$c]['credito'] - $otrasconciliacionesBancariaMatriz[$c]['debito']; ?>         
-                        <tr class="text-center">
+                        <tr class="text-center">                            
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>                            
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>
+                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['credito'],2)}}</td>
+                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['debito'],2)}}</td>
                             <td>
                                 <input type="hidden" name="idonciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}"/>
                                 <div class="custom-control custom-checkbox">
@@ -304,12 +309,7 @@
                                     <label for="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" class="custom-control-label"></label>
                                 </div>
                             </td>
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>
-                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['credito'],2)}}</td>
-                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['debito'],2)}}</td>    
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>    
                             <td>{{ $saldo}}</td>                              
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['Beneficiario']}}</td>

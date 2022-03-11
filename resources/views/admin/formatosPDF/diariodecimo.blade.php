@@ -49,11 +49,11 @@
                     <tr >
                         <td class="detalle-diario letra8"><b>{{ $detalle->cuenta->cuentaPadre->cuenta_numero }}</b></td>
                         <td class="detalle-diario letra8"><b>{{ $detalle->cuenta->cuentaPadre->cuenta_nombre }}</b></td>
-                        <td rowspan="2" class="detalle-diario letra10">{{ $detalle->detalle_comentario }}</td>
+                        <td rowspan="2" class="detalle-diario letra8">{{ $detalle->detalle_comentario }}</td>
                         <td rowspan="2" class="detalle-diario dereche letra10">@if($detalle->detalle_debe <> 0) {{ number_format($detalle->detalle_debe,2) }} @endif</td>
                         <td rowspan="2" class="detalle-diario dereche letra10">@if($detalle->detalle_haber <> 0) {{ number_format($detalle->detalle_haber,2) }} @endif</td>
                     </tr>
-                    <tr class="letra10">
+                    <tr class="letra8">
                         <td class="detalle-diario">{{ $detalle->cuenta->cuenta_numero }}</td>
                         <td class="detalle-diario" style="padding-left: 19px;">{{ $detalle->cuenta->cuenta_nombre }}</td>
                     </tr>

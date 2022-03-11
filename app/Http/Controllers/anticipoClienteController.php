@@ -553,6 +553,8 @@ class anticipoClienteController extends Controller
                 $seleccion2 = $request->get('checkbox2');
                 for ($i = 0; $i < count($seleccion2); ++$i) {
                     $descuento =  Descuento_Anticipo_Cliente::findOrFail($seleccion2[$i]);
+                   
+                    $anticipo =  Anticipo_Cliente::findOrFail($descuento->anticipo_id);
                     $diario = null;
                     $cxcAux = null;
                     if(isset($descuento->diario)){
@@ -566,7 +568,16 @@ class anticipoClienteController extends Controller
                         $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por cobrar');  
                     }
                     $descuento->delete();
+                    //$cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
                     $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
+                    $anticipo->anticipo_valor-Descuento_Anticipo_Cliente::DescuentosByAnticipo($anticipo->anticipo_id)->sum('descuento_valor');
+                    if($anticipo->anticipo_valor == 0){
+                        $anticipo->anticipo_estado = '2';
+                    }else{
+                        $anticipo->anticipo_estado = '1';
+                    }
+                    $anticipo->update();
+                    $auditoria->registrarAuditoria('Actualizacion de anticipo cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
                     if($cxcAux->cuenta_saldo == 0){
                         $cxcAux->cuenta_estado = '2';
                     }else{

@@ -203,7 +203,7 @@ class depreciacionMensualController extends Controller
                         $activosFijosMatriz[$count]['CuentaDepreciacion'] = $activoFijo->grupoActivo->cuenta_depreciacion;
                         $activosFijosMatriz[$count]['CuentaGasto'] = $activoFijo->grupoActivo->cuenta_gasto;
                         $activosFijosMatriz[$count]['Descripcion'] = $activoFijo->activo_descripcion;
-                        $activosFijosMatriz[$count]['Valor'] = number_format($ventaActivoAux,2);
+                        $activosFijosMatriz[$count]['Valor'] = $ventaActivoAux;
                         $activosFijosMatriz[$count]['PorcentajeDepreciacion'] = 0;
                         $activosFijosMatriz[$count]['baseDepreciar'] = 0;
                         $activosFijosMatriz[$count]['VidaUtil'] = 0;
@@ -334,7 +334,13 @@ class depreciacionMensualController extends Controller
                     }else{                        
                         $cuentasHaber[$countHaber-1][2] = floatval($cuentasHaber[$countDebe-1][2]) + floatval($valores[$i]);                    
                     }
-                }
+                }    
+                $depreciacionesdelmes=Depreciacion_Activo_Fijo::DepreciacionActivoxFechas($last_day, $tieneDiario)->get();
+                if(isset($depreciacionesdelmes->depreciacion_fecha)){
+                    foreach($depreciacionesdelmes as $depreciacionme){
+                        $depreciacionme->delete();
+                    }
+                }            
                 $DepreciacionActivoFijo = new Depreciacion_Activo_Fijo();
                 $DepreciacionActivoFijo->depreciacion_fecha = $last_day;
                 $DepreciacionActivoFijo->depreciacion_valor =  floatval($valores[$i]);

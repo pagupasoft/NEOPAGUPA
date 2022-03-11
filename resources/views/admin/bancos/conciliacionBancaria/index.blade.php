@@ -227,51 +227,51 @@
             <hr>
             <?php $saldo = 0; ?>
             <div class="card-body table-responsive p-0" style="height: 400px;">
-            <table id="example4" class="table table-head-fixed text-nowrap">
-                <thead>
-                    <tr class="text-center">
-                        <th>Cons.</th>
-                        <th>Fecha</th>
-                        <th>Fecha Cons.</th>
-                        <th>Tipo</th>
-                        <th>Numero</th>
-                        <th>Crédito</th>
-                        <th>Débito</th>
-                        <th>Saldo</th>
-                        <th>Diario</th>
-                        <th>Beneficiario</th>
-                        <th>Referencia</th>                                               
-                    </tr>
-                </thead>
-                <tbody>                   
-                    @if(isset($conciliacionBancariaMatriz))
-                        @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
-                        <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
+                <table class="table table-head-fixed text-nowrap">
+                    <thead>
                         <tr class="text-center">
-                            <td>
-                                <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
-                                @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
-                                    <label for="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
-                                </div>
-                                @endif
-                            </td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
-                            <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
-                            <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>    
-                            <td>{{ $saldo}}</td>                           
-                            <td>{{ $conciliacionBancariaMatriz[$i]['diario']}}</td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['Beneficiario']}}</td>
-                            <td>{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
+                            <th>Cons.</th>
+                            <th>Fecha</th>
+                            <th>Fecha Cons.</th>
+                            <th>Tipo</th>
+                            <th>Numero</th>
+                            <th>Crédito</th>
+                            <th>Débito</th>
+                            <th>Saldo</th>
+                            <th>Diario</th>
+                            <th>Beneficiario</th>
+                            <th>Referencia</th>                                               
                         </tr>
-                        @endfor
-                    @endif
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>                   
+                        @if(isset($conciliacionBancariaMatriz))
+                            @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
+                            <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
+                            <tr class="text-center">
+                                <td>
+                                    <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
+                                    @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
+                                        <label for="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
+                                    </div>
+                                    @endif
+                                </td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
+                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
+                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>    
+                                <td>{{ $saldo}}</td>                           
+                                <td>{{ $conciliacionBancariaMatriz[$i]['diario']}}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['Beneficiario']}}</td>
+                                <td>{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
+                            </tr>
+                            @endfor
+                        @endif
+                    </tbody>
+                </table>
             </div>
             <hr>
             <center><h3><b>POR CONCILIAR EN OTROS MESES</b><h3></center>

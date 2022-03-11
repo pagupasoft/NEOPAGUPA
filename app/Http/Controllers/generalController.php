@@ -236,6 +236,17 @@ class generalController extends Controller
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('diario.pdf');
     }
+    public function pdfDiariourl2(Diario $diario){
+        $empresa = Empresa::empresa()->first();
+        $ruta = public_path().'/DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y');
+        if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+        }
+        $nombreArchivo = $diario->diario_codigo. ".pdf";
+        $view =  \View::make('admin.formatosPDF.diariodecimo', ['empresa'=> $empresa,'diario'=> $diario]);
+        PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
+        return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('diario.pdf');
+    }
     public function pdfDiarioEgresourl(Diario $diario){
         $empresa = Empresa::empresa()->first();
         $diario=Diario::findOrFail($diario->diario_id);
@@ -400,18 +411,20 @@ class generalController extends Controller
     public function pdfCuarto(Decimo_Cuarto $Cuarto){
         $empresa = Empresa::empresa()->first();
         $ruta = public_path().'/decimoCuarto/'.$empresa->empresa_ruc.'/'.date("m-Y", strtotime($Cuarto->decimo_fecha));
+
         echo "$ruta";
         if (!is_dir($ruta)) {
             mkdir($ruta, 0777, true);
         }
         $nombreArchivo = $Cuarto->empleado->empleado_nombre.'-'.date("m-Y", strtotime($Cuarto->decimo_fecha)). ".pdf";
         setlocale(LC_ALL, 'spanish');
-        $mes=strftime('%B',strtotime($Cuarto->decimo_fecha));
+        $mes=strftime('%B',strtotime($Cuarto->decimo_fecha_emision));
         $fecha = strftime("%d de %B de %Y", strtotime($Cuarto->decimo_fecha));
         $view =  \View::make('admin.formatosPDF.cuarto', ['empresa'=> $empresa,'cuarto'=> $Cuarto,'fecha'=> $fecha,'mes'=> $mes]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('cuarto.pdf');
     }
+
     public function preciocosto($fechaInicio,$fechaFin,$producto_id){
         if($fechaInicio == ''){
             $fechaInicio = date("Y-m-d",strtotime($fechaFin."- 60 days"));

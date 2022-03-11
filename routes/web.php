@@ -166,6 +166,7 @@ use App\Http\Controllers\cierreMesController;
 use App\Http\Controllers\contabilizacionMensualController;
 use App\Http\Controllers\cuadreCajaAbiertaController;
 use App\Http\Controllers\cuentaPagarController;
+use App\Http\Controllers\decimoCuartoConsolidadaController;
 use App\Http\Controllers\decimoCuartoController;
 use App\Http\Controllers\decimoTerceroController;
 use App\Http\Controllers\depositoCajaController;
@@ -325,7 +326,7 @@ Route::resource('lquincena', listarquincenaController::class)->middleware('auth'
 Route::resource('listaroles', listarolConsolidadaController::class)->middleware('auth');
 Route::resource('rolindividual', rolIndividualController::class)->middleware('auth');
 Route::resource('decimoT', decimoTerceroController::class)->middleware('auth');
-Route::resource('decimoC', decimoCuartoController::class)->middleware('auth');
+Route::resource('decimoC', decimoCuartoConsolidadaController::class)->middleware('auth');
 Route::resource('tipoSeguro', tipoSeguroController::class)->middleware('auth');
 Route::resource('tipoMuestra', tipoMuestraController::class)->middleware('auth');
 Route::resource('tipoRecipiente', tipoRecipienteController::class)->middleware('auth');
@@ -442,6 +443,7 @@ Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middle
 Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middleware('auth');
 Route::resource('reporteBancario', repoteBancarioController::class)->middleware('auth');
 Route::resource('ordenAtencionIess', ordenAtencionIessController::class)->middleware('auth');
+Route::resource('ordenAtencionIess', ordenAtencionIessController::class)->middleware('auth');
 
 Route::resource('listanotaCreditoBancario', listaNotaCreditoBancoController::class)->middleware('auth');
 Route::resource('listanotaDebitoBancario', listaNotaDebitoBancoController::class)->middleware('auth');
@@ -450,7 +452,7 @@ Route::resource('listaAsientoDiario', listaAsientosDiariosController::class)->mi
 
 Route::resource('individualrol', cabeceraRolAdministrativoController::class)->middleware('auth');
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
-
+Route::resource('dicimoCuarto', decimoCuartoController::class)->middleware('auth');
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');
@@ -974,7 +976,8 @@ Route::get('/ingresoBanco/new/{id}', [ingresoBancoController::class, 'nuevo'])->
 Route::get('/anticipoCliente/new/{id}', [anticipoClienteController::class, 'nuevo'])->middleware('auth');
 Route::get('/anticipoProveedor/new/{id}', [anticipoProveedorController::class, 'nuevo'])->middleware('auth');
 Route::get('/anticipoEmpleado/new/{id}', [anticipoEmpleadoController::class, 'nuevo'])->middleware('auth');
-Route::get('/decimoC/new/{id}', [decimoCuartoController::class, 'nuevo'])->middleware('auth');
+Route::get('/decimoC/new/{id}', [decimoCuartoConsolidadaController::class, 'nuevo'])->middleware('auth');
+Route::get('/dicimoCuarto/new/{id}', [decimoCuartoController::class, 'nuevo'])->middleware('auth');
 
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 

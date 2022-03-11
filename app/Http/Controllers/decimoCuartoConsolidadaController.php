@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cabecera_Rol_CM;
 use App\Models\Cheque;
 use App\Models\Decimo_Cuarto;
 use App\Models\Detalle_Diario;
@@ -11,7 +10,6 @@ use App\Models\Diario;
 use App\Models\Empleado;
 use App\Models\Punto_Emision;
 use App\Models\Rango_Documento;
-use App\Models\Rol_Consolidado;
 use App\Models\Transferencia;
 use DateTime;
 use Illuminate\Http\Request;
@@ -19,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Luecano\NumeroALetras\NumeroALetras;
 
-class decimoCuartoController extends Controller
+class decimoCuartoConsolidadaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,22 +25,6 @@ class decimoCuartoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        try{
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();       
-            return view('admin.recursosHumanos.decimoCuarto.index',['PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
-    }
-    
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -61,6 +43,16 @@ class decimoCuartoController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     } 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -413,37 +405,5 @@ class decimoCuartoController extends Controller
     public function destroy($id)
     {
         //
-    }
-    public function ver($fecha)
-    {
-        try{
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            return view('admin.recursosHumanos.decimoCuarto.impresion', ['decimo'=>Decimo_Cuarto::ExtraerDecimoCuarto($fecha)->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
-    }
-    public function imprimir($id)
-    {
-        try{
-            $decimo=Decimo_Cuarto::findOrFail($id);
-            $general = new generalController();
-            $url = $general->pdfCuarto($decimo);
-            return $url;
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
-    }
-    public function imprimirdiario($id)
-    { 
-        try{
-            $decimo=Decimo_Cuarto::decimo($id)->get()->first();
-            $general = new generalController();
-            $url = $general->pdfDiariourl($decimo->diario);
-            return $url;
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
     }
 }

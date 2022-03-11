@@ -400,18 +400,20 @@ class generalController extends Controller
     public function pdfCuarto(Decimo_Cuarto $Cuarto){
         $empresa = Empresa::empresa()->first();
         $ruta = public_path().'/decimoCuarto/'.$empresa->empresa_ruc.'/'.date("m-Y", strtotime($Cuarto->decimo_fecha));
+
         echo "$ruta";
         if (!is_dir($ruta)) {
             mkdir($ruta, 0777, true);
         }
         $nombreArchivo = $Cuarto->empleado->empleado_nombre.'-'.date("m-Y", strtotime($Cuarto->decimo_fecha)). ".pdf";
         setlocale(LC_ALL, 'spanish');
-        $mes=strftime('%B',strtotime($Cuarto->decimo_fecha));
+        $mes=strftime('%B',strtotime($Cuarto->decimo_fecha_emision));
         $fecha = strftime("%d de %B de %Y", strtotime($Cuarto->decimo_fecha));
         $view =  \View::make('admin.formatosPDF.cuarto', ['empresa'=> $empresa,'cuarto'=> $Cuarto,'fecha'=> $fecha,'mes'=> $mes]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('cuarto.pdf');
     }
+
     public function preciocosto($fechaInicio,$fechaFin,$producto_id){
         if($fechaInicio == ''){
             $fechaInicio = date("Y-m-d",strtotime($fechaFin."- 60 days"));

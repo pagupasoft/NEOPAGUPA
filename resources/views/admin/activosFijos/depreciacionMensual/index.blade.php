@@ -72,15 +72,15 @@
                         <td><a href="{{ url("asientoDiario/ver/{$activosFijosMatriz[$i]['Diario']}")}}" target="_blank">{{ $activosFijosMatriz[$i]['Diario']}}</a></td>                                     
                         <td>{{ $activosFijosMatriz[$i]['Producto']}}<input type="hidden" name="activoId[]" id="activoId[]" value="{{ $activosFijosMatriz[$i]['activo_id']}}"></td>
                         <td>{{ $activosFijosMatriz[$i]['TipoActivo']}}</td>                       
-                        <td>{{ $activosFijosMatriz[$i]['Valor']}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['Valor'],2,'.','')}}</td>
                         <td>{{ $activosFijosMatriz[$i]['PorcentajeDepreciacion']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['baseDepreciar']}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['baseDepreciar'],2,'.','')}}</td>
                         <td>{{ $activosFijosMatriz[$i]['VidaUtil']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['ValorUtil']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['DeprecicacionMensual']}}<input type="hidden" name="valorId[]" id="valorId[]" value="{{ $activosFijosMatriz[$i]['DeprecicacionMensual']}}"></td>
-                        <td>{{ $activosFijosMatriz[$i]['DeprecicacionAnual']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['DeprecicacionAcumulada']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['ValoresLibro']}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['ValorUtil'],2,'.','')}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['DeprecicacionMensual'],2,'.','')}}<input type="hidden" name="valorId[]" id="valorId[]" value="{{ number_format($activosFijosMatriz[$i]['DeprecicacionMensual'],2,'.','')}}"></td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['DeprecicacionAnual'],2,'.','')}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['DeprecicacionAcumulada'],2,'.','')}}</td>
+                        <td>{{ number_format($activosFijosMatriz[$i]['ValoresLibro'],2,'.','')}}</td>
                         <td class="text-left">{{ $activosFijosMatriz[$i]['Descripcion']}}</td>
                     </tr>
                     @endfor

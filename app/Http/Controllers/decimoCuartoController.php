@@ -440,7 +440,7 @@ class decimoCuartoController extends Controller
         try{
             $decimo=Decimo_Cuarto::decimo($id)->get()->first();
             $general = new generalController();
-            $url = $general->pdfDiariourl($decimo->diario);
+            $url = $general->pdfDiariourl2($decimo->diario);
             return $url;
         }catch(\Exception $ex){
             return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');

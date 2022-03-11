@@ -236,6 +236,17 @@ class generalController extends Controller
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('diario.pdf');
     }
+    public function pdfDiariourl2(Diario $diario){
+        $empresa = Empresa::empresa()->first();
+        $ruta = public_path().'/DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y');
+        if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+        }
+        $nombreArchivo = $diario->diario_codigo. ".pdf";
+        $view =  \View::make('admin.formatosPDF.diariodecimo', ['empresa'=> $empresa,'diario'=> $diario]);
+        PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
+        return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('diario.pdf');
+    }
     public function pdfDiarioEgresourl(Diario $diario){
         $empresa = Empresa::empresa()->first();
         $diario=Diario::findOrFail($diario->diario_id);

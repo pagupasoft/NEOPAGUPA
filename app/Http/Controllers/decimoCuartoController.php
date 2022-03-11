@@ -228,7 +228,7 @@ class decimoCuartoController extends Controller
                         $diario->diario_fecha = $request->get('idFechaemision');
                         $diario->diario_referencia = 'COMPROBANTE DE PAGO DE DECIMO CUARTO';
                         $diario->diario_tipo_documento = 'DECIMO CUARTO';
-                        $diario->diario_numero_documento = 0;
+                        $diario->diario_numero_documento = $ncheque;
                         $diario->diario_beneficiario = $nombre[$i];
                         $diario->diario_tipo = 'CPDC';
                         $diario->diario_secuencial = substr($diario->diario_codigo, 8);

@@ -28,6 +28,9 @@ class Depreciacion_Activo_Fijo extends Model
     public function scopeDepreciacionActivo($query, $id){
         return $query->join('activo_fijo','activo_fijo.activo_id','=','depreciacion_activo_fijo.activo_id')->join('grupo_activo','grupo_activo.grupo_id','=','activo_fijo.grupo_id')->join('sucursal','sucursal.sucursal_id','=','grupo_activo.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('depreciacion_id','=',$id);
     } 
+    public function scopeDepreciacionActivoxFechas($query, $fecha,$diario){
+        return $query->join('activo_fijo','activo_fijo.activo_id','=','depreciacion_activo_fijo.activo_id')->join('grupo_activo','grupo_activo.grupo_id','=','activo_fijo.grupo_id')->join('sucursal','sucursal.sucursal_id','=','grupo_activo.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('depreciacion_fecha','=',$fecha)->where('depreciacion_activo_fijo.diario_id','=',$diario);
+    }
     public function scopeDepreciacionActivoxDiario($query, $id){
         return $query->where('diario_id','=',$id);
     }      

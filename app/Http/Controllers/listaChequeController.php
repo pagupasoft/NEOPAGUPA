@@ -120,12 +120,17 @@ class listaChequeController extends Controller
                     $cheque->cheque_fecha_pago = gmdate("Y-m-d", $unix_date3);
                     $cheque->cheque_valor =  $array[0][$i][5];
                     $cheque->cheque_valor_letras =  $formatter->toInvoice($array[0][$i][5], 2, 'Dolares');
-                    $bancoLista = Banco_Lista::BancoListaByNom($array[0][$i][7])->first();                    
-                    $banco = Banco::BancoXbancolista($bancoLista->banco_lista_id)->first();                    
+                    
+                    $bancoLista = Banco_Lista::BancoListaByNom($array[0][$i][7])->first();
+                    if(isset($bancoLista->banco_lista_id)){
+                        $banco = Banco::BancoXbancolista($bancoLista->banco_lista_id)->first();         
+                    }else{
+                        return('# cheque -'.$array[0][$i][0]);
+                    }          
                     $cuentaBancarias = Cuenta_Bancaria::CuentaBancariasBanco($banco->banco_id)->get();                    
                     foreach($cuentaBancarias as $cuentaBancaria){                        
                         if($cuentaBancaria->cuenta_bancaria_numero == $array[0][$i][6]){
-                            return($cuentaBancaria->cuenta_bancaria_numero);
+                            //return($cuentaBancaria->cuenta_bancaria_id);
                             $cheque->cuenta_bancaria_id =  $cuentaBancaria->cuenta_bancaria_id;
                         } 
                     }                                      

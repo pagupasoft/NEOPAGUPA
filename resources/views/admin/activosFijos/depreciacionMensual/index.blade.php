@@ -44,15 +44,14 @@
                     @endif
                 </div>             
             </div>            
-            
-            <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
+            <div class="card-body table-responsive p-0" style="height: 540px;">
+            <table class="table table-head-fixed text-nowrap">       
                 <thead>
-                    <tr class="text-center neo-fondo-tabla">  
+                    <tr>  
                         <th>Fecha</th>
                         <th>Diario</th>
                         <th>Producto</th>
-                        <th>Tipo de Activo</th>
-                        <th>Descripcion</th>
+                        <th>Tipo de Activo</th>                        
                         <th>Valor</th>
                         <th>% Depreciacion</th>
                         <th>Base depreciar</th>
@@ -62,6 +61,7 @@
                         <th>Depreciacion Anual</th>
                         <th>Depreciacion Acumulada</th>
                         <th>Valores en Libro</th>
+                        <th>Descripcion</th>
                     </tr>
                 </thead>            
                 <tbody>
@@ -71,8 +71,7 @@
                         <td>{{ $activosFijosMatriz[$i]['Fecha'] }}</td>                        
                         <td><a href="{{ url("asientoDiario/ver/{$activosFijosMatriz[$i]['Diario']}")}}" target="_blank">{{ $activosFijosMatriz[$i]['Diario']}}</a></td>                                     
                         <td>{{ $activosFijosMatriz[$i]['Producto']}}<input type="hidden" name="activoId[]" id="activoId[]" value="{{ $activosFijosMatriz[$i]['activo_id']}}"></td>
-                        <td>{{ $activosFijosMatriz[$i]['TipoActivo']}}</td>
-                        <td>{{ $activosFijosMatriz[$i]['Descripcion']}}</td>
+                        <td>{{ $activosFijosMatriz[$i]['TipoActivo']}}</td>                       
                         <td>{{ $activosFijosMatriz[$i]['Valor']}}</td>
                         <td>{{ $activosFijosMatriz[$i]['PorcentajeDepreciacion']}}</td>
                         <td>{{ $activosFijosMatriz[$i]['baseDepreciar']}}</td>
@@ -82,11 +81,13 @@
                         <td>{{ $activosFijosMatriz[$i]['DeprecicacionAnual']}}</td>
                         <td>{{ $activosFijosMatriz[$i]['DeprecicacionAcumulada']}}</td>
                         <td>{{ $activosFijosMatriz[$i]['ValoresLibro']}}</td>
+                        <td class="text-left">{{ $activosFijosMatriz[$i]['Descripcion']}}</td>
                     </tr>
                     @endfor
                 @endif
                 </tbody>
             </table>
+            </div>
         </form>    
     </div>
 </div>

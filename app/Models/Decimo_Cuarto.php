@@ -28,6 +28,32 @@ class Decimo_Cuarto extends Model
     public function scopedecimos($query){
         return $query->join('diario','diario.diario_id','=','decimo_cuarto.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('decimo_estado','=','1')->orderBy('decimo_fecha','asc');
     }
+    public function scopeEmpleados($query){
+        return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')->join('diario','diario.diario_id','=','decimo_cuarto.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('decimo_estado','=','1')->orderBy('empleado_nombre','asc');
+    }
+    public function scopeSucursal($query){
+        return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')
+        ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+        ->join('sucursal', 'sucursal.sucursal_id','=','tipo_empleado.sucursal_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('decimo_estado','=','1')->orderBy('sucursal_nombre','asc');
+    }
+    public function scopebuscar($query, $fechaI, $empleado, $sucursal){
+         $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')
+        ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+        ->join('sucursal', 'sucursal.sucursal_id','=','tipo_empleado.sucursal_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('decimo_estado','=','1')->where('decimo_fecha','=',$fechaI)->orderBy('empleado_nombre','asc');
+        if($empleado != '0'){
+            $query->where('empleado.empleado_id','=',$empleado);
+        }  
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id','=',$sucursal);
+        }   
+       
+    }
     public function scopedecimo($query, $id){
         return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('decimo_id','=',$id);
     }

@@ -211,6 +211,7 @@ use App\Http\Controllers\inicializarCuentasCobrarController;
 use App\Http\Controllers\inicializarCuentasPagarController;
 use App\Http\Controllers\listaAsientosDiariosController;
 use App\Http\Controllers\listaControlDiaController;
+use App\Http\Controllers\listadecimoCuartoController;
 use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
 use App\Http\Controllers\listaRolCMController;
@@ -394,6 +395,8 @@ Route::resource('roloperativoCM', rolOperactivoCostaMarketController::class)->mi
 Route::resource('reporteRol', listaRolReporteController::class)->middleware('auth');
 Route::resource('rolreporteDetallado', RolReporteDetalladoController::class)->middleware('auth');
 Route::resource('modificacionRoles', modificarRolController::class)->middleware('auth');
+Route::resource('listadecimocuarto', listadecimoCuartoController::class)->middleware('auth');
+
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
 Route::resource('tipoExamen', tipoExamenController::class)->middleware('auth');

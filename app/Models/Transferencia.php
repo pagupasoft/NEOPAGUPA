@@ -33,10 +33,10 @@ class Transferencia extends Model
         return $query->join('cuenta_bancaria','cuenta_bancaria.cuenta_bancaria_id','=','transferencia.cuenta_bancaria_id')->join('cuenta','cuenta.cuenta_id','=','cuenta_bancaria.cuenta_id')->where('cuenta.empresa_id','=',Auth::user()->empresa_id)->where('transferencia_id','=',$id);
     }
     public function scopeTransferenciaByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('transferencia.cuenta_bancaria_id','=',$id)->orderby('transferencia.transferencia_id','asc');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('transferencia.cuenta_bancaria_id','=',$id)->orderby('transferencia.transferencia_fecha','asc');
     }
     public function scopeTransferenciaOtrosByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('transferencia.cuenta_bancaria_id','=',$id)->orderby('transferencia.transferencia_id','asc');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('transferencia.cuenta_bancaria_id','=',$id)->orderby('transferencia.transferencia_fecha','asc');
     }
   
     public function detalleDiario()

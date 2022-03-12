@@ -689,7 +689,13 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $cheque->cheque_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = $cheque->cheque_valor;
                 $otrasconciliacionesBancariaMatriz[$count2]['credito'] = 0;
-                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = '';
+                $diarios = [];
+                $countDiario = 0 ;
+                foreach($cheque->detalleDiario as $detalle){
+                    $diarios[$countDiario] = $detalle->diario->diario_codigo;
+                    $countDiario ++;
+                }
+                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $cheque->cheque_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $cheque->cheque_descripcion;
                 $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
@@ -705,7 +711,13 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $deposito->deposito_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
                 $otrasconciliacionesBancariaMatriz[$count2]['credito'] = $deposito->deposito_valor;
-                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = '';
+                $diarios = [];
+                $countDiario = 0 ;
+                foreach($deposito->detalleDiario as $detalle){
+                    $diarios[$countDiario] = $detalle->diario->diario_codigo;
+                    $countDiario ++;
+                }
+                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $deposito->deposito_descripcion;
                 $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
@@ -721,11 +733,13 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = $transferencia->transferencia_valor;
                 $otrasconciliacionesBancariaMatriz[$count2]['credito'] = 0;
-                if(isset($transferencia->egresoBanco->diario->diario_codigo)){
-                    $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $transferencia->egresoBanco->diario->diario_codigo;
-                }else{
-                    $otrasconciliacionesBancariaMatriz[$count2]['diario'] ='';
+                $diarios = [];
+                $countDiario = 0 ;
+                foreach($transferencia->detalleDiario as $detalle){
+                    $diarios[$countDiario] = $detalle->diario->diario_codigo;
+                    $countDiario ++;
                 }
+                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $transferencia->transferencia_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $transferencia->transferencia_descripcion;
                 $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion;
@@ -741,7 +755,13 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $transIngresosOtro->deposito_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
                 $otrasconciliacionesBancariaMatriz[$count2]['credito'] = $transIngresosOtro->deposito_valor;
-                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = '';
+                $diarios = [];
+                $countDiario = 0 ;
+                foreach($transIngresosOtro->detalleDiario as $detalle){
+                    $diarios[$countDiario] = $detalle->diario->diario_codigo;
+                    $countDiario ++;
+                }
+                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $transIngresosOtro->deposito_descripcion;
                 $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transIngresosOtro->deposito_fecha_conciliacion;

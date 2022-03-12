@@ -225,7 +225,12 @@
                 </div>
             </div>
             <hr>
-            <?php $saldo = 0; ?>
+            <?php 
+                $saldo = 0; 
+                if(isset($saldoAnteriorContable)){
+                    $saldo = $saldoAnteriorContable;
+                }
+            ?>
             <div class="card-body table-responsive p-0" style="height: 400px;">
                 <table class="table table-head-fixed text-nowrap">
                     <thead>
@@ -239,10 +244,15 @@
                             <th>Fecha Conc.</th>
                             <th>Saldo</th>
                             <th>Diario</th>                            
-                            <th>Referencia</th>                                               
+                            <th class="text-left">Referencia</th>                                               
                         </tr>
                     </thead>
                     <tbody>                   
+                        <tr>
+                            <td colspan="7" class="text-center">SALDO ANTERIOR</td>
+                            <td class="text-center">{{ number_format($saldoAnteriorContable,2) }}</td>
+                            <td colspan="2"></td>
+                        </tr>
                         @if(isset($conciliacionBancariaMatriz))
                             @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
                             <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
@@ -264,11 +274,15 @@
                                 <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
                                 <td>{{ $saldo}}</td>                           
                                 <td>
-                                    @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
-                                        <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario'][$cd]}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario'][$cd]}}</a> - 
-                                    @endfor
+                                    @if(is_array($conciliacionBancariaMatriz[$i]['diario']))
+                                        @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
+                                            <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario'][$cd]}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario'][$cd]}}</a> - 
+                                        @endfor
+                                    @else
+                                        <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario']}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario']}}</a>
+                                    @endif
                                 </td>                                
-                                <td>{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
+                                <td class="text-left">{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
                             </tr>
                             @endfor
                         @endif
@@ -290,7 +304,7 @@
                         <th>Fecha Conc.</th>
                         <th>Saldo</th>
                         <th>Diario</th>                        
-                        <th>Referencia</th>                                               
+                        <th class="text-left">Referencia</th>                                               
                     </tr>
                 </thead>
                 <tbody>
@@ -312,8 +326,16 @@
                             </td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>    
                             <td>{{ $saldo}}</td>                              
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</td>                            
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['referencia']}}</td>                            
+                            <td>
+                                @if(is_array($otrasconciliacionesBancariaMatriz[$c]['diario']))
+                                    @for($cd = 0; $cd < count($otrasconciliacionesBancariaMatriz[$c]['diario']); $cd++)
+                                        <a href="{{ url("asientoDiario/ver/{$otrasconciliacionesBancariaMatriz[$c]['diario'][$cd]}")}}" target="_blank">{{ $otrasconciliacionesBancariaMatriz[$c]['diario'][$cd]}}</a> - 
+                                    @endfor
+                                @else
+                                    <a href="{{ url("asientoDiario/ver/{$otrasconciliacionesBancariaMatriz[$c]['diario']}")}}" target="_blank">{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</a>
+                                @endif
+                            </td>                    
+                            <td class="text-left">{{ $otrasconciliacionesBancariaMatriz[$c]['referencia']}}</td>                            
                         </tr>
                         @endfor
                     @endif                    

@@ -39,13 +39,13 @@ class Cheque extends Model
         return $query->join('cuenta_bancaria','cuenta_bancaria.cuenta_bancaria_id','=','cheque.cuenta_bancaria_id')->join('banco','banco.banco_id','=','cuenta_bancaria.banco_id')->join('banco_lista','banco_lista.banco_lista_id','=','banco.banco_lista_id');
     }
     public function scopeChequeByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->orderby('cheque.cheque_numero','asc');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','1')->orderby('cheque.cheque_numero','asc');
     }
     public function scopeChequeOtrosByCuenta($query, $id){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->orderby('cheque.cheque_numero','asc');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','1')->orderby('cheque.cheque_numero','asc');
     }
     public function scopeChequeSumaByCuenta($query, $id, $fechaHasta){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_fecha_emision','<=',$fechaHasta)->orderby('cheque.cheque_fecha_emision');
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','1')->where('cheque.cheque_fecha_emision','<=',$fechaHasta)->orderby('cheque.cheque_fecha_emision');
     }
     public function detalleDiario()
     {

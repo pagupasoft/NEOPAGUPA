@@ -36,10 +36,10 @@ class Nota_Credito_banco extends Model
         return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_id','=',$id);
     }
     public function scopeNCbancoByCuenta($query, $id){
-        return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_credito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_credito_banco.nota_secuencial','asc');
+        return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_credito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_credito_banco.nota_fecha','asc');
     }
     public function scopeNCbancoOtrosByCuenta($query, $id){
-        return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_credito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_credito_banco.nota_secuencial','asc');
+        return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('nota_credito_banco.cuenta_bancaria_id','=',$id)->orderby('nota_credito_banco.nota_fecha','asc');
     }
     public function scopeSecuencial($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','nota_credito_banco.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('rango_documento.rango_id','=',$id);

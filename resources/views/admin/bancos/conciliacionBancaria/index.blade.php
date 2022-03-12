@@ -248,10 +248,12 @@
                         </tr>
                     </thead>
                     <tbody>                   
-                        <tr>
-                            <td colspan="7" class="text-center">SALDO ANTERIOR</td>
-                            <td class="text-center">{{ number_format($saldoAnteriorContable,2) }}</td>
-                            <td colspan="2"></td>
+                        <tr> 
+                            @if(isset($saldoAnteriorContable))
+                                <td colspan="7" class="text-center">SALDO ANTERIOR</td>                           
+                                <td class="text-center">{{ number_format($saldoAnteriorContable,2) }}</td>                            
+                                <td colspan="2"></td>
+                            @endif
                         </tr>
                         @if(isset($conciliacionBancariaMatriz))
                             @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        

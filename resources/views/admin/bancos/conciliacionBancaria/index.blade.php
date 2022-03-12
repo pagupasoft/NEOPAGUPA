@@ -238,8 +238,7 @@
                             <th>Conc.</th>
                             <th>Fecha Conc.</th>
                             <th>Saldo</th>
-                            <th>Diario</th>
-                            <th>Beneficiario</th>
+                            <th>Diario</th>                            
                             <th>Referencia</th>                                               
                         </tr>
                     </thead>
@@ -264,8 +263,11 @@
                                 </td> 
                                 <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
                                 <td>{{ $saldo}}</td>                           
-                                <td>{{ $conciliacionBancariaMatriz[$i]['diario']}}</td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['Beneficiario']}}</td>
+                                <td>
+                                    @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
+                                        <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario'][$cd]}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario'][$cd]}}</a> - 
+                                    @endfor
+                                </td>                                
                                 <td>{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
                             </tr>
                             @endfor
@@ -287,8 +289,7 @@
                         <th>Cons.</th>
                         <th>Fecha Conc.</th>
                         <th>Saldo</th>
-                        <th>Diario</th>
-                        <th>Beneficiario</th>
+                        <th>Diario</th>                        
                         <th>Referencia</th>                                               
                     </tr>
                 </thead>
@@ -311,8 +312,7 @@
                             </td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>    
                             <td>{{ $saldo}}</td>                              
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</td>
-                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['Beneficiario']}}</td>
+                            <td>{{ $otrasconciliacionesBancariaMatriz[$c]['diario']}}</td>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['referencia']}}</td>                            
                         </tr>
                         @endfor

@@ -51,10 +51,6 @@ class Cheque extends Model
     {
         return $this->hasMany(Detalle_Diario::class, 'cheque_id', 'cheque_id');
     }
-    public function Diariodetalle()
-    {
-        return $this->belongsTo(Detalle_Diario::class, 'cheque_id', 'cheque_id');
-    }
     public function cuentaBancaria()
     {
         return $this->belongsTo(Cuenta_Bancaria::class, 'cuenta_bancaria_id', 'cuenta_bancaria_id');

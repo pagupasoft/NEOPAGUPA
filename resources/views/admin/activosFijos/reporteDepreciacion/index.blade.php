@@ -37,8 +37,8 @@
                     <button type="submit" id="buscarReporte" name="buscarReporte" class="btn btn-primary"><i class="fa fa-search"></i></button>
                 </div>       
             </div>            
-            
-            <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
+            <div class="card-body table-responsive p-0" style="height: 540px;">
+            <table id="example4" class="table table-head-fixed text-nowrap">
                 <thead>
                     <tr>  
                         <th>Fecha</th>
@@ -82,6 +82,7 @@
                 @endif
                 </tbody>
             </table>
+            </div>
         </form>    
     </div>
 </div>

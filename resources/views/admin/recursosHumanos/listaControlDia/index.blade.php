@@ -45,7 +45,11 @@
                     @if(isset($controles))
                    @foreach($controles as $control)
                    <tr>
-                            <td class="text-center">@if($control->control_estado=='1') <a href="{{url("listacontroldia/{$control->control_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif</td>                         
+                            <td class="text-center">
+                            <a href="{{url("listacontroldia/{$control->control_id}/ver")}}"  class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>
+                                @if($control->control_estado=='1') <a href="{{url("listacontroldia/{$control->control_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif
+                            </td>      
+                                               
                             <td class="text-center">{{ $control->control_mes}}</td>
                             <td class="text-center">{{ $control->control_ano}}</td>
                             <td class="text-center">{{ $control->empleado_nombre}}</td>

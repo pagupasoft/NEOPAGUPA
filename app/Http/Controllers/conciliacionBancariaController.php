@@ -13,10 +13,12 @@ use App\Models\Nota_Credito_banco;
 use App\Models\Nota_Debito_banco;
 use App\Models\Punto_Emision;
 use App\Models\Transferencia;
+use App\NEOPAGUPA\ViewExcel;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use TypeError;
 
 class conciliacionBancariaController extends Controller
@@ -34,12 +36,62 @@ class conciliacionBancariaController extends Controller
     }
     public function consultar(Request $request)
     {
-        if (isset($_POST['buscar'])){
-            return $this->consulta($request);
+        if (isset($_POST['buscar']) or isset($_POST['excel'])){
+            return $this->procesar($request);
         }
         if (isset($_POST['guardar'])){
             return $this->guardar($request);
         }
+    }
+    private function procesar(Request $request){
+        //try{ 
+            $datos =  $this->consulta($request);
+            if (isset($_POST['buscar'])){
+                $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+                $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+                $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();  
+                return view('admin.bancos.conciliacionBancaria.index',
+                ['bancoC'=>$cuentaBancaria->banco,
+                'saldoAnteriorContable'=>$datos[0],
+                'saldoContableActual'=>$datos[1],
+                'saldoEstadoCuenta'=>$datos[2],
+                'chequeGiradoNoCobrado'=>$datos[3],
+                'depositosConciliados'=>$datos[4],
+                'depositosNoConciliados'=>$datos[5],
+                'depositosConciliadosOtros'=>$datos[6],
+                'ndConciliado'=>$datos[7],
+                'ndNoConciliado'=>$datos[8],
+                'ncConciliado'=>$datos[9],
+                'ncNoConciliado'=>$datos[10],
+                'ncConciliadoOtros'=>$datos[11],
+                'ndConciliadoOtros'=>$datos[12],
+                'chequesConciliados'=>$datos[13],
+                'chequesNoConciliados'=>$datos[14],
+                'chequesConciliadosOtros'=>$datos[15],
+                'transferenciasEgresosConciliadas'=>$datos[16],
+                'transferenciasEgresosNoConciliadas'=>$datos[17],
+                'transferenciasEgresosConciliadasOtros'=>$datos[18],
+                'transferenciaIngresosConciliados'=>$datos[19],
+                'transferenciaIngresosNoConciliados'=>$datos[20],
+                'transferenciaIngresosConciliadosOtros' =>$datos[21],
+                'cuentaBancaria'=>$cuentaBancaria,
+                'conciliacionBancariaMatriz'=>$datos[22],
+                'otrasconciliacionesBancariaMatriz'=>$datos[23],
+                'fechaI'=>$request->get('idDesde'),
+                'fechaF'=>$request->get('idHasta'),           
+                'bancos'=>Banco::Bancos()->get(),
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso, 
+                'permisosAdmin'=>$permisosAdmin]);  
+            }
+            if (isset($_POST['excel'])){
+                $datos[24] = $request->get('idDesde');
+                $datos[25] = $request->get('idHasta');
+                return Excel::download(new ViewExcel('admin.formatosExcel.conciliacionBancaria',$datos), 'NEOPAGUPA  Sistema Contable.xls');
+            }
+       /* }catch(\Exception $ex){
+            return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }*/
     }
     private function guardar(Request $request){
         try{            
@@ -318,18 +370,9 @@ class conciliacionBancariaController extends Controller
             return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo');
         }
     }*/
-    public function OrdenarMatrizColumna(array $MatrizRegistros, $Columna = false, $Orden = false) {
-        if (is_array($MatrizRegistros) == true and $Columna == true and $Orden == true) {
-            $Orden = ($Orden == "ASC") ? SORT_ASC : SORT_DESC;
-            foreach ($MatrizRegistros as $Arreglo) {
-                $Lista[] = $Arreglo[$Columna];
-            }
-            array_multisort($Lista, $Orden, $MatrizRegistros);
-            return $MatrizRegistros;
-        }
-    }
     private function consulta(Request $request){
         try{ 
+            $datos = [];
             $fecha_actual = strtotime(date($request->get('idHasta')));
             /*RESUMEN DE TOTALES*/
             $chequeGiradoNoCobrado= 0;
@@ -446,8 +489,6 @@ class conciliacionBancariaController extends Controller
             //SALDO DEL ESTADO DE CUENTA BANCO
             $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado)+ floatval($transferenciasEgresosNoConciliadas)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
             /*------------FIN---------------------------------------------------*/
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             
             $conciliacionBancariaMatriz = [];
             $otrasconciliacionesBancariaMatriz = [];
@@ -639,9 +680,6 @@ class conciliacionBancariaController extends Controller
                 }   
                 $count = $count + 1;
             }
-            /*if(count($conciliacionBancariaMatriz) > 0){
-                $conciliacionBancariaMatriz = $this->OrdenarMatrizColumna($conciliacionBancariaMatriz, 'fecha', 'ASC');
-            }*/
             //POR CONCILIAR EN OTROS MESES
             $depositosOtros = Deposito::DepositosOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
                 $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false)->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA');
@@ -799,43 +837,63 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;
                 $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $ncBanco->nota_conciliacion;                           
                 $count2 = $count2 + 1;
-            }
-            /*if(count($otrasconciliacionesBancariaMatriz) > 0){
-                $otrasconciliacionesBancariaMatriz = $this->OrdenarMatrizColumna($otrasconciliacionesBancariaMatriz, 'fecha', 'ASC');
-            } */           
-            return view('admin.bancos.conciliacionBancaria.index',
-            ['bancoC'=>$cuentaBancaria->banco,
-            'saldoAnteriorContable'=>$saldoAnteriorContable,
-            'saldoContableActual'=>$saldoContableActual,
-            'saldoEstadoCuenta'=>$saldoEstadoCuenta,
-            'chequeGiradoNoCobrado'=>$chequeGiradoNoCobrado,
-            'depositosConciliados'=>$depositosConciliados,
-            'depositosNoConciliados'=>$depositosNoConciliados,
-            'depositosConciliadosOtros'=>$depositosConciliadosOtros,
-            'ndConciliado'=>$ndConciliado,
-            'ndNoConciliado'=>$ndNoConciliado,
-            'ncConciliado'=>$ncConciliado,
-            'ncNoConciliado'=>$ncNoConciliado,
-            'ncConciliadoOtros'=>$ncConciliadoOtros,
-            'ndConciliadoOtros'=>$ndConciliadoOtros,
-            'chequesConciliados'=>$chequesConciliados,
-            'chequesNoConciliados'=>$chequesNoConciliados,
-            'chequesConciliadosOtros'=>$chequesConciliadosOtros,
-            'transferenciasEgresosConciliadas'=>$transferenciasEgresosConciliadas,
-            'transferenciasEgresosNoConciliadas'=>$transferenciasEgresosNoConciliadas,
-            'transferenciasEgresosConciliadasOtros'=>$transferenciasEgresosConciliadasOtros,
-            'transferenciaIngresosConciliados'=>$transferenciaIngresosConciliados,
-            'transferenciaIngresosNoConciliados'=>$transferenciaIngresosNoConciliados,
-            'transferenciaIngresosConciliadosOtros' =>$transferenciaIngresosConciliadosOtros,
-            'cuentaBancaria'=>$cuentaBancaria,
-            'conciliacionBancariaMatriz'=>$conciliacionBancariaMatriz,
-            'otrasconciliacionesBancariaMatriz'=>$otrasconciliacionesBancariaMatriz,
-            'fechaI'=>$request->get('idDesde'),
-            'fechaF'=>$request->get('idHasta'),           
-            'bancos'=>Banco::Bancos()->get(),
-            'PE'=>Punto_Emision::puntos()->get(),
-            'gruposPermiso'=>$gruposPermiso, 
-            'permisosAdmin'=>$permisosAdmin]);            
+            }     
+            $datos[0] = $saldoAnteriorContable;
+            $datos[1] = $saldoContableActual;
+            $datos[2] = $saldoEstadoCuenta;
+            $datos[3] = $chequeGiradoNoCobrado;
+            $datos[4] = $depositosConciliados;
+            $datos[5] = $depositosNoConciliados;
+            $datos[6] = $depositosConciliadosOtros;
+            $datos[7] = $ndConciliado;
+            $datos[8] = $ndNoConciliado;
+            $datos[9] = $ncConciliado;
+            $datos[10] = $ncNoConciliado;
+            $datos[11] = $ncConciliadoOtros;
+            $datos[12] = $ndConciliadoOtros;
+            $datos[13] = $chequesConciliados;
+            $datos[14] = $chequesNoConciliados;
+            $datos[15] = $chequesConciliadosOtros;
+            $datos[16] = $transferenciasEgresosConciliadas;
+            $datos[17] = $transferenciasEgresosNoConciliadas;
+            $datos[18] = $transferenciasEgresosConciliadasOtros;
+            $datos[19] = $transferenciaIngresosConciliados;
+            $datos[20] = $transferenciaIngresosNoConciliados;
+            $datos[21] = $transferenciaIngresosConciliadosOtros;
+            $datos[22] = $conciliacionBancariaMatriz;
+            $datos[23] = $otrasconciliacionesBancariaMatriz;           
+             /*   'saldoAnteriorContable'=>$saldoAnteriorContable,
+                'saldoContableActual'=>$saldoContableActual,
+                'saldoEstadoCuenta'=>$saldoEstadoCuenta,
+                'chequeGiradoNoCobrado'=>$chequeGiradoNoCobrado,
+                'depositosConciliados'=>$depositosConciliados,
+                'depositosNoConciliados'=>$depositosNoConciliados,
+                'depositosConciliadosOtros'=>$depositosConciliadosOtros,
+                'ndConciliado'=>$ndConciliado,
+                'ndNoConciliado'=>$ndNoConciliado,
+                'ncConciliado'=>$ncConciliado,
+                'ncNoConciliado'=>$ncNoConciliado,
+                'ncConciliadoOtros'=>$ncConciliadoOtros,
+                'ndConciliadoOtros'=>$ndConciliadoOtros,
+                'chequesConciliados'=>$chequesConciliados,
+                'chequesNoConciliados'=>$chequesNoConciliados,
+                'chequesConciliadosOtros'=>$chequesConciliadosOtros,
+                'transferenciasEgresosConciliadas'=>$transferenciasEgresosConciliadas,
+                'transferenciasEgresosNoConciliadas'=>$transferenciasEgresosNoConciliadas,
+                'transferenciasEgresosConciliadasOtros'=>$transferenciasEgresosConciliadasOtros,
+                'transferenciaIngresosConciliados'=>$transferenciaIngresosConciliados,
+                'transferenciaIngresosNoConciliados'=>$transferenciaIngresosNoConciliados,
+                'transferenciaIngresosConciliadosOtros' =>$transferenciaIngresosConciliadosOtros,
+  
+                'conciliacionBancariaMatriz'=>$conciliacionBancariaMatriz,
+                'otrasconciliacionesBancariaMatriz'=>$otrasconciliacionesBancariaMatriz,
+                'fechaI'=>$request->get('idDesde'),
+                'fechaF'=>$request->get('idHasta'),           
+                'bancos'=>Banco::Bancos()->get(),
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso, 
+                'permisosAdmin'=>$permisosAdmin]   */ 
+            return $datos;
         }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }

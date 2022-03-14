@@ -93,7 +93,9 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
-        try {
+        //return $request;
+
+        //try {
             DB::beginTransaction();
             $auditoria = new generalController();
             $atencion=Orden_Atencion::findOrFail($request->get('orden_id'));
@@ -136,26 +138,32 @@ class atencionCitasController extends Controller
             $c_valor = $request->get('valor');
 
             
+            if(isset($c_nombre)){
+                for ($i = 1; $i < count($c_nombre); ++$i) {
+                    $detalle = new Detalle_Expediente();
+                    $detalle->detallee_nombre=$c_nombre[$i];
+                    $detalle->detallee_tipo=$c_tipo[$i];
+                    $detalle->detallee_medida=$c_medida[$i];
+                    $detalle->detallee_url=' ';
+                    $detalle->detallee_multiple=' ';
+                    $detalle->detallee_valor=$c_valor[$i];
+                    $detalle->detallee_estado='1';
+                    $detalle->expediente_id=$request->get('expediente_id');
+                    $detalle->save();
+                    $auditoria->registrarAuditoria('Ingreso de Detalle de expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con Nombre '.$c_nombre[$i].' Con Valor'.$c_valor[$i] );
+                }
+            }
 
-            for ($i = 1; $i < count($c_nombre); ++$i) {
-                $detalle = new Detalle_Expediente();
-                $detalle->detallee_nombre=$c_nombre[$i];
-                $detalle->detallee_tipo=$c_tipo[$i];
-                $detalle->detallee_medida=$c_medida[$i];
-                $detalle->detallee_url=' ';
-                $detalle->detallee_multiple=' ';
-                $detalle->detallee_valor=$c_valor[$i];
-                $detalle->detallee_estado='1';
-                $detalle->expediente_id=$request->get('expediente_id');
-                $detalle->save();
-                $auditoria->registrarAuditoria('Ingreso de Detalle de expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con Nombre '.$c_nombre[$i].' Con Valor'.$c_valor[$i] );
+            if(isset($c_nsig_valorombre)){
+                for ($i = 1; $i < count($sig_valor); ++$i) {
+                    $signos=Signos_Vitales::findOrFail($sig_id[$i]);
+                    $signos->signo_valor=$sig_valor[$i];
+                    $signos->save();
+                    
+                }
             }
-            for ($i = 1; $i < count($sig_valor); ++$i) {
-                $signos=Signos_Vitales::findOrFail($sig_id[$i]);
-                $signos->signo_valor=$sig_valor[$i];
-                $signos->save();
-                
-            }
+
+            
             if ($DenfermedadId) {
                 if (count($DenfermedadId)>0) {
                     $diagnosticos = new Diagnostico();
@@ -177,53 +185,55 @@ class atencionCitasController extends Controller
                     }
                 }
             }
-            if (count($PmedicinaId)>1) {
-                $prescripcion = new Prescripcion();
-                if ($request->get('recomendacion_prescripcion')) {
-                    $prescripcion->prescripcion_recomendacion = $request->get('recomendacion_prescripcion');
-                } 
-                if ($request->get('observacion_prescripcion')) {
-                    $prescripcion->prescripcion_observacion = $request->get('observacion_prescripcion');
-                } 
-                $prescripcion->prescripcion_estado = 1;
-                $prescripcion->expediente_id = $request->get('expediente_id');
-                $prescripcion->save();
-                $auditoria->registrarAuditoria('Ingreso de Medicina con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
-                for ($i = 1; $i < count($PmedicinaId); ++$i) {
-                    $prescripcionM = new Prescripcion_Medicamento();
+            if(isset($PmedicinaId)){
+                if (count($PmedicinaId)>1) {
+                    $prescripcion = new Prescripcion();
+                    if ($request->get('recomendacion_prescripcion')) {
+                        $prescripcion->prescripcion_recomendacion = $request->get('recomendacion_prescripcion');
+                    } 
+                    if ($request->get('observacion_prescripcion')) {
+                        $prescripcion->prescripcion_observacion = $request->get('observacion_prescripcion');
+                    } 
+                    $prescripcion->prescripcion_estado = 1;
+                    $prescripcion->expediente_id = $request->get('expediente_id');
+                    $prescripcion->save();
+                    $auditoria->registrarAuditoria('Ingreso de Medicina con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
+                    for ($i = 1; $i < count($PmedicinaId); ++$i) {
+                        $prescripcionM = new Prescripcion_Medicamento();
 
-                    /******************registro de movimiento de producto******************/
-                    $movimientoProducto = new Movimiento_Producto();
-                    $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
-                    $movimientoProducto->movimiento_cantidad=$Pcantidad[$i];
-                    $movimientoProducto->movimiento_precio=0;
-                    $movimientoProducto->movimiento_iva=0;
-                    $movimientoProducto->movimiento_total=0;
-                    $movimientoProducto->movimiento_stock_actual=0;
-                    $movimientoProducto->movimiento_costo_promedio=0;
-                    $movimientoProducto->movimiento_documento='FARMACIA';
-                    $movimientoProducto->movimiento_motivo='PENDIENTE DE DESAPACHAR';
-                    $movimientoProducto->movimiento_tipo='SALIDA';
-                    $movimientoProducto->movimiento_descripcion='PENDIENTE DE DESAPACHAR EN FARMACIA POR LA ORDEN DE ATENCION No. '.$atencion->orden_numero;
-                    $movimientoProducto->movimiento_estado='0';
-                    $movimientoProducto->producto_id=$Pproducto[$i];
-                    $movimientoProducto->bodega_id=$bodega->bodega_id;
-                    $movimientoProducto->empresa_id=Auth::user()->empresa_id;
-                    $movimientoProducto->save();
-                    $auditoria->registrarAuditoria('Registro de movimiento de producto por pendiente de despachar en farmacion con la orden de atencion numero -> '.$atencion->orden_numero,$atencion->orden_numero,'Registro de movimiento de producto de farmacia por la orden de atencion -> '.$atencion->orden_numero.' producto id -> '.$Pproducto[$i].' con la cantidad de -> '.$Pcantidad[$i].' con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
-                    /*********************************************************************/
+                        /******************registro de movimiento de producto******************/
+                        $movimientoProducto = new Movimiento_Producto();
+                        $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
+                        $movimientoProducto->movimiento_cantidad=$Pcantidad[$i];
+                        $movimientoProducto->movimiento_precio=0;
+                        $movimientoProducto->movimiento_iva=0;
+                        $movimientoProducto->movimiento_total=0;
+                        $movimientoProducto->movimiento_stock_actual=0;
+                        $movimientoProducto->movimiento_costo_promedio=0;
+                        $movimientoProducto->movimiento_documento='FARMACIA';
+                        $movimientoProducto->movimiento_motivo='PENDIENTE DE DESAPACHAR';
+                        $movimientoProducto->movimiento_tipo='SALIDA';
+                        $movimientoProducto->movimiento_descripcion='PENDIENTE DE DESAPACHAR EN FARMACIA POR LA ORDEN DE ATENCION No. '.$atencion->orden_numero;
+                        $movimientoProducto->movimiento_estado='0';
+                        $movimientoProducto->producto_id=$Pproducto[$i];
+                        $movimientoProducto->bodega_id=$bodega->bodega_id;
+                        $movimientoProducto->empresa_id=Auth::user()->empresa_id;
+                        $movimientoProducto->save();
+                        $auditoria->registrarAuditoria('Registro de movimiento de producto por pendiente de despachar en farmacion con la orden de atencion numero -> '.$atencion->orden_numero,$atencion->orden_numero,'Registro de movimiento de producto de farmacia por la orden de atencion -> '.$atencion->orden_numero.' producto id -> '.$Pproducto[$i].' con la cantidad de -> '.$Pcantidad[$i].' con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
+                        /*********************************************************************/
+                        
+
+                        $prescripcionM->prescripcionm_cantidad = $Pcantidad[$i];
+                        $prescripcionM->prescripcionm_indicacion = $Pindicaciones[$i];
+                        $prescripcionM->prescripcionm_estado = 1;
+                        $prescripcionM->medicamento_id = $PmedicinaId[$i];
+                        $prescripcionM->movimiento()->associate($movimientoProducto);
+                        $prescripcionM->prescripcion()->associate($prescripcion);
+                        $prescripcionM->save();
+
                     
-
-                    $prescripcionM->prescripcionm_cantidad = $Pcantidad[$i];
-                    $prescripcionM->prescripcionm_indicacion = $Pindicaciones[$i];
-                    $prescripcionM->prescripcionm_estado = 1;
-                    $prescripcionM->medicamento_id = $PmedicinaId[$i];
-                    $prescripcionM->movimiento()->associate($movimientoProducto);
-                    $prescripcionM->prescripcion()->associate($prescripcion);
-                    $prescripcionM->save();
-
-                  
-                    $auditoria->registrarAuditoria('Ingreso de Detalle Medicina con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con Medicina Id '.$PmedicinaId[$i].' Con Cantidad '.$Pcantidad[$i]);
+                        $auditoria->registrarAuditoria('Ingreso de Detalle Medicina con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con Medicina Id '.$PmedicinaId[$i].' Con Cantidad '.$Pcantidad[$i]);
+                    }
                 }
             }
 
@@ -307,10 +317,10 @@ class atencionCitasController extends Controller
             if(isset($AnexoPdfDir)) $redirect->with('diario', $AnexoPdfDir);
 
             return $redirect;
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');
-        }
+        //} catch (\Exception $ex) {
+        //    DB::rollBack();
+        //    return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');
+        //}
     }
 
     private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){

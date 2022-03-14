@@ -455,7 +455,7 @@ Route::resource('listaAsientoDiario', listaAsientosDiariosController::class)->mi
 
 Route::resource('individualrol', cabeceraRolAdministrativoController::class)->middleware('auth');
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
-Route::resource('dicimoCuarto', decimoCuartoController::class)->middleware('auth');
+Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middleware('auth');
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');
@@ -517,6 +517,7 @@ Route::get('/medico/{id}/eliminar', [medicoController::class, 'delete'])->middle
 Route::get('/tipoMuestra/{id}/eliminar', [tipoMuestraController::class, 'delete'])->middleware('auth');
 Route::get('/tipoRecipiente/{id}/eliminar', [tipoRecipienteController::class, 'delete'])->middleware('auth');
 
+Route::get('/listacontroldia/{id}/eliminar', [listaControlDiaController::class, 'delete'])->middleware('auth');
 Route::get('/tipoMovimiento/{id}/eliminar', [tipoMovimientoegresoController::class, 'delete'])->middleware('auth');
 Route::get('/parametrizacionRol/{id}/eliminar', [parametrizarRolController::class, 'delete'])->middleware('auth');
 Route::get('/impuestoRentaRol/{id}/eliminar', [impuestoRentaRolController::class, 'delete'])->middleware('auth');
@@ -565,6 +566,8 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 
 /*RUTAS ADICIONALES*/
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
+Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
+
 Route::get('/vacacion/new/{id}', [vacacionController::class, 'nuevo'])->middleware('auth');
 Route::get('/quincenaConsolidada/new/{id}', [quincenaConsolidadaController::class, 'nuevo'])->middleware('auth');
 Route::get('/pquincena/new/{id}', [quincenaController::class, 'nuevo'])->middleware('auth');
@@ -980,7 +983,7 @@ Route::get('/anticipoCliente/new/{id}', [anticipoClienteController::class, 'nuev
 Route::get('/anticipoProveedor/new/{id}', [anticipoProveedorController::class, 'nuevo'])->middleware('auth');
 Route::get('/anticipoEmpleado/new/{id}', [anticipoEmpleadoController::class, 'nuevo'])->middleware('auth');
 Route::get('/decimoC/new/{id}', [decimoCuartoConsolidadaController::class, 'nuevo'])->middleware('auth');
-Route::get('/dicimoCuarto/new/{id}', [decimoCuartoController::class, 'nuevo'])->middleware('auth');
+Route::get('/individualdecimoCuarto/new/{id}', [decimoCuartoController::class, 'nuevo'])->middleware('auth');
 
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 
@@ -1112,6 +1115,7 @@ Route::get('/decimoCuarto/{fecha}', [decimoCuartoController::class, 'ver'])->mid
 
 Route::get('/decimoTercero/{id}/imprimir', [decimoTerceroController::class, 'imprimir'])->middleware('auth');
 Route::get('/decimoCuarto/{id}/imprimir', [decimoCuartoController::class, 'imprimir'])->middleware('auth');
+Route::get('/decimoCuarto/{id}/eliminar', [decimoCuartoController::class, 'eliminar'])->middleware('auth');
 Route::get('/diarioTercero/{id}/imprimir', [decimoTerceroController::class, 'imprimirdiario'])->middleware('auth');
 Route::get('/diarioCuarto/{id}/imprimir', [decimoCuartoController::class, 'imprimirdiario'])->middleware('auth');
 

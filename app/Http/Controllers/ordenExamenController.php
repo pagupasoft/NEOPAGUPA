@@ -108,14 +108,13 @@ class ordenExamenController extends Controller
                     $total=$total+$tcopago;
                 }
 
-                //return "";
                 
                 $secuencial=1;
                 if($rangoDocumento){
                     $secuencial=$rangoDocumento->rango_inicio;
                     $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
                     if($secuencialAux){$secuencial=$secuencialAux+1;}
-
+                
                     
                     $data=[
                         'especialidad'=>$especialidad,
@@ -130,10 +129,10 @@ class ordenExamenController extends Controller
                         'clienteO'=>Cliente::Cliente($orden->expediente->ordenatencion->cliente_id)->first(),
                         'vendedores'=>Vendedor::Vendedores()->get(),
                         'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),
-                        'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9), 
+                        'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),                                ////////descomentar
                         'bodegas'=>Bodega::bodegasSucursal($puntoEmision->punto_id)->get(),
                         'formasPago'=>Forma_Pago::formaPagos()->get(),
-                        'rangoDocumento'=>$rangoDocumento,'PE'=>Punto_Emision::puntos()->get(),
+                        'rangoDocumento'=>$rangoDocumento,'PE'=>Punto_Emision::puntos()->get(),                                ////////descomentar
                         'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin
                     ];
                     //echo $orden->expediente->ordenatencion->cliente_id.'<br>';

@@ -53,6 +53,7 @@
                         </div>
                         <div class="col-md-1 centrar-texto">
                             <button type="submit" id="buscar" name="buscar" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Buscar"><i class="fa fa-search"></i></button>
+                            <button type="submit" id="excel" name="excel" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar a Excel"><i class="fas fa-file-excel"></i></button>
                         </div>
                     </div>
                     <div class=" row">

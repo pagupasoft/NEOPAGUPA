@@ -39,6 +39,8 @@ use App\Models\Valor_Laboratorio;
 use App\Models\Valor_Referencial;
 use DateTime;
 use PDF;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class examenController extends Controller
 {
@@ -258,7 +260,9 @@ class examenController extends Controller
         return Producto::BuscarProductoslaboratorio($request->get('buscar'))->get();
     }
     public function facturarOrdenGuardar(Request $request){
-        try{
+        //return ('hghghgggh');
+
+        //try{
             DB::beginTransaction();
             $orden = Orden_Examen::findOrFail($request->get('orden_id'));
         
@@ -282,6 +286,8 @@ class examenController extends Controller
             if($cierre){
                 return redirect('ordenesExamen')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             } 
+
+
             $puntoEmision = Punto_Emision::PuntoSucursalUser($request->get('idSucursal'),Auth::user()->user_id)->first();
             $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Factura')->first();
             $secuencial=1;
@@ -293,6 +299,10 @@ class examenController extends Controller
             }
             $general = new generalController();
             $docElectronico = new facturacionElectronicaController();
+
+            
+
+            /*
             $factura = new Factura_Venta();
             $factura->factura_numero = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie.substr(str_repeat(0, 9).$secuencial, - 9);
             $factura->factura_serie = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie;
@@ -472,7 +482,7 @@ class examenController extends Controller
                 $movimientoProducto->empresa_id=Auth::user()->empresa_id;
                 $movimientoProducto->save();
                 $general->registrarAuditoria('Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> 1 con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
-                /*********************************************************************/
+                
                 $detalleFV->movimiento()->associate($movimientoProducto);
                 $factura->detalles()->save($detalleFV);
                 $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> 1 a un precio unitario de -> '.floatval($total[$i]));
@@ -534,13 +544,17 @@ class examenController extends Controller
                 }
                 $factura->update();
             }
+            */
            
-            //return $request;
+            
         
             $puntoEmision = Punto_Emision::PuntoSucursalUser(Rango_Documento::rango($request->get('rango_id'))->first()->puntoEmision->sucursal_id,Auth::user()->user_id)->first();
             $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Analisis de Laboratorio')->first();
             $secuencial=1;
             $analisis=new Analisis_Laboratorio();
+
+           
+
             if($rangoDocumento){
                 $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
                 if($secuencialAux){
@@ -556,7 +570,7 @@ class examenController extends Controller
                 $analisis->analisis_estado='2';
                 $analisis->sucursal_id=Rango_Documento::rango($request->get('rango_id'))->first()->puntoEmision->sucursal_id;
                 $analisis->orden_id=$orden->orden_id;
-                $analisis->factura_id=$factura->factura_id;
+                //$analisis->factura_id=$factura->factura_id;
                 $analisis->orden_particular_id=null;
                 $analisis->save();
                 for ($i = 1; $i < count($cantidad); ++$i) 
@@ -576,29 +590,36 @@ class examenController extends Controller
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir facturas de venta, configueros y vuelva a intentar');
             }
+            
+
             $orden = Orden_Examen::findOrFail($request->get('orden_id'));
             $ordenes = Orden_Examen::Ordenanalisis($request->get('orden_id'))->get();
             
             $orden->orden_estado = '3';
-
+            
             ///////////enviar orden al Laboratorio externo/////////////////////////////////////////////////////////////
             $resultadoEnvio = $this->postCrearOrden($orden);
-            //DB::rollBack();
-
-            //echo $resultadoEnvio->resultado['data']['id'].'<br>';
-            //return json_encode($resultadoEnvio);
 
             
+
+
+            //return json_encode($resultadoEnvio);
+
             if($resultadoEnvio->codigo==201){ //////exito
                 $orden->orden_estado = '4';
                 $orden->orden_id_referencia=$resultadoEnvio->resultado['data']['id'];
                 $orden->orden_numero_referencia=$resultadoEnvio->resultado['data']['numero_orden'];
+
+                $this->sendMailNotifications($orden->orden_numero_referencia);
             }
             //////////  error al enviar orden
             else{
                 DB::rollBack();
-                return $resultadoEnvio;
+                return json_encode($resultadoEnvio);
             }
+
+            //return json_encode($resultadoEnvio);
+            //return 
             
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
@@ -620,19 +641,24 @@ class examenController extends Controller
 
             //return redirect('ordenesExamen')->with('success','Analisis Preatendido exitosamente')->with('pdf','ordenesExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $orden->expediente->ordenatencion->orden_fecha)->format('d-m-Y').'/'.$nombreArchivo.'.pdf');
             DB::commit();
+
+            /*
             if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
                 return redirect('ordenesExamen')->with('success','Factura y analisis registrada y autorizada exitosamente')->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('factura_fecha'))->format('d-m-Y').'/'.$factura->factura_xml_nombre.'.pdf')->with('pdf2','ordenesExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $analisis->analisis_fecha)->format('d-m-Y').'/'.$nombreArchivo.'.pdf');
             }else{
                 return redirect('ordenesExamen')->with('success','Factura y analisis registrada exitosamente')->with('error2','ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)->with('pdf2','ordenesExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d',$analisis->analisis_fecha)->format('d-m-Y').'/'.$nombreArchivo.'.pdf');
             }
-            
-        }catch(\Exception $ex){
-            DB::rollBack();  
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
-       
+            */
 
-    
+            return redirect('ordenesExamen')
+            ->with('success','Factura y analisis registrada exitosamente')
+            //->with('error2','ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)
+            ->with('pdf2','ordenesExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d',$analisis->analisis_fecha)->format('d-m-Y').'/'.$nombreArchivo.'.pdf');
+            
+        //}catch(\Exception $ex){
+        //    DB::rollBack();  
+        //    return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
     }
     public function buscarByanalisis($id){
         return Examen::BuscarProductoslaboratorio($id)->get();
@@ -655,13 +681,11 @@ class examenController extends Controller
         $expediente = Expediente::expediente($orden_examen->expediente_id)->first();
         $medico = Medico::medico($expediente->medico_id)->first();
         $medico_data = Empleado::empleadoById($medico->empleado_id)->first();
-
         $paciente_data = Paciente::paciente($expediente->paciente_id)->first();
 
-        //return $paciente_data;
+
         $sucursal_id=1;
         $categoria_id=6;
-
         $medico_nombre = explode(" ", $medico_data->empleado_nombre);
 
         $json_fields = array(
@@ -678,8 +702,8 @@ class examenController extends Controller
             //"valor_abono"=> 0,
             //"forma_pago_abono"=> "string",
             "paciente"=> array(
-                "tipo_identificacion"=> $paciente_data->tipo_identificacion_id==2? 'CED': 'PASS',
-                "numero_identificacion"=> $paciente_data->paciente_cedula,
+                "tipo_identificacion"=> 'CED',
+                "numero_identificacion"=> substr($paciente_data->paciente_cedula, 0, 10),
                 "nombres"=> $paciente_data->paciente_nombres,
                 "apellidos"=> $paciente_data->paciente_apellidos,
                 "fecha_nacimiento"=> $paciente_data->paciente_fecha_nacimiento,
@@ -704,10 +728,7 @@ class examenController extends Controller
             ]*/
         );
 
-        //return json_encode($json_fields);
-
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -730,9 +751,11 @@ class examenController extends Controller
 
         $mensaje = $this->agregarCodigo($httpcode);
 
-        //echo $result;
-        //return '';
-        return (Object)array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result, true));
+        
+        $object = (Object)array('codigo'=>$httpcode, 'mensaje'=>$mensaje,'resultado'=>json_decode($result, true));
+
+        
+        return $object;
     }
 
     private function agregarCodigo($httpcode){
@@ -780,6 +803,50 @@ class examenController extends Controller
         return $mensaje;
     }
 
+    private function sendMailNotifications($orden_numero_referencia){
+        $empresa=Empresa::Empresa()->first();
+        require base_path("vendor/autoload.php");
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP(); // tell to use smtp
+            $mail->CharSet = 'utf-8'; // set charset to utf8
+            $mail->Host = trim('mail.pagupasoft.com');
+            $mail->SMTPAuth = true;
+            $mail->SMTPSecure = 'tls';//$mail->SMTPSecure = false;
+            $mail->SMTPAutoTLS = false;
+            $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
+            $mail->Username = trim('neopagupa@pagupasoft.com');
+            $mail->Password = trim('PagupaServer07@');
+            $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
+            $mail->Subject = 'NEOPAGUPA-Sistema Contable';
+            $mail->isHTML(true);
+            $mail->MsgHTML("Este es un correo automatico de Examenes de Laboratorio:<br><br>
+
+                            La Orden con referencia externa <strong> $orden_numero_referencia </strong> se ha actualizado.<br><br><br>
+                            
+
+                            ____________________________________
+                            Atentamente,<br>
+                            Administrador
+                        ");
+
+            $mail->addAddress("neopagupa@pagupasoft.com", "Administrador");
+            $mail->addAddress("rick658658@gmail.com", "Ricardo Bohórquez");
+            $mail->SMTPOptions= array(
+                'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+                )
+            );
+            $mail->send();
+        } catch (Exception $ex) {
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Error al restablecer contraseña de usuario ','0',$ex);
+            return($ex);
+        }
+    }
+
     public function getNotifications(Request $request){
         //guardar el mensaje en la base de datos
         $test = new Detalles_Analisis_Test();
@@ -795,16 +862,17 @@ class examenController extends Controller
         //echo count($request->examenes).'<br>';
         //echo json_encode($request->examenes[0]['id']).'...<br><br>';
         
-        //return $request;
+        return $request;
 
         if($token=='ASk34344R65_Q089A98DHYAS9suygty=89aaUQPELYN'){
             if($request->estado=='R' || $request->estado=='V'){
 
-                echo 'buscando '.$request->numero_orden_externa.'<br>';
+                //echo 'buscando '.$request->numero_orden_externa.'<br>';
 
                 try{
                     DB::beginTransaction();
                     $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
+                    
                         
                     foreach($request->examenes as $detalle_array){
                         $detalleRequest = (Object) $detalle_array;
@@ -846,6 +914,9 @@ class examenController extends Controller
                             $valores->save();
                         }
                     }
+                    $analisis->analisis_estado=3;
+                    $analisis->save();
+                    
                     DB::commit();
                     return json_encode(array('result'=>'OK', 'mensaje'=>'informacion recibida correctamente'));
                 }

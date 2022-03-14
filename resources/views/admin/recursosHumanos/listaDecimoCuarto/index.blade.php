@@ -55,7 +55,8 @@
                         <tr>  
                             <td class="text-center">
                             <a href="{{ url("diarioCuarto/{$datos[$i]["id"]}/imprimir") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Diaro"><i class="fa fa-print"></i></a>                   
-                            <a href="{{ url("decimoCuarto/{$datos[$i]["id"]}/imprimir") }}" target="_blank" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Imprimir Comprabante"><i class="fa fa-print"></i></a>                                             
+                            <a href="{{ url("decimoCuarto/{$datos[$i]["id"]}/imprimir") }}" target="_blank" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Imprimir Comprabante"><i class="fa fa-print"></i></a>         
+                            <a href="{{ url("decimoCuarto/{$datos[$i]["id"]}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                                                            
                             @if($datos[$i]["tipo"]=='Cheque')
                             <a href="{{ url("/cheque/imprimir/{$datos[$i]["ncheque"]}") }}" target="_blank" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt"></i></a>                   
                             @endif   

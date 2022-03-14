@@ -223,7 +223,7 @@ class quincenaController extends Controller
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe =  0.00 ;
             $detalleDiario->detalle_haber =$request->get('idValor');
-            $detalleDiario->detalle_comentario = 'P/R';
+            $detalleDiario->detalle_comentario = 'P/R EL PAGO DE QUINCENA DEL EMPLEADO';
             $detalleDiario->detalle_tipo_documento = 'QUINCENA';
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';

@@ -618,7 +618,198 @@
         });
     }
 
-    
+    function cargarHorarioSemanal(){
+        document.getElementById("calendar").classList.remove('invisible');
+        document.getElementById("idFechaHora").value= '';
+        document.getElementById("fechaCitaID").value= '';
+        document.getElementById("horaCitaID").value= '';
+
+        $.ajax({
+            async: false,
+            url: '{{ url("horas/searchN") }}'+ '/' +document.getElementById("idMespecialidad").value,
+            dataType: "json",
+            type: "GET",
+            data: {
+                buscar: document.getElementById("idMespecialidad").value
+            },
+            success: function(data){  
+                console.log("horarios")
+                console.log(data)
+                
+                var hoy = new Date()
+                console.log("fecha")
+                console.log(hoy)
+
+
+                var date = new Date()
+                var dias = 7*semana_actual; // sumando la semana actual
+                date.setDate(hoy.getDate() + dias);
+
+
+                var d    = date.getDate(),
+                    m    = date.getMonth(),
+                    y    = date.getFullYear(),
+                    dia  = date.getDay();
+
+                let horarios = []
+                var valor = 0;
+                for (var i = 0; i < data.length; i++) {
+                    valor = 0;
+                    if(data[i].horario_dia == 'Lunes'){
+                        valor = 1 - dia;
+                    }
+                    if(data[i].horario_dia == 'Martes'){
+                        valor = 2 - dia;
+                    }
+                    if(data[i].horario_dia == 'Miércoles'){
+                        valor = 3 - dia;
+                    }
+                    if(data[i].horario_dia == 'Jueves'){
+                        valor = 4 - dia;
+                    }
+                    if(data[i].horario_dia == 'Viernes'){
+                        valor = 5 - dia;
+                    }
+                    if(data[i].horario_dia == 'Sábado'){
+                        valor = 6 - dia;
+                    }
+                    if(data[i].horario_dia == 'Domingo'){
+                        valor = -1 + dia;
+                    }
+
+                    
+                    
+                    var turnos = 60/data[i].especialidad_duracion;
+                    horaI = data[i].horario_hora_inicio.split(':');
+                    horaF = data[i].horario_hora_fin.split(':');
+
+                    var hora1 = new Date();
+                    hora1.setHours(horaI[0]);
+                    hora1.setMinutes(horaI[1]);
+
+                    var hora2 = new Date();
+                    hora2.setHours(horaF[0]);
+                    hora2.setMinutes(horaF[1]);
+
+                    //La diferencia se da en milisegundos así que debes dividir entre 1000
+                    var horasTurno = (((hora2-hora1)/1000)/60)/60;
+                    
+                    fechaAux = new Date();
+                    fechaAux.setHours(horaI[0]);
+                    fechaAux.setMinutes(horaI[1]);
+
+                    fechaPost = new Date();
+                    fechaPost.setHours(horaI[0]);
+                    fechaPost.setMinutes(horaI[1]);
+
+
+                    //obtener rango incio fin con fecha
+                    f1 = new Date();
+                    f1.setHours(horaI[0]);
+                    f1.setMinutes(horaI[1]);
+                    fecha_rango1 = new Date(y, m, d + valor, f1.getHours(), f1.getMinutes());
+
+                    var f2 = new Date();
+                    f2.setHours(horaF[0]);
+                    f2.setMinutes(horaF[1]);
+                    fecha_rango2 = new Date(y, m, d + valor, f2.getHours(),f2.getMinutes()-1)
+
+
+                    console.log('rango')
+                    console.log("fecha1 "+fecha_rango1+"    fecha2 "+fecha_rango2)
+
+                    //console.log("medico "+data[i].medico_id)
+                    ordenes =getOrdenesAtencion(data[i].medico_id,
+                                                  data[i].especialidad_id,  
+                                                  moment(fecha_rango1).format('YYYY-MM-DD HH:mm:ss'),
+                                                  moment(fecha_rango2).format('YYYY-MM-DD HH:mm:ss'))
+
+                    //console.log(data[i].medico_id+" "+data[i].especialidad_id+"      "+JSON.stringify(ordenes))
+
+                    console.log("turnos")
+                    console.log(turnos+"x"+horasTurno +"    duracion "+data[i].especialidad_duracion)
+
+                    for(var tur = 0; tur < turnos*horasTurno; tur++){
+                        fechaPost.setMinutes(fechaPost.getMinutes() + parseInt(data[i].especialidad_duracion));
+                        fechaCita = new Date(y, m, d + valor, fechaAux.getHours(), fechaAux.getMinutes());
+
+                        console.log("fecha cita "+fechaCita)
+
+
+                        fecha_inicio = new Date(y, m, d + valor, fechaAux.getHours(),fechaAux.getMinutes())
+                        fecha_fin = new Date(y, m, d + valor, fechaPost.getHours(),fechaPost.getMinutes()-1)
+
+                        titulo = 'DISPONIBLE'
+                        color = '#00a65a'
+                        funcion =  "javascript:seleccionarHora('"+fechaCita+"');"
+
+                        //console.log("compracion "+hoy.getTime()+"   "+fecha_inicio.getTime())
+                        if(hoy.getTime()<=fecha_inicio.getTime())
+                            for(var ord=0; ord<ordenes.length; ord++){
+                                if (ordenes[ord].orden_hora.substring(0, 5)==moment(fecha_inicio).format('HH:mm')){
+                                    titulo = 'OCUPADO'
+                                    color = '#E11B1B'
+                                    funcion =  "javascript:errorSeleccionar1()"
+                                    
+                                    break;
+                                }
+                            }
+                        else{
+                            titulo = ''
+                            color = '#58704e'
+                            funcion =  "javascript:errorSeleccionar2()"
+                            
+                            if(ordenes.length>0){
+                                
+                                for(var ord=0; ord<ordenes.length; ord++){
+                                    if (ordenes[ord].orden_hora.substring(0, 5)==moment(fecha_inicio).format('HH:mm')){
+                                        titulo = 'OCUPADO'
+                                        color = '#564144'
+                                    }
+                                }
+                            }
+                        }
+                        
+                        horarios.push({
+                            title          : titulo,//data[i].horario_hora_inicio,
+                            start          : fecha_inicio,
+                            end            : fecha_fin,
+                            allDay         : false,
+                            url            : funcion,
+                            backgroundColor: color, //Success (green)
+                            borderColor    : color //Success (green)
+                        });
+
+                        console.log('fecha auxiliar '+fechaAux+"   +dura "+data[i].especialidad_duracion +"   minutes "+fechaAux.getMinutes())
+                        fechaAux.setMinutes(fechaAux.getMinutes() + parseInt(data[i].especialidad_duracion));
+
+                        console.log('fecha auxiliar sumado '+fechaAux)
+                        console.log('')
+                    }
+                }
+
+               
+                
+                Calendar = FullCalendar.Calendar;
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new Calendar(calendarEl, {
+                    initialDate: moment(date).format('YYYY-MM-DD'), // will be parsed as local
+                    headerToolbar: {
+                        right  : 'prev,next today',
+                        center: 'title',
+                        left: '',
+                    },
+                    themeSystem: 'bootstrap',
+                    events: horarios,
+                    editable  : false,
+                });
+                calendar.render();
+            },
+            error: function(data) {
+               
+            },
+        });
+    }
 
     function errorSeleccionar1(){
         alert('Esta Cita ya ha sido reservada');
@@ -726,8 +917,8 @@
         horaFormat = '';
      
         const formatDate = (fechaHora)=>{
-        let formatted_date = fechaHora.getDate() + "-" + (fechaHora.getMonth() + 1) + "-" + fechaHora.getFullYear()
-        return formatted_date;
+            let formatted_date = fechaHora.getFullYear() + "-" + (fechaHora.getMonth() + 1) + "-" + fechaHora.getDate()
+            return formatted_date;
         }
         var fecha_cita=formatDate(fechaHora);
         var Hora = fechaHora.toLocaleTimeString([], {timeStyle: 'short'});
@@ -913,177 +1104,6 @@ $(document).ready(function(){
     })
 })
 
-<script>
-    function cargarHorarioSemanal(){
-        document.getElementById("calendar").classList.remove('invisible');
-        document.getElementById("idFechaHora").value= '';
-        document.getElementById("fechaCitaID").value= '';
-        document.getElementById("horaCitaID").value= '';
 
-        $.ajax({
-            async: false,
-            url: '{{ url("horas/searchN") }}'+ '/' +document.getElementById("idMespecialidad").value,
-            dataType: "json",
-            type: "GET",
-            data: {
-                buscar: document.getElementById("idMespecialidad").value
-            },
-            success: function(data){  
-                console.log(data)
-
-                var hoy = new Date()
-
-                var date = new Date()
-                var dias = 7*semana_actual; // sumando la semana actual
-                date.setDate(hoy.getDate() + dias);
-
-
-                var d    = date.getDate(),
-                    m    = date.getMonth(),
-                    y    = date.getFullYear(),
-                    dia  = date.getDay();
-                let horarios = []
-                var valor = 0;
-                for (var i = 0; i < data.length; i++) {
-                    valor = 0;
-                    if(data[i].horario_dia == 'Lunes'){
-                        valor = 1 - dia;
-                    }
-                    if(data[i].horario_dia == 'Martes'){
-                        valor = 2 - dia;
-                    }
-                    if(data[i].horario_dia == 'Miércoles'){
-                        valor = 3 - dia;
-                    }
-                    if(data[i].horario_dia == 'Jueves'){
-                        valor = 4 - dia;
-                    }
-                    if(data[i].horario_dia == 'Viernes'){
-                        valor = 5 - dia;
-                    }
-                    if(data[i].horario_dia == 'Sábado'){
-                        valor = 6 - dia;
-                    }
-                    if(data[i].horario_dia == 'Domingo'){
-                        valor = -1 + dia;
-                    }
-
-                    
-                    
-                    var turnos = 60/data[i].especialidad_duracion;
-                    horaI = data[i].horario_hora_inicio.split(':');
-                    horaF = data[i].horario_hora_fin.split(':');
-
-                    var hora1 = new Date();
-                    hora1.setHours(horaI[0]);
-                    hora1.setMinutes(horaI[1]);
-                    var hora2 = new Date();
-                    hora2.setHours(horaF[0]);
-                    hora2.setMinutes(horaF[1]);
-
-                    //La diferencia se da en milisegundos así que debes dividir entre 1000
-                    var horasTurno = (((hora2-hora1)/1000)/60)/60;
-                    
-                    fechaAux = new Date();
-                    fechaAux.setHours(horaI[0]);
-                    fechaAux.setMinutes(horaI[1]);
-                    fechaPost = new Date();
-                    fechaPost.setHours(horaI[0]);
-                    fechaPost.setMinutes(horaI[1]);
-
-
-                    //obtener rango incio fin con fecha
-                    f1 = new Date();
-                    f1.setHours(horaI[0]);
-                    f1.setMinutes(horaI[1]);
-                    fecha_rango1 = new Date(y, m, d + valor, f1.getHours(), f1.getMinutes());
-
-                    var f2 = new Date();
-                    f2.setHours(horaF[0]);
-                    f2.setMinutes(horaF[1]);
-                    fecha_rango2 = new Date(y, m, d + valor, f2.getHours(),f2.getMinutes()-1)
-
-                    //console.log("fecha1 "+fecha_rango1+"    fecha 2 "+fecha_rango2)
-
-                    //console.log("medico "+data[i].medico_id)
-                    ordenes  =getOrdenesAtencion(data[i].medico_id,
-                                                  data[i].especialidad_id,  
-                                                  moment(fecha_rango1).format('YYYY-MM-DD HH:mm:ss'),
-                                                  moment(fecha_rango2).format('YYYY-MM-DD HH:mm:ss'))
-
-                    //console.log(data[i].medico_id+" "+data[i].especialidad_id+"      "+JSON.stringify(ordenes))
-
-                    for(var tur = 0; tur < turnos*horasTurno; tur++){
-                        fechaPost.setMinutes(fechaPost.getMinutes() + data[i].especialidad_duracion);
-                        fechaCita = new Date(y, m, d + valor, fechaAux.getHours(),fechaAux.getMinutes());
-
-
-                        fecha_inicio = new Date(y, m, d + valor, fechaAux.getHours(),fechaAux.getMinutes())
-                        fecha_fin = new Date(y, m, d + valor, fechaPost.getHours(),fechaPost.getMinutes()-1)
-                        titulo = 'DISPONIBLE'
-                        color = '#00a65a'
-                        funcion =  "javascript:seleccionarHora('"+fechaCita+"');"
-
-                        //console.log("compracion "+hoy.getTime()+"   "+fecha_inicio.getTime())
-                        if(hoy.getTime()<=fecha_inicio.getTime())
-                            for(var ord=0; ord<ordenes.length; ord++){
-                                if (ordenes[ord].orden_hora.substring(0, 5)==moment(fecha_inicio).format('HH:mm')){
-                                    titulo = 'OCUPADO'
-                                    color = '#E11B1B'
-                                    funcion =  "javascript:errorSeleccionar1()"
-                                    
-                                    break;
-                                }
-                            }
-                        else{
-                            titulo = ''
-                            color = '#58704e'
-                            funcion =  "javascript:errorSeleccionar2()"
-                            
-                            if(ordenes.length>0){
-                                
-                                for(var ord=0; ord<ordenes.length; ord++){
-                                    if (ordenes[ord].orden_hora.substring(0, 5)==moment(fecha_inicio).format('HH:mm')){
-                                        titulo = 'OCUPADO'
-                                        color = '#564144'
-                                    }
-                                }
-                            }
-                        }
-                        
-                        horarios.push({
-                            title          : titulo,//data[i].horario_hora_inicio,
-                            start          : fecha_inicio,
-                            end            : fecha_fin,
-                            allDay         : false,
-                            url            : funcion,
-                            backgroundColor: color, //Success (green)
-                            borderColor    : color //Success (green)
-                        });
-                        fechaAux.setMinutes(fechaAux.getMinutes() + data[i].especialidad_duracion);
-                    }
-                }
-                
-                Calendar = FullCalendar.Calendar;
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new Calendar(calendarEl, {
-                    initialDate: moment(date).format('YYYY-MM-DD'), // will be parsed as local
-                    headerToolbar: {
-                        right  : 'prev,next today',
-                        center: 'title',
-                        left: '',
-                    },
-                    themeSystem: 'bootstrap',
-                    events: horarios,
-                    editable  : false,
-                });
-                calendar.render();
-            },
-            error: function(data) {
-               
-            },
-        });
-    }
-</script>
 
 @endsection

@@ -862,12 +862,12 @@ class examenController extends Controller
         //echo count($request->examenes).'<br>';
         //echo json_encode($request->examenes[0]['id']).'...<br><br>';
         
-        //return $request;
+        return $request;
 
         if($token=='ASk34344R65_Q089A98DHYAS9suygty=89aaUQPELYN'){
             if($request->estado=='R' || $request->estado=='V'){
 
-                echo 'buscando '.$request->numero_orden_externa.'<br>';
+                //echo 'buscando '.$request->numero_orden_externa.'<br>';
 
                 try{
                     DB::beginTransaction();

@@ -117,6 +117,43 @@ class listaControlDiaController extends Controller
             return redirect('listacontroldia')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    public function ver($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $control=Control_Dia::findOrFail($id); 
+            $datos=null;
+            $count=1;
+            $anio=$control->control_ano;
+            $mes=$control->control_mes;
+            foreach($control->detalles as $detalle){
+               
+                for ($i = 1; $i <= 31; ++$i) {
+                    $vari='control_dia'.$i;
+                    $titulo='titulo'.$i;
+                    $valor='valor'.$i;
+                    if ($control->$vari!='0') {
+                        $datos[$count][$titulo]='Dia '.$i;
+                        $datos[$count][$valor]=$detalle->$vari;
+                       
+                    }
+                    else{
+                        $datos[$count][$titulo]=' ';
+                        $datos[$count][$valor]=' ';
+                    }
+                    
+                }
+                $count++;
+            }
+            
+        
+            return view('admin.recursosHumanos.controlDias.view',['anio'=>$anio,'mes'=>$mes,'detalle'=>$datos,'control'=>$control, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('listacontroldia')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *

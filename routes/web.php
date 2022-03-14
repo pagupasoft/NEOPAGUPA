@@ -517,6 +517,7 @@ Route::get('/medico/{id}/eliminar', [medicoController::class, 'delete'])->middle
 Route::get('/tipoMuestra/{id}/eliminar', [tipoMuestraController::class, 'delete'])->middleware('auth');
 Route::get('/tipoRecipiente/{id}/eliminar', [tipoRecipienteController::class, 'delete'])->middleware('auth');
 
+Route::get('/listacontroldia/{id}/eliminar', [listaControlDiaController::class, 'delete'])->middleware('auth');
 Route::get('/tipoMovimiento/{id}/eliminar', [tipoMovimientoegresoController::class, 'delete'])->middleware('auth');
 Route::get('/parametrizacionRol/{id}/eliminar', [parametrizarRolController::class, 'delete'])->middleware('auth');
 Route::get('/impuestoRentaRol/{id}/eliminar', [impuestoRentaRolController::class, 'delete'])->middleware('auth');
@@ -565,6 +566,8 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 
 /*RUTAS ADICIONALES*/
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
+Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
+
 Route::get('/vacacion/new/{id}', [vacacionController::class, 'nuevo'])->middleware('auth');
 Route::get('/quincenaConsolidada/new/{id}', [quincenaConsolidadaController::class, 'nuevo'])->middleware('auth');
 Route::get('/pquincena/new/{id}', [quincenaController::class, 'nuevo'])->middleware('auth');

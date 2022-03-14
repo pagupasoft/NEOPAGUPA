@@ -30,7 +30,7 @@ class listarquincenaController extends Controller
             $estados=Quincena::Estados()->select('quincena_estado')->distinct()->get();
             $empleado=Quincena::EmpleadoQuincena()->orderBy('empleado_nombre','asc')->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
             $sucursales=Quincena::EmpleadoQuincena()->orderBy('sucursal_nombre','asc')->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
-            return view('admin.recursosHumanos.quincena.view',['fecha_desde'=>null,'fecha_hasta'=>null,'fecha_todo'=>null,'nombre_empleado'=>null,'estadoactual'=>null,'sucursales'=>$sucursales,'estados'=>$estados,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.recursosHumanos.quincena.view',['sucursalid'=>null,'fecha_desde'=>null,'fecha_hasta'=>null,'fecha_todo'=>null,'nombre_empleado'=>null,'estadoactual'=>null,'sucursales'=>$sucursales,'estados'=>$estados,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         
     }
 
@@ -234,7 +234,7 @@ class listarquincenaController extends Controller
                         $detalle->save();
     
                         $transferenciaAux->delete();
-                        $general->registrarAuditoria('Eliminacion de Cheque numero: -> '.$transferenciaAux->transferencia_numero, $id, 'Con quincena  id -> '.$id.'Con valor de -> '.$transferenciaAux->transferencia_valor);  
+                        $general->registrarAuditoria('Eliminacion de Transferencia numero: -> '.$transferenciaAux->transferencia_numero, $id, 'Con quincena  id -> '.$id.'Con valor de -> '.$transferenciaAux->transferencia_valor);  
                     }
                    
     

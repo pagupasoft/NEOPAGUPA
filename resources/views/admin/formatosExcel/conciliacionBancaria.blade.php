@@ -31,7 +31,7 @@
         <tr> 
             @if(isset($datos[0]))
                 <td colspan="7" >SALDO ANTERIOR</td>                           
-                <td >{{ number_format($datos[0],2) }}</td>                            
+                <td >{{ number_format($datos[0],2,'.','') }}</td>                            
                 <td colspan="2"></td>
             @endif
         </tr>
@@ -42,8 +42,8 @@
                 <td>{{ $datos[22][$i]['fecha'] }}</td>                                
                 <td>{{ $datos[22][$i]['tipo'] }}</td>
                 <td>{{ $datos[22][$i]['numero']}}</td>
-                <td>{{ number_format($datos[22][$i]['credito'],2)}}</td>
-                <td>{{ number_format($datos[22][$i]['debito'],2)}}</td>
+                <td>{{ number_format($datos[22][$i]['credito'],2,'.','')}}</td>
+                <td>{{ number_format($datos[22][$i]['debito'],2,'.','')}}</td>
                 <td style="text-align: center;">
                     @if($datos[22][$i]['conciliacion'] == true)
                         X
@@ -94,8 +94,8 @@
                 <td>{{ $datos[23][$c]['fecha'] }}</td>                            
                 <td>{{ $datos[23][$c]['tipo'] }}</td>
                 <td>{{ $datos[23][$c]['numero']}}</td>
-                <td>{{ number_format($datos[23][$c]['credito'],2)}}</td>
-                <td>{{ number_format($datos[23][$c]['debito'],2)}}</td>
+                <td>{{ number_format($datos[23][$c]['credito'],2,'.','')}}</td>
+                <td>{{ number_format($datos[23][$c]['debito'],2,'.','')}}</td>
                 <td style="text-align: center;">
                     @if($datos[23][$c]['conciliacion'] == true)
                         X

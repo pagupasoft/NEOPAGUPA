@@ -872,6 +872,7 @@ class examenController extends Controller
                 try{
                     DB::beginTransaction();
                     $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
+                    
                         
                     foreach($request->examenes as $detalle_array){
                         $detalleRequest = (Object) $detalle_array;
@@ -913,6 +914,9 @@ class examenController extends Controller
                             $valores->save();
                         }
                     }
+                    $analisis->analisis_estado=3;
+                    $analisis->save();
+                    
                     DB::commit();
                     return json_encode(array('result'=>'OK', 'mensaje'=>'informacion recibida correctamente'));
                 }

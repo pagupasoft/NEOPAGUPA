@@ -44,6 +44,6 @@ class HorarioFijo extends Model
                     )->join('medico','medico.medico_id','=','medico_especialidad.medico_id'
                     )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
                     )->where('medico.empresa_id', '=', Auth::user()->empresa_id
-                    )->where('horario_fijo.mespecialidad_id', '=', $mespecialidad_id)->orderBy('horario_dia','asc')->orderBy('horario_hora_inicio','asc');
+                    )->where('horario_fijo.mespecialidad_id', '=', $mespecialidad_id)->orderBy('horario_id','asc');//->orderBy('horario_hora_inicio','asc');
     }    
 }

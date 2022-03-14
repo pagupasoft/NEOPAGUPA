@@ -608,6 +608,8 @@ class anticipoProveedorController extends Controller
                     $valorDescuento = $descuento->descuento_valor;
                     $anticipo = Anticipo_Proveedor::findOrFail($descuento->anticipo_id);
                     $general = new generalController();
+                    $diario = null;
+                    $cxpAux = null;
                     $cierre = $general->cierre($descuento->descuento_fecha);                   
                     if($cierre){
                         return redirect('anticipoProveedor')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
@@ -616,8 +618,6 @@ class anticipoProveedorController extends Controller
                     if($cierre){
                         return redirect('anticipoProveedor')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
                     }  
-                    $diario = null;
-                    $cxpAux = null;
                     if(isset($descuento->diario->diario_id)){
                         $diario = $descuento->diario;
                     }
@@ -647,7 +647,6 @@ class anticipoProveedorController extends Controller
                     }else{
                         $anticipo->anticipo_saldo = $anticipo->anticipo_valor-Anticipo_Proveedor::AnticipoClienteDescuentos($anticipo->anticipo_id)->sum('descuento_valor');
                     }
-                    
                     if($anticipo->anticipo_saldo == 0){
                         $anticipo->anticipo_estado = '2';
                     }else{
@@ -656,9 +655,11 @@ class anticipoProveedorController extends Controller
                     $anticipo->update();
                     if (isset($descuento->transaccionCompra->cuentaPagar)) {
                         $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
+                        $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
                     }
                     if (!isset($descuento->transaccionCompra->cuentaPagar)) {
                         $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                        $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
                     }
                 }
             }

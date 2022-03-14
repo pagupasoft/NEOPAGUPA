@@ -51,8 +51,8 @@
                     <label for="idTipo" class="col-sm-2 col-form-label">Tipo de Anticipo</label>
                     <div class="col-sm-10">
                         <select class="custom-select" id="idTipo" name="idTipo" onchange="bancoActivar();" require>
-                            <option value="Deposito" >Deposito</option>
-                            <option value="Efectivo" >Efectivo</option>
+                            <option value="Deposito" >DEPOSITO</option>
+                            <option value="Efectivo" >EFECTIVO</option>
                         </select>
                     </div>
                 </div>

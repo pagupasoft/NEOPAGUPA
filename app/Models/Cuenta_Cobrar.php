@@ -127,4 +127,7 @@ class Cuenta_Cobrar extends Model
     public function scopeScucursalesxCXC($query,$cliente_id){
         return $query->join('cliente','cliente.cliente_id','=','cuenta_cobrar.cliente_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','cliente.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_estado','=','1')->where('cuenta_cobrar.cliente_id','=',$cliente_id);
     }
+    public function scopeCuentaByFacturaMigrada($query, $facturaMigrada){
+        return $query->join('cliente','cliente.cliente_id','=','cuenta_cobrar.cliente_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','cliente.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_descripcion','like','%'.$facturaMigrada.'%');
+    }
 }

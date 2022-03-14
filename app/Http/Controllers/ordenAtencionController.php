@@ -124,7 +124,7 @@ class ordenAtencionController extends Controller
         //try {
         //    DB::beginTransaction();
            
-         
+            //return $request;
          
             $empresa = Empresa::empresa()->first();
         
@@ -142,9 +142,12 @@ class ordenAtencionController extends Controller
             $general = new generalController();
             /**********************************************************************/
             /********************cabecera de factura de venta ********************/
+
+            /* descomentar
             $docElectronico = new facturacionElectronicaController();
             $factura = new Factura_Venta();
             $puntoEmision = Punto_Emision::PuntoSucursalUser($request->get('idSucursal'), Auth::user()->user_id)->first();
+
             $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Factura')->first();
             $secuencial=1;
             if ($rangoDocumento) {
@@ -153,6 +156,7 @@ class ordenAtencionController extends Controller
                     $secuencial=$secuencialAux+1;
                 }
             }
+
             $factura->factura_numero = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie.substr(str_repeat(0, 9).$secuencial, - 9);
             $factura->factura_serie = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie;
             $factura->factura_secuencial = $secuencial;
@@ -180,6 +184,8 @@ class ordenAtencionController extends Controller
             $factura->cliente_id = $request->get('clienteID');
             $factura->forma_pago_id = $request->get('forma_pago_id');
             /********************cuenta por cobrar***************************/
+
+            /* descomentar
             $cxc = new Cuenta_Cobrar();
             $cxc->cuenta_descripcion = 'VENTA CON FACTURA No. '.$factura->factura_numero;
             if ($request->get('factura_tipo_pago') == 'CREDITO' or $request->get('factura_tipo_pago') == 'CONTADO') {
@@ -201,8 +207,12 @@ class ordenAtencionController extends Controller
             $cxc->save();
             $general->registrarAuditoria('Registro de cuenta por cobrar de factura -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de cuenta por cobrar de factura -> '.$factura->factura_numero.' con cliente -> '.$request->get('buscarCliente').' con un total de -> '.$request->get('IdCopago').' con clave de acceso -> '.$factura->factura_autorizacion);
             /****************************************************************/
+            
+            /*descomentar
             $factura->cuentaCobrar()->associate($cxc);
             /**********************asiento diario****************************/
+            
+            /*descomentar
             $diario = new Diario();
             $diario->diario_codigo = $general->generarCodigoDiario($dateNew, 'CFVE');
             $diario->diario_fecha = $dateNew;
@@ -222,8 +232,9 @@ class ordenAtencionController extends Controller
             $diario->save();
             $general->registrarAuditoria('Registro de diario de venta de factura -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de diario de venta de factura -> '.$factura->factura_numero.' con cliente -> '.$request->get('buscarCliente').' con un total de -> '.$request->get('IdCopago').' y con codigo de diario -> '.$diario->diario_codigo);
             /****************************************************************/
+            /*descomentar
             if ($banderaP) {
-                /**********************asiento diario de costo ****************************/
+                
                 $diarioC = new Diario();
                 $diarioC->diario_codigo = $general->generarCodigoDiario($dateNew, 'CCVP');
                 $diarioC->diario_fecha = $dateNew;
@@ -242,11 +253,16 @@ class ordenAtencionController extends Controller
                 $diarioC->sucursal_id = Rango_Documento::rango($rangoDocumento->rango_id)->first()->puntoEmision->sucursal_id;
                 $diarioC->save();
                 $general->registrarAuditoria('Registro de diario de costo de venta de factura -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de diario de costo de venta de factura -> '.$factura->factura_numero.' con cliente -> '.$request->get('buscarCliente').' con un total de -> '.$request->get('IdCopago').' y con codigo de diario -> '.$diarioC->diario_codigo);
-                /************************************************************************/
+               
                 $factura->diarioCosto()->associate($diarioC);
             }
+
+            */
+
+            /********************Pago por Venta en efectivo***************************/
+            /*descomentar 
             if ($cxc->cuenta_estado == '2') {
-                /********************Pago por Venta en efectivo***************************/
+               
                 $pago = new Pago_CXC();
                 $pago->pago_descripcion = 'PAGO EN EFECTIVO';
                 $pago->pago_fecha = $cxc->cuenta_fecha;
@@ -264,9 +280,11 @@ class ordenAtencionController extends Controller
                 $detallePago->cuenta_id = $cxc->cuenta_id;
                 $detallePago->pagoCXC()->associate($pago);
                 $detallePago->save();
-                /****************************************************************/
+                
             }
             /********************detalle de diario de venta********************/
+
+            /*descomentar
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe = $request->get('IdCopago');
             $detalleDiario->detalle_haber = 0.00 ;
@@ -291,7 +309,9 @@ class ordenAtencionController extends Controller
             
             $diario->detalles()->save($detalleDiario);
             $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo, $factura->factura_numero, 'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el debe por un valor de -> '.$request->get('IdCopago'));
-           
+            */
+
+
             /*
             if ($request->get('idIva') > 0){
                 $detalleDiario = new Detalle_Diario();
@@ -310,15 +330,16 @@ class ordenAtencionController extends Controller
             /****************************************************************/
             /****************************************************************/
             
+            /*/*descomentar 
             $factura->diario()->associate($diario);
             $factura->save();
             $general->registrarAuditoria('Registro de factura de venta numero -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de factura de venta numero -> '.$factura->factura_numero.' con cliente -> '.$request->get('buscarCliente').' con un total de -> '.$request->get('IdCopago').' con clave de acceso -> '.$factura->factura_autorizacion.' y con codigo de diario -> '.$diario->diario_codigo);
-        
+            */
        
 
             /*******************************************************************/
             /********************detalle de factura de venta********************/
-        
+            /*descomentar
             $detalleFV = new Detalle_FV();
             $detalleFV->detalle_cantidad = 1;
             $detalleFV->detalle_precio_unitario = $request->get('IdCopago');
@@ -328,7 +349,10 @@ class ordenAtencionController extends Controller
             $detalleFV->detalle_descripcion = $request->get('nombreP');
             $detalleFV->detalle_estado = '1';
             $detalleFV->producto_id = $request->get('IdCodigo');
+
             /******************registro de movimiento de producto******************/
+
+            /*descomentar
             $movimientoProducto = new Movimiento_Producto();
             $movimientoProducto->movimiento_fecha=$dateNew;
             $movimientoProducto->movimiento_cantidad=1;
@@ -348,6 +372,8 @@ class ordenAtencionController extends Controller
             $movimientoProducto->save();
             $general->registrarAuditoria('Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de movimiento de producto por factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$request->get('nombreP').' con la cantidad de -> 1 con un stock actual de -> '.$movimientoProducto->movimiento_stock_actual);
             /*********************************************************************/
+            
+            /*descomentar
             $detalleFV->movimiento()->associate($movimientoProducto);
             $factura->detalles()->save($detalleFV);
             $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero, $factura->factura_numero, 'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$request->get('nombreP').' con la cantidad de -> 1 a un precio unitario de -> '.$request->get('IdCopago'));
@@ -398,6 +424,7 @@ class ordenAtencionController extends Controller
             }
         
             /*******************************************************************/
+            /*descomentar
             if($factura->factura_emision == 'ELECTRONICA'){
                 $facturaAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlFactura($factura), 'FACTURA');
                 $factura->factura_xml_estado = $facturaAux->factura_xml_estado;
@@ -410,6 +437,7 @@ class ordenAtencionController extends Controller
                 }
                 $factura->update();
             }
+            */
         
        
             $ordenAtencion = new Orden_Atencion();
@@ -441,7 +469,7 @@ class ordenAtencionController extends Controller
             $ordenAtencion->orden_cobertura = $request->get('IdCobertura');
             $ordenAtencion->orden_copago = $request->get('IdCopago');
 
-            $ordenAtencion->factura_id = $factura->factura_id;
+            //$ordenAtencion->factura_id = $factura->factura_id;
             $mespecialidad=Medico_Especialidad::findOrFail($request->get('idMespecialidad'));
             $ordenAtencion->medico_id = $mespecialidad->medico->medico_id;
 
@@ -491,13 +519,24 @@ class ordenAtencionController extends Controller
             }
             $nombreArchivo = 'Orden de atencion';
             PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo.'.pdf');
+            /* descomentar
             $url = $general->pdfDiario($diario);
+            */
             DB::commit();
+            
+            /*/*descomentar
             if ($facturaAux->factura_xml_estado == 'AUTORIZADO') {
                 return redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente, Factura registrada y autorizada exitosamente')->with('diario',$url)->with('pdf', 'documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('factura_fecha'))->format('d-m-Y').'/'.$factura->factura_xml_nombre.'.pdf')->with('pdf2', '/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$newformat2.'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
             } else {
                 return redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente')->with('diario',$url)->with('error2', 'ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
             }
+
+            */
+
+            return redirect('ordenAtencion')
+                    ->with('success', 'Datos guardados exitosamente')
+                    //->with('diario',$url)->with('error2', 'ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)
+                    ->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
         //}
         //catch(\Exception $ex){    
         //   DB::rollBack();  

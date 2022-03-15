@@ -154,6 +154,69 @@ class quincenaConsolidadaController extends Controller
             return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }   
     }
+    public function eliminarconsolidada(Request $request){
+        try{
+            DB::beginTransaction();
+            $idquince=$request->get('idquincena');
+            for ($i = 0; $i < count($idquince); ++$i) {
+                $quincena=Quincena::findOrFail($idquince[$i]);
+                if(isset($quincena->rol)){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+                if(isset($quincena->rolcm)){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+                if(count($quincena->decuento)>0){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un descuento de quincena');
+                }
+            }
+            for ($i = 0; $i < count($idquince); ++$i) {
+                $quincena=Quincena::findOrFail($idquince[$i]);
+                $id=$idquince[$i];
+                $diario=Diario::findOrFail($quincena->diario_id);
+                $general = new generalController();
+                $cierre = $general->cierre($quincena->quincena_fecha);
+                if ($cierre) {
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+                }
+                
+                $quincena->diario_id=null;
+                $quincena->save();
+
+                
+                $quincena->delete();
+                $general->registrarAuditoria('Eliminacion de la quincena: -> '.$id.'con empleado '.$quincena->empleado->emepleado_nombre, $id, 'Con quincena  id -> '.$id);
+       
+         
+            }
+            foreach ($diario->detalles as $i) {
+                  
+                if (isset($i->transferencia_id)) {
+                    $detalle=Detalle_Diario::findOrFail($i->detalle_id);
+                
+                    $transferenciaAux=Transferencia::findOrFail($i->transferencia_id);
+
+                    $detalle->transferencia_id=null;
+                    $detalle->save();
+
+                    $transferenciaAux->delete();
+                    $general->registrarAuditoria('Eliminacion de Cheque numero: -> '.$transferenciaAux->transferencia_numero, $transferenciaAux->transferencia_id, 'Con Diario '.$diario->diario_id.' Con valor de -> '.$transferenciaAux->transferencia_valor);
+                }
+        
+
+                $i->delete();
+                $general = new generalController();
+                $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento,$diario->diario_id,'con codigo de diario'.$diario->diario_codigo);
+            }
+            $diario->delete();
+            $general->registrarAuditoria('Eliminacion de Dario de quincena consolidada con empleado '.$quincena->empleado->emepleado_nombre, 0, '');
+        
+            DB::commit();
+            return redirect('lquincena')->with('success','Datos Eliminados exitosamente');
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }   
+    }
 
     public function generar(Request $request)
     {

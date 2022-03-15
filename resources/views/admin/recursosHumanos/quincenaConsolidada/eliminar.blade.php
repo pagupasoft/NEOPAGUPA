@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST"  action="{{ url("eliminarquincena") }} "> 
+<form class="form-horizontal" method="POST"  action="{{ url("eliminarquincenaconsolidada") }} "> 
     @csrf 
     <div class="card card-secondary">
         <div class="card-header">
@@ -16,12 +16,12 @@
             <div class="form-group row">
                 <label for="fecha" class="col-sm-1 col-form-label"><center>Fecha:</center></label>
                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="fecha" name="fecha"   value='{{$quincenas->quincena_fecha}}' readonly>
+                        <input type="text" class="form-control" id="fecha" name="fecha"   value='{{$quincena->quincena_fecha}}' readonly>
                     </div>
                     <label for="idsucursal" class="col-sm-1 col-form-label">Sucursal</label>   
                    
                     <div class="col-sm-2">
-                        <input  class="form-control" value="{{ $quincenas->rango->puntoEmision->sucursal->sucursal_nombre }}"
+                        <input  class="form-control" value="{{ $quincena->rango->puntoEmision->sucursal->sucursal_nombre }}"
                         type="text" readonly>
                     </div>
                     
@@ -45,8 +45,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @if(isset($quincena))
-                            @foreach($quincena as $x)  
+                        @if(isset($quincenas))
+                            @foreach($quincenas as $x)  
                             <tr>
     
                                 <td width="150">{{$x->empleado->empleado_cedula}} </td>
@@ -69,7 +69,7 @@
             <div class="form-group row">
                     <label for="idTipo" class="col-sm-2 col-form-label">Tipo de Pago</label>
                     <div class="col-sm-10">
-                    <label class="form-control" id="idTipo" name="idTipo"  >{{$quincenas->quincena_tipo}}</label>   
+                    <label class="form-control" id="idTipo" name="idTipo"  >{{$quincena->quincena_tipo}}</label>   
                             
                        
                     </div>
@@ -78,13 +78,8 @@
                     <div class="form-group row">
                             <label for="banco_id" class="col-sm-2 col-form-label">Banco</label>
                             <div class="col-sm-10">
-                            <label class="form-control" >
-                                @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cuentaBancaria->banco->bancoLista->banco_lista_nombre}}
-                                @endif
-                                @if($quincenas->quincena_tipo=="Transferencia")
+                            <label class="form-control" >                            
                                    {{$transferencia->cuentaBancaria->banco->bancoLista->banco_lista_nombre}}
-                                @endif
                             </label>   
                     
                                 
@@ -94,12 +89,7 @@
                             <label for="cuenta_id" class="col-sm-2 col-form-label"># de Cuenta</label>
                             <div class="col-sm-10">
                             <label class="form-control" id="ncuenta" name="ncuenta"  >
-                                @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cuentaBancaria->cuenta_bancaria_numero}}
-                                @endif
-                                @if($quincenas->quincena_tipo=="Transferencia")
                                    {{$transferencia->cuentaBancaria->cuenta_bancaria_numero}}
-                                @endif
                             </label>   
                             </div>
                     </div> 
@@ -107,13 +97,7 @@
                             <label for="idCuentaContable" class="col-sm-2 col-form-label">Cuenta Contable</label>
                             <div class="col-sm-10">
                             <label class="form-control" id="idCuentaContable" name="idCuentaContable"  >           
-                                @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cuentaBancaria->cuenta->cuenta_numero}}-{{$cheque->cuentaBancaria->cuenta->cuenta_nombre}}
-                                   cuenta_nombre
-                                @endif
-                                @if($quincenas->quincena_tipo=="Transferencia")
                                    {{$transferencia->cuentaBancaria->cuenta->cuenta_numero}}-{{$transferencia->cuentaBancaria->cuenta->cuenta_nombre}}
-                                @endif
                             </label>   
                     
                               
@@ -129,12 +113,7 @@
                             <label for="idFechaCheque" class="col-sm-2 col-form-label">Fecha</label>
                             <div class="col-sm-10">
                             <label class="form-control" id="idFechaCheque" name="idFechaCheque"  >
-                            @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cheque_fecha_emision}}
-                                @endif
-                                @if($quincenas->quincena_tipo=="Transferencia")
                                    {{$transferencia->transferencia_fecha}}
-                                @endif
                             </label>   
                     
                             </div>
@@ -143,9 +122,7 @@
                     <label for="idNcheque" class="col-sm-2 col-form-label"># de Cheque</label>
                     <div class="col-sm-10">
                     <label class="form-control" >
-                            @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cheque_numero}}
-                                @endif
+                           
                     </label>   
                     
                     </div>
@@ -154,12 +131,10 @@
                     <label for="idBeneficiario" class="col-sm-2 col-form-label">Beneficiario</label>
                     <div class="col-sm-10">
                     <label class="form-control" >
-                                @if($quincenas->quincena_tipo=="Cheque")
-                                   {{$cheque->cheque_beneficiario}}
-                                @endif
-                                @if($quincenas->quincena_tipo=="Transferencia")
+                                
+                               
                                    {{$transferencia->transferencia_beneficiario}}
-                                @endif
+               
                     </label>   
                    
                     </div>

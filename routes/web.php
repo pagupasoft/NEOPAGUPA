@@ -522,6 +522,7 @@ Route::get('/tipoMovimiento/{id}/eliminar', [tipoMovimientoegresoController::cla
 Route::get('/parametrizacionRol/{id}/eliminar', [parametrizarRolController::class, 'delete'])->middleware('auth');
 Route::get('/impuestoRentaRol/{id}/eliminar', [impuestoRentaRolController::class, 'delete'])->middleware('auth');
 Route::get('/lquincena/{id}/eliminar', [listarquincenaController::class, 'delete'])->middleware('auth');
+Route::get('/lquincena/{id}/eliminarconsolidada', [listarquincenaController::class, 'deleteconsolidada'])->middleware('auth');
 Route::post('/lquincena/anular', [listarquincenaController::class, 'anulacion'])->middleware('auth');
 Route::get('/lquincena/{id}/anular', [listarquincenaController::class, 'anular'])->middleware('auth');
 Route::get('/listaEgresoCaja/{id}/eliminar', [listaEgresoCajaController::class, 'delete'])->middleware('auth');
@@ -559,7 +560,7 @@ Route::post('listaEgresoBancoanular', [listaEgresoBancoController::class, 'anula
 Route::get('/vacacion/{id}/anular', [vacacionController::class, 'anular'])->middleware('auth');
 Route::post('vacacionanular', [vacacionController::class, 'anulacion'])->middleware('auth');
 Route::post('eliminarquincena', [quincenaConsolidadaController::class, 'eliminar'])->middleware('auth');
-
+Route::post('eliminarquincenaconsolidada', [quincenaConsolidadaController::class, 'eliminarconsolidada'])->middleware('auth');
 Route::post('cargarIngreso', [rubroController::class, 'cargaringreso'])->middleware('auth');
 Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middleware('auth');
 

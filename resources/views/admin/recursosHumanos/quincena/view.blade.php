@@ -77,40 +77,39 @@
                 </thead>
                 <tbody>
                     @if(isset($quincena))
-                        @foreach($quincena as $x)
+                        @for ($i = 1; $i <= count($quincena); ++$i)  
                         <tr>  
                             <td class="text-center"> 
-                            <a href="{{ url("lquincena/{$x->quincena_id}") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>                   
-                            @if(!isset($x->detalle_rol_id))
-                            <a href="{{ url("lquincena/{$x->quincena_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                        
-                            @if($x->quincena_tipo=='Cheque')
-                            <a href="{{ url("lquincena/{$x->quincena_id}/anular") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Anularlo"><i class="fa fa-ban" aria-hidden="true"></i></a>                        
+                            <a href="{{ url("lquincena/{$quincena[$i]["id"]}") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>                   
+                            @if(!isset($quincena[$i]["rol"]) || !isset($quincena[$i]["rolcm"]))
+                            <a href="{{ url("lquincena/{$quincena[$i]["id"]}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Quincena Individual"><i class="fa fa-trash" aria-hidden="true"></i></a>                        
+                                @if($quincena[$i]["consolidado"]!='0')   
+                                <a href="{{ url("lquincena/{$quincena[$i]["id"]}/eliminarconsolidada") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Quincena Consolidada"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>                        
+                                @endif   
+                            @if($quincena[$i]["pago"]=='Cheque')
+                                <a href="{{ url("lquincena/{$quincena[$i]["idcheque"]}/anular") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Anularlo"><i class="fa fa-ban" aria-hidden="true"></i></a>                        
+                                @endif
                             @endif
-                            @endif
-                            <a href="{{ url("lquincena/{$x->quincena_id}/imprimirempleado") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Diario"><i class="fa fa-print"></i></a>                   
-                            @if($x->quincena_tipo=="Cheque" )
-                                @foreach($x->diario->detalles as $i)
-                                    @if($i->cheque)
-                                        <a href="{{ url("/cheque/imprimir/{$i->cheque->cheque_id}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt" aria-hidden="true"></i></a>                        
-                                    @endif   
-                                @endforeach
+                            <a href="{{ url("lquincena/{$quincena[$i]["id"]}/imprimirempleado") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Diario"><i class="fa fa-print"></i></a>                   
+                            @if($quincena[$i]["pago"]=="Cheque" )
+                                <a href="{{ url("/cheque/imprimir/{$quincena[$i]["idcheque"]}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt" aria-hidden="true"></i></a>                                  
                             @endif
                             </td>    
-                            <td class="text-center">{{ $x->quincena_numero}}</td>                           
-                            <td class="text-center">{{ $x->empleado->empleado_nombre}}</td>
-                            <td class="text-center">{{ $x->quincena_fecha}}</td>
-                            <td class="text-center">{{ $x->quincena_valor}}</td>
-                            <td class="text-center">{{ $x->quincena_tipo}}</td>
-                            <td class="text-center">{{ $x->quincena_descripcion}}</td>
+                            <td class="text-center">{{ $quincena[$i]["numero"]}}</td>                           
+                            <td class="text-center">{{ $quincena[$i]["empleado"] }}</td>
+                            <td class="text-center">{{ $quincena[$i]["fecha"]}}</td>
+                            <td class="text-center">{{ $quincena[$i]["valor"]}}</td>
+                            <td class="text-center">{{ $quincena[$i]["pago"]}}</td>
+                            <td class="text-center">{{ $quincena[$i]["descripcion"]}}</td>
                             <td class="text-center">
-                                    @if( $x->quincena_estado ==0) Anulado @endif 
-                                    @if( $x->quincena_estado ==1) Pendiente descontar @endif 
-                                    @if( $x->quincena_estado ==2) Descontado @endif            
+                                    @if( $quincena[$i]["estado"] ==0) Anulado @endif 
+                                    @if( $quincena[$i]["estado"] ==1) Pendiente descontar @endif 
+                                    @if( $quincena[$i]["estado"] ==2) Descontado @endif            
                             </td>    
                       
                            
                         </tr>
-                        @endforeach
+                        @endfor
                     @endif
                 </tbody>
             </table>

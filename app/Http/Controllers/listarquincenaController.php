@@ -59,8 +59,35 @@ class listarquincenaController extends Controller
             $esta_quin=Quincena::Estados()->select('quincena_estado')->distinct()->get();
             $empleado=Quincena::EmpleadoQuincena()->orderBy('empleado_nombre','asc')->select('empleado.empleado_id','empleado.empleado_nombre')->distinct()->get();
             $sucursales=Quincena::EmpleadoQuincena()->orderBy('sucursal_nombre','asc')->select('sucursal.sucursal_id','sucursal.sucursal_nombre')->distinct()->get();
-               
-                $quincena=Quincena::QuincenasDiferente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('estados'),$request->get('sucursal'))->get();
+            $quincena=null;   
+            $count=1;   
+            $quincen=Quincena::QuincenasDiferente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_empleado'),$request->get('estados'),$request->get('sucursal'))->get();
+            foreach($quincen as $quince){
+                $quincena[$count]["id"]=$quince->quincena_id;
+                $quincena[$count]["pago"]=$quince->quincena_tipo;
+                $quincena[$count]["numero"]=$quince->quincena_numero;
+                $quincena[$count]["fecha"]=$quince->quincena_fecha;
+                $quincena[$count]["valor"]=$quince->quincena_valor;
+                $quincena[$count]["descripcion"]=$quince->quincena_descripcion;
+                $quincena[$count]["estado"]=$quince->quincena_estado;
+                $quincena[$count]["empleado"]=$quince->empleado->empleado_nombre;
+                $quincena[$count]["rol"]=$quince->cabecera_rol_id;
+                $quincena[$count]["rolcm"]=$quince->cabecera_rol_cm_id;
+                $quincena[$count]["idcheque"]=0;
+                $quincena[$count]["consolidado"]=0;
+                if($quince->quincena_tipo=="Cheque" ){
+                    foreach($quince->diario->detalles as $i){
+                        if($i->cheque){
+                            $quincena[$count]["idcheque"]=$i->cheque->cheque_id;   
+                        }
+                    }
+                }
+                $validacion=Quincena::Validacion($quince->diario_id)->get();
+                if(count($validacion)>1){
+                    $quincena[$count]["consolidado"]=$quince->quincena_id;
+                }
+                $count++;
+            }
                         
             
             return view('admin.recursosHumanos.quincena.view',['sucursales'=>$sucursales,'sucursalid'=>$request->get('sucursal'),'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'estadoactual'=>$request->get('estados'),'estados'=>$esta_quin,'empleado'=>$empleado,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -157,6 +184,37 @@ class listarquincenaController extends Controller
         
         
             return view('admin.recursosHumanos.quincena.eliminar', ['transferencia'=>$transferencia,'cheque'=>$cheque,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        
+            
+
+        }catch(\Exception $ex){
+            return redirect('lquincena')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+
+    }
+    public function deleteconsolidada($id)
+    {        
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+            $transferencia=null;
+            
+            $quincena=Quincena::findOrFail($id);
+            $quincenas=Quincena::Validacion($quincena->diario_id)->get();
+            foreach($quincenas as $detalle){
+                if(isset($detalle->rolcm)){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+                if(isset($detalle->rol)){
+                    return redirect('lquincena')->with('error2', 'No puede realizar la operacion por que pertenece a un rol');
+                }
+            }
+            foreach ($quincena->diario->detalles as $i) {
+                if (isset($i->transferencia_id)) {
+                    $transferencia=Transferencia::findOrFail($i->transferencia_id);
+                }
+            }
+            return view('admin.recursosHumanos.quincenaConsolidada.eliminar', ['transferencia'=>$transferencia,'quincenas'=>$quincenas,'quincena'=>$quincena,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         
             
 

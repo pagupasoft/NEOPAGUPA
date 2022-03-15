@@ -24,6 +24,7 @@ class Quincena extends Model
         'quincena_estado',
         'diario_id',
         'cabecera_rol_id',
+        'cabecera_rol_cm_id',
         'empleado_id',
         'rango_id'
     ];
@@ -144,7 +145,7 @@ class Quincena extends Model
     }
     public function rolcm()
     {
-        return $this->belongsTo(Cabecera_Rol_CM::class, 'cabecera_rol_id', 'cabecera_rol_id');
+        return $this->belongsTo(Cabecera_Rol_CM::class, 'cabecera_rol_cm_id', 'cabecera_rol_id');
     }
     public function empleado()
     {

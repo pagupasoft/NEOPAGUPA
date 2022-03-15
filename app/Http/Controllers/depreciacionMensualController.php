@@ -263,8 +263,8 @@ class depreciacionMensualController extends Controller
             }          
             $activos = $request->get('activoId');           
             $valores = $request->get('valorId');                          
-            $cuentasDebe = null;
-            $cuentasHaber = null;
+            $cuentasDebe = [];
+            $cuentasHaber = [];
             $countDebe = 0 ;
             $countHaber = 0;
             $tieneDiario = $request->get('diarioID');
@@ -290,11 +290,12 @@ class depreciacionMensualController extends Controller
                 /*Fin de registro de auditoria */
              }            
             /**********************asiento diario****************************/
+            setlocale(LC_TIME, "es");
             $general = new generalController();
             $diario = new Diario();
             $diario->diario_codigo = $general->generarCodigoDiario($last_day,'CDAF');
             $diario->diario_fecha = $last_day;
-            $diario->diario_referencia = 'COMPROBANTE DIARIO POR DEPRECICIACION DE ACTIVOS FIJOS';
+            $diario->diario_referencia = 'COMPROBANTE DIARIO POR DEPRECIACION DE ACTIVOS FIJOS';
             $diario->diario_tipo_documento = 'DEPRECIACION DE ACTIVOS FIJOS';
             $diario->diario_numero_documento = 0;
             $diario->diario_beneficiario = "SIN BENEFICIARIO";
@@ -302,7 +303,7 @@ class depreciacionMensualController extends Controller
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
             $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $last_day)->format('m');
             $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $last_day)->format('Y');
-            $diario->diario_comentario = 'COMPROBANTE DIARIO POR DEPRECICIACION DE ACTIVOS FIJOS';
+            $diario->diario_comentario = 'COMPROBANTE DIARIO POR DEPRECIACION DE ACTIVOS FIJOS'.' '.strtoupper(strftime("%B", strtotime($last_day))).'-'.DateTime::createFromFormat('Y-m-d', $last_day)->format('Y');
             $diario->diario_cierre = '0';
             $diario->diario_estado = '1';
             $diario->empresa_id = Auth::user()->empresa_id;
@@ -312,27 +313,47 @@ class depreciacionMensualController extends Controller
            
             for ($i = 0; $i < count($activos); ++$i){
                 $activo = Activo_Fijo::findOrFail($activos[$i]);
-                if($i == 0){
+                if($i == 0){                    
                     $cuentasDebe[$countDebe][1] = $activo->grupoActivo->cuentaGasto->cuenta_id;
                     $cuentasDebe[$countDebe][2] = floatval($valores[$i]);
                     $cuentasHaber[$countHaber][1] = $activo->grupoActivo->cuentaDepreciacion->cuenta_id;
                     $cuentasHaber[$countHaber][2] = floatval($valores[$i]);
                     $countDebe ++;
                     $countHaber ++;
-                }else{
-                    if($cuentasDebe[$countDebe-1][1] != $activo->grupoActivo->cuentaGasto->cuenta_id){
+                }else{  
+                    $encontardoD = false;
+                    $posicionD=0;
+                    for ($j = 0; $j < count($cuentasDebe); ++$j){
+                        if($cuentasDebe[$j][1] == $activo->grupoActivo->cuentaGasto->cuenta_id){
+                            $encontardoD = true;
+                            $posicionD=$j;
+                            break;
+                        }
+                    }
+                    if($encontardoD){
+                        $cuentasDebe[$posicionD][2] = floatval($cuentasDebe[$posicionD][2]) + floatval($valores[$i]);
+                    }else{
                         $cuentasDebe[$countDebe][1] = $activo->grupoActivo->cuentaGasto->cuenta_id;
                         $cuentasDebe[$countDebe][2] = floatval($valores[$i]);
-                        $countDebe ++;
-                    }else{
-                        $cuentasDebe[$countDebe-1][2] = floatval($cuentasDebe[$countDebe-1][2]) + floatval($valores[$i]);
+                        $countDebe ++;                        
                     }
-                    if($cuentasHaber[$countHaber-1][1] != $activo->grupoActivo->cuentaDepreciacion->cuenta_id){
+                    $encontardoH = false;
+                    $posicionH=0;
+                    
+                    for ($j = 0; $j < count($cuentasHaber); ++$j){
+                        if($cuentasHaber[$j][1] == $activo->grupoActivo->cuentaDepreciacion->cuenta_id){
+                            $encontardoH = true;
+                            $posicionH=$j;
+                            break;
+                        }
+                    }
+                    if($encontardoH){
+                        $cuentasHaber[$posicionH][2] = floatval($cuentasHaber[$posicionH][2]) + floatval($valores[$i]);
+                    }else{ 
                         $cuentasHaber[$countHaber][1] = $activo->grupoActivo->cuentaDepreciacion->cuenta_id;
                         $cuentasHaber[$countHaber][2] = floatval($valores[$i]);
-                        $countHaber ++;
-                    }else{                        
-                        $cuentasHaber[$countHaber-1][2] = floatval($cuentasHaber[$countDebe-1][2]) + floatval($valores[$i]);                    
+                        $countHaber ++;                       
+                                 
                     }
                 }    
                 $depreciacionesdelmes=Depreciacion_Activo_Fijo::DepreciacionActivoxFechas($last_day, $tieneDiario)->get();
@@ -360,7 +381,7 @@ class depreciacionMensualController extends Controller
                 $detalleDiario = new Detalle_Diario();
                 $detalleDiario->detalle_debe = $cuentasDebe[$i][2];
                 $detalleDiario->detalle_haber = 0.00 ;
-                $detalleDiario->detalle_comentario = 'CUENTA DE GASTO';
+                $detalleDiario->detalle_comentario = 'COMPROBANTE DIARIO POR DEPRECIACION DE ACTIVOS FIJOS'.' '.strtoupper(strftime("%B", strtotime($last_day))).'-'.DateTime::createFromFormat('Y-m-d', $last_day)->format('Y');
                 $detalleDiario->detalle_tipo_documento = 'DEPRECIACION ACTIVO FIJO';
                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                 $detalleDiario->detalle_conciliacion = '0';
@@ -368,14 +389,14 @@ class depreciacionMensualController extends Controller
                 $detalleDiario->cuenta_id = $cuentasDebe[$i][1];
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo,'0','En la cuenta del debe con el valor de: -> '.$cuentasDebe[$i][2]);
-            }
+            }            
             for ($i = 0; $i < count($cuentasHaber); ++$i){
                 //$cuentasHaber[$i][1];
                 //$cuentasHaber[$i][2];
                 $detalleDiario = new Detalle_Diario();
                 $detalleDiario->detalle_debe = 0.00;
                 $detalleDiario->detalle_haber = $cuentasHaber[$i][2];
-                $detalleDiario->detalle_comentario = 'CUENTA DE DEPRECIACION';
+                $detalleDiario->detalle_comentario = 'COMPROBANTE DIARIO POR DEPRECIACION DE ACTIVOS FIJOS'.' '.strtoupper(strftime("%B", strtotime($last_day))).'-'.DateTime::createFromFormat('Y-m-d', $last_day)->format('Y');
                 $detalleDiario->detalle_tipo_documento = 'DEPRECIACION ACTIVO FIJO';
                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                 $detalleDiario->detalle_conciliacion = '0';

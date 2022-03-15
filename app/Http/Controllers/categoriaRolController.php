@@ -53,8 +53,6 @@ class categoriaRolController extends Controller
             DB::beginTransaction();
             $categoria = new Categoria_Rol();
             $categoria->categoria_nombre = $request->get('categoria_nombre');
-          
-            $categoria->empresa_id = Auth::user()->empresa_id;
             $categoria->categoria_estado = 1;
             $categoria->centro_consumo_id = $request->get('consumo'); 
             $categoria->save();
@@ -171,10 +169,10 @@ class categoriaRolController extends Controller
             $auditoria->registrarAuditoria('Eliminacion de categoria producto-> '.$categoria->categoria_nombre, '0', '');
             /*Fin de registro de auditoria */
             DB::commit();
-            return redirect('categoriaProducto')->with('success', 'Datos eliminados exitosamente');
+            return redirect('categoriaRol')->with('success', 'Datos eliminados exitosamente');
         } catch (\Exception $ex) {
             DB::rollBack();
-            return redirect('categoriaProducto')->with('error', 'El registro no pudo ser borrado, tiene resgitros adjuntos.');
+            return redirect('categoriaRol')->with('error', 'El registro no pudo ser borrado, tiene resgitros adjuntos.');
         }
     }
     public function delete($id)
@@ -182,7 +180,7 @@ class categoriaRolController extends Controller
         try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            $categoria = Categoria_Rol::findOrFail($id)->first();
+            $categoria = Categoria_Rol::findOrFail($id);
             if($categoria){
                 return view('admin.recursosHumanos.categoriaRol.eliminar',['categoria'=>$categoria, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{

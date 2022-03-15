@@ -45,7 +45,7 @@
                 </div>             
             </div>            
             <div class="card-body table-responsive p-0" style="height: 540px;">
-            <table class="table table-head-fixed text-nowrap">       
+            <table id="example4" class="table table-head-fixed text-nowrap">       
                 <thead>
                     <tr>  
                         <th>Fecha</th>

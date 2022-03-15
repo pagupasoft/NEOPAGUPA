@@ -142,7 +142,7 @@ class kardexCostoController extends Controller
                 $datos[$count]['tot3'] = floatval($datos[$count]['can3'])*round(floatval($datos[$count]['pre3']),4);
                 if($movimiento->movimiento_tipo == "SALIDA"){
                     $datos[$count]['pre2'] = $datos[$count]['pre3'];
-                    $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                    $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*round(floatval($datos[$count]['pre2']),4);
                 }
                 if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
                     $datos[$count]['pre1'] = $datos[$count]['pre3'];
@@ -212,6 +212,12 @@ class kardexCostoController extends Controller
                 if($movimiento->detalle_od){
                     $datos[$count]['num'] = $movimiento->detalle_od->ordenDespacho->orden_numero;
                     $datos[$count]['ref'] = $movimiento->detalle_od->ordenDespacho->cliente->cliente_nombre;
+                    if(isset($movimiento->detalle_od->ordenDespacho->Factura->diario)){
+                        $datos[$count]['dia'] = $movimiento->detalle_od->ordenDespacho->Factura->diario->diario_codigo;
+                    }
+                    if(isset($movimiento->detalle_od->ordenDespacho->Factura->diarioCosto)){
+                        $datos[$count]['cos'] = $movimiento->detalle_od->ordenDespacho->Factura->diarioCosto->diario_codigo;
+                    }
                 }
                 if($movimiento->detalle_or){
                     $datos[$count]['num'] = $movimiento->detalle_or->ordenDespacho->ordenr_numero;

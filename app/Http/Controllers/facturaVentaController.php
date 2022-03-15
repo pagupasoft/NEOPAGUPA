@@ -342,7 +342,7 @@ class facturaVentaController extends Controller
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$producto->cuentaVenta->cuenta_numero.' en el haber por un valor de -> '.$total[$i]);
                 
                 if($banderaP){
-                    if($producto->producto_tipo == '1'){
+                    if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
                         $detalleDiario->detalle_haber = $movimientoProducto->movimiento_costo_promedio;
@@ -596,7 +596,7 @@ class facturaVentaController extends Controller
             $banderaP = false;
             for ($i = 1; $i < count($cantidad); ++$i){
                 $producto = Producto::findOrFail($isProducto[$i]);
-                if($producto->producto_tipo == '1'){
+                if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
                     $banderaP = true;
                 }
             }
@@ -797,6 +797,7 @@ class facturaVentaController extends Controller
                 $general->registrarAuditoria('Actualizacion de Guia de Remision -> '.$guias->gr_numero,$guias->gr_numero,'Actualizacion de Guia de Remision -> '.$guias->gr_numero.' con Factura -> '.$factura->factura_numero);
             }
             /********************detalle de factura de venta********************/
+            $movimientoProducto_id = null;
             for ($i = 1; $i < count($cantidad); ++$i){
                 $producto = Producto::findOrFail($isProducto[$i]);
                 if($inventarioResevado == false){
@@ -838,6 +839,23 @@ class facturaVentaController extends Controller
                     /*********************************************************************/
                 
                     $detalleFV->movimiento()->associate($movimientoProducto);
+                }else{
+                    $movimientoProducto_id = null;
+                    for ($k = 0; $k < count($guia); ++$k) {
+                        $guias = Guia_Remision::findOrFail($guia[$k]);      
+                        $guias->Factura()->associate($factura);
+                        $guias->gr_estado='2';
+                        $guias->update();
+                        $orden=Orden_Despacho::OrdenGuia($guia[$k])->get();
+                        for ($j = 0; $j < count($orden); ++$j) {
+                            $ordene= Orden_Despacho::findOrFail($orden[$j]["orden_id"]);
+                            foreach($ordene->detalles as $detalleOrdenDespacho){
+                                if($producto->producto_id == $detalleOrdenDespacho->producto_id and $cantidad[$i] == $detalleOrdenDespacho->detalle_cantidad){
+                                    $movimientoProducto_id = $detalleOrdenDespacho->movimiento->movimiento_id;
+                                }
+                            }
+                        }
+                    }
                 }
                 $factura->detalles()->save($detalleFV);
                 $general->registrarAuditoria('Registro de detalle de factura de venta numero -> '.$factura->factura_numero,$factura->factura_numero,'Registro de detalle de factura de venta numero -> '.$factura->factura_numero.' producto de nombre -> '.$nombre[$i].' con la cantidad de -> '.$cantidad[$i].' a un precio unitario de -> '.$pu[$i]);
@@ -852,13 +870,15 @@ class facturaVentaController extends Controller
                 $detalleDiario->detalle_estado = '1';
                 if($inventarioResevado == false){
                     $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                }else{
+                    $detalleDiario->movimiento_id = $movimientoProducto_id;
                 }
                 $detalleDiario->cuenta_id = $producto->producto_cuenta_venta;
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$producto->cuentaVenta->cuenta_numero.' en el haber por un valor de -> '.$total[$i]);
 
                 if($banderaP){
-                    if($producto->producto_tipo == '1'){
+                    if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
                         if($inventarioResevado == false){
@@ -874,6 +894,8 @@ class facturaVentaController extends Controller
                         $detalleDiario->cuenta_id = $producto->producto_cuenta_inventario;
                         if($inventarioResevado == false){
                             $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        }else{
+                            $detalleDiario->movimiento_id = $movimientoProducto_id;
                         }
                         $diarioC->detalles()->save($detalleDiario);
                         $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el haber por un valor de -> '.$detalleDiario->detalle_haber);
@@ -892,6 +914,8 @@ class facturaVentaController extends Controller
                         $detalleDiario->detalle_estado = '1';
                         if($inventarioResevado == false){
                             $detalleDiario->movimientoProducto()->associate($movimientoProducto);
+                        }else{
+                            $detalleDiario->movimiento_id = $movimientoProducto_id;
                         }
                         $parametrizacionContable = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
                         $detalleDiario->cuenta_id = $parametrizacionContable->cuenta_id;

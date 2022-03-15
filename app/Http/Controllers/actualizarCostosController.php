@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Detalle_Diario;
 use App\Models\Diario;
+use App\Models\Factura_Venta;
 use App\Models\Movimiento_Producto;
 use App\Models\Parametrizacion_Contable;
 use App\Models\Producto;
+use App\Models\Rango_Documento;
 use App\Models\Sucursal;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +29,88 @@ class actualizarCostosController extends Controller
     }
     public function actualizar(Request $request){
         try{
+            $this->verificarAsientosCostos($request->get('fecha_desde'), $request->get('fecha_hasta'));
             $this->actualizarPrecioCosto($request->get('fecha_desde'), $request->get('fecha_hasta'));
             return redirect('actualizarCostos')->with('success','Datos actualizados exitosamente');
         }catch(\Exception $ex){
+            return redirect('actualizarCostos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function verificarAsientosCostos($fechaDesde, $fechaHasta){
+        try{           
+            DB::beginTransaction();
+            $general = new generalController();
+            foreach(Factura_Venta::Facturas()->where('factura_venta.factura_fecha','>=',$fechaDesde)->where('factura_venta.factura_fecha','<=',$fechaHasta)->get() as $factura){
+                if(!isset($factura->diarioCosto->diario_id)){                
+                    $banderaP = false;
+                    foreach($factura->detalles as $detalle){
+                        $producto = Producto::findOrFail($detalle->producto->producto_id);
+                        if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
+                            $banderaP = true;
+                        }
+                    }
+                    if($banderaP){
+                        /**********************asiento diario de costo ****************************/
+                        $diarioC = new Diario();
+                        $diarioC->diario_codigo = $general->generarCodigoDiario($factura->factura_fecha,'CCVP');
+                        $diarioC->diario_fecha = $factura->factura_fecha;
+                        $diarioC->diario_referencia = 'COMPROBANTE DE COSTO DE VENTA DE PRODUCTO';
+                        $diarioC->diario_tipo_documento = 'FACTURA';
+                        $diarioC->diario_numero_documento = $factura->factura_numero;
+                        $diarioC->diario_beneficiario = $factura->cliente->cliente_nombre;
+                        $diarioC->diario_tipo = 'CCVP';
+                        $diarioC->diario_secuencial = substr($diarioC->diario_codigo, 8);
+                        $diarioC->diario_mes = DateTime::createFromFormat('Y-m-d', $factura->factura_fecha)->format('m');
+                        $diarioC->diario_ano = DateTime::createFromFormat('Y-m-d', $factura->factura_fecha)->format('Y');
+                        $diarioC->diario_comentario = 'COMPROBANTE DE COSTO DE VENTA DE PRODUCTO CON FACTURA: '.$factura->factura_numero;
+                        $diarioC->diario_cierre = '0';
+                        $diarioC->diario_estado = '1';
+                        $diarioC->empresa_id = Auth::user()->empresa_id;
+                        $diarioC->sucursal_id = Rango_Documento::rango($factura->rango_id)->first()->puntoEmision->sucursal_id;
+                        $diarioC->save();
+                        $general->registrarAuditoria('Registro de diario de costo de venta de factura -> '.$factura->factura_numero,$factura->factura_numero,'Registro de diario de costo de venta de factura -> '.$factura->factura_numero.' con cliente -> '.$factura->cliente->cliente_nombre.' con un total de -> '.$factura->factura_total.' y con codigo de diario -> '.$diarioC->diario_codigo);
+                        /************************************************************************/
+                        $factura->diarioCosto()->associate($diarioC);
+                        $factura->update();
+                        foreach($factura->detalles as $detalle){
+                            $producto = Producto::findOrFail($detalle->producto->producto_id);
+                            if($banderaP){
+                                if($producto->producto_tipo == '1' and $producto->producto_compra_venta == '3'){
+                                    $detalleDiario = new Detalle_Diario();
+                                    $detalleDiario->detalle_debe = 0.00;
+                                    $detalleDiario->detalle_haber = $detalle->movimiento->movimiento_costo_promedio;
+                                    $detalleDiario->detalle_comentario = 'P/R COSTO DE INVENTARIO POR VENTA DE PRODUCTO '.$producto->producto_codigo;
+                                    $detalleDiario->detalle_tipo_documento = 'FACTURA';
+                                    $detalleDiario->detalle_numero_documento = $diarioC->diario_numero_documento;
+                                    $detalleDiario->detalle_conciliacion = '0';
+                                    $detalleDiario->detalle_estado = '1';
+                                    $detalleDiario->cuenta_id = $producto->producto_cuenta_inventario;
+                                    $detalleDiario->movimientoProducto()->associate($detalle->movimiento);
+                                    $diarioC->detalles()->save($detalleDiario);
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el haber por un valor de -> '.$detalleDiario->detalle_haber);
+                                    
+                                    $detalleDiario = new Detalle_Diario();
+                                    $detalleDiario->detalle_debe = $detalle->movimiento->movimiento_costo_promedio;
+                                    $detalleDiario->detalle_haber = 0.00;
+                                    $detalleDiario->detalle_comentario = 'P/R COSTO DE INVENTARIO POR VENTA DE PRODUCTO '.$producto->producto_codigo;
+                                    $detalleDiario->detalle_tipo_documento = 'FACTURA';
+                                    $detalleDiario->detalle_numero_documento = $diarioC->diario_numero_documento;
+                                    $detalleDiario->detalle_conciliacion = '0';
+                                    $detalleDiario->detalle_estado = '1';
+                                    $detalleDiario->movimientoProducto()->associate($detalle->movimiento);
+                                    $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diarioC->sucursal_id, 'COSTOS DE MERCADERIA')->first();
+                                    $detalleDiario->cuenta_id = $parametrizacionContable->cuenta_id;
+                                    $diarioC->detalles()->save($detalleDiario);
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo,$factura->factura_numero,'Registro de detalle de diario con codigo -> '.$diarioC->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el debe por un valor de -> '.$detalleDiario->detalle_debe);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            DB::commit();
+        }catch(\Exception $ex){
+            DB::rollBack();
             return redirect('actualizarCostos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
@@ -117,7 +200,7 @@ class actualizarCostosController extends Controller
                     $datos[$count]['tot3'] = floatval($datos[$count]['can3'])*round(floatval($datos[$count]['pre3']),4);
                     if($movimiento->movimiento_tipo == "SALIDA"){
                         $datos[$count]['pre2'] = $datos[$count]['pre3'];
-                        $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                        $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*round(floatval($datos[$count]['pre2']),4);
                     }
                     $datos[$count]['dia'] = '';
                     $datos[$count]['cos'] = '';
@@ -129,6 +212,11 @@ class actualizarCostosController extends Controller
                     if($movimiento->detalle_nc){
                         if($movimiento->detalle_nc->notaCredito->diarioCosto){
                             $datos[$count]['cos'] = $movimiento->detalle_nc->notaCredito->diarioCosto->diario_codigo;
+                        }
+                    }
+                    if($movimiento->detalle_od){
+                        if(isset($movimiento->detalle_od->ordenDespacho->Factura->diarioCosto)){
+                            $datos[$count]['cos'] = $movimiento->detalle_od->ordenDespacho->Factura->diarioCosto->diario_codigo;
                         }
                     }
                     $datos[$count]['pre3'] = round($datos[$count]['pre3'],4);
@@ -155,6 +243,15 @@ class actualizarCostosController extends Controller
                                     $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
                                     if($detalle->cuenta_id == $parametrizacionContable->cuenta_id){
                                         $detalle->detalle_haber = $datos[$count]['tot2'];
+                                    }
+                                }
+                                if(isset($movimiento->detalle_od->detalle_id)){
+                                    if($detalle->cuenta_id == $movimiento->detalle_od->producto->producto_cuenta_inventario){
+                                        $detalle->detalle_haber = $datos[$count]['tot2'];
+                                    }
+                                    $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
+                                    if($detalle->cuenta_id == $parametrizacionContable->cuenta_id){
+                                        $detalle->detalle_debe = $datos[$count]['tot2'];
                                     }
                                 }
                                 $detalle->update();

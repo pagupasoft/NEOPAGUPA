@@ -38,7 +38,7 @@ class Movimiento_Producto extends Model
         Movimiento_Producto::observe(MovimientoProductoObserver::class);
     }
     public function scopeMovProductoByFechaCorte($query, $producto_id, $fechaCorte){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('producto_id','=',$producto_id)->where('movimiento_fecha','<=',$fechaCorte);
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('movimiento_producto.producto_id','=',$producto_id)->where('movimiento_fecha','<=',$fechaCorte);
     }
     public function scopeMovProductoByFecha($query, $producto_id, $fechaInicio,$fechaFin){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('producto_id','=',$producto_id)->where('movimiento_fecha','>=',$fechaInicio)->where('movimiento_fecha','<=',$fechaFin);

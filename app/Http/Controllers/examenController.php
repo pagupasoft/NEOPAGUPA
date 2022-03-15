@@ -842,7 +842,7 @@ class examenController extends Controller
             $mail->send();
         } catch (Exception $ex) {
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Error al restablecer contraseña de usuario ','0',$ex);
+            $auditoria->registrarAuditoria('Error al enviar correo al usuario','0',$ex);
             return($ex);
         }
     }
@@ -862,34 +862,36 @@ class examenController extends Controller
         //echo count($request->examenes).'<br>';
         //echo json_encode($request->examenes[0]['id']).'...<br><br>';
         
-        return $request;
+        //return $request;
 
         if($token=='ASk34344R65_Q089A98DHYAS9suygty=89aaUQPELYN'){
-            if($request->estado=='R' || $request->estado=='V'){
+            //echo 'buscando '.$request->numero_orden_externa.'<br>';
 
-                //echo 'buscando '.$request->numero_orden_externa.'<br>';
+            try{
+               
+                $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
 
-                try{
+                if($request->estado=='R' || $request->estado=='V'){
                     DB::beginTransaction();
-                    $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
-                    
-                        
                     foreach($request->examenes as $detalle_array){
                         $detalleRequest = (Object) $detalle_array;
                         
                         //echo 'buscando detalle '.$analisis->analisis_laboratorio_id.'     '.$detalleRequest->id_externo.'<br>';
-                        $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id ,$detalleRequest->id_externo)->first();
+                        $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id, $detalleRequest->id_externo)->first();
 
                         //return $detalleRequest;
 
                         
                         $detalle_analisis->tecnica="$detalleRequest->tecnica";
                         
-                        $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
+                        if(isset($detalleRequest->fecha_recepcion_muestra)){
+                            $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
+                        }
+
                         $detalle_analisis->fecha_reporte="$detalleRequest->fecha_reporte";
                         $detalle_analisis->fecha_validacion="$detalleRequest->fecha_validacion";
-
-                        $detalle_analisis->usuario_validacion="$detalleRequest->usuario_validacion";
+                        
+                        $detalle_analisis->usuario_validacion=json_encode($detalleRequest->usuario_validacion);
                         $detalle_analisis->estado=$detalleRequest->estado;
 
                         $detalle_analisis->save();
@@ -916,17 +918,56 @@ class examenController extends Controller
                     }
                     $analisis->analisis_estado=3;
                     $analisis->save();
+
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Eliminacion del examen -> '.$examen->producto_id.' con id -> '.$examen->examen_id,'0','');
+                    /*Fin de registro de auditoria */
                     
                     DB::commit();
-                    return json_encode(array('result'=>'OK', 'mensaje'=>'informacion recibida correctamente'));
+                    return response()->json(['result'=>'OK', 'message' => 'informacion recibida correctamente'], 200);
                 }
-                catch(\Exception $e){
-                    DB::rollBack();
-                    return json_encode(array('result'=>'Error', 'mensaje'=>$e->getMessage()));
+                else if($request->estado=='P'){
+                    DB::beginTransaction();
+                    $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
+                    $analisis->analisis_estado=2;
+                    $analisis->save();
+
+                    foreach($analisis->detalles as $detalle){
+                        foreach($detalle->detalles as $fila){
+                            $newfila=Detalles_Analisis_Valores::findOrFail($fila->detalle_valores_id);
+                            $newfila->delete();
+                        }
+                    }
+
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Se ha receptado correctamente una notificación (webhook), orden externa '.$request->numero_orden_externa,'0','');
+                    /*Fin de registro de auditoria */
+                   
+                    DB::commit();
+                    return response()->json(['result'=>'OK', 'message' => 'informacion Actualizada Correctamente'], 200);
                 }
             }
+            catch(\Exception $e){
+                /*Inicio de registro de auditoria */
+                $auditoria = new generalController();
+                $auditoria->registrarAuditoria('Hubo un error al tratar de registrar una notificación (webhook), orden externa: '.$request->numero_orden_externa,'0','');
+                /*Fin de registro de auditoria */
+
+                DB::rollBack();
+                return response()->json(['result'=>'Error', 'message' => $e->getMessage()], 500);
+            }
         }
-        else
-            DB::commit();return json_encode(array('result'=>'Error', 'mensaje'=>'la session ha expirado'));
+        else{
+            /*Inicio de registro de auditoria */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Se ha tratado de ingresar con credenciales inválidos','0','');
+            /*Fin de registro de auditoria */
+
+
+            DB::commit(); 
+            return response()->json(['result'=>'Error', 'message' => 'No tiene los permisos suficientes'], 401);
+        }
     }
 }

@@ -130,7 +130,9 @@ class reporteUtilidadController extends Controller
             $datos[$count]['can2'] = 0;
             $datos[$count]['pre2'] = 0;
             $datos[$count]['tot2'] = 0;
-            $datos[$count]['can3'] = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")) )->where('movimiento_tipo','=','ENTRADA')->sum('movimiento_cantidad')-Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")) )->where('movimiento_tipo','=','SALIDA')->sum('movimiento_cantidad');
+            $datos[$count]['can3'] = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")) )->where('movimiento_tipo','=','ENTRADA')->where('movimiento_motivo', '<>', 'ANULACION')->sum('movimiento_cantidad') 
+            - Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")) )->where('movimiento_tipo','=','SALIDA')->sum('movimiento_cantidad')
+            + Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")) )->join('detalle_fv','movimiento_producto.movimiento_id','=','detalle_fv.movimiento_id')->join('factura_venta','detalle_fv.factura_id','=','factura_venta.factura_id')->where('movimiento_tipo','=','SALIDA')->whereNull('factura_venta.diario_id')->sum('movimiento_cantidad');
             $costoPromedio = Movimiento_Producto::MovProductoByFechaCorte($producto->producto_id,date("Y-m-d",strtotime($fechaI."- 1 days")))->orderBy('movimiento_fecha','desc')->orderBy('movimiento_id','desc')->first();
             $datos[$count]['pre3'] = 0;
             if($costoPromedio){
@@ -199,7 +201,7 @@ class reporteUtilidadController extends Controller
             $datos[$count]['tot3'] = floatval($datos[$count]['can3'])*round(floatval($datos[$count]['pre3']),4);
             if($movimiento->movimiento_tipo == "SALIDA"){
                 $datos[$count]['pre2'] = $datos[$count]['pre3'];
-                $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*round(floatval($datos[$count]['pre2']),4);
             }
             if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
                 $datos[$count]['pre1'] = $datos[$count]['pre3'];

@@ -200,7 +200,7 @@ class actualizarCostosController extends Controller
                     $datos[$count]['tot3'] = floatval($datos[$count]['can3'])*round(floatval($datos[$count]['pre3']),4);
                     if($movimiento->movimiento_tipo == "SALIDA"){
                         $datos[$count]['pre2'] = $datos[$count]['pre3'];
-                        $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                        $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*round(floatval($datos[$count]['pre2']),4);
                     }
                     $datos[$count]['dia'] = '';
                     $datos[$count]['cos'] = '';

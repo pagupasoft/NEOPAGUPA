@@ -321,6 +321,9 @@ class Orden_Despacho extends Model
     public function scopeOrdenes($query){
         return $query->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('orden_estado','=','1')->orderBy('orden_numero','asc');
     }
+    public function scopeOrdenesReserva($query){
+        return $query->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id);
+    }
     public function scopeOrdenBusqueda($query){
         return $query->join('cliente','cliente.cliente_id','=','orden_despacho.cliente_id')->join('bodega','bodega.bodega_id','=','orden_despacho.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('orden_numero','asc');
     }

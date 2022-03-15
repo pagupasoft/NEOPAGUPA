@@ -30,13 +30,13 @@
                     @endforeach
                     <tr class="text-center">
                         <td> 
-                            <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Orden"><i class="fa fa-print"></i></a>
+                            <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Ordenr"><i class="fa fa-print"></i></a>
                             
                             @if($ordenanalisisuser->analisis_estado == 3)   
                                 <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->analisis_laboratorio_id}/resultados") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver Resultados"><i class="fa fa-vial"></i></a> 
 
                                 @if($count=='1')   
-                                    <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->analisis_laboratorio_id}/enviar") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Enviar por Correo"><i class="fa fa-envelop"></i></a> 
+                                    <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->analisis_laboratorio_id}/enviar") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Enviar por Correo"><i class="fas fa-envelope"></i></a> 
                                 @endif
                             @else
                                 <a class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Sin Datos Aún"><i class="fas fa-exclamation-circle"></i>&nbsp; PENDIENTE</a> 
@@ -54,10 +54,10 @@
                 @if($ordenanalisis->analisis_estado == 2 || $ordenanalisis->analisis_estado == 3     )   
                     <tr class="text-center">
                         <td> 
-                            <a href="{{ url("analisisLaboratorio/{$ordenanalisis->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Orden"><i class="fa fa-print"></i></a>  
+                            <a href="{{ url("analisisLaboratorio/{$ordenanalisis->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Ordenr"><i class="fa fa-print"></i></a>  
                             @if($ordenanalisis->analisis_estado == 3)   
                                 <a href="{{ url("analisisLaboratorio/{$ordenanalisis->analisis_laboratorio_id}/resultados") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver Resultados"><i class="fa fa-vial"></i></a> 
-                                <a href="{{ url("analisisLaboratorio/{$ordenanalisis->analisis_laboratorio_id}/enviar") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Enviar por Correo"><i class="fa fa-envelop"></i></a> 
+                                <a href="{{ url("analisisLaboratorio/{$ordenanalisis->analisis_laboratorio_id}/enviar") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Enviar por Correo"><i class="fas fa-envelope"></i></a> 
                             @else
                                 <a class="btn btn-xs btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Sin Datos Aún"><i class="fas fa-exclamation-circle"></i>&nbsp; PENDIENTE</a> 
                             @endif

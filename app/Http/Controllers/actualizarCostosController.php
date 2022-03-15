@@ -131,6 +131,11 @@ class actualizarCostosController extends Controller
                             $datos[$count]['cos'] = $movimiento->detalle_nc->notaCredito->diarioCosto->diario_codigo;
                         }
                     }
+                    if($movimiento->detalle_od){
+                        if(isset($movimiento->detalle_od->ordenDespacho->Factura->diarioCosto)){
+                            $datos[$count]['cos'] = $movimiento->detalle_od->ordenDespacho->Factura->diarioCosto->diario_codigo;
+                        }
+                    }
                     $datos[$count]['pre3'] = round($datos[$count]['pre3'],4);
                     $movimiento->movimiento_stock_actual = $datos[$count]['can3'];
                     $movimiento->movimiento_costo_promedio = $datos[$count]['pre3'];
@@ -155,6 +160,15 @@ class actualizarCostosController extends Controller
                                     $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
                                     if($detalle->cuenta_id == $parametrizacionContable->cuenta_id){
                                         $detalle->detalle_haber = $datos[$count]['tot2'];
+                                    }
+                                }
+                                if(isset($movimiento->detalle_od->detalle_id)){
+                                    if($detalle->cuenta_id == $movimiento->detalle_od->producto->producto_cuenta_inventario){
+                                        $detalle->detalle_haber = $datos[$count]['tot2'];
+                                    }
+                                    $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
+                                    if($detalle->cuenta_id == $parametrizacionContable->cuenta_id){
+                                        $detalle->detalle_debe = $datos[$count]['tot2'];
                                     }
                                 }
                                 $detalle->update();

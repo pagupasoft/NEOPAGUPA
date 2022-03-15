@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
+use App\Models\Factura_Venta;
 use App\Models\Movimiento_Producto;
+use App\Models\Orden_Despacho;
 use App\Models\Producto;
 use App\Models\Punto_Emision;
 use DateTime;
@@ -206,6 +208,13 @@ class reporteUtilidadController extends Controller
             if($movimiento->detalle_fv){
                 $datos[$count]['num'] = $movimiento->detalle_fv->facturaVenta->factura_numero;
             }
+            /*if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "ORDEN DE DESPACHO"){
+                if($movimiento->detalle_od->ordenDespacho->orden_reserva == '1' and isset($movimiento->detalle_od->ordenDespacho->Factura->factura_id)){
+                    $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
+                    $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
+                    $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
+                }                
+            }*/
             if($bandera2){
                 if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
                     $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
@@ -229,6 +238,17 @@ class reporteUtilidadController extends Controller
                 }
                 $count ++;
             }
+        }
+        foreach(Orden_Despacho::OrdenesReserva()->join('factura_venta','factura_venta.factura_id','=','orden_despacho.factura_id')
+        ->join('detalle_orden','detalle_orden.orden_id','=','orden_despacho.orden_id')
+        ->join('movimiento_producto','movimiento_producto.movimiento_id','=','detalle_orden.movimiento_id')
+        ->select('movimiento_producto.movimiento_cantidad','movimiento_producto.movimiento_costo_promedio','movimiento_producto.movimiento_total')
+        ->where('movimiento_producto.producto_id','=',$producto->producto_id)->where('orden_despacho.orden_reserva','=','1')
+        ->where('factura_venta.factura_fecha','>=',$fechaI)->where('factura_venta.factura_fecha','<=',$fechaF)->get() as $movimiento){
+            $resultado [0] = $resultado[0] + round($movimiento->movimiento_cantidad,2); 
+            $valor = floatval($movimiento->movimiento_costo_promedio) * floatval($movimiento->movimiento_cantidad);
+            $resultado [1] = $resultado[1] + round($valor,2); 
+            $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
         }
         if($bandera == 0){
             return $resultado;

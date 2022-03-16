@@ -73,7 +73,7 @@ class egresoBodegaController extends Controller
             /********************cabecera de egreso de venta ********************/
             for ($i = 1; $i < count($cantidad); ++$i) {
                 $prod=Producto::findOrFail($isProducto[$i]);
-                $productonombre=$productonombre+$prod->producto_nombre.', ';
+                $productonombre=$productonombre.$prod->producto_nombre.', ';
             }
             $general = new generalController();           
             $egreso = new Egreso_Bodega();
@@ -107,7 +107,7 @@ class egresoBodegaController extends Controller
                 $diario = new Diario();
                 $diario->diario_codigo = $general->generarCodigoDiario($request->get('egreso_fecha'),'CEBP');
                 $diario->diario_fecha = $request->get('egreso_fecha');
-                $diario->diario_referencia = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTO: '.$productonombre;
+                $diario->diario_referencia = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTO';
                 $diario->diario_tipo_documento = 'EGRESO DE BODEGA';
                 $diario->diario_numero_documento = $egreso->cabecera_egreso_numero;
                 $diario->diario_beneficiario = $request->get('egreso_destinatario');
@@ -115,7 +115,7 @@ class egresoBodegaController extends Controller
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('egreso_fecha'))->format('m');
                 $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('egreso_fecha'))->format('Y');
-                $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTOS';
+                $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTOS: '.$productonombre;
                 $diario->diario_cierre = '0';
                 $diario->diario_estado = '1';
                 $diario->empresa_id = Auth::user()->empresa_id;

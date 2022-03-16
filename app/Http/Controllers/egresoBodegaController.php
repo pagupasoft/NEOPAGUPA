@@ -68,8 +68,13 @@ class egresoBodegaController extends Controller
             $nombre = $request->get('Ddescripcion');
             $pu = $request->get('Dpu');
             $total = $request->get('Dtotal');
-            $consumo = $request->get('Didconsumo');       
+            $consumo = $request->get('Didconsumo');    
+            $productonombre='';   
             /********************cabecera de egreso de venta ********************/
+            for ($i = 1; $i < count($cantidad); ++$i) {
+                $prod=Producto::findOrFail($isProducto[$i]);
+                $productonombre=$productonombre+$prod->producto_nombre.', ';
+            }
             $general = new generalController();           
             $egreso = new Egreso_Bodega();
             $cierre = $general->cierre($request->get('egreso_fecha'));          
@@ -102,7 +107,7 @@ class egresoBodegaController extends Controller
                 $diario = new Diario();
                 $diario->diario_codigo = $general->generarCodigoDiario($request->get('egreso_fecha'),'CEBP');
                 $diario->diario_fecha = $request->get('egreso_fecha');
-                $diario->diario_referencia = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTO';
+                $diario->diario_referencia = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTO: '.$productonombre;
                 $diario->diario_tipo_documento = 'EGRESO DE BODEGA';
                 $diario->diario_numero_documento = $egreso->cabecera_egreso_numero;
                 $diario->diario_beneficiario = $request->get('egreso_destinatario');

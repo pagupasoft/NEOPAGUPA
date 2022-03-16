@@ -706,6 +706,8 @@ Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/historial', [historialClinicoController::class, 'historial'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/ver', [historialClinicoController::class, 'ver'])->middleware('auth')->middleware('acceso');
+Route::get('/historialClinico/{id}/informacion', [historialClinicoController::class, 'informacion'])->middleware('auth')->middleware('acceso');
+
 Route::get('/reporteDepreciacion', [depreciacionMensualController::class, 'reporteDepreciacionActivo'])->middleware('auth');
 Route::get('/reporteDepreciacion', [depreciacionMensualController::class, 'nuevo'])->middleware('auth');
 Route::get('/examen/{id}/agregarValores', [examenController::class, 'agregarValores'])->middleware('auth')->middleware('acceso');

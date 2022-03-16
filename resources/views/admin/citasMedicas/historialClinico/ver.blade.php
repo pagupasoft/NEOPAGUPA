@@ -1,5 +1,11 @@
 @extends ('admin.layouts.admin')
 @section('principal')
+
+<style>
+    a:hover{
+        cursor: pointer
+    }
+</style>
 <form class="form-horizontal" method="POST" action="/historialClinico">
 @csrf
 <div class="card card-secondary">
@@ -50,7 +56,7 @@
                     </li>             
                 </ul>
             </div>  
-            <div class="col-8" style="height: 80vh overflow-y: scrol"> 
+            <div class="col-8" style="height: 80vh; overflow-y: scroll"> 
                 <div class="form-group">
                     <div class="well listview-pagupa">
                         <div class="tab-content" id="myTabContent">
@@ -340,10 +346,23 @@
                 <!-- Timeline -->
                 <ul class="timeline">
                     @foreach($historial as $historiales)
-                    <li class="timeline-item bg-white rounded ml-3 p-4 shadow active">
-                        <div class="timeline-arrow"></div>
-                        <a  href="{{ url("historialClinico/{$historiales->orden_id}/cargar") }}"  > <h5 class="h7 mb-0 text-center"> @if(isset($historiales->medico->empleado)) {{$historiales->medico->empleado->empleado_nombre}} @else @if(isset($historiales->medico->proveedor)) {{$historiales->medico->proveedor->proveedor_nombre}} @endif @endif <br>{{$historiales->especialidad->especialidad_nombre}}</h5><span class="small text-center"><i class="fa fa-clock-o mr-1"></i>{{$historiales->orden_fecha}} {{$historiales->orden_hora}}</span></a> 
-                    </li>
+                    <a  class="card" onclick="cargarConsultaMedica({{ $historiales->orden_id }})">
+                        <li class="timeline-item bg-white rounded ml-3 p-4 shadow active">
+                            <div class="timeline-arrow"></div>
+                            <h5 class="h7 mb-0 text-center">
+                                @if(isset($historiales->medico->empleado)) 
+                                    {{$historiales->medico->empleado->empleado_nombre}} 
+                                @elseif(isset($historiales->medico->proveedor)) 
+                                    {{$historiales->medico->proveedor->proveedor_nombre}} 
+                                @endif 
+                                
+                                <br>
+                                
+                                {{$historiales->especialidad->especialidad_nombre}}
+                            </h5>
+                            <span class="small text-center"><i class="fa fa-clock-o mr-1"></i>{{$historiales->orden_fecha}} {{$historiales->orden_hora}}</span>
+                        </li>
+                    </a> 
                     @endforeach
                     
                     
@@ -359,9 +378,26 @@
 @endsection
 
 <script>
-function make(e) {
-        // ...  your function code
-        // e.preventDefault();   // use this to NOT go to href site
+    function cargarConsultaMedica($id) {
+        cargarDatosInfo($id);
+    }
+
+    function cargarDatos(){
+        $.ajax({
+            async: false,
+            url: '{{ url("historialClinico/") }}/'+$id+'/informacion',
+            dataType: "json",
+            type: "GET",
+            data: {},                      
+            success: function(data){ 
+                console.log("Cargando")
+                console.log(data)  
+                
+            },
+            error: function(data) { 
+                console.log(data);       
+            },
+        });
     }
 </script>
 

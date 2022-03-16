@@ -110,7 +110,7 @@ class egresoBodegaController extends Controller
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('egreso_fecha'))->format('m');
                 $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('egreso_fecha'))->format('Y');
-                $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTO: '.$egreso->cabecera_egreso_numero;
+                $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BODEGA DE PRODUCTOS';
                 $diario->diario_cierre = '0';
                 $diario->diario_estado = '1';
                 $diario->empresa_id = Auth::user()->empresa_id;
@@ -164,7 +164,7 @@ class egresoBodegaController extends Controller
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
                         $detalleDiario->detalle_haber = $total[$i];
-                        $detalleDiario->detalle_comentario = 'P/R SALIDA DE INVENTARIO DE PRODUCTO CON CODIGO '.$producto->producto_codigo;
+                        $detalleDiario->detalle_comentario = 'P/R SALIDA DE INVENTARIO DEL PRODUCTO '.$producto->producto_nombre.' CON CODIGO '.$producto->producto_codigo. ' Y CANTIDAD '.$cantidad[$i];
                         $detalleDiario->detalle_tipo_documento = 'EGRESO DE BODEGA';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';

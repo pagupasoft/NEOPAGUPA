@@ -220,6 +220,7 @@ use App\Http\Controllers\modificarRolController;
 use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
 use App\Http\Controllers\reporteUtilidadController;
+use App\Http\Controllers\reporteVentasProductoController;
 use App\Http\Controllers\repoteBancarioController;
 use App\Http\Controllers\rolConsolidadoCostaMarketController;
 use App\Http\Controllers\rolIndividualCostaMarketController;
@@ -456,6 +457,8 @@ Route::resource('listaAsientoDiario', listaAsientosDiariosController::class)->mi
 Route::resource('individualrol', cabeceraRolAdministrativoController::class)->middleware('auth');
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
 Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middleware('auth');
+Route::resource('reporteVentaProductoC', reporteVentasProductoController::class)->middleware('auth');
+
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');

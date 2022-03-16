@@ -227,22 +227,28 @@ class quincenaConsolidadaController extends Controller
             $nombre = $request->get('Dnombre');
             $Squincena = $request->get('quincena');
           
-        $general = new generalController();
-        $fecha=$request->get('fecha')."-15";
-        $total=0;
+            $general = new generalController();
+            $fecha=$request->get('fecha')."-01";
+            $dth = new DateTime($fecha);
+            $fechafin=($dth->format('Y-m-t'));
+            $total=0;
       
-        $cierre = $general->cierre($fecha);
-       
-        $urlcheque = '';
-        $datos=null;
-        if($cierre){
-            return redirect('quincenaConsolidada')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-        }
-        $banco=Banco::findOrFail($request->get('banco_id'));
-        $cuentabanco=Cuenta_Bancaria::findOrFail($request->get('cuenta_id'));
-        $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-        $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
-            
+            $cierre = $general->cierre($fecha);
+            if($cierre){
+                return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            $urlcheque = '';
+            $datos=null;
+            for ($i = 0; $i < count($contador); ++$i) {
+                if(count(Quincena::buscarquincena($idEmpleado[$contador[$i]],$fecha,$fechafin)->get())>0){
+                    return redirect('quincenaConsolidada/new/'.$request->get('punto_id'))->with('error2','Ya existe la quincena de un empleado');
+                }
+            }
+            $banco=Banco::findOrFail($request->get('banco_id'));
+            $cuentabanco=Cuenta_Bancaria::findOrFail($request->get('cuenta_id'));
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
+                
           
             if ($request->get('idTipo') == 'Cheque') {
             $numero=$request->get('idNcheque');

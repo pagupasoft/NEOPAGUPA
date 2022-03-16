@@ -164,7 +164,7 @@ class egresoBodegaController extends Controller
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe = 0.00;
                         $detalleDiario->detalle_haber = $total[$i];
-                        $detalleDiario->detalle_comentario = 'P/R SALIDA DE INVENTARIO DEL PRODUCTO '.$producto->producto_nombre.' CON CODIGO '.$producto->producto_codigo. ' Y CANTIDAD '.$cantidad[$i];
+                        $detalleDiario->detalle_comentario = 'P/R SALIDA DE INVENTARIO DEL PRODUCTO '.$producto->producto_nombre.' CON LA CANTIDAD DE '.$cantidad[$i].' Y CODIGO '.$producto->producto_codigo;
                         $detalleDiario->detalle_tipo_documento = 'EGRESO DE BODEGA';
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_conciliacion = '0';

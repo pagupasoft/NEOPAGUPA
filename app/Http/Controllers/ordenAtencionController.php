@@ -681,6 +681,7 @@ class ordenAtencionController extends Controller
     public function buscarByFecha($buscar){
         return Orden_Atencion::OrdenFecha($buscar)->get();
     }
+    
     public function facturarOrden($idOrden){
         try{
             $orden = Orden_Atencion::findOrFail($idOrden);

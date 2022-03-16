@@ -39,6 +39,7 @@ use App\Models\Valor_Laboratorio;
 use App\Models\Valor_Referencial;
 use DateTime;
 use PDF;
+use Illuminate\Support\Facades\Storage;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -664,6 +665,44 @@ class examenController extends Controller
         return Examen::BuscarProductoslaboratorio($id)->get();
     }
 
+    public function getOrdenPdf(Request $request){
+        $orden_numero_id=$request->id;
+
+        $headers = array();
+        $headers[] = 'Accept: application/pdf';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes/'.$orden_numero_id.'/resultados/pdf');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $mensaje = $this->agregarCodigo($httpcode);
+
+        $data = $result;
+        $destination = '../public/pdf/abc.pdf';
+        $file = fopen($destination, "w+");
+        fputs($file, $data);
+        fclose($file); 
+        
+        header("content-type: application/pdf");
+        
+        if($httpcode==200){
+            echo $result;
+        }
+        else
+            return null;
+    }
+    
     private function postCrearOrden($orden_examen){
         $examenes = [];
 
@@ -802,7 +841,7 @@ class examenController extends Controller
 
         return $mensaje;
     }
-
+    
     private function sendMailNotifications($orden_numero_referencia){
         $empresa=Empresa::Empresa()->first();
         require base_path("vendor/autoload.php");
@@ -919,10 +958,8 @@ class examenController extends Controller
                     $analisis->analisis_estado=3;
                     $analisis->save();
 
-                    /*Inicio de registro de auditoria */
                     $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Eliminacion del examen -> '.$examen->producto_id.' con id -> '.$examen->examen_id,'0','');
-                    /*Fin de registro de auditoria */
+                    $auditoria->registrarAuditoria('Se ha receptado correctamente una notificación (webhook), orden externa procesada: '.$request->numero_orden_externa,'0','');
                     
                     DB::commit();
                     return response()->json(['result'=>'OK', 'message' => 'informacion recibida correctamente'], 200);
@@ -942,7 +979,7 @@ class examenController extends Controller
 
                     /*Inicio de registro de auditoria */
                     $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Se ha receptado correctamente una notificación (webhook), orden externa '.$request->numero_orden_externa,'0','');
+                    $auditoria->registrarAuditoria('Se ha cambiado una orden de laboratorio como Pendiente (webhook), orden externa '.$request->numero_orden_externa,'0','');
                     /*Fin de registro de auditoria */
                    
                     DB::commit();

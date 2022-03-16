@@ -1000,6 +1000,7 @@ Route::get('/examenes/testGetOrdenes', [atencionCitasController::class, 'pruebaG
 Route::get('/examenes/testGetOrden', [atencionCitasController::class, 'pruebaGetOrden'])->middleware('auth');
 Route::get('/examenes/testGetOrdenPdf', [atencionCitasController::class, 'pruebaGetOrdenPdf'])->middleware('auth');
 Route::post('/examenes/getNotifications', [examenController::class, 'getNotifications']);
+Route::get('/examenes/getOrdenPdf', [examenController::class, 'getOrdenPdf']);
 
 //Buscar Examenes de Imagen
 Route::get('/imagenes/searchN/{buscar}', [ImagenController::class, 'buscarBy'])->middleware('auth');;
@@ -1166,6 +1167,7 @@ Route::get('/valorLaboratorio/{id}/eliminar',  [detalleLaboratorioController::cl
 Route::get('/analisisLaboratorio/{id}/imprimirorden', [analisis_LaboratorioController::class, 'imprimiranalisis'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/resultados', [analisis_LaboratorioController::class, 'resultados'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/enviar', [analisis_LaboratorioController::class, 'enviar'])->middleware('auth');
+Route::get('/analisisLaboratorio/cargarDatosExamenes', [analisis_LaboratorioController::class, 'cargarDatosExamenes'])->middleware('auth');
 
 //orden de recepcion
 Route::get('/ordenRecepecion/{id}/eliminar',  [ordenRecepcionController::class, 'eliminar'])->middleware('auth');

@@ -93,9 +93,7 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request;
-
-        //try {
+        try {
             DB::beginTransaction();
             $auditoria = new generalController();
             $atencion=Orden_Atencion::findOrFail($request->get('orden_id'));
@@ -317,10 +315,10 @@ class atencionCitasController extends Controller
             if(isset($AnexoPdfDir)) $redirect->with('diario', $AnexoPdfDir);
 
             return $redirect;
-        //} catch (\Exception $ex) {
-        //    DB::rollBack();
-        //    return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');
-        //}
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return redirect('atencionCitas')->with('error', 'Ocurrio un error en el procedimiento. Vuelva a intentar.('.$ex->getMessage().')');
+        }
     }
 
     private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){

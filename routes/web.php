@@ -1170,7 +1170,7 @@ Route::get('/valorLaboratorio/{id}/eliminar',  [detalleLaboratorioController::cl
 Route::get('/analisisLaboratorio/{id}/imprimirorden', [analisis_LaboratorioController::class, 'imprimiranalisis'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/resultados', [analisis_LaboratorioController::class, 'resultados'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/enviar', [analisis_LaboratorioController::class, 'enviar'])->middleware('auth');
-Route::get('/analisisLaboratorio/cargarDatosExamenes', [analisis_LaboratorioController::class, 'cargarDatosExamenes'])->middleware('auth');
+Route::post('/analisisLaboratorio/cargarDatosExamenes', [analisis_LaboratorioController::class, 'cargarDatosExamenes'])->middleware('auth');
 
 //orden de recepcion
 Route::get('/ordenRecepecion/{id}/eliminar',  [ordenRecepcionController::class, 'eliminar'])->middleware('auth');

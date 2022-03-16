@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-1">
+            <div class="col-1">
                 <ul class="nav flex-column2 nav-tabs h-100" id="myTab" role="tablist" aria-orientation="vertical">
                     <li class="nav-item">
                         <a class="nav-link btn btn-app2 redondo" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
@@ -50,12 +50,12 @@
                     </li>             
                 </ul>
             </div>  
-            <div class="col-sm-8"> 
+            <div class="col-8" style="height: 80vh overflow-y: scrol"> 
                 <div class="form-group">
                     <div class="well listview-pagupa">
                         <div class="tab-content" id="myTabContent">
                             <!--Informacion-->
-                            <div class="tab-pane fade show" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
+                            <div class="tab-pane fade" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
                                 <br>
                                 <?php $count=1;?>
                                 @if(isset($cespecialidad))
@@ -82,41 +82,40 @@
                                         </div>
                                     @endif
                                 
-                                @endif      
+                                @endif
+                            </div>   
                         </div>
                         
                         <!-- /.tab-contentt --> 
-                        <div class="tab-pane fade show" id="signos" role="tabpanel" aria-labelledby="signos-tab">  
+                        <div class="tab-pane fade" id="signos" role="tabpanel" aria-labelledby="signos-tab">  
                             <br> 
                             <div class="col-12 col-sm-12">
                             <?php $count=1;?>
                             @if(isset($signoVital))
                                 @foreach($signoVital as $signoVitales)  
-                                    
                                     @if(($count % 2) != 0)
                                         <div class="form-group row">
                                     @endif
-                                        <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-2 col-form-label">{{$signoVitales->signo_nombre}}:</label>
-                                        <div class="col-sm-3">    
-                                            <input @if($signoVitales->signo_tipo==1) type="text" @endif @if($signoVitales->signo_tipo==2) type="number" min="0"  step="0.01" required @endif class="form-control" id="id{{$signoVitales->signo_nombre}}" name="svalor[]" value="{{$signoVitales->signo_valor}}" required> 
-                                            <input type="hidden" name="side[]" value="{{$signoVitales->signo_id}}">      
-                                        </div>  
-                                        <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-1 col-form-label">{{$signoVitales->signo_medida}}</label>                   
+                                            <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-2 col-form-label">{{$signoVitales->signo_nombre}}:</label>
+                                            <div class="col-sm-3">    
+                                                <input @if($signoVitales->signo_tipo==1) type="text" @endif @if($signoVitales->signo_tipo==2) type="number" min="0"  step="0.01" required @endif class="form-control" id="id{{$signoVitales->signo_nombre}}" name="svalor[]" value="{{$signoVitales->signo_valor}}" required> 
+                                                <input type="hidden" name="side[]" value="{{$signoVitales->signo_id}}">      
+                                            </div>  
+                                            <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-1 col-form-label">{{$signoVitales->signo_medida}}</label>                   
                                     @if(($count % 2) == 0)        
                                         </div>
                                     @endif
                                     <?php $count++;?> 
                                 @endforeach 
                                 @if((($count-1) % 2) != 0)
-                                    </div>
+                                    <!--/div-->
                                 @endif
-                            
                             @endif    
                         </div>
                     </div>
                         <!-- /.tab-contentt -->                               
                         <!--Diagnóstico-->
-                    <div class="tab-pane fade show" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab">  
+                    <div class="tab-pane fade" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab">  
                         <br> 
                         <div class="col-12 col-sm-12">
                             <div class="form-group">
@@ -142,7 +141,7 @@
                         <!-- /.tab-contentt -->
 
                         <!--Prescripcion-->
-                    <div class="tab-pane fade show" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab">
+                    <div class="tab-pane fade" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab">
                         <br>
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
@@ -226,7 +225,7 @@
                     </div>
                         <!-- /.tab-contentt -->
                         <!--Examenes-->
-                    <div class="tab-pane direct fade show direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
+                    <div class="tab-pane direct fade direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
                         <br>
                         <div class="row">  
                         @if(isset($tipoExamenes))                                   
@@ -261,7 +260,7 @@
                     </div>
                         <!-- /.tab-contentt -->
                         <!--Imagenes-->
-                    <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
+                    <div class="tab-pane fade" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
                         <br>
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
@@ -333,15 +332,11 @@
                             </div> 
                         </div>
                     </div>
-                        <!-- /.tab-contentt -->
-                        
-                        
-                        <!-- /.tab-contentt -->
+                </div>
                 </div>
             </div>
          
-            <div class="col-lg-2">
-                
+            <div class="col-3" style="max-height: 80vh; ; overflow-y: scroll">
                 <!-- Timeline -->
                 <ul class="timeline">
                     @foreach($historial as $historiales)
@@ -362,6 +357,13 @@
 </form>
 <!-- /.card -->
 @endsection
+
+<script>
+function make(e) {
+        // ...  your function code
+        // e.preventDefault();   // use this to NOT go to href site
+    }
+</script>
 
 <script>
 function make(e) {

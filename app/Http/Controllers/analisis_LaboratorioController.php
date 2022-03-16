@@ -45,8 +45,96 @@ class analisis_LaboratorioController extends Controller
         }
     }
 
-    public function obtenerDatosExamenes(){
-        
+    public function cargarDatosExamenes()
+    {
+        $auditoria = new generalController();
+        $cantidad=0;
+        $total=0;
+        $noenviadas=0;
+
+        try{
+            DB::beginTransaction();
+            $analisis_lista = Analisis_Laboratorio::analisisatender()->get();
+
+            foreach($analisis_lista as $analisis){
+                $orden = $analisis->orden;
+
+                if($analisis->analisis_estado==2){
+                    $total++;
+
+                    if($orden->orden_numero_referencia!=null){
+                        $ordenes_externo=(Object)json_decode($this->getOrdenes($orden->orden_numero_referencia));
+
+                        foreach($ordenes_externo->data as $orden){
+                            $orden_laboratorio= (Object) $orden;
+                            
+                            if($orden_laboratorio->estado=='V'  || $orden_laboratorio->estado=='R'){
+                                foreach($orden_laboratorio->examenes as $detalle_array){
+                                    $detalleRequest = (Object) $detalle_array;
+                                    
+                                    //actualizar el detalle de analisis
+                                    $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id, $detalleRequest->id_externo)->first();
+                                    $detalle_analisis->tecnica="$detalleRequest->tecnica";
+                            
+                                    if(isset($detalleRequest->fecha_recepcion_muestra)){
+                                        $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
+                                    }
+
+                                    $detalle_analisis->fecha_reporte="$detalleRequest->fecha_reporte";
+                                    $detalle_analisis->fecha_validacion="$detalleRequest->fecha_validacion";
+                                    $detalle_analisis->usuario_validacion=json_encode($detalleRequest->usuario_validacion);
+                                    $detalle_analisis->estado=$detalleRequest->estado;
+                                    $detalle_analisis->save();
+
+                                    //borrar resultados en caso que haya algún detalle guardado (el API devuelve todos otra vez)
+                                    foreach($analisis->detalles as $detalle){
+                                        foreach($detalle->detalles as $fila){
+                                            $newfila=Detalles_Analisis_Valores::findOrFail($fila->detalle_valores_id);
+                                            $newfila->delete();
+                                        }
+                                    }
+
+                                    //actualizar resultados de cada analisis
+                                    foreach($detalleRequest->resultados as $resultado_array){
+                                        $resultadoObject=(Object) $resultado_array;
+                                        $valores = new Detalles_Analisis_Valores();
+
+                                        $valores->detalle_id=$detalle_analisis->detalle_id;
+                                        $valores->id_externo_parametro=$resultadoObject->id_externo_parametro;
+                                        $valores->nombre_parametro=$resultadoObject->nombre_parametro;
+                                        $valores->resultado=$resultadoObject->resultado;
+                                        $valores->unidad_medida=$resultadoObject->unidad_medida;
+
+                                        $valores->valor_minimo=$resultadoObject->valor_minimo;
+                                        $valores->valor_maximo=$resultadoObject->valor_maximo;
+                                        $valores->valor_normal=$resultadoObject->valor_normal;
+
+                                        $valores->interpretacion=$resultadoObject->interpretacion;
+                                        $valores->comentario=$resultadoObject->comentario;
+
+                                        $valores->save();
+                                    }
+                                }
+                                $cantidad++;
+                                $analisis->analisis_estado=3;
+                                $analisis->save();
+
+                                $auditoria->registrarAuditoria('Se ha actualizado correctamente un analisis desde el exterior, orden examen: '.$orden->orden_id,'0','');
+                            }
+                        }
+                    }
+                }
+                else
+                    $noenviadas++;
+            }
+
+            DB::commit();
+            return redirect('/analisisLaboratorio')->with("success","Se han actualizado $cantidad/$total orden(es) desde módulo externo, $noenviadas no enviadas al laboratorio");
+        }
+        catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/analisisLaboratorio')->with("error2","Hubo un error al actualizar ordendes, error ".$ex);
+        }
     }
 
     public function imprimiranalisis($id)
@@ -157,8 +245,9 @@ class analisis_LaboratorioController extends Controller
         }
     }
 
-    /* get exams PDF fro Oreon API */
-    private function showExamenResults($orden_id_referencia){
+    /* get PDF exam results from Oreon API */
+    private function showExamenResults($orden_id_referencia)
+    {
         $headers = array();
         $headers[] = 'Accept: application/pdf';
         $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
@@ -184,6 +273,68 @@ class analisis_LaboratorioController extends Controller
         else
             return null;
     }
+
+
+    /* get all pending orders from ORION API  */
+    private function getOrdenes($orden_numero_externo = null, $fecha1=null, $fecha2=null, $identificacion=null, $estado=null)
+    {
+        $filtro='';
+
+        if(isset($orden_numero_externo)) $filtro='&filtrar[numero_orden]='.$orden_numero_externo;
+
+        if(isset($fecha1)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[fecha_orden_desde]='.$fecha1;
+            else
+                $filtro='filtrar[fecha_orden_desde]='.$fecha1;
+        }
+
+        if(isset($fecha2)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[fecha_orden_hasta]='.$fecha2;
+            else
+                $filtro='filtrar[fecha_orden_hasta]='.$fecha2;
+        }
+
+        if(isset($identificacion)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[paciente.numero_identificacion]='.$identificacion;
+            else
+                $filtro='filtrar[paciente.numero_identificacion]='.$identificacion;
+        }
+
+        if(isset($estado)){
+            if(strlen($filtro)>0)
+                $filtro.='&filtrar[examenes.estado]='.$estado;
+            else
+                $filtro='filtrar[examenes.estado]='.$estado;
+        }
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes?incluir=paciente,examenes.resultados'.$filtro);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-Type: application/json';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+
+        return $result;
+    }
+
    
     /**
      * Show the form for creating a new resource.

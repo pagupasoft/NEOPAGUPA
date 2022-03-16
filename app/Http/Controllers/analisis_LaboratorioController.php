@@ -44,6 +44,11 @@ class analisis_LaboratorioController extends Controller
             return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo');
         }
     }
+
+    public function obtenerDatosExamenes(){
+        
+    }
+
     public function imprimiranalisis($id)
     { 
         try{
@@ -68,9 +73,18 @@ class analisis_LaboratorioController extends Controller
     public function enviar($id)
     { 
         try{
-            
             $analisis = Analisis_Laboratorio::findOrFail($id);
-            //$tipo= Orden_Examen::Ordenanalisis($analisis->orden_id)->select('tipo_examen.tipo_id','tipo_examen.tipo_nombre')->distinct()->get();
+            $response_pdf_text=$this->showExamenResults($analisis->orden->orden_id_referencia);
+            
+            /* guardar temporalmente la orden de examenes*/
+            $data = $response_pdf_text;
+            $destination = '../public/PDF/temp_examenes'.$id.'.pdf';
+            $file = fopen($destination, "w+");
+            fputs($file, $data);
+            fclose($file);
+
+
+            /*$tipo= Orden_Examen::Ordenanalisis($analisis->orden_id)->select('tipo_examen.tipo_id','tipo_examen.tipo_nombre')->distinct()->get();
             $empresa =  Empresa::empresa()->first();
             $view =  \View::make('admin.formatosPDF.resultadoExamen', ['analisis'=>$analisis,'empresa'=>$empresa]);
             $ruta = public_path().'/rusultadosExamenes/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $analisis->analisis_fecha)->format('d-m-Y');
@@ -79,28 +93,32 @@ class analisis_LaboratorioController extends Controller
             }
             $nombreArchivo = 'RE-'.$analisis->analisis_numero;
             PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo.'.pdf');
+            */
+
+            //$analisis->analisis_estado='4';
+            //$analisis->save();
             
-            $analisis->analisis_estado='4';
-            $analisis->save();
-            
-            $email=Email_Empresa::Email()->first();
+            //$email=Email_Empresa::Email()->first();
 
             require base_path("vendor/autoload.php");
             $mail = new PHPMailer(true);
             $mail->isSMTP(); // tell to use smtp
             $mail->CharSet = 'utf-8'; // set charset to utf8
-            $mail->Host = trim($email->email_servidor);
+            $mail->Host =  'mail.pagupasoft.com';  //$mail->Host = trim($email->email_servidor);
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';//$mail->SMTPSecure = false;
             $mail->SMTPAutoTLS = false;
             $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
-            $mail->Username = trim($email->email_usuario);
-            $mail->Password = trim($email->email_pass);
+
+            $mail->Username = trim('neopagupa@pagupasoft.com');  //$mail->Username = trim($email->email_usuario);
+            $mail->Password = trim('PagupaServer07@');//$mail->Password = trim($email->email_pass);
+
             $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
             $mail->Subject = 'NEOPAGUPA-Sistema Contable';
-            $mail->MsgHTML('RESULTADOS DE ANANLISI DEL PACIENTE ');
+            $mail->MsgHTML('RESULTADOS DE ANALISIS DEL PACIENTE ');
             $mail->addAddress(trim($analisis->orden->expediente->ordenatencion->paciente->paciente_email), 'SDS');
-            $mail->AddAttachment($ruta.'/'.$nombreArchivo.'.pdf', 'ResultadosAnalisis.pdf');
+            //$mail->AddAttachment($ruta.'/'.$nombreArchivo.'.pdf', 'ResultadosAnalisis.pdf');
+            $mail->AddAttachment($destination, 'Resultado de examenes');
             $mail->SMTPOptions= array(
                 'ssl' => array(
                 'verify_peer' => false,
@@ -109,6 +127,9 @@ class analisis_LaboratorioController extends Controller
                 )
             );
             $mail->send();
+
+            /* borrar el archivo pdf luego de enviarlo */
+            unlink($destination);
 
             return redirect('analisisLaboratorio')->with('success', 'Se envio la orden de examen exitosamente');
         }
@@ -124,10 +145,44 @@ class analisis_LaboratorioController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $analisis = Analisis_Laboratorio::findOrFail($id);
-            return view('admin.laboratorio.ordenesExamen.atender',['analisis'=>$analisis,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+
+            $response=$this->showExamenResults($analisis->orden->orden_id_referencia);
+            header("content-type: application/pdf");
+            echo $response;
+
+
+            //return view('admin.laboratorio.ordenesExamen.atender',['analisis'=>$analisis,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
+    }
+
+    /* get exams PDF fro Oreon API */
+    private function showExamenResults($orden_id_referencia){
+        $headers = array();
+        $headers[] = 'Accept: application/pdf';
+        $headers[] ='Authorization: Bearer SUHeKxqVgrz8Pu97U3nQJEPTHGO43Ym4ip7FQa6D1DldHic3Deij4r09R9b7';
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://demo.orion-labs.com/api/v1/ordenes/'.$orden_id_referencia.'/resultados/pdf');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        
+        if($httpcode==200){
+            return $result;
+        }
+        else
+            return null;
     }
    
     /**

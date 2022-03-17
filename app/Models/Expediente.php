@@ -42,6 +42,11 @@ class Expediente extends Model
         return $this->belongsTo(Orden_Atencion::class, 'orden_id', 'orden_id');
     }
 
+    public function detalleExpediente()
+    {
+        return $this->hasMany(Detalle_Expediente::class, 'expediente_id', 'expediente_id');
+    }
+
     public function diagnostico()
     {
         return $this->belongsTo(Diagnostico::class, 'expediente_id', 'expediente_id');
@@ -60,6 +65,11 @@ class Expediente extends Model
     public function ordenImagen()
     {
         return $this->belongsTo(Orden_Imagen::class, 'expediente_id', 'expediente_id');
+    }
+
+    public function signosVitales()
+    {
+        return $this->hasMany(Signos_Vitales::class, 'expediente_id', 'expediente_id');
     }
 
     public function scopeFindByOrden($query, $ordenId){

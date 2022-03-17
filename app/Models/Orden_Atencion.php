@@ -78,7 +78,7 @@ class Orden_Atencion extends Model
     }
     public function expediente()
     {
-        return $this->hasOne(Expediente::class, 'orden_id', 'orden_id');
+        return $this->belongsTo(Expediente::class, 'orden_id', 'orden_id');
     }
     public function especialidad()
     {
@@ -166,7 +166,10 @@ class Orden_Atencion extends Model
     }
     public function scopeHistorial($query, $id){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                    )->where('orden_estado','=','4')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('paciente_id','=',$id);
+                    )->where('orden_estado','=','3'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->where('paciente_id','=',$id
+                    )->orderByDesc('orden_atencion.orden_fecha');
     }
     
     public function scopeOrdenProcedimientoId($query, $id){

@@ -453,7 +453,7 @@ class atencionCitasController extends Controller
             }
             $medico = Medico::medico($medicoId)->first();
             $mespecialidadM = Medico_Especialidad::mespecialidadM($medicoId)->first();
-            $ordenAtencion = Orden_Atencion::Orden($id)->first();
+            $ordenAtencion = Orden_Atencion::findOrFail($id);
             $cespecialidad=Configuracion_Especialidad::ConfiEspecialidades($ordenAtencion->especialidad_id)->get();
      
             $signoVital=Signos_Vitales::SignoVitalOrdenId($ordenAtencion->orden_id)->get();

@@ -71,59 +71,15 @@
             <div class="col-8" style="height: 80vh; overflow-y: scroll"> 
                 <div class="form-group tab-group">
                     <div class="tab-pane col-12 oculto" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
-                        <br>
-                        <?php $count=1;?>
-                        @if(isset($cespecialidad))
-                            @foreach($cespecialidad as $cespecialidades)  
-                                @if(($count % 2) != 0)
-                                <div class="form-group row">
-                                @endif
+                    <div id="marco-expediente" class="col-12 col-sm-12">
                             
-                                    <label for="id{{$cespecialidades->configuracion_nombre}}" class="col-sm-2 col-form-label">{{$cespecialidades->configuracion_nombre}}:</label>
-                                    <div class="col-sm-3">    
-                                        <input @if($cespecialidades->configuracion_tipo==1) type="text" @endif @if($cespecialidades->configuracion_tipo==2) type="number" min="0"  step="0.01" required @endif class="form-control" id="id{{$cespecialidades->configuracion_nombre}}" name="valor[]" value="" required> 
-                                        <input type="hidden" name="nombre[]" value="{{$cespecialidades->configuracion_nombre}}">  
-                                        <input type="hidden" name="tipo[]" value="{{$cespecialidades->configuracion_tipo}}">
-                                        <input type="hidden" name="medida[]" value="{{$cespecialidades->configuracion_medida}}">
-                                        <input type="hidden" name="ide[]" value="{{$cespecialidades->configuracion_id}}">      
-                                    </div>
-                                    <label for="id{{$cespecialidades->configuracion_nombre}}" class="col-sm-1 col-form-label">{{$cespecialidades->configuracion_medida}}</label>           
-                                @if(($count % 2) == 0)        
-                                </div>
-                                @endif
-                                <?php $count++;?>     
-                            @endforeach 
-                            @if((($count-1) % 2) != 0)
-                                </div>
-                            @endif
-                        
-                        @endif
+                            </div>
                     </div>   
 
                     <div class="tab-pane col-12 oculto" id="signos" role="tabpanel" aria-labelledby="signos-tab">  
                         <br> 
-                        <div class="col-12 col-sm-12">
-                            <?php $count=1;?>
-                            @if(isset($signoVital))
-                                @foreach($signoVital as $signoVitales)  
-                                    @if(($count % 2) != 0)
-                                        <div class="form-group row">
-                                    @endif
-                                            <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-2 col-form-label">{{$signoVitales->signo_nombre}}:</label>
-                                            <div class="col-sm-3">    
-                                                <input @if($signoVitales->signo_tipo==1) type="text" @endif @if($signoVitales->signo_tipo==2) type="number" min="0"  step="0.01" required @endif class="form-control" id="id{{$signoVitales->signo_nombre}}" name="svalor[]" value="{{$signoVitales->signo_valor}}" required> 
-                                                <input type="hidden" name="side[]" value="{{$signoVitales->signo_id}}">      
-                                            </div>  
-                                            <label for="id{{$signoVitales->signo_nombre}}" class="col-sm-1 col-form-label">{{$signoVitales->signo_medida}}</label>                   
-                                    @if(($count % 2) == 0)        
-                                        </div>
-                                    @endif
-                                    <?php $count++;?> 
-                                @endforeach 
-                                <div>
-                                    </div>
-                                
-                            @endif    
+                        <div id="marco-signos" class="col-12 col-sm-12">
+                            
                         </div>
                     </div>
 
@@ -162,7 +118,6 @@
                                     <table id="cargarItemPrescripcion" class="table table-striped table-hover" style="margin-bottom: 6px;">
                                         <thead>
                                             <tr class="letra-blanca fondo-azul-claro text-center">
-                                                <th></th>
                                                 <th>Medicinas y dietas</th>
                                                 <th>Cant</th>
                                                 <th>Indicaciones</th>  
@@ -195,7 +150,7 @@
                         <br>
                         <div class="row">  
                             <iframe style='display:none' id='frame' width='100%' height='100%' frameborder='0'></iframe>
-                        <div>
+                        </div>
                     </div>
                     
                     <div class="tab-pane col-12 oculto" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
@@ -267,38 +222,56 @@
                             </div> 
                         </div>
                     </div>
-                
                 </div>
             </div>
-            </div>
-            </div>
+        
          
             <div class="col-3" style="max-height: 80vh; ; overflow-y: scroll">
                 <!-- Timeline -->
                 <ul class="timeline">
-                    @foreach($historial as $historiales)
-                    <a  class="card" onclick="cargarConsultaMedica({{ $historiales->orden_id }})">
-                        <li id="timeline{{ $historiales->orden_id }}" class="timeline-item bg-white rounded ml-3 p-4 shadow">
-                            <div class="timeline-arrow"></div>
-                            <h5 class="h7 mb-0 text-center">
-                                @if(isset($historiales->medico->empleado)) 
-                                    {{$historiales->medico->empleado->empleado_nombre}} 
-                                @elseif(isset($historiales->medico->proveedor)) 
-                                    {{$historiales->medico->proveedor->proveedor_nombre}} 
-                                @endif 
-                                
-                                <br>
-                                
-                                {{$historiales->especialidad->especialidad_nombre}}
-                            </h5>
-                            <span class="small text-center"><i class="fa fa-clock-o mr-1"></i>{{$historiales->orden_fecha}} {{$historiales->orden_hora}}</span>
-                        </li>
-                    </a> 
-                    @endforeach
-                    
-                    
-                </ul><!-- End -->
+                    <?php 
+                        $c=0;
+                    ?>
 
+                    @foreach($historial as $historiales)
+                        <?php $c++; ?>
+
+                        <a  class="card" onclick="cargarConsultaMedica({{ $historiales->orden_id }})">
+                            <li id="timeline{{ $historiales->orden_id }}" class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                                <div class="timeline-arrow"></div>
+                                <h5 class="h7 mb-0 text-center">
+                                    @if(isset($historiales->medico->empleado)) 
+                                        {{$historiales->medico->empleado->empleado_nombre}} 
+                                    @elseif(isset($historiales->medico->proveedor)) 
+                                        {{$historiales->medico->proveedor->proveedor_nombre}} 
+                                    @endif 
+                                    
+                                    <br>
+                                    
+                                    {{$historiales->especialidad->especialidad_nombre}}
+                                </h5>
+                                <span class="small text-center"><i class="fa fa-clock-o mr-1"></i>{{$historiales->orden_fecha}} {{$historiales->orden_hora}}</span>
+                            </li>
+                        </a>
+                        <?php
+                            if($c==1){
+                                $historial_primero=$historiales->orden_id;
+                            }
+                        ?>
+                    @endforeach
+
+                    <script>
+                        item1= <?= $historial_primero; ?>
+
+                        if(item1){
+                            setTimeout(function(){
+                                cargarConsultaMedica(item1)
+                                aditionalTab = document.getElementById("adicional-tab")
+                                aditionalTab.click()
+                            }, 1000)
+                        }
+                    </script>
+                </ul><!-- End -->
             </div>
         </div>
     </div>
@@ -320,6 +293,8 @@
     prescripcionTab = document.getElementById("prescripcion-tab")
     examenesTab = document.getElementById("examenes-tab")
     imagenesTab = document.getElementById("imagenes-tab")
+
+    
 
 
     aditionalTab.addEventListener("click", function(){
@@ -439,7 +414,7 @@
 
                     ////borrar tabla de prescripcion
                     $('#cargarItemPrescripcion tbody tr').remove();
-                    console.log('borrando')
+                    //console.log('borrando')
 
                     if(data.prescripcion){
                         observacion_prescripcion.value=data.prescripcion.prescripcion_observacion
@@ -465,9 +440,6 @@
                         }
                     }
 
-
-
-
                     ////////////////////////  orden de Imagenes  ///////////////////////////////////////
                     observacion_imagen = document.getElementById("otros_imagen")
                     observacion_imagen.value=""
@@ -483,7 +455,7 @@
                             data.imagen.detalle_imagen.forEach(det=>{
                                 var linea = $("#plantillaItemImagen").html();
 
-                                console.log(linea)
+                                //console.log(linea)
 
                                 linea = linea.replace(/{ImagenNombre}/g, det.imagen.imagen_nombre);
                                 linea = linea.replace(/{ImagenId}/g, det.imagen_id);
@@ -497,16 +469,12 @@
                     //https://neopagupa.com/public/analisisLaboratorio/23/resultados
 
                     ////////////////////////  Analisis de Laboratorio  /////////////////////////////
-                    observacion_imagen = document.getElementById("otros_imagen")
-                    observacion_imagen.value=""
-
-                    ////borrar tabla
-                    $('#cargarItemImagen tbody tr').remove();
+                    
                     
 
                     if(data.examen){
-                        console.log(data.examen)
-                        console.log(data.orden_estado)
+                        //console.log(data.examen)
+                        //console.log(data.orden_estado)
                         if(data.examen.orden_estado==2 || data.examen.orden_estado==3){
                             var frame = $('#frame');
                             var url = "/analisisLaboratorio/"+data.examen.analisis.analisis_laboratorio_id+"/resultados";
@@ -515,6 +483,68 @@
                         else{
 
                         }
+                    }
+
+                    /////////////////signos vitales
+                    marco_signos=document.getElementById('marco-signos')
+                    
+                    while (marco_signos.firstChild) {
+                        marco_signos.removeChild(marco_signos.firstChild);
+                    }
+
+                    if(data.signos_vitales){
+                        data.signos_vitales.forEach(det=>{
+                            div = document.createElement('div')
+                            div.classList.add('row', 'offset-md-4', 'col-md-4', 'mb-5')
+
+                            label = document.createElement('label')
+                            label.classList.add('mb-0')
+                            label.innerHTML=det.signo_nombre
+
+                            input = document.createElement('input')
+                            input.classList.add('form-control')
+                            input.value=det.signo_valor
+                            
+                            if(det.signo_medida)                            
+                                input.value+=det.signo_medida
+
+                            div.appendChild(label)
+                            div.appendChild(input)
+                            marco_signos.appendChild(div)
+                        })
+                    }
+
+                    /////////////////expediente detalle
+                    marco_expediente=document.getElementById('marco-expediente')
+                    
+                    while (marco_expediente.firstChild) {
+                        marco_expediente.removeChild(marco_expediente.firstChild);
+                    }
+
+                    if(data.detalle_expediente){
+                        data.detalle_expediente.forEach(det=>{
+                            div = document.createElement('div')
+                            div.classList.add('row', 'offset-md-2', 'col-md-8', 'mb-5')
+
+                            label = document.createElement('label')
+                            label.classList.add('mb-0')
+                            label.innerHTML=det.detallee_nombre
+
+                            input = document.createElement('textarea')
+                            input.setAttribute('cols',80);
+                            input.setAttribute('rows', 3);
+                            input.setAttribute('rows', 3);
+                            //input.style.resize='none';
+                            input.classList.add('form-control')
+                            input.value=det.detallee_valor
+                            
+                            if(det.signo_medida)                            
+                                input.value+=det.detallee_medida
+
+                            div.appendChild(label)
+                            div.appendChild(input)
+                            marco_expediente.appendChild(div)
+                        })
                     }
                 },
                 error: function(data) { 

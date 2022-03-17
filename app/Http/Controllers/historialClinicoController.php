@@ -52,12 +52,23 @@ class historialClinicoController extends Controller
     }
 
     public function informacion($id){
-        try{
+        //try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
 
             $orden=Orden_Atencion::findOrFail($id);
             $expediente=$orden->expediente;
+            
+            
+            ///////////////detalle  expediente///////////////////////////////
+            $detalle_expediente=$expediente->detalleExpediente;
+            
+
+
+
+            ///////////////signos vitales///////////////////////////////
+            $signosVitales=$expediente->signosVitales;
+
 
             ///////////////diagnóstico///////////////////////////////
             $diagnostico=$expediente->diagnostico;
@@ -85,11 +96,13 @@ class historialClinicoController extends Controller
             //////////////////////examenes/////////////////////////////
             $examen=$expediente->ordenExamen;
             
-            if($examen->analisis){
-                $analisisDetalle=$examen->analisis->detalles;
+            if($examen){
+                if($examen->analisis->detalles){
+                    $analisisDetalle=$examen->analisis->detalles;
 
-                foreach($analisisDetalle as $detalle){
-                    $detalle->detalles;
+                    foreach($analisisDetalle as $detalle){
+                        $detalle->detalles;
+                    }
                 }
             }
             
@@ -110,7 +123,9 @@ class historialClinicoController extends Controller
                 'diagnostico'=>$diagnostico,
                 'examen'=>$examen,
                 'prescripcion'=>$prescripcion,
-                'imagen'=>$imagen
+                'imagen'=>$imagen,
+                'signos_vitales'=>$signosVitales,
+                'detalle_expediente'=>$detalle_expediente
             ];
 
 
@@ -122,10 +137,10 @@ class historialClinicoController extends Controller
             //}else{
             //    return redirect('/denegado');
             //}
-        }
-        catch(\Exception $ex){      
-            return response()->json(['result'=>'error', 'message'=>$ex->getMessage()], 500);
-        }
+        //}
+        //catch(\Exception $ex){      
+        //    return response()->json(['result'=>'error', 'message'=>$ex->getMessage()], 500);
+        //}
     }
 
     public function ver($id)

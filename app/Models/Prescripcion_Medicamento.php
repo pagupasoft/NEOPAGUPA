@@ -42,5 +42,8 @@ class Prescripcion_Medicamento extends Model
     {
         return $this->belongsTo(Prescripcion::class, 'prescripcion_id', 'prescripcion_id');
     }
-    
+    public function medicamento()
+    {
+        return $this->belongsTo(Medicamento::class, 'medicamento_id', 'medicamento_id');
+    }
 }

@@ -19,7 +19,7 @@
 
             <input class="invisible" id="paciente_id" name="paciente_id" value="{{$ordenAtencion->paciente->paciente_id}}">
             <input class="invisible" id="orden_id" name="orden_id" value="{{$ordenAtencion->orden_id}}">
-            <input class="invisible" id="expediente_id" name="expediente_id" value="{{$ordenAtencion->expendiente->expediente_id}}">
+            <input class="invisible" id="expediente_id" name="expediente_id" value="{{$ordenAtencion->expediente->expediente_id}}">
             <div class="form-group row">
                 <label for="sucursal" class="col-sm-1 col-form-label">Paciente:</label>
                 <div class="col-sm-4">

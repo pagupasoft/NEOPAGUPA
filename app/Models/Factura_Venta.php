@@ -183,6 +183,37 @@ class Factura_Venta extends Model
         ->where('sucursal_nombre','=',$sucursal)
         ->where('factura_numero','like','%'.$numeroDoc.'%');
     }
+    public function scopeFacturaVentaxProducto($query, $producto, $bodega, $cliente, $fechadesde, $fechahasta){
+        $query->select('factura_venta.factura_id','factura_venta.factura_numero'
+        ,'producto.producto_codigo'
+        ,'producto.producto_nombre'
+        ,'factura_venta.factura_fecha'
+        ,'detalle_fv.detalle_cantidad'
+        ,DB::raw('(detalle_fv.detalle_precio_unitario / detalle_fv.detalle_cantidad) as pvp')
+        ,'detalle_fv.detalle_iva'
+        ,'detalle_fv.detalle_precio_unitario as subtotal'
+        ,DB::raw('(detalle_fv.detalle_precio_unitario + detalle_fv.detalle_iva) as total')
+        ,'cliente.cliente_nombre'        
+        ,'factura_venta.factura_comentario'
+        ,'producto.tamano_id')
+        ->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+        ->join('producto','producto.producto_id','=','detalle_fv.producto_id')
+        ->join('cliente','cliente.cliente_id','=','factura_venta.cliente_id')
+        ->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')        
+        ->where('factura_venta.factura_estado','=','1')
+        ->where('empresa_id','=',Auth::user()->empresa_id);
+        if($producto != '0'){
+            $query->where('detalle_fv.producto_id', '=', $producto);
+        }
+        if($bodega != '0'){
+        $query->where('bodega.bodega_id','=',$bodega);
+        }
+        if($cliente != '0'){
+            $query->where('cliente.cliente_id','=',$cliente);
+        }      
+        $query->where('factura_venta.factura_fecha','>=',$fechadesde)->where('factura_venta.factura_fecha','<=',$fechahasta)->orderBy('factura_venta.factura_fecha','asc');  
+        return $query;
+    }
     public function arqueoCaja(){
         return $this->belongsTo(Arqueo_Caja::class, 'arqueo_id', 'arqueo_id');
     }
@@ -236,5 +267,8 @@ class Factura_Venta extends Model
     }
     public function empresa(){
         return $this->hasOneThrough(Empresa::class, Forma_Pago::class,'forma_pago_id','empresa_id','forma_pago_id','empresa_id');
+    }
+    public function tamano(){
+        return $this->belongsTo(Tamano_Producto::class, 'tamano_id', 'tamano_id');
     }
 }

@@ -23,7 +23,7 @@
                         data-live-search="true">
                         <option value="0">Todos</option>
                         @foreach($bodegas as $bodega)
-                        <option value="{{ $bodega->bodega_id }}">{{ $bodega->bodega_nombre }}</option>
+                            <option value="{{ $bodega->bodega_id }}"@if(isset($bodegac)) @if($bodegac == $bodega->bodega_id) selected @endif @endif>{{ $bodega->bodega_nombre }}</option>
                         @endforeach
                     </select>
                 </div>

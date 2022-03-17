@@ -21,6 +21,15 @@ class reporteVentasProductoController extends Controller
      */
     public function index()
     {
+        
+        $totalCantidad = 0;
+        $totalIva = 0;
+        $total12=0;
+        $total0=0;
+        $totales =0;
+        $totalLibras =0;
+        $totalKilos =0;
+        $totalTm =0;
         $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
         $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
         $productos = Producto::productos()->where('producto_compra_venta','=','3')->orwhere('producto_compra_venta','=','2')->get();
@@ -28,7 +37,15 @@ class reporteVentasProductoController extends Controller
         return view('admin.inventario.reporteVentaxProducto.index',
         ['productos'=>$productos,
         'clientes'=>Cliente::clientes()->get(),
-        'bodegas'=>$bodegas,        
+        'bodegas'=>$bodegas,   
+        'totalCantidad'=>$totalCantidad,
+        'totalIva'=>$totalIva,
+        'totales'=>$totales,
+        'total12'=>$total12,
+        'total0'=>$total0,
+        'totalLibras'=>$totalLibras,
+        'totalKilos'=>$totalKilos,
+        'totalTm'=>$totalTm,     
         'gruposPermiso'=>$gruposPermiso,         
         'permisosAdmin'=>$permisosAdmin]);
     }
@@ -118,6 +135,7 @@ class reporteVentasProductoController extends Controller
             $fechaselect2 =  $request->get('idDesde');
             $productoC =  $request->get('productoID');
             $clienteC =  $request->get('clienteID');
+            $bodegac =  $request->get('bodega_id');
             $fechaselect2 =  $request->get('idDesde');
             $productos = Producto::productos()->where('producto_compra_venta','=','3')->orwhere('producto_compra_venta','=','2')->get();
             $bodegas = Bodega::Bodegas()->get();
@@ -126,6 +144,7 @@ class reporteVentasProductoController extends Controller
             'fechaselect'=>$fechaselect,
             'clienteC'=>$clienteC,
             'productoC'=>$productoC,
+            'bodegac'=>$bodegac,
             'productos'=>$productos,
             'bodegas'=>$bodegas,
             'clientes'=>Cliente::clientes()->get(),

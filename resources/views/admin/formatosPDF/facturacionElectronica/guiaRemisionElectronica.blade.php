@@ -196,7 +196,7 @@
                         </tr>
                         <tr><td></td></tr>
                         @foreach ($xml->infoAdicional->campoAdicional as $adicional)
-                            <tr><td><b>{{$adicional['nombre']}}: </b> {{ $adicional }}</td></tr>
+                            <tr><td class="observacion-word"><b>{{$adicional['nombre']}}: </b> {{ $adicional }}</td></tr>
                         @endforeach
                     </table>
                 </td>

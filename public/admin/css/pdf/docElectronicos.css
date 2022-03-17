@@ -85,3 +85,6 @@ border-radius: 13px;
 .linea-nc hr{
   width: 97%;
 }
+.observacion-word {
+  word-wrap: break-word;
+}

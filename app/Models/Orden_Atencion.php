@@ -76,15 +76,15 @@ class Orden_Atencion extends Model
     {
         return $this->belongsTo(Factura_Venta::class, 'factura_id', 'factura_id');
     }
-    public function expendiente()
+    public function expediente()
     {
-        return $this->belongsTo(Expediente::class, 'orden_id', 'orden_id');
+        return $this->hasOne(Expediente::class, 'orden_id', 'orden_id');
     }
     public function especialidad()
     {
         return $this->belongsTo(Especialidad::class, 'especialidad_id', 'especialidad_id');
     }
-
+    
     public function scopeOrdenCitaDisponible($query, $medico_id, $especialidad_id, $fecha1, $fecha2){
         return $query->where('medico_id','=',$medico_id
                     )->where('especialidad_id','=',$especialidad_id

@@ -35,6 +35,6 @@ class Detalle_Imagen extends Model
 
     public function imagen()
     {
-        return $this->hasMany(Imagen::class, 'imagen_id', 'imagen_id');
+        return $this->hasOne(Imagen::class, 'imagen_id', 'imagen_id');
     }
 }

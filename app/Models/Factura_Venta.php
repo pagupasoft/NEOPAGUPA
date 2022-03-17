@@ -189,10 +189,10 @@ class Factura_Venta extends Model
         ,'producto.producto_nombre'
         ,'factura_venta.factura_fecha'
         ,'detalle_fv.detalle_cantidad'
-        ,DB::raw('(detalle_fv.detalle_precio_unitario as pvp')
+        ,'detalle_fv.detalle_precio_unitario'
         ,'detalle_fv.detalle_iva'
-        ,'detalle_fv.detalle_precio_unitario as subtotal'
-        ,DB::raw('(detalle_fv.detalle_precio_unitario + detalle_fv.detalle_iva) as total')
+        ,DB::raw('detalle_fv.detalle_precio_unitario * detalle_fv.detalle_cantidad as subtotal')
+        ,DB::raw('(detalle_fv.detalle_total + detalle_fv.detalle_iva) as total')
         ,'cliente.cliente_nombre'        
         ,'factura_venta.factura_comentario'
         ,'producto.tamano_id')

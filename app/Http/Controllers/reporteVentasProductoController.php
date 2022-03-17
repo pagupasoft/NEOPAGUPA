@@ -107,7 +107,7 @@ class reporteVentasProductoController extends Controller
                 $ventaxProductoMatriz[$count]['Producto'] = $ventasProducto->producto_nombre;
                 $ventaxProductoMatriz[$count]['Fecha'] = $ventasProducto->factura_fecha;
                 $ventaxProductoMatriz[$count]['Cantidad'] = $ventasProducto->detalle_cantidad;
-                $ventaxProductoMatriz[$count]['Pvp'] = floatval($ventasProducto->pvp);
+                $ventaxProductoMatriz[$count]['Pvp'] = floatval($ventasProducto->detalle_precio_unitario);
                 $ventaxProductoMatriz[$count]['Iva'] = floatval($ventasProducto->detalle_iva);
                 if($ventasProducto->detalle_iva){
                     $total12= $total12 + floatval($ventasProducto->subtotal);

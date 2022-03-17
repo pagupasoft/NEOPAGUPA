@@ -42,8 +42,26 @@ class Expediente extends Model
         return $this->belongsTo(Orden_Atencion::class, 'orden_id', 'orden_id');
     }
 
+    public function diagnostico()
+    {
+        return $this->belongsTo(Diagnostico::class, 'expediente_id', 'expediente_id');
+    }
 
-    // 
+    public function prescripcion()
+    {
+        return $this->belongsTo(Prescripcion::class, 'expediente_id', 'expediente_id');
+    }
+
+    public function ordenExamen()
+    {
+        return $this->belongsTo(Orden_Examen::class, 'expediente_id', 'expediente_id');
+    }
+
+    public function ordenImagen()
+    {
+        return $this->belongsTo(Orden_Imagen::class, 'expediente_id', 'expediente_id');
+    }
+
     public function scopeFindByOrden($query, $ordenId){
         return $query->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
                     )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'

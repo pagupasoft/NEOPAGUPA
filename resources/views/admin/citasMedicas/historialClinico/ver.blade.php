@@ -14,6 +14,10 @@
         display: none;
     }
 
+    .active{
+        background-color: #c2d7eb !important;
+    }
+
     .active-timeline{
         background-color: #e5a946 !important;
     }
@@ -49,22 +53,22 @@
             <div class="col-1">
                 <ul class="nav flex-column2 nav-tabs h-100" id="myTab" role="tablist" aria-orientation="vertical">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
+                        <a class="nav-link btn btn-app2 redondo" id="adicional-tab" data-toggle="tab" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="signos-tab" data-toggle="tab" href="#signos" role="tab" aria-controls="signos" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Signos Vitales</a>
+                        <a class="nav-link btn btn-app2 redondo" id="signos-tab" data-toggle="tab" role="tab" aria-controls="signos" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Signos Vitales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="diagnostico-tab" data-toggle="tab" href="#diagnostico" role="tab" aria-controls="diagnostico" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Diagnóstico</a>
+                        <a class="nav-link btn btn-app2 redondo" id="diagnostico-tab" data-toggle="tab" role="tab" aria-controls="diagnostico" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Diagnóstico</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="prescripcion-tab" data-toggle="tab" href="#prescripcion" role="tab" aria-controls="prescripcion" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-prescription-bottle-alt"></i> Prescripción</a>
+                        <a class="nav-link btn btn-app2 redondo" id="prescripcion-tab" data-toggle="tab" role="tab" aria-controls="prescripcion" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-prescription-bottle-alt"></i> Prescripción</a>
                     </li>
                     <li class="nav-item">
-                    <a class=" nav-link btn btn-app2 redondo" id="examenes-tab" data-toggle="tab" href="#examenes" role="tab" aria-controls="examenes" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-microscope"></i> Exámenes</a>
+                    <a class=" nav-link btn btn-app2 redondo" id="examenes-tab" data-toggle="tab" role="tab" aria-controls="examenes" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-microscope"></i> Exámenes</a>
                     </li>
                     <li class="nav-item">
-                    <a class=" nav-link btn btn-app2 redondo" id="imagenes-tab" data-toggle="tab" href="#imagenes" role="tab" aria-controls="imagenes" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-id-card-alt"></i> Imágenes</a>
+                    <a class=" nav-link btn btn-app2 redondo" id="imagenes-tab" data-toggle="tab" role="tab" aria-controls="imagenes" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-id-card-alt"></i> Imágenes</a>
                     </li>             
                 </ul>
             </div>  
@@ -268,7 +272,7 @@
                                 cargarConsultaMedica(item1)
                                 aditionalTab = document.getElementById("adicional-tab")
                                 aditionalTab.click()
-                            }, 1000)
+                            }, 600)
                         }
                     </script>
                 </ul><!-- End -->

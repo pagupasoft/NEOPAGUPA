@@ -1,5 +1,11 @@
 @extends ('admin.layouts.admin')
 @section('principal')
+
+<style>
+    .active{
+        background-color: #c2d7eb !important;
+    }
+</style>
 <form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data">
 @csrf
 <div class="card card-secondary">
@@ -98,7 +104,7 @@
                     <div class="well listview-pagupa">
                         <div class="tab-content" id="myTabContent">
                             <!--Informacion-->
-                            <div class="tab-pane fade show" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
+                            <div class="tab-pane fade show" id="adicional" role="tabpanel" aria-labelledby="adicional-tab" style="background: white !important">
                                 <br>
                                 <?php $count=1;?>
                                 @if(isset($cespecialidad))
@@ -129,7 +135,7 @@
                             </div>
                             
                             <!-- /.tab-contentt --> 
-                            <div class="tab-pane fade show" id="signos" role="tabpanel" aria-labelledby="signos-tab">  
+                            <div class="tab-pane fade show" id="signos" role="tabpanel" aria-labelledby="signos-tab" style="background: white !important">  
                                 <br> 
                                 <div class="col-12 col-sm-12">
                                 <?php $count=1;?>
@@ -159,7 +165,7 @@
                             </div>
     	                    <!-- /.tab-contentt -->                               
                             <!--Diagnóstico-->
-                            <div class="tab-pane fade show" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab">  
+                            <div class="tab-pane fade show" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab" style="background: white !important">  
                                 <br> 
                                 <div class="col-12 col-sm-12">
                                     <div class="form-group">
@@ -184,7 +190,7 @@
     	                    <!-- /.tab-contentt -->
 
                             <!--Prescripcion-->
-                            <div class="tab-pane fade show" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab">
+                            <div class="tab-pane fade show" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab" style="background: white !important">
                                 <br>
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-5 col-lg-6" style="margin-bottom: 0px;">
@@ -266,7 +272,7 @@
                             </div>
                             <!-- /.tab-contentt -->
                             <!--Examenes-->
-                            <div class="tab-pane direct fade show direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
+                            <div class="tab-pane direct fade show direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab" style="background: white !important">
                                 <br>
                                 <div class="row">                                           
                                     @foreach($tipoExamenes as $tipoExamen) 
@@ -299,7 +305,7 @@
                             </div>
                             <!-- /.tab-contentt -->
                             <!--Imagenes-->
-                            <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
+                            <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab" style="background: white !important">
                                 <br>
 
                                 
@@ -392,7 +398,7 @@
                             <!-- /.tab-contentt -->
                             <!--Imagenes-->
                             
-                            <div class="tab-pane fade show" id="subirimagenes" role="tabpanel" aria-labelledby="subirimagenes-tab">  
+                            <div class="tab-pane fade show" id="subirimagenes" role="tabpanel" aria-labelledby="subirimagenes-tab" style="background: white !important">  
                                 <br> 
 
                                 <div id="actions" class="row">

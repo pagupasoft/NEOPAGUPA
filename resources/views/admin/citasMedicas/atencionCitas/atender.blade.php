@@ -71,7 +71,7 @@
             <div class="col-sm-1">
                 <ul class="nav flex-column2 nav-tabs h-100" id="myTab" role="tablist" aria-orientation="vertical">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
+                        <a class="nav-link btn btn-app2 redondo active" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-app2 redondo" id="signos-tab" data-toggle="tab" href="#signos" role="tab" aria-controls="signos" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Signos Vitales</a>
@@ -104,7 +104,7 @@
                     <div class="well listview-pagupa">
                         <div class="tab-content" id="myTabContent">
                             <!--Informacion-->
-                            <div class="tab-pane fade show" id="adicional" role="tabpanel" aria-labelledby="adicional-tab" style="background: white !important">
+                            <div class="tab-pane fade show active" id="adicional" role="tabpanel" aria-labelledby="adicional-tab" style="background: white !important">
                                 <br>
                                 <?php $count=1;?>
                                 @if(isset($cespecialidad))
@@ -553,7 +553,8 @@
     }
 
     var id_itemM = 0;  
-    function agregarItemPrescripcion() {   
+    function agregarItemPrescripcion() {
+        console.log('sdfdsfds')
         if (document.getElementById("id_disponible").value > 0) {
             paso=true
 
@@ -579,7 +580,7 @@
             }
                 
             if(paso){
-                if (Number(document.getElementById("id_disponible").value) > Number(document.getElementById("id_cantidad").value)) {
+                if (Number(document.getElementById("id_disponible").value) >= Number(document.getElementById("id_cantidad").value)) {
                     var linea = $("#plantillaItemMedicamento").html();
                     linea = linea.replace(/{ID}/g, id_itemM);
                     linea = linea.replace(/{PmedicinaNombre}/g, document.getElementById("buscarProducto").value);
@@ -597,6 +598,7 @@
             }
         }
     }
+
     function resetearCampos() {
         document.getElementById("id_cantidad").value = 1;
         document.getElementById("codigoProducto").value = "";

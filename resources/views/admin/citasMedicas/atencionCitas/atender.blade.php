@@ -556,24 +556,6 @@
                 paso=false
             }
             else{
-                /*
-                var filas = $("#cargarItemPrescripcion tbody tr").length;
-
-                console.log("filas "+filas)
-                for(i=0; i<filas; i++){
-                    celda= jQuery("#row_"+i).find("td:eq(1)");
-                    
-                    id= celda.children().eq(1).val()
-
-                    console.log(id)
-
-                    if(id==document.getElementById("idProductoID").value){
-                        alert("Este item ya esta en la Lista")
-                        return false
-                    }
-                }
-                */
-
                 $("#cargarItemPrescripcion tbody tr").each(function(){
                     console.log(this)
                     celda= jQuery(this).find("td:eq(1)");
@@ -620,36 +602,65 @@
 
     var id_itemI = 0; 
     function agregarItemImagen(idImag) {
-        var linea = $("#plantillaItemImagen").html();
-        linea = linea.replace(/{ID}/g, id_itemI);
-        linea = linea.replace(/{ImagenNombre}/g, document.getElementById("imagenNombreAux_"+idImag).value);
-        linea = linea.replace(/{ImagenId}/g, document.getElementById("imagenIdAux_"+idImag).value);
-        linea = linea.replace(/{Iobservacion}/g, "");
+        paso=true
+        $("#cargarItemImagen tbody tr").each(function(){
+            celda= jQuery(this).find("td:eq(1)");
+            id= celda.children().eq(1).val()
 
-        $("#cargarItemImagen tbody").append(linea);
-        id_itemI = id_itemI + 1; 
-        $('#modal-imagenes').modal('hide');
-    }
+            if(id==idImag){
+                alert("El examen de imagen "+document.getElementById("imagenNombreAux_"+idImag).value+" ya esta Ingresado en la Orden")
+                paso=false
+                return true
+            }
+        })
 
-    function agregarImagen() { 
-        id=$("#idImagen").val();
-        nombreImagen=$("#buscarImagen").val();
-
-        if(parseInt(id)>0){
-
+        if(paso){
             var linea = $("#plantillaItemImagen").html();
-            linea = linea.replace(/{ID}/g, id);
-            linea = linea.replace(/{ImagenNombre}/g, nombreImagen);
-            linea = linea.replace(/{ImagenId}/g, id);
+            linea = linea.replace(/{ID}/g, id_itemI);
+            linea = linea.replace(/{ImagenNombre}/g, document.getElementById("imagenNombreAux_"+idImag).value);
+            linea = linea.replace(/{ImagenId}/g, document.getElementById("imagenIdAux_"+idImag).value);
             linea = linea.replace(/{Iobservacion}/g, "");
 
             $("#cargarItemImagen tbody").append(linea);
-            //id_itemI = id_itemI + 1; 
-            //$('#modal-imagenes').modal('hide');
+            id_itemI = id_itemI + 1; 
+            $('#modal-imagenes').modal('hide');
+        }   
+    }
 
-            $('#idImagen').val('0');
-            $('#buscarImagen').val('');
+    function agregarImagen() { 
+        paso=true
+        id=$("#idImagen").val();
+        nombreImagen=$("#buscarImagen").val();
+
+        $("#cargarItemImagen tbody tr").each(function(){
+            celda= jQuery(this).find("td:eq(1)");
+            idcelda= celda.children().eq(1).val()
+
+            if(id==idcelda){
+                paso=false
+                return true
+            }
+        })
+        
+        if(parseInt(id)>0){
+            if(paso){
+                var linea = $("#plantillaItemImagen").html();
+                linea = linea.replace(/{ID}/g, id);
+                linea = linea.replace(/{ImagenNombre}/g, nombreImagen);
+                linea = linea.replace(/{ImagenId}/g, id);
+                linea = linea.replace(/{Iobservacion}/g, "");
+
+                $("#cargarItemImagen tbody").append(linea);
+                //id_itemI = id_itemI + 1; 
+                //$('#modal-imagenes').modal('hide');
+
+                $('#idImagen').val('0');
+                $('#buscarImagen').val('');
+            }
+            else
+                alert("El examen de imagen "+nombreImagen+" ya esta Ingresado en la Orden")
         }
+        
     }
 
     /*

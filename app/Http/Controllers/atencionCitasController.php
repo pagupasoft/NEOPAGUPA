@@ -93,8 +93,6 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request;
-
         try {
             DB::beginTransaction();
             $auditoria = new generalController();

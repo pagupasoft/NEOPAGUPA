@@ -895,6 +895,7 @@ Route::get('/puntomision/searchN/{ide}', [puntoEmisionController::class, 'buscar
 Route::post('/procedimiento/searchN', [procedimientoEspecialidadController::class, 'buscarBy'])->middleware('auth');
 Route::post('/analisis/searchN', [examenController::class, 'buscarByExamen'])->middleware('auth');
 Route::get('/medicinas/searchN/{buscar}', [medicamentoController::class, 'buscarBy'])->middleware('auth');
+Route::get('/medicinas/searchId/{buscar}', [medicamentoController::class, 'buscarId'])->middleware('auth');
 
 Route::get('/nuevartencion/searchN/{ide}', [transaccionCompraController::class, 'buscarBy'])->middleware('auth');
 Route::get('/proveedores/searchN/{buscar}', [proveedorController::class, 'buscarByProveedor'])->middleware('auth');

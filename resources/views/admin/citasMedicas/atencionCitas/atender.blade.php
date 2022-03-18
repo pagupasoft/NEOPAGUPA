@@ -6,7 +6,7 @@
         background-color: #c2d7eb !important;
     }
 </style>
-<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data">
+<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data" onsubmit="return comprobarStockPrescripcion()">
 @csrf
 <div class="card card-secondary">
     <div class="card-header">
@@ -467,10 +467,43 @@
 <script>
     cantidadImagenes=0;
 
-    //const fileInput = document.getElementById("tttt");
-
     function borrarMarcoImagen(id){
         $("#"+id).remove();
+    }
+
+    function comprobarStockPrescripcion(){
+        resultado= true
+       
+        //recorro cada medicamento para conocer el stock
+        $("#cargarItemPrescripcion tbody tr").each(function(){
+            celdaId= jQuery(this).find("td:eq(1)");
+            celdaCant= jQuery(this).find("td:eq(2)");
+            
+            id= celdaId.children().eq(1).val()
+            cant= celdaCant.children().eq(0).children().eq(0).val()
+
+            //////extraer el producto para ver el stok
+            $.ajax({
+                url: "/medicinas/searchId/"+id,
+                dataType: "json",
+                type: "GET",
+                async: false,
+                data: {
+                    buscar: id
+                },
+                success: function(data){
+                    if(data.producto_stock<cant){
+                        alert('El producto '+data.producto_nombre+' ya no tiene el Stock suficiente para poder Continuar');
+                        resultado=false
+                    }
+                }
+            });
+
+            if(resultado==false)
+                return false   //salir del Each
+        })
+        
+        return resultado
     }
 
     window.addEventListener('paste', e => {
@@ -505,19 +538,11 @@
 
             $("#previews").append(linea);
             $("#marco"+cantidadImagenes).append(fileInput);
-           
-            
-            
-            //console.log(bytesToSize(file));
-            //console.log(linea+"    "+JSON.stringify(e.clipboardData.files))
         }
         else{
             linea = linea.replace(/tamano:,/g, '0.00Kb');
             linea = linea.replace(/error:,/g, 'No es imagen!');
         }
-
-        //console.log(linea)
-
     });
 
     function bytesToSize(bytes) {
@@ -554,7 +579,6 @@
 
     var id_itemM = 0;  
     function agregarItemPrescripcion() {
-        console.log('sdfdsfds')
         if (document.getElementById("id_disponible").value > 0) {
             paso=true
 
@@ -564,12 +588,8 @@
             }
             else{
                 $("#cargarItemPrescripcion tbody tr").each(function(){
-                    console.log(this)
                     celda= jQuery(this).find("td:eq(1)");
-                    
                     id= celda.children().eq(1).val()
-    
-                    console.log(id)
     
                     if(id==document.getElementById("idProductoID").value){
                         alert("Este item ya esta en la Lista")
@@ -670,25 +690,6 @@
         }
         
     }
-
-    /*
-    <tbody id="plantillaItemImagen">
-        <tr class="text-center" id="row_{ID}">
-            <td>
-                <a onclick="eliminarItem({ID});" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a>
-            </td>
-            <td>
-                {ImagenNombre}<input class="invisible" name="ImagenNombre[]" value="{ImagenNombre}"/>
-                <input class="invisible" name="ImagenId[]" value="{ImagenId}"/>
-            </td>
-            <td>
-                <input class="form-control" name="Iobservacion[]" value="{Iobservacion}">
-            </td>           
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
-    */
 
     var id_itemP = 0; 
     function agregarItemFacturacion(id_itemP) {    

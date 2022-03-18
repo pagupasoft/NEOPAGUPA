@@ -544,26 +544,68 @@
     
     function eliminarItem(id) {
         $("#row_" + id).remove();
-        //id_item = id_item - 1;
     }
 
     var id_itemM = 0;  
     function agregarItemPrescripcion() {   
         if (document.getElementById("id_disponible").value > 0) {
-            if (Number(document.getElementById("id_disponible").value) > Number(document.getElementById("id_cantidad").value)) {
-                var linea = $("#plantillaItemMedicamento").html();
-                linea = linea.replace(/{ID}/g, id_itemM);
-                linea = linea.replace(/{PmedicinaNombre}/g, document.getElementById("buscarProducto").value);
-                linea = linea.replace(/{PproductoId}/g, document.getElementById("idProductoID").value);
-                linea = linea.replace(/{PmedicinaId}/g,document.getElementById("idmedicamento").value);
-                linea = linea.replace(/{Pcantidad}/g,document.getElementById("id_cantidad").value);
-                linea = linea.replace(/{Pindicaciones}/g, "");
+            paso=true
 
-                $("#cargarItemPrescripcion tbody").append(linea);
-                id_itemM = id_itemM + 1; 
-                $('#modal-prescripcion').modal('hide');
-            
-                resetearCampos();
+            if(document.getElementById("codigoProducto").value==""){
+                alert('Busque un examen para agregarlo en la lista')
+                paso=false
+            }
+            else{
+                /*
+                var filas = $("#cargarItemPrescripcion tbody tr").length;
+
+                console.log("filas "+filas)
+                for(i=0; i<filas; i++){
+                    celda= jQuery("#row_"+i).find("td:eq(1)");
+                    
+                    id= celda.children().eq(1).val()
+
+                    console.log(id)
+
+                    if(id==document.getElementById("idProductoID").value){
+                        alert("Este item ya esta en la Lista")
+                        return false
+                    }
+                }
+                */
+
+                $("#cargarItemPrescripcion tbody tr").each(function(){
+                    console.log(this)
+                    celda= jQuery(this).find("td:eq(1)");
+                    
+                    id= celda.children().eq(1).val()
+    
+                    console.log(id)
+    
+                    if(id==document.getElementById("idProductoID").value){
+                        alert("Este item ya esta en la Lista")
+                        paso=false
+                        return true
+                    }
+                })
+            }
+                
+            if(paso){
+                if (Number(document.getElementById("id_disponible").value) > Number(document.getElementById("id_cantidad").value)) {
+                    var linea = $("#plantillaItemMedicamento").html();
+                    linea = linea.replace(/{ID}/g, id_itemM);
+                    linea = linea.replace(/{PmedicinaNombre}/g, document.getElementById("buscarProducto").value);
+                    linea = linea.replace(/{PproductoId}/g, document.getElementById("idProductoID").value);
+                    linea = linea.replace(/{PmedicinaId}/g,document.getElementById("idmedicamento").value);
+                    linea = linea.replace(/{Pcantidad}/g,document.getElementById("id_cantidad").value);
+                    linea = linea.replace(/{Pindicaciones}/g, "");
+
+                    $("#cargarItemPrescripcion tbody").append(linea);
+                    id_itemM = id_itemM + 1; 
+                    $('#modal-prescripcion').modal('hide');
+                
+                    resetearCampos();
+                }
             }
         }
     }
@@ -577,7 +619,7 @@
     }
 
     var id_itemI = 0; 
-    function agregarItemImagen(idImag) {    
+    function agregarItemImagen(idImag) {
         var linea = $("#plantillaItemImagen").html();
         linea = linea.replace(/{ID}/g, id_itemI);
         linea = linea.replace(/{ImagenNombre}/g, document.getElementById("imagenNombreAux_"+idImag).value);

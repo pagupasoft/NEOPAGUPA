@@ -58,7 +58,7 @@ class ordenExamenController extends Controller
     }
     public function facturarOrden($id)
     {
-        //try{
+        try{
             $count=1;
             $orden = Orden_Examen::findOrFail($id);
             if($orden){
@@ -77,8 +77,6 @@ class ordenExamenController extends Controller
                     $procedimiento=Procedimiento_Especialidad::ProcedimientoProductoEspecialidad($ordenes->examen->producto->producto_id,$especialidad->especialidad_id)->first();
                     $producto=Aseguradora_Procedimiento::ProcedimientosAsignados($procedimiento->procedimiento_id,$Paciente->cliente_id)->first();
                     
-                    //echo json_encode($procedimiento).'<br>';
-
                     $datos[$count]['idproducto']=$ordenes->examen->producto->producto_id;
                     $datos[$count]['codigo']=$producto->procedimientoA_codigo;
                     $datos[$count]['cantidad']=1;
@@ -91,9 +89,6 @@ class ordenExamenController extends Controller
                     
                     $copago=Entidad_Procedimiento::ValorAsignado($procedimiento->procedimiento_id, $Paciente->entidad_id)->get();
                     
-                    
-                    //return "";
-
                     foreach($copago as $copagos){
                         if($copagos->procedimiento->producto_id==$ordenes->examen->producto->producto_id){
                             
@@ -114,7 +109,6 @@ class ordenExamenController extends Controller
                     $secuencial=$rangoDocumento->rango_inicio;
                     $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
                     if($secuencialAux){$secuencial=$secuencialAux+1;}
-                
                     
                     $data=[
                         'especialidad'=>$especialidad,
@@ -129,14 +123,12 @@ class ordenExamenController extends Controller
                         'clienteO'=>Cliente::Cliente($orden->expediente->ordenatencion->cliente_id)->first(),
                         'vendedores'=>Vendedor::Vendedores()->get(),
                         'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),
-                        'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),                                ////////descomentar
+                        'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9), 
                         'bodegas'=>Bodega::bodegasSucursal($puntoEmision->punto_id)->get(),
                         'formasPago'=>Forma_Pago::formaPagos()->get(),
-                        'rangoDocumento'=>$rangoDocumento,'PE'=>Punto_Emision::puntos()->get(),                                ////////descomentar
+                        'rangoDocumento'=>$rangoDocumento,'PE'=>Punto_Emision::puntos()->get(),
                         'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin
                     ];
-                    //echo $orden->expediente->ordenatencion->cliente_id.'<br>';
-                    //return Cliente::Cliente($orden->expediente->ordenatencion->cliente_id)->first();
 
                     return view('admin.laboratorio.ordenesExamen.facturar', $data);
                 }else{
@@ -145,10 +137,10 @@ class ordenExamenController extends Controller
             }else{
                 return redirect('/denegado');
             }
-        //}
-        //catch(\Exception $ex){      
-        //    return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
     
     /**

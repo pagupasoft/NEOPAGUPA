@@ -68,7 +68,7 @@
                     </li>             
                 </ul>
             </div>  
-            <div class="col-8" style="height: 80vh; overflow-y: scroll"> 
+            <div class="col-8" style="height: 75vh; overflow-y: scroll"> 
                 <div class="form-group tab-group">
                     <div class="tab-pane col-12 oculto" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
                     <div id="marco-expediente" class="col-12 col-sm-12">
@@ -226,7 +226,7 @@
             </div>
         
          
-            <div class="col-3" style="max-height: 80vh; ; overflow-y: scroll">
+            <div class="col-3" style="max-height: 75vh; ; overflow-y: scroll">
                 <!-- Timeline -->
                 <ul class="timeline">
                     <?php 

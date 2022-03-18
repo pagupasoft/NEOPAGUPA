@@ -93,6 +93,8 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request;
+
         try {
             DB::beginTransaction();
             $auditoria = new generalController();
@@ -201,7 +203,7 @@ class atencionCitasController extends Controller
 
                         /******************registro de movimiento de producto******************/
                         $movimientoProducto = new Movimiento_Producto();
-                        $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
+                        $movimientoProducto->movimiento_fecha=date('Y-m-d H:i:s');;
                         $movimientoProducto->movimiento_cantidad=$Pcantidad[$i];
                         $movimientoProducto->movimiento_precio=0;
                         $movimientoProducto->movimiento_iva=0;

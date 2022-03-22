@@ -269,8 +269,8 @@
                                     <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
                                     @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
-                                        <label for="chk-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
+                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
+                                        <label for="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
                                     </div>
                                     @endif
                                 </td> 
@@ -323,8 +323,8 @@
                             <td>
                                 <input type="hidden" name="idonciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}"/>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" name="chkConciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion'] == true) checked @endif >
-                                    <label for="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" class="custom-control-label"></label>
+                                    <input type="checkbox" class="custom-control-input" id="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['tabla'] }}-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" name="chkConciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion'] == true) checked @endif >
+                                    <label for="chk2-{{ $otrasconciliacionesBancariaMatriz[$c]['tabla'] }}-{{ $otrasconciliacionesBancariaMatriz[$c]['id'] }}" class="custom-control-label"></label>
                                 </div>
                             </td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>    

@@ -696,7 +696,10 @@ Route::post('/listaRetencionRecibida', [listaRetencionRecibidaController::class,
 Route::get('/nuevoSignosV/{id}', [signosVitalesController::class, 'nuevoSigno'])->middleware('auth');
 
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
-Route::get('/informehistoricoplano', [atencionCitasController::class, 'examenHistorico'])->middleware('auth')->middleware('acceso');
+Route::get('/informeHistoricoPlano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
+Route::get('/generarReporteHistoricoPlano', [atencionCitasController::class, 'informeHistoricoPlano'])->middleware('auth')->middleware('acceso');
+
+
 
 Route::get('/receta', [atencionRecetasController::class, 'index'])->middleware('auth')->middleware('acceso');
 Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])->middleware('auth')->middleware('acceso');

@@ -41,6 +41,8 @@ use App\Models\Tipo_Examen;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use PDF;
+use Excel;
+use App\NEOPAGUPA\ViewExcel;
 use DateTime;
 use Illuminate\Support\Facades\Storage;
 
@@ -354,18 +356,24 @@ class atencionCitasController extends Controller
     }
 
     public function informeHistoricoPlano(Request $request){
-        
-        
-        $sucursal=Sucursal::findOrFail($request->sucursal);
-        $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
-        
-        //echo $request;
-        //echo '<br>';
+        //try{   
+            $sucursal=Sucursal::findOrFail($request->sucursal);
+            $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
 
 
+            //return $ordenes;
+            //$datos['ordenes'][count($datos)+1] = $tipo;
 
-        return json_encode($ordenes);
+            $datos['ordenes']= $ordenes;
+
+            //echo $ordenes;
+
+            return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
+        //}catch(\Exception $ex){
+        //    return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
     }
+
 
     private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
         $empresa = Empresa::empresa()->first();

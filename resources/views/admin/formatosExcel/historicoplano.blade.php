@@ -1,114 +1,126 @@
 <table>
     <tr>
-        <td colspan="10" style="text-align: center;">NEOPAGUPA | Sistema Contable</td>
+        <td colspan="32" style="text-align: center">NEOPAGUPA | Sistema Contable</td>
     </tr>
 </table>
 <table>
     <thead>
         <tr>
-            @if(isset($datos['tipo'][count($datos)]))
-                @if($datos['tipo'][count($datos)] <> 1)
-                <th style="font-weight: bold;" colspan="2"></th>
-                @else
-                    <th></th>
-                @endif
-            @else   
-                <th colspan="2"></th>
-            @endif
-            <th style="font-weight: bold;" colspan="3">ENTRADAS</th>
-            <th style="font-weight: bold;" colspan="3">SALIDAS</th>
-            @if(isset($datos['tipo'][count($datos)]))
-                @if($datos['tipo'][count($datos)] <> 1)
-                <th colspan="7"></th>
-                @else
-                <th colspan="3"></th>
-                @endif
-            @endif
+            <th></th>
+            <th style="font-weight: bold">Anexo 1</th>
+            <th></th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 2</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 3</th>
+            <th style="font-weight: bold">Anexo 4</th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 5</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 6</th>
+            <th></th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 7</th>
+            <th></th>
+            <th style="font-weight: bold">Anexo 8</th>
         </tr>
         <tr>
-            <th style="font-weight: bold;">Producto</th>
-            @if(isset($datos['tipo'][count($datos)]))
-                @if($datos['tipo'][count($datos)] <> 1)
-                <th style="font-weight: bold;">Fecha</th>
-                @endif
-            @else   
-                <th style="font-weight: bold;">Fecha</th>
-            @endif
-            <th style="font-weight: bold;">Cantidad</th>
-            <th style="font-weight: bold;">Precio</th>
-            <th style="font-weight: bold;">Total</th>
-            <th style="font-weight: bold;">Cantidad</th>
-            <th style="font-weight: bold;">Precio</th>
-            <th style="font-weight: bold;">Total</th>
-            <th style="font-weight: bold;">Saldo</th>
-            @if(isset($datos['tipo'][count($datos)]))
-                @if($datos['tipo'][count($datos)] <> 1)
-                    <th style="font-weight: bold;">Transaccion</th>
-                    <th style="font-weight: bold;">Documento</th>
-                    <th style="font-weight: bold;">Documento No.</th>
-                    <th style="font-weight: bold;">Cliente/Proveedor</th> 
-                    <th style="font-weight: bold;">Descripción</th> 
-                    <th style="font-weight: bold;">Bodega</th> 
-                @else
-                    <th style="font-weight: bold;">Costo Inv.</th>
-                    <th style="font-weight: bold;">Utilidad</th>
-                @endif
-            @else
-                <th style="font-weight: bold;">Transaccion</th>
-                <th style="font-weight: bold;">Documento</th>
-                <th style="font-weight: bold;">Documento No.</th>
-                <th style="font-weight: bold;">Cliente/Proveedor</th> 
-                <th style="font-weight: bold;">Descripción</th> 
-                <th style="font-weight: bold;">Bodega</th> 
-            @endif
+            <th style="font-weight: bold">DEPENDENCIA</th>
+            <th style="font-weight: bold">SECUENCIA</th>
+            <th style="font-weight: bold">FECHA ATENCION</th>
+            <th style="font-weight: bold">TIPO SECURO</th>
+            <th style="font-weight: bold">CEDULA PACIENTE</th>
+            <th style="font-weight: bold">NOMBRE PACIENTE</th>
+            <th style="font-weight: bold">SEXO</th>
+            <th style="font-weight: bold">FECHA NAC PAC</th>
+            <th style="font-weight: bold">EDAD PACIENTE</th>
+            <th style="font-weight: bold">TIPO EXAMEN</th>
+            <th style="font-weight: bold">CODIGO TARIF</th>
+            <th style="font-weight: bold">DESCRIPCION PROCE TAR</th>
+            <th style="font-weight: bold">DIAG PRI - CIE10</th>
+            <th style="font-weight: bold">DIAG 2</th>
+            <th style="font-weight: bold">DIAG 3</th>
+            <th style="font-weight: bold">CANTIDAD</th>
+            <th style="font-weight: bold">PRECIO UNITARIO</th>
+            <th style="font-weight: bold">TIEMPO</th>
+            <th style="font-weight: bold">PARENTESCO</th>
+            <th style="font-weight: bold">CEDULA AFILIADO</th>
+            <th style="font-weight: bold">NOMBRE AFILIADO</th>
+            <th style="font-weight: bold">TIPO DERIVACION</th>
+            <th style="font-weight: bold">SECUENCIA</th>
+            <th style="font-weight: bold"></th>
+            <th style="font-weight: bold">TIPO ADIG</th>
+            <th style="font-weight: bold">DIASG 4</th>
+            <th style="font-weight: bold">DIASG 5</th>
+            <th style="font-weight: bold">DIASG 6</th>
+            <th style="font-weight: bold"></th>
+            <th style="font-weight: bold">IVA</th>
+            <th style="font-weight: bold">% IVA</th>
+            <th style="font-weight: bold">LETRA</th>
+            
+            
         </tr>
     </thead>
     <tbody>
         @if(isset($datos))
-            @for ($i = 1; $i < count($datos); ++$i)    
-                @if($datos[$i]['col'] == "0")
+            @foreach($datos['ordenes'] as $orden)
                 <tr>
-                    <td colspan="15"><b>{{ $datos[$i]['nom'] }}</b></td>
+                    <td>{{ $orden->orden_dependencia }}</td>
+                    <td>{{ $orden->orden_secuencia }}</td>
+                    <td>{{ $orden->orden_fecha }}</td>
+                    <td>{{--$tipo_seguro--}}</td>
+
+                    <td>{{ $orden->paciente->paciente_cedula }}</td>
+                    <td>{{ $orden->paciente->paciente_nombres }}</td>
+                    <td>{{ $orden->paciente->paciente_sexo }}</td>
+                    <td>{{ $orden->paciente->paciente_facha_nacimiento }}</td>
+                    <td>{{ $orden->paciente->paciente_edad }}</td>
+
+
+                    <td>{{--$tipo_examen--}}</td>
+                    <td>{{--$codigo_tar--}}</td>
+                    <td>{{--$descripcion_proceso_tar--}}</td>
+
+
+                    <td>{{--$diag_pri_cie10--}}</td>
+                    <td>{{--$diag2--}}</td>
+                    <td>{{--$diag3--}}</td>
+                    <td>{{--$cantidad--}}</td>
+                    <td>{{--$precio_unitario--}}</td>
+                    <td>{{--$tiempo--}}</td>
+
+                    <td>{{--$parentezco--}}</td>
+                    <td>{{ $orden->orden_cedula_afiliado }}</td>
+                    <td>{{ $orden->orden_nombre_afiliado }}</td>
+
+                    <td>{{--$tipo derivacion }}</td>
+                    <td>{{--$secuencia }}</td>
+                    <td></td>
+
+                    <td>{{--$tipo_adig--}}</td>
+                    <td>{{--$diasg4--}}</td>
+                    <td>{{--$diasg5--}}</td>
+                    <td>{{--$diasg6--}}</td>
+                    <td></td>
+
+
+                    <td>{{--$iva--}}</td>
+                    <td>{{--$por_iva--}}</td>
+                    <td>{{--$letra--}}</td>
                 </tr>
-                @elseif($datos[$i]['col'] == "1")
-                <tr>
-                    <td colspan="8">SALDO ANTERIOR</td>
-                    <td>{{ $datos[$i]['can3'] }}</td>
-                    <td colspan="6"></td>
-                </tr>
-                @elseif($datos[$i]['col'] == "3")
-                <tr>
-                    <td>{{ $datos[$i]['nom'] }}</td>
-                    <td>{{ $datos[$i]['can1'] }}</td>
-                    <td>{{ round($datos[$i]['pre1'],2) }}</td>
-                    <td>{{ round($datos[$i]['tot1'],2) }}</td>
-                    <td>{{ $datos[$i]['can2'] }}</td>
-                    <td>{{ round($datos[$i]['pre2'],2) }}</td>
-                    <td>{{ round($datos[$i]['tot2'],2) }}</td>
-                    <td>{{ $datos[$i]['can3'] }}</td>
-                    <td>{{ round($datos[$i]['pre3'],2) }}</td>
-                    <td>{{ round($datos[$i]['tot3'],2) }}</td>
-                </tr>
-                @else
-                <tr>
-                    <td>{{ $datos[$i]['nom'] }}</td>
-                    <td>{{ $datos[$i]['fec'] }}</td>
-                    <td>@if($datos[$i]['can1'] <> 0) {{ $datos[$i]['can1'] }} @endif</td>
-                    <td>@if($datos[$i]['pre1'] <> 0) {{ round($datos[$i]['pre1'],2) }} @endif</td>
-                    <td>@if($datos[$i]['tot1'] <> 0) {{ round($datos[$i]['tot1'],2) }} @endif</td>
-                    <td>@if($datos[$i]['can2'] <> 0) {{ $datos[$i]['can2'] }} @endif</td>
-                    <td>@if($datos[$i]['pre2'] <> 0) {{ round($datos[$i]['pre2'],2) }} @endif</td>
-                    <td>@if($datos[$i]['tot2'] <> 0) {{ round($datos[$i]['tot2'],2) }} @endif</td>
-                    <td>{{ $datos[$i]['can3']}}</td>
-                    <td>{{ $datos[$i]['tra'] }}</td>
-                    <td>{{ $datos[$i]['doc'] }}</td>
-                    <td>{{ $datos[$i]['num'] }}</td>
-                    <td>{{ $datos[$i]['ref'] }}</td>
-                    <td>{{ $datos[$i]['des'] }}</td>
-                    <td>{{ $datos[$i]['bod'] }}</td>
-                </tr>
-                @endif
-            @endfor
+            @endforeach
+        @else
+            <tr>
+                <td>sdasdas</td>
+            </tr>
         @endif
     </tbody>
 </table>

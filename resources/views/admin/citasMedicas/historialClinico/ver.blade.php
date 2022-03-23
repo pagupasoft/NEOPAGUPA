@@ -28,7 +28,7 @@
     <div class="card-header">
         <div class="float-right">
             <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
-            <button onclick="window.location = '/historialClinico';" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+            <button onclick="window.history.back();" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
         </div>
     </div>
     <!-- /.card-header -->
@@ -272,7 +272,7 @@
                                 cargarConsultaMedica(item1)
                                 aditionalTab = document.getElementById("adicional-tab")
                                 aditionalTab.click()
-                            }, 600)
+                            }, 300)
                         }
                     </script>
                 </ul><!-- End -->

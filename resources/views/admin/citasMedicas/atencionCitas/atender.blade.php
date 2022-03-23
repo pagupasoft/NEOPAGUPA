@@ -28,9 +28,13 @@
             <input class="invisible" id="expediente_id" name="expediente_id" value="{{$ordenAtencion->expediente->expediente_id}}">
             <div class="form-group row">
                 <label for="sucursal" class="col-sm-1 col-form-label">Paciente:</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <label  class="form-control" >{{$ordenAtencion->paciente->paciente_apellidos.' '.$ordenAtencion->paciente->paciente_nombres}}</label>
                 </div>
+                <div class="col-md-1">
+                    <a style="color: white" class="btn btn-warning" href="{{ url('historialClinico/'.$ordenAtencion->paciente->paciente_id.'/ver') }}"><i class="fa fa-calendar-check"></i> &nbsp; Historial</a>
+                </div>
+
                 <label for="fecha_hora" class="col-sm-1 col-form-label">Fecha/Hora:</label>
                 <div class="col-sm-2">
                 <input type="date" class="form-control" id="fecha" name="fecha" value="{{$ordenAtencion->orden_fecha}}" readonly>
@@ -61,6 +65,7 @@
                 <label class="form-control">{{$ordenAtencion->tipoSeguro->tipo_codigo}} - {{$ordenAtencion->tipoSeguro->tipo_nombre}}</label>
                 </div>
             </div> 
+
             <div class="form-group row">
                 <div class="col-sm-12">
                     <label for="observacion" class="col-sm-5 col-form-label">Observación de la cita:</label>

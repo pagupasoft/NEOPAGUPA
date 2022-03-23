@@ -7,7 +7,7 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-    <form class="form-horizontal" method="POST" action="{{ url("receta") }}">
+    <form class="form-horizontal" method="POST" action="{{ url("generarreportehistoricoplano") }}">
         @csrf
         <div class="col-md-12">
             <div class="form-group row">
@@ -28,6 +28,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
+                <label for="fecha_desde" class="col-sm-1 col-form-label text-right">Sucursal :</label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="sucursal">
+                        @foreach($sucursales as $sucursal)
+                            <option value={{$sucursal->sucursal_id}}>{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="text-right">
+                <input class="btn btn-success" type="submit" value="Generar">
             </div>
         </div>
     </div>

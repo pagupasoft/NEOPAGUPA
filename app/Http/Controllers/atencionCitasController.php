@@ -333,22 +333,38 @@ class atencionCitasController extends Controller
                     $id = $medico->medico_id;
                 }
             }
+
+
             
             $medico = Medico::medico($id)->first();
             $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
             $prescripciones = Prescripcion::prescripcionesPaciente()->get();
             $pacientes = Paciente::pacientes()->get();
 
+
+            $sucursales=Sucursal::sucursales()->get();
+            
+
             //return $prescripciones;
 
-            return view('admin.citasMedicas.atencionCitas.historicoPlano',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'prescripciones'=>$prescripciones, 'pacientes'=>$pacientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.citasMedicas.atencionCitas.historicoPlano',['medico'=>$medico, 'sucursales'=>$sucursales, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 
     public function informeHistoricoPlano(Request $request){
-        return $request;
+        
+        
+        $sucursal=Sucursal::findOrFail($request->sucursal);
+        $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+        
+        //echo $request;
+        //echo '<br>';
+
+
+
+        return json_encode($ordenes);
     }
 
     private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){

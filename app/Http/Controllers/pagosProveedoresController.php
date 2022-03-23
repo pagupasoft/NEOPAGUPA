@@ -271,8 +271,9 @@ class pagosProveedoresController extends Controller
                                     $general->registrarAuditoria('Registro de detalle de pago de proveedor -> '.$request->get('idNombre'),'0','Detalle de pago de Factura No. '.substr($cxpAux->cuenta_descripcion, 39).' pago en '.$request->get('radioPago')); 
                                     $cxpAux->cuenta_saldo = $cxpAux->cuenta_saldo - $detallePago->detalle_pago_valor;
                                 }
-                                if($cxpAux->cuenta_saldo == 0){
+                                if(round($cxpAux->cuenta_saldo,2) == 0){
                                     $cxpAux->cuenta_estado = '2';
+                                    $cxpAux->cuenta_saldo = 0;
                                 }else{
                                     $cxpAux->cuenta_estado = '1';
                                 }
@@ -499,7 +500,7 @@ class pagosProveedoresController extends Controller
     public function eliminarPagos(Request $request){
         try {
             DB::beginTransaction();
-           
+            $jo=false;
             $auditoria = new generalController();
             $noTienecaja =null;
             $seleccion = $request->get('checkbox');
@@ -512,7 +513,7 @@ class pagosProveedoresController extends Controller
             }            
             for ($i = 0; $i < count($seleccion); ++$i) {
                 $detalle_pago = Detalle_Pago_CXP::DetallePagoCXP($seleccion[$i])->first();
-                if($detalle_pago){
+                if(isset($detalle_pago->detalle_pago_id)){
                     $cxpAux = $detalle_pago->cuentaPagar;
                     $valorPagoGeneral = $detalle_pago->detalle_pago_valor;
                     $pago = $detalle_pago->pagoCXP;
@@ -605,33 +606,36 @@ class pagosProveedoresController extends Controller
                                                 
                                                     foreach ($pago2->detalles as $detallePago) {
                                                         if($detallePago->cuentaPagar){
-                                                            $cxpAux2 = $detallePago->cuentaPagar;
-                                                            $valorPago = $detallePago->detalle_pago_valor;
-                                                            $detallePago->delete();
-                                                            $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
-                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }else{
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
-                                                            }
-                                                            if($cxpAux2->cuenta_saldo == 0){
-                                                                $cxpAux2->cuenta_estado = '2';
-                                                            }else{
-                                                                $cxpAux2->cuenta_estado = '1';
-                                                            }
-                                                            $cxpAux2->update();
-                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
-                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
-                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
-                                                            }else{
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                            if(isset(Detalle_Pago_CXP::DetallePagoCXP($detallePago->detalle_pago_id)->first()->detalle_pago_id)){
+                                                                $cxpAux2 = $detallePago->cuentaPagar;
+                                                                $valorPago = $detallePago->detalle_pago_valor;
+                                                                $detallePago->delete();
+                                                                $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
+                                                                if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                                                                }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                                }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                                }else{
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
+                                                                }
+                                                                if(round($cxpAux2->cuenta_saldo,2) == 0){
+                                                                    $cxpAux2->cuenta_estado = '2';
+                                                                    $cxpAux2->cuenta_saldo = 0;
+                                                                }else{
+                                                                    $cxpAux2->cuenta_estado = '1';
+                                                                }
+                                                                $cxpAux2->update();
+                                                                if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
+                                                                }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
+                                                                }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
+                                                                }else{
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -700,33 +704,36 @@ class pagosProveedoresController extends Controller
                                                 if($bandera2){
                                                     foreach ($pago2->detalles as $detallePago) {
                                                         if($detallePago->cuentaPagar){
-                                                            $cxpAux2 = $detallePago->cuentaPagar;
-                                                            $valorPago = $detallePago->detalle_pago_valor;
-                                                            $detallePago->delete();
-                                                            $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
-                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }else{
-                                                                $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
-                                                            }
-                                                            if($cxpAux2->cuenta_saldo == 0){
-                                                                $cxpAux2->cuenta_estado = '2';
-                                                            }else{
-                                                                $cxpAux2->cuenta_estado = '1';
-                                                            }
-                                                            $cxpAux2->update();
-                                                            if(isset($cxpAux2->transaccionCompra->transaccion_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
-                                                            }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
-                                                            }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
-                                                            }else{
-                                                                $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                            if(isset(Detalle_Pago_CXP::DetallePagoCXP($detallePago->detalle_pago_id)->first()->detalle_pago_id)){
+                                                                $cxpAux2 = $detallePago->cuentaPagar;
+                                                                $valorPago = $detallePago->detalle_pago_valor;
+                                                                $detallePago->delete();
+                                                                $auditoria->registrarAuditoria('Eliminacion del detalle de pago cuentas por pagar  '.$detallePago->cuentaPagar->cuenta_descripcion,'','');  
+                                                                if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux2->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                                                                }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                                }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux2->cuenta_id)->sum('detalle_pago_valor');
+                                                                }else{
+                                                                    $cxpAux2->cuenta_saldo = $cxpAux2->cuenta_saldo + $valorPago;
+                                                                }
+                                                                if(round($cxpAux2->cuenta_saldo,2) == 0){
+                                                                    $cxpAux2->cuenta_estado = '2';
+                                                                    $cxpAux2->cuenta_saldo = 0;
+                                                                }else{
+                                                                    $cxpAux2->cuenta_estado = '1';
+                                                                }
+                                                                $cxpAux2->update();
+                                                                if(isset($cxpAux2->transaccionCompra->transaccion_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->transaccionCompra->proveedor->proveedor_nombre.' con '.$cxpAux2->transaccionCompra->tipoComprobante->tipo_comprobante_nombre.' -> '.$cxpAux2->transaccionCompra->transaccion_numero);
+                                                                }elseif(isset($cxpAux2->liquidacionCompra->lc_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->liquidacionCompra->proveedor->proveedor_nombre.' con Liquidacion de compra -> '.$cxpAux2->liquidacionCompra->lc_numero);
+                                                                }elseif(isset($cxpAux2->ingresoBodega->cabecera_ingreso_id)){
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->ingresoBodega->proveedor->proveedor_nombre.' con Ingreso de Bodega -> '.$cxpAux2->ingresoBodega->cabecera_ingreso_numero);
+                                                                }else{
+                                                                    $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor','0','Actualizacion de cuenta por pagar de proveedor -> '.$cxpAux2->proveedor->proveedor_nombre.' '.$cxpAux2->cuenta_descripcion);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -798,8 +805,9 @@ class pagosProveedoresController extends Controller
                     }else{
                         $cxpAux->cuenta_saldo = $cxpAux->cuenta_saldo + $valorPagoGeneral;
                     } 
-                    if($cxpAux->cuenta_saldo == 0){
+                    if(round($cxpAux->cuenta_saldo,2) == 0){
                         $cxpAux->cuenta_estado = '2';
+                        $cxpAux->cuenta_saldo = 0;
                     }else{
                         $cxpAux->cuenta_estado = '1';
                     }

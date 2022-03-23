@@ -682,41 +682,59 @@ class conciliacionBancariaController extends Controller
             }
             //POR CONCILIAR EN OTROS MESES
             $depositosOtros = Deposito::DepositosOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false)->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA');
-            })->orwhere(function($query) use ($request){
-                $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('deposito.deposito_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false)->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA');
+                })->orwhere(function($query) use ($request){
+                    $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('deposito.deposito_conciliacion','=', true);
+                });
             })->get();
+
             $transIngresosOtros = Deposito::DepositosOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false)->where('deposito.deposito_tipo','=', 'TRANSFERENCIA');
-            })->orwhere(function($query) use ($request){
-                $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('deposito.deposito_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_conciliacion','=', false)->where('deposito.deposito_tipo','=', 'TRANSFERENCIA');
+                })->orwhere(function($query) use ($request){
+                    $query->where('deposito.deposito_fecha','<',$request->get('idDesde'))->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('deposito.deposito_conciliacion','=', true);
+                });
             })->get();
+
              $transferenciasOtros = Transferencia::TransferenciaOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))->where('transferencia.transferencia_conciliacion','=', false);
-            })->orwhere(function($query) use ($request){
-                $query->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))->where('transferencia.transferencia_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('transferencia.transferencia_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))->where('transferencia.transferencia_conciliacion','=', false);
+                })->orwhere(function($query) use ($request){
+                    $query->where('transferencia.transferencia_fecha','<',$request->get('idDesde'))->where('transferencia.transferencia_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('transferencia.transferencia_conciliacion','=', true);
+                });
             })->get();
+            
              $chequesOtros = Cheque::ChequeOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))->where('cheque.cheque_conciliacion','=', false);
-            })->orwhere(function($query) use ($request){
-                $query->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))->where('cheque.cheque_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('cheque.cheque_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))->where('cheque.cheque_conciliacion','=', false);
+                })->orwhere(function($query) use ($request){
+                    $query->where('cheque.cheque_fecha_emision','<',$request->get('idDesde'))->where('cheque.cheque_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('cheque.cheque_conciliacion','=', true);
+                });
             })->get();
+            
              $ndBancosOtros = Nota_Debito_banco::NDbancoOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('nota_debito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_debito_banco.nota_conciliacion','=', false);
-            })->orwhere(function($query) use ($request){
-                $query->where('nota_debito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_debito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('nota_debito_banco.nota_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('nota_debito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_debito_banco.nota_conciliacion','=', false);
+                })->orwhere(function($query) use ($request){
+                    $query->where('nota_debito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_debito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('nota_debito_banco.nota_conciliacion','=', true);
+                });
             })->get();
+
              $ncBancosOtros = Nota_Credito_banco::NCbancoOtrosByCuenta($request->get('cuenta_id'))->where(function($query) use ($request){
-                $query->where('nota_credito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_credito_banco.nota_conciliacion','=', false);
-            })->orwhere(function($query) use ($request){
-                $query->where('nota_credito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_credito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
-                ->where('nota_credito_banco.nota_conciliacion','=', true);
+                $query->where(function($query) use ($request){
+                    $query->where('nota_credito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_credito_banco.nota_conciliacion','=', false);
+                })->orwhere(function($query) use ($request){
+                    $query->where('nota_credito_banco.nota_fecha','<',$request->get('idDesde'))->where('nota_credito_banco.nota_fecha_conciliacion','=',$request->get('idHasta'))
+                    ->where('nota_credito_banco.nota_conciliacion','=', true);
+                });
             })->get();
+
             $count2 = 0;   
             foreach($chequesOtros as $cheque){                    
                 //CHEQUES
@@ -862,37 +880,6 @@ class conciliacionBancariaController extends Controller
             $datos[21] = $transferenciaIngresosConciliadosOtros;
             $datos[22] = $conciliacionBancariaMatriz;
             $datos[23] = $otrasconciliacionesBancariaMatriz;           
-             /*   'saldoAnteriorContable'=>$saldoAnteriorContable,
-                'saldoContableActual'=>$saldoContableActual,
-                'saldoEstadoCuenta'=>$saldoEstadoCuenta,
-                'chequeGiradoNoCobrado'=>$chequeGiradoNoCobrado,
-                'depositosConciliados'=>$depositosConciliados,
-                'depositosNoConciliados'=>$depositosNoConciliados,
-                'depositosConciliadosOtros'=>$depositosConciliadosOtros,
-                'ndConciliado'=>$ndConciliado,
-                'ndNoConciliado'=>$ndNoConciliado,
-                'ncConciliado'=>$ncConciliado,
-                'ncNoConciliado'=>$ncNoConciliado,
-                'ncConciliadoOtros'=>$ncConciliadoOtros,
-                'ndConciliadoOtros'=>$ndConciliadoOtros,
-                'chequesConciliados'=>$chequesConciliados,
-                'chequesNoConciliados'=>$chequesNoConciliados,
-                'chequesConciliadosOtros'=>$chequesConciliadosOtros,
-                'transferenciasEgresosConciliadas'=>$transferenciasEgresosConciliadas,
-                'transferenciasEgresosNoConciliadas'=>$transferenciasEgresosNoConciliadas,
-                'transferenciasEgresosConciliadasOtros'=>$transferenciasEgresosConciliadasOtros,
-                'transferenciaIngresosConciliados'=>$transferenciaIngresosConciliados,
-                'transferenciaIngresosNoConciliados'=>$transferenciaIngresosNoConciliados,
-                'transferenciaIngresosConciliadosOtros' =>$transferenciaIngresosConciliadosOtros,
-  
-                'conciliacionBancariaMatriz'=>$conciliacionBancariaMatriz,
-                'otrasconciliacionesBancariaMatriz'=>$otrasconciliacionesBancariaMatriz,
-                'fechaI'=>$request->get('idDesde'),
-                'fechaF'=>$request->get('idHasta'),           
-                'bancos'=>Banco::Bancos()->get(),
-                'PE'=>Punto_Emision::puntos()->get(),
-                'gruposPermiso'=>$gruposPermiso, 
-                'permisosAdmin'=>$permisosAdmin]   */ 
             return $datos;
         }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

@@ -568,23 +568,23 @@ class anticipoProveedorController extends Controller
 
                     }
                     if($jo){
-                        $auditoria->registrarAuditoria('Eliminacion de anticipo de proveedor  '.$anticipo->proveedor->proveedor_nombre,'',''); 
+                        $auditoria->registrarAuditoria('Eliminacion de anticipo de proveedor  '.$anticipo->proveedor->proveedor_nombre,'','Diario No '.$diario->diario_codigo); 
                         $anticipo->delete();
                         if(!is_null($diario)){
                             foreach($diario->detalles as $detalle){
-                                if(isset($detalle->cheque)){
+                                if(isset($detalle->cheque->cheque_id)){
                                     $auxC =$detalle->cheque;
                                 }
-                                if(isset($detalle->transferencia)){
+                                if(isset($detalle->transferencia->transferencia_id)){
                                     $auxT=$detalle->transferencia;
                                 }
                                 $detalle->delete();
                                 $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de anticipo');  
-                                if(isset($auxT)){
+                                if(isset($auxT->transferencia_id)){
                                     $auxT->delete();
                                     $auditoria->registrarAuditoria('Eliminacion de transferencia a proveedor '.$auxT->transferencia_beneficiario,'','Eliminacion de transferencia a proveedor '.$auxT->transferencia_beneficiario.' por un valor de '.$auxT->transferencia_valor.' por eliminacion de anticipo de proveedor');  
                                 }
-                                if(isset($auxC)){
+                                if(isset($auxC->cheque_id)){
                                     if($request->get('anularChequeID') == 'no'){
                                         $auxC->delete();
                                         $auditoria->registrarAuditoria('Eliminacion de cheque','','Eliminacion de cheque numero '.$auxC->cheque_numero.' por un valor de '.$auxC->cheque_valor.' por eliminacion de anticipo de proveedor');  

@@ -197,6 +197,7 @@ use App\Http\Controllers\ventaActivoController;
 use App\Http\Controllers\historialClinicoController;
 use App\Http\Controllers\LaboratorioController;
 use App\Http\Controllers\ordenExamenController;
+use App\Http\Controllers\ordenImagenController;
 use App\Http\Controllers\tipoMuestraController;
 use App\Http\Controllers\tipoRecipienteController;
 use App\Http\Controllers\tipoSeguroController;
@@ -412,6 +413,7 @@ Route::resource('historialClinico', historialClinicoController::class)->middlewa
 Route::resource('valorLaboratorio', valorLaboratorioController::class)->middleware('auth');
 Route::resource('valorReferencial', valorReferencialController::class)->middleware('auth');
 Route::resource('ordenesExamen', ordenExamenController::class)->middleware('auth');
+Route::resource('ordenImagen', ordenImagenController::class)->middleware('auth');
 Route::resource('tipoDependencia', tipoDependenciaController::class)->middleware('auth');
 Route::resource('documentoOrdenAtencion', documentoOrdenAtencionController::class)->middleware('auth');
 Route::resource('tarjetaCredito', tarjetaCreditoController::class)->middleware('auth');

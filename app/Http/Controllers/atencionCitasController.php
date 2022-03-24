@@ -359,7 +359,30 @@ class atencionCitasController extends Controller
         //try{   
             $sucursal=Sucursal::findOrFail($request->sucursal);
             $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+            
+            if($ordenes){
+                foreach($ordenes as $orden){
+                    $expediente=$orden->expediente;
+                    $producto=$orden->producto;
+                    $paciente=$orden->paciente;
 
+                    ///////////////diagnóstico///////////////////////////////
+
+                    if($expediente){
+                        $diagnostico=$expediente->diagnostico;
+
+                        if($diagnostico){
+                            $diagDetalle=$diagnostico->detallediagnostico;
+
+                            foreach($diagDetalle as $detalle){
+                                $detalle->enfermedad;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //return "";
 
             //return $ordenes;
             //$datos['ordenes'][count($datos)+1] = $tipo;

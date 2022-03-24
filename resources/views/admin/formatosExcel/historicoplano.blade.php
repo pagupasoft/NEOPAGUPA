@@ -72,6 +72,15 @@
     <tbody>
         @if(isset($datos))
             @foreach($datos['ordenes'] as $orden)
+                <?php //dd($orden) ?>
+
+                <?php
+                    $nacimiento = new DateTime($orden->paciente->paciente_fecha_nacimiento);
+                    $ahora = new DateTime(date("Y-m-d"));
+                    $diferencia = $ahora->diff($nacimiento);
+                    $edad= $diferencia->format("%y");
+                ?>
+
                 <tr>
                     <td>{{ $orden->orden_dependencia }}</td>
                     <td>{{ $orden->orden_secuencia }}</td>
@@ -81,18 +90,47 @@
                     <td>{{ $orden->paciente->paciente_cedula }}</td>
                     <td>{{ $orden->paciente->paciente_nombres }}</td>
                     <td>{{ $orden->paciente->paciente_sexo }}</td>
-                    <td>{{ $orden->paciente->paciente_facha_nacimiento }}</td>
-                    <td>{{ $orden->paciente->paciente_edad }}</td>
-
+                    <td>{{ $orden->paciente->paciente_fecha_nacimiento }}</td>
+                    <td>{{ $edad }}</td>
 
                     <td>{{--$tipo_examen--}}</td>
                     <td>{{--$codigo_tar--}}</td>
-                    <td>{{--$descripcion_proceso_tar--}}</td>
+                    <td>{{ $orden->orden_observacion }}</td>
 
+                    <?php 
+                        $expediente=$orden->expediente;
 
+                        if($expediente){
+                            $diagnostico=$expediente->diagnostico;
+                    
+                            if($diagnostico){
+                                $diagDetalle=$diagnostico->detallediagnostico;
+                                $c=0;
+
+                                foreach($diagDetalle as $detalle){
+                                    $c++;
+
+                                    $detalle->enfermedad;
+                                    echo '<td>'.$detalle->enfermedad->enfermedad_codigo.'</td>';
+                                    
+                                    if($c==3)  break;
+                                }
+                            }
+                        }
+                        else{
+                            echo "
+                                <td></td>
+                                <td></td>
+                                <td></td>";
+                        }
+                    ?>
+            
+            
                     <td>{{--$diag_pri_cie10--}}</td>
                     <td>{{--$diag2--}}</td>
                     <td>{{--$diag3--}}</td>
+
+
                     <td>{{--$cantidad--}}</td>
                     <td>{{--$precio_unitario--}}</td>
                     <td>{{--$tiempo--}}</td>
@@ -116,6 +154,7 @@
                     <td>{{--$por_iva--}}</td>
                     <td>{{--$letra--}}</td>
                 </tr>
+
             @endforeach
         @else
             <tr>

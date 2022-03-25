@@ -738,9 +738,9 @@ class listaCarteraController extends Controller
             }
             $view =  \View::make('admin.formatosPDF.listaCartera', ['vencidas'=>$request->get('idVencidas'),'vencer'=>$request->get('idAVencer'),'monto'=>$request->get('idMonto'),'saldo'=>$request->get('idSaldo'),'todo'=>$todo,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'actual'=>DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d/m/Y'),'empresa'=>$empresa]);
             if($todo == 1){
-                $nombreArchivo = 'LISTA DE CARTTERA AL '.DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d-m-Y');
+                $nombreArchivo = 'LISTA DE CARTERA AL '.DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d-m-Y');
             }else{
-                $nombreArchivo = 'LISTA DE CARTTERA DEL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
+                $nombreArchivo = 'LISTA DE CARTERA DEL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
             }
             return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
         }catch(\Exception $ex){

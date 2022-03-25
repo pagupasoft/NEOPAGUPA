@@ -28,6 +28,10 @@ class Rango_Cheque extends Model
         return $query->join('cuenta_bancaria', 'cuenta_bancaria.cuenta_bancaria_id','=','rango_cheque.cuenta_bancaria_id')->join('cuenta', 'cuenta.cuenta_id',"=",'cuenta_bancaria.cuenta_id')->where('cuenta.empresa_id','=',Auth::user()->empresa_id)->where('rango_id','=',$id);
         
     }
+    public function scopeCuentaRangoCheque($query, $id){
+        return $query->join('cuenta_bancaria', 'cuenta_bancaria.cuenta_bancaria_id','=','rango_cheque.cuenta_bancaria_id')->join('cuenta', 'cuenta.cuenta_id',"=",'cuenta_bancaria.cuenta_id')->where('cuenta.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_bancaria.cuenta_bancaria_id','=',$id);
+        
+    }
     public function cuentaBancaria()
     {
         return $this->belongsTo(cuenta_bancaria::class, 'cuenta_bancaria_id', 'cuenta_bancaria_id');

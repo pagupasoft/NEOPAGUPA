@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\RangoChequeObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,10 @@ class Cheque extends Model
     ];
     protected $guarded =[
     ];
-
+    protected static function booted()
+    {
+        Cheque::observe(RangoChequeObserver::class);
+    }
     public function scopeCheques($query){
         return $query->join('cuenta_bancaria','cuenta_bancaria.cuenta_bancaria_id','=','cheque.cuenta_bancaria_id')->join('cuenta','cuenta.cuenta_id','=','cuenta_bancaria.cuenta_id')->where('cuenta.empresa_id','=',Auth::user()->empresa_id)->where('cheque_estado','=','1')->orderBy('cheque_numero','asc');
     }

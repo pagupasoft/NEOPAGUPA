@@ -6,7 +6,7 @@
 <table>
     <thead>
         <tr>
-            <th></th>
+            
             <th style="font-weight: bold">Anexo 1</th>
             <th></th>
             <th></th>
@@ -36,7 +36,7 @@
             <th style="font-weight: bold">DEPENDENCIA</th>
             <th style="font-weight: bold">SECUENCIA</th>
             <th style="font-weight: bold">FECHA ATENCION</th>
-            <th style="font-weight: bold">TIPO SECURO</th>
+            <th style="font-weight: bold">TIPO SEGURO</th>
             <th style="font-weight: bold">CEDULA PACIENTE</th>
             <th style="font-weight: bold">NOMBRE PACIENTE</th>
             <th style="font-weight: bold">SEXO</th>
@@ -72,7 +72,14 @@
     <tbody>
         @if(isset($datos))
             @foreach($datos['ordenes'] as $orden)
-                <?php //dd($orden) ?>
+                <?php
+
+                    //use function PHPUnit\Framework\isNull;
+
+                    //if($orden->tipo_seguro==null){
+                    //    echo dd($orden);
+                    //}
+                ?>
 
                 <?php
                     $nacimiento = new DateTime($orden->paciente->paciente_fecha_nacimiento);
@@ -82,10 +89,10 @@
                 ?>
 
                 <tr>
-                    <td>{{ $orden->orden_dependencia }}</td>
+                    <td>{{ $orden->especialidad->especialidad_codigo }}</td>
                     <td>{{ $orden->orden_secuencia }}</td>
                     <td>{{ $orden->orden_fecha }}</td>
-                    <td>{{--$tipo_seguro--}}</td>
+                    <td>{{ $orden->tipoSeguro->tipo_codigo }}</td>
 
                     <td>{{ $orden->paciente->paciente_cedula }}</td>
                     <td>{{ $orden->paciente->paciente_nombres }}</td>
@@ -99,14 +106,14 @@
 
                     <?php 
                         $expediente=$orden->expediente;
-
+                        $c=0;
+                        
                         if($expediente){
                             $diagnostico=$expediente->diagnostico;
                     
                             if($diagnostico){
                                 $diagDetalle=$diagnostico->detallediagnostico;
-                                $c=0;
-
+                                
                                 foreach($diagDetalle as $detalle){
                                     $c++;
 
@@ -117,42 +124,34 @@
                                 }
                             }
                         }
-                        else{
-                            echo "
-                                <td></td>
-                                <td></td>
-                                <td></td>";
+
+                        for($i=$c; $i<3;  $i++){
+                            echo "<td></td>";
                         }
                     ?>
-            
-            
-                    <td>{{--$diag_pri_cie10--}}</td>
-                    <td>{{--$diag2--}}</td>
-                    <td>{{--$diag3--}}</td>
-
 
                     <td>{{--$cantidad--}}</td>
                     <td>{{--$precio_unitario--}}</td>
                     <td>{{--$tiempo--}}</td>
 
-                    <td>{{--$parentezco--}}</td>
+                    <td>{{ $orden->paciente->tipoDependencia->tipod_codigo }}</td>
                     <td>{{ $orden->orden_cedula_afiliado }}</td>
                     <td>{{ $orden->orden_nombre_afiliado }}</td>
 
-                    <td>{{--$tipo derivacion }}</td>
-                    <td>{{--$secuencia }}</td>
+                    <td>CVENC</td>
+                    <td>{{--$secuencia --}}</td>
                     <td></td>
 
-                    <td>{{--$tipo_adig--}}</td>
-                    <td>{{--$diasg4--}}</td>
-                    <td>{{--$diasg5--}}</td>
-                    <td>{{--$diasg6--}}</td>
+                    <td>D</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td></td>
 
 
-                    <td>{{--$iva--}}</td>
-                    <td>{{--$por_iva--}}</td>
-                    <td>{{--$letra--}}</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>F</td>
                 </tr>
 
             @endforeach

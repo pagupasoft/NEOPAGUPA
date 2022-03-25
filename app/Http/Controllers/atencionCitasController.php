@@ -356,7 +356,7 @@ class atencionCitasController extends Controller
     }
 
     public function informeHistoricoPlano(Request $request){
-        //try{   
+        try{   
             $sucursal=Sucursal::findOrFail($request->sucursal);
             $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
             
@@ -365,6 +365,12 @@ class atencionCitasController extends Controller
                     $expediente=$orden->expediente;
                     $producto=$orden->producto;
                     $paciente=$orden->paciente;
+                    $especialidad=$orden->especialidad;
+                    $tipoSeguro=$orden->tipoSeguro;
+
+                    if($paciente){
+                        $dependencia=$paciente->tipoDependencia;
+                    }
 
                     ///////////////diagnóstico///////////////////////////////
 
@@ -378,23 +384,17 @@ class atencionCitasController extends Controller
                                 $detalle->enfermedad;
                             }
                         }
+
                     }
                 }
             }
 
-            //return "";
-
-            //return $ordenes;
-            //$datos['ordenes'][count($datos)+1] = $tipo;
-
             $datos['ordenes']= $ordenes;
 
-            //echo $ordenes;
-
             return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
-        //}catch(\Exception $ex){
-        //    return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+        }catch(\Exception $ex){
+            return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
 

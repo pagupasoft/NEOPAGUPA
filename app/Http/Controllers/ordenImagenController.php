@@ -8,11 +8,13 @@ use App\Models\Arqueo_Caja;
 use App\Models\Aseguradora_Procedimiento;
 use App\Models\Bodega;
 use App\Models\Cliente;
+use App\Models\Detalle_Imagen;
 use App\Models\Entidad_Procedimiento;
 use App\Models\Especialidad;
 use App\Models\Factura_Venta;
 use App\Models\Forma_Pago;
 use App\Models\Orden_Examen;
+use App\Models\Orden_Imagen;
 use App\Models\Paciente;
 use App\Models\Procedimiento_Especialidad;
 use App\Models\Punto_Emision;
@@ -24,8 +26,10 @@ use App\Models\Vendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use DateTime;
+use App\Models\Empresa;
 
-class ordenExamenController extends Controller
+class ordenImagenController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,131 +38,136 @@ class ordenExamenController extends Controller
      */
     public function index()
     {
-        try{
+        //try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();         
             $ordenesAtencion=Orden_Examen::OrdenExamenesHOY()->select('orden_examen.orden_id as orden_examen_id', 'orden_atencion.orden_id', 'orden_fecha','orden_codigo','orden_numero', 'paciente_apellidos','paciente_nombres','orden_otros','orden_examen.orden_estado')->get();
-           
-            return view('admin.laboratorio.ordenesExamen.index',['sucursales'=>Sucursal::Sucursales()->get(),'ordenesAtencion'=>$ordenesAtencion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }
-        catch(\Exception $ex){      
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
-    }
-    public function atender($id)
-    {
-        try{
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            $orden = Orden_Examen::findOrFail($id);
-            return view('admin.laboratorio.ordenesExamen.atender',['orden'=>$orden,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
-    }
-    public function facturarOrden($id)
-    {
-        //try{
-            $count=1;
-            $orden = Orden_Examen::findOrFail($id);
-            if($orden){
-                $puntoEmision = Punto_Emision::PuntoSucursalUser($orden->expediente->ordenatencion->sucursal_id,Auth::user()->user_id)->first();
-                $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-                $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-                $sucursales=Sucursal::Sucursales()->get();
-                $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-                $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Analisis de Laboratorio')->first();
-                $Paciente=Paciente::Paciente($orden->expediente->ordenatencion->paciente->paciente_id)->first();
-                $especialidad=Especialidad::EspecialidadBuscar('Laboratorio')->first();
-                $total=0;
+            $ordenesImagen=Orden_Imagen::ordenImagenes()->get();
 
-                //echo json_encode($Paciente).'<br><br>paciente '.$orden->expediente->ordenatencion->paciente->paciente_id.'<br><br>';
+            //return $ordenesImagen;
 
-                foreach($orden->detalle as $ordenes){
+            foreach($ordenesImagen as $ordenImagen){
+                if($ordenImagen->expediente){
+                    $expediente=$ordenImagen->expediente;
 
-                    //echo json_encode($ordenes).'<br><br><br>';
+                    if($expediente){
+                        $ordenesAtencion=$expediente->ordenAtencion;
 
-                    $tcopago=0;
-                    $procedimiento=Procedimiento_Especialidad::ProcedimientoProductoEspecialidad($ordenes->examen->producto->producto_id,$especialidad->especialidad_id)->first();
-                    $producto=Aseguradora_Procedimiento::ProcedimientosAsignados($procedimiento->procedimiento_id,$Paciente->cliente_id)->first();
-                    
-                    //echo 'buscando<br><br>proc '.$procedimiento->procedimiento_id.'     cliente '.$Paciente->cliente_id.'<br>';
-                    //echo '<br><br>';
-                    //return 'producto id '.$ordenes->examen->producto->producto_id.',       procedimiento_id '.$procedimiento->procedimiento_id.',     cliente id: '.$Paciente->cliente_id;
-
-                    if(!$producto){
-                        //echo 'dfsdf';
-                        //return redirect('inicio')->with('error','El procedimiento no pudo ser encontrado, consulte a su Administrador del Servicio');
-                    }
-
-                    //echo 'producto <br>'.json_encode($producto).'<br><br>';
-
-                    $datos[$count]['idproducto']=$ordenes->examen->producto->producto_id;
-                    $datos[$count]['codigo']=$producto->procedimientoA_codigo;
-                    $datos[$count]['cantidad']=1;
-                    $datos[$count]['nombre']=$ordenes->examen->producto->producto_nombre;
-                    $datos[$count]['valor']=$producto->procedimientoA_valor;
-                    $datos[$count]['%Cobertura']='0 %';
-                    $datos[$count]['Cobertura']=$producto->procedimientoA_valor;;
-                    $datos[$count]['Copago']=$producto->procedimientoA_valor;
-                    $tcopago=$producto->procedimientoA_valor;
-                    
-                    $copago=Entidad_Procedimiento::ValorAsignado($procedimiento->procedimiento_id, $Paciente->entidad_id)->get();
-                    
-                    foreach($copago as $copagos){
-                        if($copagos->procedimiento->producto_id==$ordenes->examen->producto->producto_id){
-                            
-                            $datos[$count]['%Cobertura']=$copagos->ep_valor.' %';
-                            $datos[$count]['Cobertura']=(($producto->procedimientoA_valor*$copagos->ep_valor)/100);
-
-                            $datos[$count]['Copago']=$producto->procedimientoA_valor+round(($producto->procedimientoA_valor*$copagos->ep_valor/100), 2);
-                            $tcopago=($producto->procedimientoA_valor)+round(($producto->procedimientoA_valor*$copagos->ep_valor/100), 2);
+                        if($ordenesAtencion){
+                            $paciente = $ordenesAtencion->paciente;
                         }
                     }
-                    $count++;
-                    $total=$total+$tcopago;
                 }
-
-                //return  'fin<br>';
-
-                
-                $secuencial=1;
-                if($rangoDocumento){
-                    $secuencial=$rangoDocumento->rango_inicio;
-                    $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
-                    if($secuencialAux){$secuencial=$secuencialAux+1;}
-                    
-                    $data=[
-                        'especialidad'=>$especialidad,
-                        'total'=>$total,
-                        'datos'=>$datos,
-                        'paciente'=>$Paciente,
-                        'seguros'=>Tipo_Seguro::tipos()->get(),
-                        'cajaAbierta'=>$cajaAbierta,
-                        'sucursales'=>$sucursales,
-                        'ordenAtencion'=>$orden,
-                        //'clienteO'=>Cliente::Cliente($orden->expediente->ordenatencion->factura->cliente_id)->first(),
-                        'clienteO'=>Cliente::Cliente($orden->expediente->ordenatencion->cliente_id)->first(),
-                        'vendedores'=>Vendedor::Vendedores()->get(),
-                        'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),
-                        'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9), 
-                        'bodegas'=>Bodega::bodegasSucursal($puntoEmision->punto_id)->get(),
-                        'formasPago'=>Forma_Pago::formaPagos()->get(),
-                        'rangoDocumento'=>$rangoDocumento,'PE'=>Punto_Emision::puntos()->get(),
-                        'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin
-                    ];
-
-                    return view('admin.laboratorio.ordenesExamen.facturar', $data);
-                }else{
-                    return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir facturas de venta, configueros y vuelva a intentar');
-                }
-            }else{
-                return redirect('/denegado');
             }
+
+            //return $ordenesImagen;
+
+            return view('admin.laboratorio.ordenesImagen.index',['sucursales'=>Sucursal::Sucursales()->get(),'ordenesAtencion'=>$ordenesImagen,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         //}
         //catch(\Exception $ex){      
+            //return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
+    }
+
+    public function subirImagenes($id)
+    {
+        //try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            
+            
+            $orden = Orden_Imagen::findOrFail($id);
+
+            $detalle=$orden->detalleImagen;
+
+            if($detalle){
+                foreach($detalle as $det){
+                    $d=$det->imagen->producto;
+                }
+            }
+            
+
+            //return $orden;
+
+            return view('admin.laboratorio.ordenesImagen.subirImagen',['orden'=>$orden,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        //}catch(\Exception $ex){
         //    return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         //}
+    }
+
+    public function guardarImagenes(Request $request){
+        try{
+            DB::beginTransaction();
+
+            $orden_imagen=Orden_Imagen::findOrFail($request->orden_id);
+            $orden_atencion=$orden_imagen->expediente->ordenAtencion;
+
+            $imagenes=[];
+            $empresa = Empresa::empresa()->first();
+            $fecha = (new DateTime("$orden_atencion->orden_fecha"))->format('d-m-Y');
+
+            $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$orden_atencion->orden_numero.'/Documentos/Imagenes';
+
+            $actualizados=[];
+
+            if ($request->files) {
+                if (!is_dir(public_path().'/'.$ruta)) {
+                    mkdir(public_path().'/'.$ruta, 0777, true);
+                }
+                
+                foreach($request->files as $key => $file){
+                    $detalleId=explode("_",$key)[1];
+                    
+                    $c=0;
+                    foreach($file as $documento){
+                        $c++;
+                        $name = 'imagen_resultado'.$detalleId.'_'.$c.'.pdf';
+
+                        $path = $documento->move(public_path().'/'.$ruta, $name);
+                        $temp = [
+                            'ruta'=>$ruta,
+                            'nombre'=>$name,
+                            'path'=>$path
+                        ];
+
+                        $imagenes[] = $temp;
+
+                        $actualizados[]=$detalleId;
+                        $detalleImagen=Detalle_Imagen::findOrFail($detalleId);
+                        $detalleImagen->detalle_estado=2;
+                        $detalleImagen->save();
+                    }
+                }
+                
+                $detalleImagen=$orden_imagen->detalleImagen;
+
+                $listo=true;
+                foreach($detalleImagen as $detalle){
+                    if($detalle->detalle_estado!=2){
+                        $listo=false;
+                        
+                    }
+                }
+                
+                if($listo){
+                    $orden_imagen->orden_estado=3;
+                    $orden_imagen->save();
+                }
+                else{
+                    return $detalleImagen;
+                }
+            }
+
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Actualizacion de orden de Imagen #'.$orden_imagen->orden_id.' con Expediente '.$orden_imagen->expediente,$orden_imagen->orden_id, json_encode($actualizados));
+
+            DB::commit();
+            return redirect('ordenImagen')->with('success', 'Datos guardados exitosamente');
+        }
+        catch(\Exception $e){
+            DB::rollBack();
+            return redirect('ordenImagen')->with('success', 'Datos guardados exitosamente');
+        }
     }
     
     /**

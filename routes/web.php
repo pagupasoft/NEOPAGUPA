@@ -158,6 +158,8 @@ use App\Http\Controllers\vacacionController;
 use App\Http\Controllers\signosVitalesController;
 use App\Http\Controllers\atencionCitasController;
 use App\Http\Controllers\atencionRecetasController;
+use App\Http\Controllers\cabeceraRolAdministrativoController;
+use App\Http\Controllers\cabeceraRolController;
 use App\Http\Controllers\cargarBalancesController;
 use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\categoriaCostoController;

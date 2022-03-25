@@ -568,15 +568,14 @@ class examenController extends Controller
                 $analisis->analisis_fecha=$request->get('factura_fecha');
                 $analisis->analisis_otros=$request->get('otros');
                 $analisis->analisis_observacion='';
-                $analisis->analisis_estado='2';
+                $analisis->analisis_estado='1';
                 $analisis->sucursal_id=Rango_Documento::rango($request->get('rango_id'))->first()->puntoEmision->sucursal_id;
                 $analisis->orden_id=$orden->orden_id;
                 //$analisis->factura_id=$factura->factura_id;
                 $analisis->orden_particular_id=null;
                 $analisis->save();
-                for ($i = 1; $i < count($cantidad); ++$i) 
-                {
-                    
+
+                for ($i = 1; $i < count($cantidad); ++$i){
                     $detalleanalisis=new Detalle_Analisis();
                     $detalleanalisis->detalle_estado='1';
                     $detalleanalisis->producto_id=$isProducto[$i];
@@ -598,35 +597,20 @@ class examenController extends Controller
             
             $orden->orden_estado = '3';
             
-            ///////////enviar orden al Laboratorio externo/////////////////////////////////////////////////////////////
+            ///////////enviar orden al Laboratorio externo/////////////////////////////////////////////////////////////////////////////
             $resultadoEnvio = $this->postCrearOrden($orden);
 
-            
-
-
-            //return json_encode($resultadoEnvio);
-
             if($resultadoEnvio->codigo==201){ //////exito
-                $orden->orden_estado = '4';
+                $analisis->analisis_estado = '2';
+                $analisis->save();
                 $orden->orden_id_referencia=$resultadoEnvio->resultado['data']['id'];
                 $orden->orden_numero_referencia=$resultadoEnvio->resultado['data']['numero_orden'];
 
                 $this->sendMailNotifications($orden->orden_numero_referencia);
             }
-            //////////  error al enviar orden
-            else{
-                DB::rollBack();
-                return json_encode($resultadoEnvio);
-            }
-
-            //return json_encode($resultadoEnvio);
-            //return 
-            
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             $orden->update();
-            
-            
             
             $tipo= Orden_Examen::Ordenanalisis($request->get('orden_id'))->select('tipo_examen.tipo_id','tipo_examen.tipo_nombre')->distinct()->get();
             $etiquetas= Orden_Examen::Ordenetiquetas($request->get('orden_id'))->select('tipo_recipiente.tipo_recipiente_id','tipo_recipiente.tipo_nombre')->distinct()->get();
@@ -896,18 +880,8 @@ class examenController extends Controller
 
         $token = $request->bearerToken();
 
-        //echo $request->id.'<br>';
-        //echo $request->numero_orden_externa.'<br>';
-        //echo count($request->examenes).'<br>';
-        //echo json_encode($request->examenes[0]['id']).'...<br><br>';
-        
-        //return $request;
-
         if($token=='ASk34344R65_Q089A98DHYAS9suygty=89aaUQPELYN'){
-            //echo 'buscando '.$request->numero_orden_externa.'<br>';
-
             try{
-               
                 $analisis=Analisis_Laboratorio::analisisById($request->numero_orden_externa)->first();
 
                 if($request->estado=='R' || $request->estado=='V'){

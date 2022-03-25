@@ -18,4 +18,9 @@ class Detalle_Diagnostico extends Model
     ];
     protected $guarded =[
     ];  
+
+    public function enfermedad()
+    {
+        return $this->belongsTo(Enfermedad::class, 'enfermedad_id', 'enfermedad_id');
+    }
 }

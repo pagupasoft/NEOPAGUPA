@@ -197,6 +197,7 @@ use App\Http\Controllers\ventaActivoController;
 use App\Http\Controllers\historialClinicoController;
 use App\Http\Controllers\LaboratorioController;
 use App\Http\Controllers\ordenExamenController;
+use App\Http\Controllers\ordenImagenController;
 use App\Http\Controllers\tipoMuestraController;
 use App\Http\Controllers\tipoRecipienteController;
 use App\Http\Controllers\tipoSeguroController;
@@ -412,6 +413,7 @@ Route::resource('historialClinico', historialClinicoController::class)->middlewa
 Route::resource('valorLaboratorio', valorLaboratorioController::class)->middleware('auth');
 Route::resource('valorReferencial', valorReferencialController::class)->middleware('auth');
 Route::resource('ordenesExamen', ordenExamenController::class)->middleware('auth');
+Route::resource('ordenImagen', ordenImagenController::class)->middleware('auth');
 Route::resource('tipoDependencia', tipoDependenciaController::class)->middleware('auth');
 Route::resource('documentoOrdenAtencion', documentoOrdenAtencionController::class)->middleware('auth');
 Route::resource('tarjetaCredito', tarjetaCreditoController::class)->middleware('auth');
@@ -694,7 +696,12 @@ Route::post('/reporteDocsAnulados', [reporteDocsAnuladosController::class, 'cons
 Route::get('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'nuevo'])->middleware('auth');
 Route::post('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'consultar'])->middleware('auth');
 Route::get('/nuevoSignosV/{id}', [signosVitalesController::class, 'nuevoSigno'])->middleware('auth');
+
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
+Route::get('/informehistoricoplano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
+Route::post('/generarreportehistoricoplano', [atencionCitasController::class, 'informeHistoricoPlano'])->middleware('auth')->middleware('acceso');
+
+
 
 Route::get('/receta', [atencionRecetasController::class, 'index'])->middleware('auth')->middleware('acceso');
 Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])->middleware('auth')->middleware('acceso');
@@ -702,10 +709,15 @@ Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'
 Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 
+Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
+Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
+
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/historial', [historialClinicoController::class, 'historial'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/ver', [historialClinicoController::class, 'ver'])->middleware('auth')->middleware('acceso');
+Route::get('/historialClinico/{id}/informacion', [historialClinicoController::class, 'informacion'])->middleware('auth')->middleware('acceso');
+
 Route::get('/reporteDepreciacion', [depreciacionMensualController::class, 'reporteDepreciacionActivo'])->middleware('auth');
 Route::get('/reporteDepreciacion', [depreciacionMensualController::class, 'nuevo'])->middleware('auth');
 Route::get('/examen/{id}/agregarValores', [examenController::class, 'agregarValores'])->middleware('auth')->middleware('acceso');
@@ -893,6 +905,7 @@ Route::get('/puntomision/searchN/{ide}', [puntoEmisionController::class, 'buscar
 Route::post('/procedimiento/searchN', [procedimientoEspecialidadController::class, 'buscarBy'])->middleware('auth');
 Route::post('/analisis/searchN', [examenController::class, 'buscarByExamen'])->middleware('auth');
 Route::get('/medicinas/searchN/{buscar}', [medicamentoController::class, 'buscarBy'])->middleware('auth');
+Route::get('/medicinas/searchId/{buscar}', [medicamentoController::class, 'buscarId'])->middleware('auth');
 
 Route::get('/nuevartencion/searchN/{ide}', [transaccionCompraController::class, 'buscarBy'])->middleware('auth');
 Route::get('/proveedores/searchN/{buscar}', [proveedorController::class, 'buscarByProveedor'])->middleware('auth');
@@ -1170,7 +1183,7 @@ Route::get('/valorLaboratorio/{id}/eliminar',  [detalleLaboratorioController::cl
 Route::get('/analisisLaboratorio/{id}/imprimirorden', [analisis_LaboratorioController::class, 'imprimiranalisis'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/resultados', [analisis_LaboratorioController::class, 'resultados'])->middleware('auth');
 Route::get('/analisisLaboratorio/{id}/enviar', [analisis_LaboratorioController::class, 'enviar'])->middleware('auth');
-Route::get('/analisisLaboratorio/cargarDatosExamenes', [analisis_LaboratorioController::class, 'cargarDatosExamenes'])->middleware('auth');
+Route::post('/analisisLaboratorio/cargarDatosExamenes', [analisis_LaboratorioController::class, 'cargarDatosExamenes'])->middleware('auth');
 
 //orden de recepcion
 Route::get('/ordenRecepecion/{id}/eliminar',  [ordenRecepcionController::class, 'eliminar'])->middleware('auth');

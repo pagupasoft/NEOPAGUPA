@@ -76,7 +76,7 @@ class Orden_Atencion extends Model
     {
         return $this->belongsTo(Factura_Venta::class, 'factura_id', 'factura_id');
     }
-    public function expendiente()
+    public function expediente()
     {
         return $this->belongsTo(Expediente::class, 'orden_id', 'orden_id');
     }
@@ -84,14 +84,12 @@ class Orden_Atencion extends Model
     {
         return $this->belongsTo(Especialidad::class, 'especialidad_id', 'especialidad_id');
     }
-
+    
     public function scopeOrdenCitaDisponible($query, $medico_id, $especialidad_id, $fecha1, $fecha2){
         return $query->where('medico_id','=',$medico_id
                     )->where('especialidad_id','=',$especialidad_id
                     )->where('orden_fecha', "=", "'$fecha1'"
                     )->whereBetween('orden_hora', ["'$fecha1'","'$fecha2'"]);
-
-                    //->whereRaw('created_at >= DATE_SUB(NOW(), INTERVAL 3 HOUR)
     }
 
     public function scopeOrdenCitaDisponibleHora($query, $medico_id, $especialidad_id, $fecha){
@@ -99,8 +97,6 @@ class Orden_Atencion extends Model
                     )->where('especialidad_id','=',$especialidad_id
                     )->where('orden_fecha', "=", "'$fecha'"
                     )->where('orden_hora', "=", "'$fecha'");
-
-                    //->whereRaw('created_at >= DATE_SUB(NOW(), INTERVAL 3 HOUR)
     }
 
     public function scopeOrdenesByFechaSuc($query,$fechaI,$fechaF,$sucursal){
@@ -108,8 +104,11 @@ class Orden_Atencion extends Model
                     )->where('orden_fecha','>=',$fechaI
                     )->where('orden_fecha','<=',$fechaF
                     )->where('orden_atencion.sucursal_id','=',$sucursal
-                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->orderBy('orden_atencion.orden_fecha','asc'
+                    )->orderBy('orden_atencion.orden_hora','asc');
     }
+    
     public function scopeOrdenes($query){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'     
                     )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
@@ -166,7 +165,10 @@ class Orden_Atencion extends Model
     }
     public function scopeHistorial($query, $id){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                    )->where('orden_estado','=','4')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('paciente_id','=',$id);
+                    )->where('orden_estado','=','3'
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->where('paciente_id','=',$id
+                    )->orderByDesc('orden_atencion.orden_fecha');
     }
     
     public function scopeOrdenProcedimientoId($query, $id){

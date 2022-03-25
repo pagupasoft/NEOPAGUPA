@@ -140,7 +140,7 @@
             </tr>
             <tr><td></td></tr>
             @foreach ($xml->infoAdicional->campoAdicional as $adicional)
-                <tr><td><b>{{$adicional['nombre']}}: </b> @if($adicional['nombre'] == 'Email') {{ str_replace(';','; ',$adicional) }}  @else {{$adicional}} @endif</td></tr>
+                <tr><td class="observacion-word"><b>{{$adicional['nombre']}}: </b> @if($adicional['nombre'] == 'Email') {{ str_replace(';','; ',$adicional) }}  @else {{$adicional}} @endif</td></tr>
             @endforeach
           </table>
           <br>

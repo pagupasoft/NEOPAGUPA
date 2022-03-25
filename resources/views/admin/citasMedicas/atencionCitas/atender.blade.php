@@ -1,6 +1,12 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data">
+
+<style>
+    .active{
+        background-color: #c2d7eb !important;
+    }
+</style>
+<form class="form-horizontal" method="POST" action="{{ url("atencionCitas") }}" enctype="multipart/form-data" onsubmit="return comprobarStockPrescripcion()">
 @csrf
 <div class="card card-secondary">
     <div class="card-header">
@@ -19,12 +25,16 @@
 
             <input class="invisible" id="paciente_id" name="paciente_id" value="{{$ordenAtencion->paciente->paciente_id}}">
             <input class="invisible" id="orden_id" name="orden_id" value="{{$ordenAtencion->orden_id}}">
-            <input class="invisible" id="expediente_id" name="expediente_id" value="{{$ordenAtencion->expendiente->expediente_id}}">
+            <input class="invisible" id="expediente_id" name="expediente_id" value="{{$ordenAtencion->expediente->expediente_id}}">
             <div class="form-group row">
                 <label for="sucursal" class="col-sm-1 col-form-label">Paciente:</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <label  class="form-control" >{{$ordenAtencion->paciente->paciente_apellidos.' '.$ordenAtencion->paciente->paciente_nombres}}</label>
                 </div>
+                <div class="col-md-1">
+                    <a style="color: white" class="btn btn-warning" href="{{ url('historialClinico/'.$ordenAtencion->paciente->paciente_id.'/ver') }}"><i class="fa fa-calendar-check"></i> &nbsp; Historial</a>
+                </div>
+
                 <label for="fecha_hora" class="col-sm-1 col-form-label">Fecha/Hora:</label>
                 <div class="col-sm-2">
                 <input type="date" class="form-control" id="fecha" name="fecha" value="{{$ordenAtencion->orden_fecha}}" readonly>
@@ -55,6 +65,7 @@
                 <label class="form-control">{{$ordenAtencion->tipoSeguro->tipo_codigo}} - {{$ordenAtencion->tipoSeguro->tipo_nombre}}</label>
                 </div>
             </div> 
+
             <div class="form-group row">
                 <div class="col-sm-12">
                     <label for="observacion" class="col-sm-5 col-form-label">Observación de la cita:</label>
@@ -65,7 +76,7 @@
             <div class="col-sm-1">
                 <ul class="nav flex-column2 nav-tabs h-100" id="myTab" role="tablist" aria-orientation="vertical">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-app2 redondo" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
+                        <a class="nav-link btn btn-app2 redondo active" id="adicional-tab" data-toggle="tab" href="#adicional" role="tab" aria-controls="adicional" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-info-circle"></i> Informacion</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-app2 redondo" id="signos-tab" data-toggle="tab" href="#signos" role="tab" aria-controls="signos" aria-selected="false"><span class="badge bg-purple"></span><i class="fas fa-stethoscope"></i> Signos Vitales</a>
@@ -98,7 +109,7 @@
                     <div class="well listview-pagupa">
                         <div class="tab-content" id="myTabContent">
                             <!--Informacion-->
-                            <div class="tab-pane fade show" id="adicional" role="tabpanel" aria-labelledby="adicional-tab">
+                            <div class="tab-pane fade show active" id="adicional" role="tabpanel" aria-labelledby="adicional-tab" style="background: white !important">
                                 <br>
                                 <?php $count=1;?>
                                 @if(isset($cespecialidad))
@@ -129,7 +140,7 @@
                             </div>
                             
                             <!-- /.tab-contentt --> 
-                            <div class="tab-pane fade show" id="signos" role="tabpanel" aria-labelledby="signos-tab">  
+                            <div class="tab-pane fade show" id="signos" role="tabpanel" aria-labelledby="signos-tab" style="background: white !important">  
                                 <br> 
                                 <div class="col-12 col-sm-12">
                                 <?php $count=1;?>
@@ -159,7 +170,7 @@
                             </div>
     	                    <!-- /.tab-contentt -->                               
                             <!--Diagnóstico-->
-                            <div class="tab-pane fade show" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab">  
+                            <div class="tab-pane fade show" id="diagnostico" role="tabpanel" aria-labelledby="diagnostico-tab" style="background: white !important">  
                                 <br> 
                                 <div class="col-12 col-sm-12">
                                     <div class="form-group">
@@ -184,7 +195,7 @@
     	                    <!-- /.tab-contentt -->
 
                             <!--Prescripcion-->
-                            <div class="tab-pane fade show" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab">
+                            <div class="tab-pane fade show" id="prescripcion" role="tabpanel" aria-labelledby="prescripcion-tab" style="background: white !important">
                                 <br>
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-5 col-lg-6" style="margin-bottom: 0px;">
@@ -266,7 +277,7 @@
                             </div>
                             <!-- /.tab-contentt -->
                             <!--Examenes-->
-                            <div class="tab-pane direct fade show direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
+                            <div class="tab-pane direct fade show direct-chat-messages" id="examenes" role="tabpanel" aria-labelledby="examenes-tab" style="background: white !important">
                                 <br>
                                 <div class="row">                                           
                                     @foreach($tipoExamenes as $tipoExamen) 
@@ -299,7 +310,7 @@
                             </div>
                             <!-- /.tab-contentt -->
                             <!--Imagenes-->
-                            <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
+                            <div class="tab-pane fade show" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab" style="background: white !important">
                                 <br>
 
                                 
@@ -392,7 +403,7 @@
                             <!-- /.tab-contentt -->
                             <!--Imagenes-->
                             
-                            <div class="tab-pane fade show" id="subirimagenes" role="tabpanel" aria-labelledby="subirimagenes-tab">  
+                            <div class="tab-pane fade show" id="subirimagenes" role="tabpanel" aria-labelledby="subirimagenes-tab" style="background: white !important">  
                                 <br> 
 
                                 <div id="actions" class="row">
@@ -461,10 +472,43 @@
 <script>
     cantidadImagenes=0;
 
-    //const fileInput = document.getElementById("tttt");
-
     function borrarMarcoImagen(id){
         $("#"+id).remove();
+    }
+
+    function comprobarStockPrescripcion(){
+        resultado= true
+       
+        //recorro cada medicamento para conocer el stock
+        $("#cargarItemPrescripcion tbody tr").each(function(){
+            celdaId= jQuery(this).find("td:eq(1)");
+            celdaCant= jQuery(this).find("td:eq(2)");
+            
+            id= celdaId.children().eq(1).val()
+            cant= celdaCant.children().eq(0).children().eq(0).val()
+
+            //////extraer el producto para ver el stok
+            $.ajax({
+                url: "/medicinas/searchId/"+id,
+                dataType: "json",
+                type: "GET",
+                async: false,
+                data: {
+                    buscar: id
+                },
+                success: function(data){
+                    if(data.producto_stock<cant){
+                        alert('El producto '+data.producto_nombre+' ya no tiene el Stock suficiente para poder Continuar');
+                        resultado=false
+                    }
+                }
+            });
+
+            if(resultado==false)
+                return false   //salir del Each
+        })
+        
+        return resultado
     }
 
     window.addEventListener('paste', e => {
@@ -499,19 +543,11 @@
 
             $("#previews").append(linea);
             $("#marco"+cantidadImagenes).append(fileInput);
-           
-            
-            
-            //console.log(bytesToSize(file));
-            //console.log(linea+"    "+JSON.stringify(e.clipboardData.files))
         }
         else{
             linea = linea.replace(/tamano:,/g, '0.00Kb');
             linea = linea.replace(/error:,/g, 'No es imagen!');
         }
-
-        //console.log(linea)
-
     });
 
     function bytesToSize(bytes) {
@@ -544,29 +580,50 @@
     
     function eliminarItem(id) {
         $("#row_" + id).remove();
-        //id_item = id_item - 1;
     }
 
     var id_itemM = 0;  
-    function agregarItemPrescripcion() {   
+    function agregarItemPrescripcion() {
         if (document.getElementById("id_disponible").value > 0) {
-            if (Number(document.getElementById("id_disponible").value) > Number(document.getElementById("id_cantidad").value)) {
-                var linea = $("#plantillaItemMedicamento").html();
-                linea = linea.replace(/{ID}/g, id_itemM);
-                linea = linea.replace(/{PmedicinaNombre}/g, document.getElementById("buscarProducto").value);
-                linea = linea.replace(/{PproductoId}/g, document.getElementById("idProductoID").value);
-                linea = linea.replace(/{PmedicinaId}/g,document.getElementById("idmedicamento").value);
-                linea = linea.replace(/{Pcantidad}/g,document.getElementById("id_cantidad").value);
-                linea = linea.replace(/{Pindicaciones}/g, "");
+            paso=true
 
-                $("#cargarItemPrescripcion tbody").append(linea);
-                id_itemM = id_itemM + 1; 
-                $('#modal-prescripcion').modal('hide');
-            
-                resetearCampos();
+            if(document.getElementById("codigoProducto").value==""){
+                alert('Busque un examen para agregarlo en la lista')
+                paso=false
+            }
+            else{
+                $("#cargarItemPrescripcion tbody tr").each(function(){
+                    celda= jQuery(this).find("td:eq(1)");
+                    id= celda.children().eq(1).val()
+    
+                    if(id==document.getElementById("idProductoID").value){
+                        alert("Este item ya esta en la Lista")
+                        paso=false
+                        return true
+                    }
+                })
+            }
+                
+            if(paso){
+                if (Number(document.getElementById("id_disponible").value) >= Number(document.getElementById("id_cantidad").value)) {
+                    var linea = $("#plantillaItemMedicamento").html();
+                    linea = linea.replace(/{ID}/g, id_itemM);
+                    linea = linea.replace(/{PmedicinaNombre}/g, document.getElementById("buscarProducto").value);
+                    linea = linea.replace(/{PproductoId}/g, document.getElementById("idProductoID").value);
+                    linea = linea.replace(/{PmedicinaId}/g,document.getElementById("idmedicamento").value);
+                    linea = linea.replace(/{Pcantidad}/g,document.getElementById("id_cantidad").value);
+                    linea = linea.replace(/{Pindicaciones}/g, "");
+
+                    $("#cargarItemPrescripcion tbody").append(linea);
+                    id_itemM = id_itemM + 1; 
+                    $('#modal-prescripcion').modal('hide');
+                
+                    resetearCampos();
+                }
             }
         }
     }
+
     function resetearCampos() {
         document.getElementById("id_cantidad").value = 1;
         document.getElementById("codigoProducto").value = "";
@@ -577,57 +634,67 @@
     }
 
     var id_itemI = 0; 
-    function agregarItemImagen(idImag) {    
-        var linea = $("#plantillaItemImagen").html();
-        linea = linea.replace(/{ID}/g, id_itemI);
-        linea = linea.replace(/{ImagenNombre}/g, document.getElementById("imagenNombreAux_"+idImag).value);
-        linea = linea.replace(/{ImagenId}/g, document.getElementById("imagenIdAux_"+idImag).value);
-        linea = linea.replace(/{Iobservacion}/g, "");
+    function agregarItemImagen(idImag) {
+        paso=true
+        $("#cargarItemImagen tbody tr").each(function(){
+            celda= jQuery(this).find("td:eq(1)");
+            id= celda.children().eq(1).val()
 
-        $("#cargarItemImagen tbody").append(linea);
-        id_itemI = id_itemI + 1; 
-        $('#modal-imagenes').modal('hide');
-    }
+            if(id==idImag){
+                alert("El examen de imagen "+document.getElementById("imagenNombreAux_"+idImag).value+" ya esta Ingresado en la Orden")
+                paso=false
+                return true
+            }
+        })
 
-    function agregarImagen() { 
-        id=$("#idImagen").val();
-        nombreImagen=$("#buscarImagen").val();
-
-        if(parseInt(id)>0){
-
+        if(paso){
             var linea = $("#plantillaItemImagen").html();
-            linea = linea.replace(/{ID}/g, id);
-            linea = linea.replace(/{ImagenNombre}/g, nombreImagen);
-            linea = linea.replace(/{ImagenId}/g, id);
+            linea = linea.replace(/{ID}/g, id_itemI);
+            linea = linea.replace(/{ImagenNombre}/g, document.getElementById("imagenNombreAux_"+idImag).value);
+            linea = linea.replace(/{ImagenId}/g, document.getElementById("imagenIdAux_"+idImag).value);
             linea = linea.replace(/{Iobservacion}/g, "");
 
             $("#cargarItemImagen tbody").append(linea);
-            //id_itemI = id_itemI + 1; 
-            //$('#modal-imagenes').modal('hide');
-
-            $('#idImagen').val('0');
-            $('#buscarImagen').val('');
-        }
+            id_itemI = id_itemI + 1; 
+            $('#modal-imagenes').modal('hide');
+        }   
     }
 
-    /*
-    <tbody id="plantillaItemImagen">
-        <tr class="text-center" id="row_{ID}">
-            <td>
-                <a onclick="eliminarItem({ID});" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a>
-            </td>
-            <td>
-                {ImagenNombre}<input class="invisible" name="ImagenNombre[]" value="{ImagenNombre}"/>
-                <input class="invisible" name="ImagenId[]" value="{ImagenId}"/>
-            </td>
-            <td>
-                <input class="form-control" name="Iobservacion[]" value="{Iobservacion}">
-            </td>           
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
-    */
+    function agregarImagen() { 
+        paso=true
+        id=$("#idImagen").val();
+        nombreImagen=$("#buscarImagen").val();
+
+        $("#cargarItemImagen tbody tr").each(function(){
+            celda= jQuery(this).find("td:eq(1)");
+            idcelda= celda.children().eq(1).val()
+
+            if(id==idcelda){
+                paso=false
+                return true
+            }
+        })
+        
+        if(parseInt(id)>0){
+            if(paso){
+                var linea = $("#plantillaItemImagen").html();
+                linea = linea.replace(/{ID}/g, id);
+                linea = linea.replace(/{ImagenNombre}/g, nombreImagen);
+                linea = linea.replace(/{ImagenId}/g, id);
+                linea = linea.replace(/{Iobservacion}/g, "");
+
+                $("#cargarItemImagen tbody").append(linea);
+                //id_itemI = id_itemI + 1; 
+                //$('#modal-imagenes').modal('hide');
+
+                $('#idImagen').val('0');
+                $('#buscarImagen').val('');
+            }
+            else
+                alert("El examen de imagen "+nombreImagen+" ya esta Ingresado en la Orden")
+        }
+        
+    }
 
     var id_itemP = 0; 
     function agregarItemFacturacion(id_itemP) {    

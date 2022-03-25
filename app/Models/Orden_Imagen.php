@@ -37,4 +37,9 @@ class Orden_Imagen extends Model
     {
         return $this->hasMany(Detalle_Imagen::class, 'orden_id', 'orden_id');
     }
+
+    public function expediente()
+    {
+        return $this->belongsTo(Expediente::class, 'expediente_id', 'expediente_id');
+    }
 }

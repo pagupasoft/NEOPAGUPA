@@ -41,6 +41,8 @@ use App\Models\Tipo_Examen;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use PDF;
+use Excel;
+use App\NEOPAGUPA\ViewExcel;
 use DateTime;
 use Illuminate\Support\Facades\Storage;
 
@@ -201,7 +203,7 @@ class atencionCitasController extends Controller
 
                         /******************registro de movimiento de producto******************/
                         $movimientoProducto = new Movimiento_Producto();
-                        $movimientoProducto->movimiento_fecha=$request->get('factura_fecha');
+                        $movimientoProducto->movimiento_fecha=date('Y-m-d H:i:s');;
                         $movimientoProducto->movimiento_cantidad=$Pcantidad[$i];
                         $movimientoProducto->movimiento_precio=0;
                         $movimientoProducto->movimiento_iva=0;
@@ -321,12 +323,87 @@ class atencionCitasController extends Controller
         }
     }
 
+    public function informeHistoricoIndex(Request $request){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $medicos = Medico::medicos()->get();
+            $id = 0;
+
+            foreach($medicos as $medico){
+                if($medico->user_id == Auth::user()->user_id){
+                    $id = $medico->medico_id;
+                }
+            }
+
+
+            
+            $medico = Medico::medico($id)->first();
+            $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
+            $prescripciones = Prescripcion::prescripcionesPaciente()->get();
+            $pacientes = Paciente::pacientes()->get();
+
+
+            $sucursales=Sucursal::sucursales()->get();
+            
+
+            //return $prescripciones;
+
+            return view('admin.citasMedicas.atencionCitas.historicoPlano',['medico'=>$medico, 'sucursales'=>$sucursales, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function informeHistoricoPlano(Request $request){
+        try{   
+            $sucursal=Sucursal::findOrFail($request->sucursal);
+            $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+            
+            if($ordenes){
+                foreach($ordenes as $orden){
+                    $expediente=$orden->expediente;
+                    $producto=$orden->producto;
+                    $paciente=$orden->paciente;
+                    $especialidad=$orden->especialidad;
+                    $tipoSeguro=$orden->tipoSeguro;
+
+                    if($paciente){
+                        $dependencia=$paciente->tipoDependencia;
+                    }
+
+                    ///////////////diagnóstico///////////////////////////////
+
+                    if($expediente){
+                        $diagnostico=$expediente->diagnostico;
+
+                        if($diagnostico){
+                            $diagDetalle=$diagnostico->detallediagnostico;
+
+                            foreach($diagDetalle as $detalle){
+                                $detalle->enfermedad;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            $datos['ordenes']= $ordenes;
+
+            return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
+        }catch(\Exception $ex){
+            return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+
     private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
         $empresa = Empresa::empresa()->first();
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 
         $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenMedico', ['orden'=>$atencion, 'ordenExamen'=> $ordenExamen, 'tipos'=>$tipos, 'empresa'=>$empresa]);
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Laboratorio';
         if (!is_dir(public_path().'/'.$ruta)) {
             mkdir(public_path().'/'.$ruta, 0777, true);
         }
@@ -343,7 +420,7 @@ class atencionCitasController extends Controller
         //$detalleImagen = Detalle_Imagen::DetalleImagen($ordenImagen->orden_id);
 
         $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenImagen', ['orden'=>$atencion, 'ordenImagen'=> $ordenImagen, 'empresa'=>$empresa]);
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Imagenes';
         if (!is_dir(public_path().'/'.$ruta)) {
             mkdir(public_path().'/'.$ruta, 0777, true);
         }
@@ -358,7 +435,7 @@ class atencionCitasController extends Controller
         $empresa = Empresa::empresa()->first();
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Anexos';
 
         if ($imagefile) {
             if (!is_dir(public_path().'/'.$ruta)) {
@@ -453,7 +530,7 @@ class atencionCitasController extends Controller
             }
             $medico = Medico::medico($medicoId)->first();
             $mespecialidadM = Medico_Especialidad::mespecialidadM($medicoId)->first();
-            $ordenAtencion = Orden_Atencion::Orden($id)->first();
+            $ordenAtencion = Orden_Atencion::findOrFail($id);
             $cespecialidad=Configuracion_Especialidad::ConfiEspecialidades($ordenAtencion->especialidad_id)->get();
      
             $signoVital=Signos_Vitales::SignoVitalOrdenId($ordenAtencion->orden_id)->get();

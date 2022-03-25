@@ -193,4 +193,8 @@ class medicamentoController extends Controller
     public function buscarBy($buscar){
         return Producto::BuscarProductosmedicinas($buscar)->get();
     }
+
+    public function buscarId($buscar){
+        return Producto::findOrFail($buscar);
+    }
 }

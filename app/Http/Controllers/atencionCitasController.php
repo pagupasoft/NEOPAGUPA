@@ -403,7 +403,7 @@ class atencionCitasController extends Controller
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 
         $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenMedico', ['orden'=>$atencion, 'ordenExamen'=> $ordenExamen, 'tipos'=>$tipos, 'empresa'=>$empresa]);
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Laboratorio';
         if (!is_dir(public_path().'/'.$ruta)) {
             mkdir(public_path().'/'.$ruta, 0777, true);
         }
@@ -420,7 +420,7 @@ class atencionCitasController extends Controller
         //$detalleImagen = Detalle_Imagen::DetalleImagen($ordenImagen->orden_id);
 
         $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenExamenImagen', ['orden'=>$atencion, 'ordenImagen'=> $ordenImagen, 'empresa'=>$empresa]);
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Imagenes';
         if (!is_dir(public_path().'/'.$ruta)) {
             mkdir(public_path().'/'.$ruta, 0777, true);
         }
@@ -435,7 +435,7 @@ class atencionCitasController extends Controller
         $empresa = Empresa::empresa()->first();
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 
-        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos';
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Anexos';
 
         if ($imagefile) {
             if (!is_dir(public_path().'/'.$ruta)) {

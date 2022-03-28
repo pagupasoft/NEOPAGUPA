@@ -246,7 +246,13 @@ class atencionCitasController extends Controller
                 if($request->get('otros_examenes')){ 
                     $ordenExamen->orden_otros = $request->get('otros_examenes');
                 }
-                $ordenExamen->orden_estado = 1; 
+
+                ///////////  si es iess pasa directo a subir examenes (estado 2)
+                if($atencion->orden_iess == '0')
+                    $ordenExamen->orden_estado = 1; 
+                else
+                    $ordenExamen->orden_estado = 2; 
+
                 $ordenExamen->expediente_id = $request->get('expediente_id'); 
                 $ordenExamen->save();  
                 $auditoria->registrarAuditoria('Ingreso de Examenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
@@ -275,7 +281,7 @@ class atencionCitasController extends Controller
 
             if (count($ImagenId)>1) {
                 $ordenImagen = new Orden_Imagen();
-                $ordenImagen->orden_estado = 1;
+                $ordenImagen->orden_estado = 2;
                 if ($request->get('otros_imagen')) {
                     $ordenImagen->orden_observacion=$request->get('otros_imagen');
                 }

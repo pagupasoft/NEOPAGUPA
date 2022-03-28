@@ -20,12 +20,14 @@ class Orden_Imagen extends Model
     protected $guarded =[
     ];    
     public function scopeOrdenImagenes($query){
-        return $query->join('expediente','expediente.expediente_id','=','orden_imagen.expediente_id'
+        return $query->select("orden_imagen.*"
+                    )->join('expediente','expediente.expediente_id','=','orden_imagen.expediente_id'
                     )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
                     )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id       
-                    )->where('orden_imagen.orden_estado','=','1');                       
+                    )->orderBy('orden_atencion.orden_fecha', 'desc');
     }
+
     public function scopeOrdenImagen($query, $id){
         return $query->join('detalle_imagen','detalle_imagen.orden_id','=','orden_imagen.orden_id'
                     )->join('imagen','imagen.imagen_id','=','detalle_imagen.imagen_id'

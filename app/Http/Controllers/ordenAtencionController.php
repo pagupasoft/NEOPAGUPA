@@ -19,6 +19,7 @@ use App\Models\Detalle_Diario;
 use App\Models\Detalle_FV;
 use App\Models\Detalle_Pago_CXC;
 use App\Models\Diario;
+use App\Models\Documento_Cita_Medica;
 use App\Models\Documento_Orden_Atencion;
 use App\Models\Empresa;
 use App\Models\Entidad_Procedimiento;
@@ -126,7 +127,7 @@ class ordenAtencionController extends Controller
            
             //return $request;
          
-            $empresa = Empresa::empresa()->first();
+            $empresa = Empresa::findOrFail(Auth::user()->empresa_id);
         
             /***************SABER SI SE GENERAR UN ASIENTO DE COSTO****************/
 
@@ -441,11 +442,8 @@ class ordenAtencionController extends Controller
         
        
             $ordenAtencion = new Orden_Atencion();
-           
-            
-           
-            
             $cierre = $general->cierre($dateNew);
+
             if ($cierre) {
                 return redirect('ordenAtencion')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
@@ -492,33 +490,36 @@ class ordenAtencionController extends Controller
             $documento=Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get();
             foreach ($documento as $documentos) {
                 $file='file-es'.$documentos->documento_id;
-                if (($request->get($file))) {
-                    if ($request->file($file)) {
-                        $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos';
-                        if (!is_dir($ruta)) {
-                            mkdir($ruta, 0777, true);
-                        }
-                        if ($request->file($file)->isValid()) {
-                            $name = $documentos->documento_nombre.'.'.$request->file($file)->getClientOriginalExtension();
-                            $path = $request->file($file)->move($ruta, $name);
-                            $documen_orden=new Documento_Orden_Atencion();
-                            $documen_orden->doccita_nombre=$name;
-                            $documen_orden->doccita_url=$ruta.'/'.$name;
-                            $documen_orden->doccita_estado='1';
-                            $documen_orden->orden_id=$ordenAtencion->orden_id;
-                        }
+                
+                if ($request->file($file)) {
+                    $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime("$dateNew"))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos/DocumentosPesonales';
+                    if (!is_dir($ruta)) {
+                        mkdir($ruta, 0777, true);
+                    }
+                    if ($request->file($file)->isValid()) {
+                        $name = $documentos->documento_nombre.'.'.$request->file($file)->getClientOriginalExtension();
+                        $path = $request->file($file)->move($ruta, $name);
+
+                        $documentos_cita_medica=new Documento_Cita_Medica();
+                            $documentos_cita_medica->doccita_nombre=$name;
+                            $documentos_cita_medica->doccita_url=$path;
+                            $documentos_cita_medica->doccita_estado='1';
+                            $documentos_cita_medica->orden_id=$ordenAtencion->orden_id;
+                        $documentos_cita_medica->save();
                     }
                 }
             }
 
             $empresa = Empresa::empresa()->first();
             $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenAtencion', ['orden'=>$ordenAtencion,'empresa'=>$empresa]);
-            $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos';
+            $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime("$dateNew"))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos';
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
             $nombreArchivo = 'Orden de atencion';
             PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo.'.pdf');
+            
+            
             /* descomentar
             $url = $general->pdfDiario($diario);
             */

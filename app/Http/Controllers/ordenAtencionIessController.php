@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PDF;
+use DateTime;
 
 class ordenAtencionIessController extends Controller
 {
@@ -129,7 +130,7 @@ class ordenAtencionIessController extends Controller
                 $file='file-es'.$documento->documento_id;
 
                 if ($request->file($file)) {
-                    $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
+                    $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime($request->get('fechaCitaID')))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos/DocumentosPersonales';
                     if (!is_dir($ruta)) {
                         mkdir($ruta, 0777, true);
                     }
@@ -149,14 +150,14 @@ class ordenAtencionIessController extends Controller
 
             $empresa = Empresa::empresa()->first();
             $view =  \View::make('admin.formatosPDF.ordenesAtenciones.ordenAtencionIess', ['orden'=>$ordenAtencion,'empresa'=>$empresa]);
-            $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos';
+            $ruta = public_path().'/DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime($request->get('fechaCitaID')))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos';
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
             $nombreArchivo = 'Orden de atencion';
             PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo.'.pdf');
             DB::commit();
-            return redirect('ordenAtencionIess')->with('success', 'Datos guardados exitosamente')->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$request->get('fechaCitaID').'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
+            return redirect('ordenAtencionIess')->with('success', 'Datos guardados exitosamente')->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime($request->get('fechaCitaID')))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
           
         }
         catch(\Exception $ex){    

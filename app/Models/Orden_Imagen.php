@@ -20,7 +20,7 @@ class Orden_Imagen extends Model
     protected $guarded =[
     ];    
     public function scopeOrdenImagenes($query){
-        return $query->select("orden_imagen.*"
+        return $query->select('orden_imagen.*'
                     )->join('expediente','expediente.expediente_id','=','orden_imagen.expediente_id'
                     )->join('orden_atencion','orden_atencion.orden_id','=','expediente.orden_id'
                     )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'

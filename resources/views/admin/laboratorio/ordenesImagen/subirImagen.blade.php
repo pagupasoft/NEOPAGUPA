@@ -33,11 +33,11 @@
                                             
                                             @if($det->detalle_estado==1)
                                                 <label style="font-size: 18px; font-weight: normal">
-                                                    estado: <button class="btn btn-sm btn-outline-warning"><i class="fas fa-exclamation-circle"></i>  PENDIENTE</button>
+                                                    estado: <a class="btn btn-sm btn-outline-warning"><i class="fas fa-exclamation-circle"></i>  PENDIENTE</a>
                                                 </label>
                                             @else
                                                 <label>
-                                                    estado: <button class="btn btn-sm btn-outline-success"><i class="fa fa-check"></i>LISTO</button>
+                                                    estado: <a class="btn btn-sm btn-outline-success"><i class="fa fa-check"></i>LISTO</a>
                                                 </label>
                                             @endif
                                         </div>
@@ -55,7 +55,7 @@
                                                 <img class="mr-3" src="{{ asset('/img/pdf_file.png') }}" style="width: 80px; height: 80px">
                                                 <div style="margin-top: auto; margin-bottom: auto;">
                                                     <a class="btn btn-sm  btn-success">
-                                                        <i class="fa fa-download"></i>
+                                                        <i class="fa fa-search"></i>
                                                         Ver Documento
                                                     </a>
                                                 </div>

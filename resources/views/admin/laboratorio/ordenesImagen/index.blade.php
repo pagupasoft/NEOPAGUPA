@@ -2,11 +2,11 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Atencion de Analisis de Laboratario</h3>
+        <h3 class="card-title">Atencion de Analisis de Imagenes</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="{{ url("ordenesExamen") }}">
+        <form class="form-horizontal" method="POST" action="{{ url("ordenesImagen") }}">
         @csrf
             <div class="form-group row">
                 <div class="col-sm-6">
@@ -37,7 +37,7 @@
         <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
             <thead>
                 <tr class="text-center neo-fondo-tabla">
-                    <th></th>
+                    <th>Acción</th>
                     <th>Codigo</th>
                     <th>Número</th> 
                     <th>Paciente</th> 
@@ -46,21 +46,35 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach($ordenesAtencion as $ordenAtencion)
-               
+
+            @foreach($ordenesImagen as $ordenImagen)
                 <tr class="text-center">
-                    <td>  
-                        @if($ordenAtencion->orden_estado == 1)
-                            <a href="{{ url("ordenExamen/{$ordenAtencion->orden_examen_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
-                        @endif 
+                    <td>
+                        {{--$ordenImagen->orden_estado--}}  {{--$ordenImagen->orden_id--}}
+                        @if($ordenImagen->orden_estado == 1)
+                            <a class="btn btn-xs btn-outline-danger " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="No Facturado">
+                                <i class="fas fa-info-circle"></i> Pendiente
+                            </a>
+                        @elseif($ordenImagen->orden_estado==2)
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/subirImagenes") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Subir Resultados">
+                                <i class="fas fa-edit"></i> Subir
+                            </a>
+                        @else
+                            <a class="btn btn-xs btn-outline-success" style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Subidos">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/verResultadosImagen") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="ver Resultados">
+                                <i class="fa fa-folder-open"></i>
+                            </a>
+                        @endif
+                    </td>
                         
-                    </td>    
-                        <td>{{ $ordenAtencion->orden_codigo }}</td>
-                        <td>{{ $ordenAtencion->orden_numero }}</td>
-                        <td>{{ $ordenAtencion->paciente_apellidos}} <br>
-                            {{ $ordenAtencion->paciente_nombres }} </td>
-                        <td>{{ $ordenAtencion->orden_fecha }}</td>
-                        <td>{{ $ordenAtencion->orden_otros }}</td>                                         
+                    <td>{{ $ordenImagen->expediente->ordenAtencion->orden_codigo }}</td>
+                    <td>{{ $ordenImagen->expediente->ordenAtencion->orden_numero }}</td>
+                    <td>{{ $ordenImagen->expediente->ordenAtencion->paciente->paciente_apellidos}} <br>
+                        {{ $ordenImagen->expediente->ordenAtencion->paciente->paciente_nombres }} </td>
+                    <td>{{ $ordenImagen->expediente->ordenAtencion->orden_fecha }}</td>
+                    <td>{{ $ordenImagen->expediente->ordenAtencion->orden_otros }}</td>                                         
                 </tr>
                  
             @endforeach

@@ -1,79 +1,61 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <div class="card card-secondary">
-   
-    <form  method="POST" action="{{ url("ordenImagen") }}/{{ $orden->orden_id }}/guardarImagenes" enctype="multipart/form-data">
-        @csrf
-        
-        <div class="col-sm-12">
-            <div class="card card-secondary ">
-                <div class="card-header">
-                    <h3 class="card-title">Subir Documentos de Imagenes</h3>
-                    <div class="float-right">
-                        <button type="submit" name="guardar" id="guardar" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
-                        <button type="button" onclick='window.location = "{{ url("ordenImagen") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
-                    </div>
+    <div class="col-sm-12">
+        <div class="card card-secondary ">
+            <div class="card-header">
+                <h3 class="card-title">Ver Resultados de Imagen Guardados</h3>
+                <div class="float-right">
+                    <button type="button" onclick='history.back()' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                 </div>
-                <div class="p-5">
-                    <div class="card-body">
-                        <table>
-                            <thead class="invisible">
-                                <tr class="text-center">
-                                    <th>
-                                        <input type="hidden" id="orden_id" name="orden_id" value="{{ $orden->orden_id}} ">
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($orden->detalleImagen as $det)
-                                <tr>
-                                    <td class="filaDelgada30">
-                                        <div class="row">
-                                            <label class="mr-3" style="font-size: 18px; font-weight: bold !important;">- &nbsp; {{  $det->imagen->imagen_nombre}}</label>
+            </div>
+            <div class="p-5">
+                <div class="card-body">
+                    <table>
+                        <thead class="invisible">
+                            <tr class="text-center">
+                                <th>
+                                    <input type="hidden" id="orden_id" name="orden_id" value="{{ $orden->orden_id}} ">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($orden->detalleImagen as $det)
+                            <tr>
+                                <td class="filaDelgada30">
+                                    <div class="row">
+                                        <label class="mr-3" style="font-size: 18px; font-weight: bold !important;">- &nbsp; {{  $det->imagen->imagen_nombre}}</label>
+                                    </div>
+
+                                    @if($det->detalle_estado=='1')
+                                        <div class="row ml-5 mb-5">
+                                            <img class="mr-3" src="{{ asset('/img/no_file.png') }}" style="width: 80px; height: 80px">
                                             
-                                            @if($det->detalle_estado==1)
-                                                <label style="font-size: 18px; font-weight: normal">
-                                                    estado: <a class="btn btn-sm btn-outline-warning"><i class="fas fa-exclamation-circle"></i>  PENDIENTE</a>
-                                                </label>
-                                            @else
-                                                <label>
-                                                    estado: <a class="btn btn-sm btn-outline-success"><i class="fa fa-check"></i>LISTO</a>
-                                                </label>
-                                            @endif
+                                            <div style="margin-top: auto; margin-bottom: auto;">
+                                                <input name="imagenes_{{ $det->detalle_id }}[]" type="file" class="btn btn-sm btn-success" accept="application/pdf">
+                                            </div>
                                         </div>
-
-                                        @if($det->detalle_estado=='1')
-                                            <div class="row ml-5 mb-5">
-                                                <img class="mr-3" src="{{ asset('/img/no_file.png') }}" style="width: 80px; height: 80px">
-                                                
-                                                <div style="margin-top: auto; margin-bottom: auto;">
-                                                    <input name="imagenes_{{ $det->detalle_id }}[]" type="file" class="btn btn-sm btn-success" accept="application/pdf">
-                                                </div>
+                                    @else
+                                        <div class="row ml-5 mb-5">
+                                            <img class="mr-3" src="{{ asset('/img/pdf_file.png') }}" style="width: 80px; height: 80px">
+                                            <div style="margin-top: auto; margin-bottom: auto;">
+                                                <a target="_blank" href="{{ url('DocumentosOrdenAtencion/') }}<?= '/'.$empresa->empresa_ruc.'/'.(new DateTime("$ordenAtencion->orden_fecha"))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos/Imagenes/imagen_resultado'.$det->detalle_id.'_1.pdf' ?>"  class="btn btn-sm  btn-success">
+                                                    <i class="fa fa-search"></i>
+                                                    Ver Documento
+                                                </a>
                                             </div>
-                                        @else
-                                            <div class="row ml-5 mb-5">
-                                                <img class="mr-3" src="{{ asset('/img/pdf_file.png') }}" style="width: 80px; height: 80px">
-                                                <div style="margin-top: auto; margin-bottom: auto;">
-                                                    <a class="btn btn-sm  btn-success">
-                                                        <i class="fa fa-search"></i>
-                                                        Ver Documento
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                    </div>
                 </div>
             </div>
         </div>
-        
-    </form>   
-    <!-- /.card-body -->
+    </div>
 </div>
 <!-- /.modal -->
 <script type="text/javascript">

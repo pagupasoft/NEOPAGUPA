@@ -479,7 +479,7 @@
                     if(data.examen){
                         //console.log(data.examen)
                         //console.log(data.orden_estado)
-                        if(data.examen.orden_estado==2 || data.examen.orden_estado==3){
+                        if(data.examen.orden_estado==3){
                             var frame = $('#frame');
                             var url = "/analisisLaboratorio/"+data.examen.analisis.analisis_laboratorio_id+"/resultados";
                             frame.attr('src',url).show();

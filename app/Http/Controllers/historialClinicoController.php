@@ -97,11 +97,13 @@ class historialClinicoController extends Controller
             $examen=$expediente->ordenExamen;
             
             if($examen){
-                if($examen->analisis->detalles){
-                    $analisisDetalle=$examen->analisis->detalles;
+                if($examen->analisis){
+                    if($examen->analisis->detalles){
+                        $analisisDetalle=$examen->analisis->detalles;
 
-                    foreach($analisisDetalle as $detalle){
-                        $detalle->detalles;
+                        foreach($analisisDetalle as $detalle){
+                            $detalle->detalles;
+                        }
                     }
                 }
             }

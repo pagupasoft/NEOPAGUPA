@@ -159,8 +159,10 @@
                     } 
                 }        
             },
-            error: function(){ 
-                alert("error petición ajax");
+            error: function(error){ 
+                alert("error petición ajax ");
+
+                console.log(error)
             },
             
         });

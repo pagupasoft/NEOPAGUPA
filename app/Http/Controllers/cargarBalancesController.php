@@ -34,6 +34,27 @@ class cargarBalancesController extends Controller
     }
     public function CargarExcel(Request $request)
     {
+        
+        
+    }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
         try{
             DB::beginTransaction();
 
@@ -46,7 +67,7 @@ class cargarBalancesController extends Controller
                 $diario=Diario::findOrFail($request->get('diario'));
                 for ($i=1;$i < count($array[0]);$i++) {
                     $validarcuenta=trim($array[0][$i][0]);
-                    $cuenta=Cuenta::buscarCuenta($validarcuenta)->fisrt();
+                    $cuenta=Cuenta::buscarCuenta($validarcuenta)->first();
                     if (floatval($array[0][$i][1])>0) {
                         $detalleDiario = new Detalle_Diario();
                     
@@ -80,32 +101,11 @@ class cargarBalancesController extends Controller
                 $general->registrarAuditoria('Actualizacion de Diario codigo: -> '.$diario->diario_codigo, '0','');
             }
             DB::commit();
-            return redirect('activoFijo')->with('success','Datos guardados exitosamente');
+            return redirect('cargaBalances')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('excelActivoFijo')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
+            return redirect('cargaBalances')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
         }
-        
-    }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**

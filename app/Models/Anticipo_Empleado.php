@@ -22,6 +22,7 @@ class Anticipo_Empleado extends Model
         'anticipo_motivo',
         'anticipo_valor',
         'anticipo_saldo',
+        'anticipo_saldom',
         'rango_id',
         'empleado_id',
         'diario_id',
@@ -63,10 +64,19 @@ class Anticipo_Empleado extends Model
         return $query;
     }  
     public function scopeAnticipoEmpleado($query, $id){
-        return $query->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('empleado_id','=',$id);
+        return $query->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')
+        ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
+        ->where('empleado_id','=',$id);
     }
     public function scopeAnticipoEmpleadobuscar($query, $id){
-        return $query->join('diario','diario.diario_id','=','anticipo_empleado.diario_id')->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->join('empleado','empleado.empleado_id','=','anticipo_empleado.empleado_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('anticipo_estado','=','1')->where('anticipo_empleado.empleado_id','=',$id);
+        return $query->join('diario','diario.diario_id','=','anticipo_empleado.diario_id')
+        ->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')
+        ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')
+        ->join('empleado','empleado.empleado_id','=','anticipo_empleado.empleado_id')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
+        ->where('anticipo_estado','=','1')
+        ->where('anticipo_empleado.empleado_id','=',$id);
     }
     public function scopeAnticiposByEmpleadoFecha($query, $empleado_id, $fecha){
         return $query->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('empleado_id','=',$empleado_id)->where('anticipo_fecha','<=',$fecha)->orderBy('anticipo_fecha','asc');

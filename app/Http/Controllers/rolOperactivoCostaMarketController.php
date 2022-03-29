@@ -441,7 +441,12 @@ class rolOperactivoCostaMarketController extends Controller
         
                     $auditoria = new generalController();
                     $auditoria->registrarAuditoria('Resgitro del descuento del Anticipo de empleado-> '.$request->get('idEmpleado'), '0', 'Por el pago de rol');
-                    $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    if($anticipo->anticipo_saldom){
+                        $anticipo->anticipo_saldo=$anticipo->anticipo_saldom-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    }
+                    else{
+                        $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    }
                     if ($anticipo->anticipo_saldo=='0') {
                         $anticipo->anticipo_estado='2';
                     }
@@ -1306,10 +1311,14 @@ class rolOperactivoCostaMarketController extends Controller
                 foreach ($rol->anticiposcm as $detalle) {
                     $anticipos = Descuento_Anticipo_Empleado::findOrFail($detalle->descuento_id);
                     $anticipo = Anticipo_Empleado::findOrFail($anticipos->anticipo_id);
+                    $anticipoaux = Anticipo_Empleado::findOrFail($anticipos->anticipo_id);
                     $anticipos->delete();
                     $auditoria->registrarAuditoria('Eliminacion de Descuento de Anticipos para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');
-
-                    $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    if($anticipoaux->anticipo_saldom){
+                        $anticipo->anticipo_saldo=$anticipo->anticipo_saldom-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    }else{
+                        $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                    }
                     $anticipo->anticipo_estado='1';
                     $anticipo->update();
                  

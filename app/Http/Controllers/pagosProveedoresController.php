@@ -603,7 +603,6 @@ class pagosProveedoresController extends Controller
                                                     $bandera2=true;
                                                 }
                                                 if($bandera2){
-                                                
                                                     foreach ($pago2->detalles as $detallePago) {
                                                         if(isset($detallePago->cuentaPagar->cuenta_id)){
                                                             if(isset(Detalle_Pago_CXP::DetallePagoCXP($detallePago->detalle_pago_id)->first()->detalle_pago_id)){

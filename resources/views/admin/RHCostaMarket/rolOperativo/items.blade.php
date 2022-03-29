@@ -9,7 +9,7 @@
             <input type="hidden" name="tiporubro[]" value="{tipo}"/>
             <input type="hidden" name="rubro[]"   value="{rubro}"/>
             <input type="hidden" name="valor[]" id="V{rubro}" value="{valor}"/>
-          
+            <input type="hidden"name="prubro[]" id="p{rubro}" value="PAGADO"/>
         </tr>
     </tbody>
 </table>

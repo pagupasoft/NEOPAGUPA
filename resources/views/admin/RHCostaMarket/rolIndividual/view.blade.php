@@ -2,7 +2,7 @@
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="card card-primary ">
-    <form method="POST" action="{{ url("rolindividualCM") }}"  onsubmit="return validar()"> 
+    <form method="POST" action="{{ url("individualrol") }}"  onsubmit="return validar()"> 
     @csrf
         <div class="row">
         <!-- Tabla de empelados -->
@@ -51,31 +51,7 @@
                                 <br>
 
                             </div>
-                            <div class="row clearfix form-horizontal">
-                            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label "
-                                       >
-                                <label >Consumo</label>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" >  
-                                    <select class="custom-select select2" id="consumo" name="consumo" >               
-                                        @foreach($consumo as $consumos)
-                                            <option id="{{$consumos->centro_consumo_nombre}}" name="{{$consumos->centro_consumo_nombre}}" value="{{$consumos->centro_consumo_id}}">{{$consumos->centro_consumo_nombre}}</option>
-                                        @endforeach
-                                    </select>    
-                            </div>
-                            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label "
-                                       >
-                                <label >Categoria</label>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" >  
-                                
-                                        <select class="custom-select select2" id="categoria" name="categoria" >               
-                                            @foreach($categoria as $categorias)
-                                                <option id="{{$categorias->categoria_nombre}}" name="{{$categorias->categoria_nombre}}" value="{{$categorias->categoria_id}}">{{$categorias->categoria_nombre}}</option>
-                                            @endforeach
-                                        </select>      
-                            </div>
-                            </div>
+                            
                             <br>
                         </div>  
                     </div> 
@@ -135,7 +111,7 @@
                             </div>
                         </div>
                         <!-- Tabla de ingresos -->
-                        <div  class="col-md-3">
+                        <div  class="col-md-3-5">
                             <div class="card card-secondary"> 
                                 <div class="card-header">
                                     <h3 class="card-title ">Ingresos</h3>
@@ -173,7 +149,7 @@
                         </div>
                             
                         <!-- Tabla de egresos -->
-                        <div  class="col-md-3">
+                        <div  class="col-md-3-5">
                                 
                                 <div class="card card-secondary">  
                                     <div class="card-header">
@@ -427,9 +403,9 @@
                                             <th  class="text-center-encabesado letra-blanca fondo-gris-oscuro negrita" colspan="2">Totales </th>
                                         </tr>
                                         <tr>
-                                            <td  class="letra-blanca fondo-gris-oscuro negrita" width="90">Total Ingresos (+)
+                                            <td  class="letra-blanca fondo-gris-oscuro negrita" width="50%">Total Ingresos (+)
                                             </td>
-                                            <td id="TotalIngresosV" name="TotalIngresosV" width="100" class="derecha-texto negrita">0.00
+                                            <td id="TotalIngresosV" name="TotalIngresosV" width="50%" class="derecha-texto negrita">0.00
                                             </td>
                                             <input type="hidden"   name="TIngresos"  id="TIngresos" value="0" required readonly>
                                             <input type="hidden"   name="idControldia"  id="idControldia" value="0" required readonly>
@@ -459,26 +435,23 @@
                                            
                                             <input type="hidden"   name="cuartot"  id="cuartot" value="0" required readonly> 
                                             <input type="hidden"   name="tercerot"  id="tercerot" value="0" required readonly> 
-
-                                            <input type="hidden"   id="vquince" value="0" required readonly> 
-                                            <input type="hidden"    id="valim" value="0" required readonly> 
-                                            <input type="hidden"    id="vanti" value="0" required readonly> 
+                                            
                                             
                                             <input type="hidden"   name="idempleado"  id="idempleado" value="0" required readonly>                                                 
                                         </tr>
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Total Egresos (-)</td>
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Total Egresos (-)</td>
                                             <td id="TotalEgresos"  name="TotalEgresos" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="TEgresos"  id="TEgresos" value="0" required readonly>
                                         </tr>
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Ingresos - Egresos
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Ingresos - Egresos
                                             </td>
                                             <td id="TIngreEgreV" name="TIngreEgreV" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="TIngreEgre"  id="TIngreEgre" value="0" required readonly>
                                         </tr>
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Fondos de Reserva (+)</td>
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Fondos de Reserva (+)</td>
                                             <td id="TotalFondosV"  name="TotalFondosV" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="TFondo"  id="TFondo" value="0" required readonly> 
                                             <input type="hidden"   name="reservat"  id="reservat" value="" required readonly> 
@@ -486,27 +459,36 @@
                                             <input type="hidden"   name="Fondoacumulado"  id="Fondoacumulado" value="0" required readonly> 
                                         </tr>
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Decimo Tercero (+)</td>
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Decimo Tercero (+)</td>
                                             <td id="TotalTerceroV"  name="TotalTerceroV" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="TTercero"  id="TTercero" value="0" required readonly>           
                                         </tr>
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Decimo Cuarto (+)</td>
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Decimo Cuarto (+)</td>
                                             <td id="TotalCuartoV"  name="TotalCuartoV" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="TCuarto"  id="TCuarto" value="0" required readonly>           
                                         </tr>
-                                        
-                                        
-                                    
-                                       
-                                        <td class="letra-blanca fondo-gris-oscuro negrita">Viaticos (+)</td>
-                                        <td >
-                                        <input type="number" id="Viaticos" name="Viaticos" class="form-control "
+                                        </table>
+                                        <table id="tablatotal" class="table table-totalVenta">
+                                        @foreach($rubros as $rubro)
+                                            @if($rubro->rubro_tipo=='4')
+                                            <tr>
+                                                <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">{{$rubro->rubro_descripcion}} (+)</td>
+                                                <td id="{{$rubro->rubro_nombre}}" width="50%"> <input type="number" id="V{{$rubro->rubro_nombre}}" name="valor[]" class="form-control"
                                                         value="0.00" onclick="sumatotales();" onkeyup="sumatotales();" step="any" required>
-                                        </td>
-                                        </tr>
+                                                </td>
+                                                <input type="hidden" name="rolid[]" value="0"/>
+                                                <input type="hidden" name="idrubro[]" value="{{$rubro->rubro_id}}"/>
+                                                <input type="hidden" name="tiporubro[]" value="{{$rubro->rubro_tipo}}"/>
+                                                <input type="hidden" name="rubro[]"   value="{{$rubro->rubro_nombre}}"/>
+                                                <input type="hidden"name="prubro[]"  value="PAGADO"/>        
+                                            </tr>
+                                            @endif
+                                        @endforeach
+                                        </table>
+                                        <table class="table table-totalVenta">
                                         <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Liquido a Pagar</td>
+                                            <td class="letra-blanca fondo-gris-oscuro negrita" width="50%">Liquido a Pagar</td>
                                             <td id="LiquidacionTotal" name="LiquidacionTotal" class="derecha-texto negrita">0.00</td>
                                             <input type="hidden"   name="Liquidacion"  id="Liquidacion" value="0" required readonly> 
                                             
@@ -521,44 +503,25 @@
                                         <tr>
                                             <th  class="text-center-encabesado letra-blanca fondo-gris-oscuro negrita" colspan="2">Beneficios y Proviciones </th>
                                         </tr>
-                                        <tr>
-                                            <td  class="letra-blanca fondo-gris-oscuro negrita" width="90">A. Patronal:
-                                            </td>
-                                            <td id="Patronall" name="Patronall" width="100" class="derecha-texto negrita">0.00
-                                            </td>
-                                            <input type="hidden"   name="Patronal"  id="Patronal" value="0" required readonly> 
-                                                                       
-                                        </tr>
-                                        <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">D. Tercero:</td>
-                                            <td id="Tercerol"  name="Tercerol" class="derecha-texto negrita">0.00</td>
-                                            <input type="hidden"   name="Tercero"  id="Tercero" value="0" required readonly> 
-                                        </tr>
-                                        <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">D. Cuarto:
-                                            </td>
-                                            <td id="Cuartol" name="Cuartol" class="derecha-texto negrita">0.00</td>
-                                            <input type="hidden"   name="Cuarto"  id="Cuarto" value="0" required readonly>           
-                                        </tr>
-                                        <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">F. Res.:</td>
-                                            <td id="Fondol"  name="Fondol" class="derecha-texto negrita">0.00</td>
-                                          
-                                            <input type="hidden"   name="Fondo"  id="Fondo" value="0" required readonly>            
-                                        </tr>
-                                        <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">IECE/SECAP.:</td>
-                                            <td id="IECEl"  name="IECEl" class="derecha-texto negrita">0.00</td>
-                                            
-                                            <input type="hidden"   name="IECE"  id="IECE" value="0" required readonly>                      
-                                        </tr>
-                                        <tr>
-                                            <td class="letra-blanca fondo-gris-oscuro negrita">Vacaciones.:</td>
-                                            <td id="VACACIONESPL"  name="VACACIONESPL" class="derecha-texto negrita">0.00</td>
-                                            
-                                            <input type="hidden"   name="VACACIONESP"  id="VACACIONESP" value="0" required readonly>                      
-                                        </tr>
+                                        @foreach($rubros as $rubro)
+                                            @if($rubro->rubro_tipo=='3')
+                                            <tr>
+                                                <td  class="letra-blanca fondo-gris-oscuro negrita" width="50%">{{$rubro->rubro_descripcion}}:
+                                                </td>
+                                                <td id="{{$rubro->rubro_nombre}}" width="50%" class="derecha-texto negrita">0.00
+                                                </td>
+                                                <input type="hidden" name="rolid[]" value="0"/>
+                                                <input type="hidden" name="idrubro[]" value="{{$rubro->rubro_id}}"/>
+                                                <input type="hidden" name="tiporubro[]" value="{{$rubro->rubro_tipo}}"/>
+                                                <input type="hidden" name="rubro[]"   value="{{$rubro->rubro_nombre}}"/>
+                                                <input type="hidden" name="valor[]" id="V{{$rubro->rubro_nombre}}" value="0"/>  
+                                                <input type="hidden"name="prubro[]" id="p{{$rubro->rubro_nombre}}" value="PAGADO"/>        
+                                            </tr>
+                                            @endif
+                                        @endforeach
+                                        
                                     </table>
+
                                     <br>
                                     <table class="table table-totalVenta">
                                         <tr>
@@ -654,10 +617,10 @@ function eliminarItem(id) {
         }
         
     });
-    document.getElementById("sueldos").innerHTML= round(sueldos,2).toFixed(2);      
-    document.getElementById("Vsueldos").value= round(sueldos,2);
+    document.getElementById("sueldos").innerHTML= (sueldos).toFixed(2);      
+    document.getElementById("Vsueldos").value= sueldos;
        
-    document.getElementById("Totaldias").value= dias; 
+    document.getElementById("Totaldias").value= sueldos; 
     
 
     sumaingresos();
@@ -788,7 +751,7 @@ function cargarIngreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  round(Number(data[i]["valor"]),2).toFixed(2));
+                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
                     total+=Number(data[i]["valor"]);
                     $("#tablaingresos tbody").append(linea);
                 
@@ -802,44 +765,50 @@ function cargarIngreso(id) {
                 
             });
             
-            document.getElementById("sueldos").innerHTML= round(sueldos,2).toFixed(2);      
-            document.getElementById("Vsueldos").value= round(sueldos,2);  
+            document.getElementById("sueldos").innerHTML= (sueldos).toFixed(2);      
+            document.getElementById("Vsueldos").value= sueldos;  
             sumaingresos();
             if (document.getElementById("afiliadot").value=="1") {
                
-                document.getElementById("Patronall").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS_Pa").value))/100,2).toFixed(2);
-                document.getElementById("Patronal").value=document.getElementById("Patronall").innerHTML;
-                document.getElementById("IECEl").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IESCAP").value))/100,2).toFixed(2);
-                document.getElementById("IECE").value= document.getElementById("IECEl").innerHTML;
-                document.getElementById("VACACIONESPL").innerHTML=round(Number(document.getElementById("Total_In").value)/24,2).toFixed(2);
-                document.getElementById("VACACIONESP").value= document.getElementById("VACACIONESPL").innerHTML;
+                document.getElementById("aportePatronal").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS_Pa").value))/100).toFixed(2);
+                document.getElementById("VaportePatronal").value=document.getElementById("aportePatronal").innerHTML;
+                document.getElementById("iece").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IESCAP").value))/100).toFixed(2);
+                document.getElementById("Viece").value= document.getElementById("iece").innerHTML;
+                document.getElementById("vacacion").innerHTML=(Number(document.getElementById("Total_In").value)/24).toFixed(2);
+                document.getElementById("Vvacacion").value= document.getElementById("vacacion").innerHTML;
                
                 if (document.getElementById("cuartot").value=="1") {
-                    document.getElementById("TotalCuartoV").innerHTML=round((Number(document.getElementById("Basicot").value))/12,2).toFixed(2);
+                    document.getElementById("TotalCuartoV").innerHTML=((Number(document.getElementById("Basicot").value))/12).toFixed(2);
                     document.getElementById("TCuarto").value=document.getElementById("TotalCuartoV").innerHTML;
+                   
                 }
                 else{
-                    document.getElementById("Cuartol").innerHTML=round((Number(document.getElementById("Basicot").value))/12,2).toFixed(2);
-                    document.getElementById("Cuarto").value=document.getElementById("Cuartol").innerHTML;
+                    document.getElementById("decimoCuarto").innerHTML=((Number(document.getElementById("Basicot").value))/12).toFixed(2);
+                    document.getElementById("VdecimoCuarto").value=document.getElementById("decimoCuarto").innerHTML;
+                    document.getElementById("pdecimoCuarto").value='ACUMULADO';
                 }
                
                 if (document.getElementById("tercerot").value=="1") {
-                    document.getElementById("TotalTerceroV").innerHTML=round((Number(document.getElementById("Total_In").value))/12,2).toFixed(2);
+                    document.getElementById("TotalTerceroV").innerHTML=((Number(document.getElementById("Total_In").value))/12).toFixed(2);
                     document.getElementById("TTercero").value=document.getElementById("TotalTerceroV").innerHTML;
+                    
                 }
                 else{
-                    document.getElementById("Tercerol").innerHTML=round((Number(document.getElementById("Total_In").value))/12,2).toFixed(2);
-                    document.getElementById("Tercero").value=document.getElementById("Tercerol").innerHTML;
+                    document.getElementById("decimoTercero").innerHTML=((Number(document.getElementById("Total_In").value))/12).toFixed(2);
+                    document.getElementById("VdecimoTercero").value=document.getElementById("decimoTercero").innerHTML;
+                    document.getElementById("pdecimoTercero").value='ACUMULADO';
                 }
               
                 if (document.getElementById("reservat").value=="1") {
-                    document.getElementById("Fondol").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100,2).toFixed(2);
-                    document.getElementById("Fondo").value=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100,2);
+                    document.getElementById("fondoReserva").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100).toFixed(2);
+                    document.getElementById("VfondoReserva").value=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100).toFixed(2);
+                    document.getElementById("pfondoReserva").value='ACUMULADO';
                 }
                
                 if (document.getElementById("reservat").value=="0") {
-                    document.getElementById("TotalFondosV").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100,2).toFixed(2);
-                    document.getElementById("TFondo").value=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100,2);
+                    document.getElementById("TotalFondosV").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100).toFixed(2);
+                    document.getElementById("TFondo").value=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("VReservat").value))/100).toFixed(2);
+                   
                 }
                 
                  
@@ -880,36 +849,23 @@ function cargaregreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  round(Number(data[i]["valor"]),2).toFixed(2));
+                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
                     total+=Number(data[i]["valor"]);
                     $("#tablaegresos tbody").append(linea);
                 
             }  
            
             if (document.getElementById("afiliadot").value=="1") {
-                  
-                    document.getElementById("iess").innerHTML=round(((Number(document.getElementById("Total_In").value)*Number(document.getElementById("Personalt").value))/100),2).toFixed(2);
-                    document.getElementById("Viess").value= round(((Number(document.getElementById("Total_In").value)*Number(document.getElementById("Personalt").value))/100),2).toFixed(2);
+                
+                    document.getElementById("iess").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+                    document.getElementById("Viess").value= document.getElementById("iess").innerHTML;
                 
                 
             }
-            document.getElementById("vanti").value= document.getElementById("Vanticipos").value;
-            document.getElementById("vquince").value= document.getElementById("Vquincena").value;
-            document.getElementById("valim").value= document.getElementById("Vcomisariato").value;
             sumaegresos();
                               
         },
     });
-}
-function round(num, decimales = 2) {
-    var signo = (num >= 0 ? 1 : -1);
-    num = num * signo;
-    if (decimales === 0) 
-        return signo * Math.round(num);
-    num = num.toString().split('e');
-    num = Math.round(+(num[0] + 'e' + (num[1] ? (+num[1] + decimales) : decimales)));
-    num = num.toString().split('e');
-    return signo * (num[0] + 'e' + (num[1] ? (+num[1] - decimales) : -decimales));
 }
 function sumaingresos() { 
     var ingresos=0;
@@ -917,17 +873,16 @@ function sumaingresos() {
     ingresos=Number($(this).find("td").eq(1).html())+ingresos;
     });
     
-    document.getElementById("Total_Inl").innerHTML= round(ingresos,2).toFixed(2);      
-    document.getElementById("Total_In").value= round(ingresos,2);
+    document.getElementById("Total_Inl").innerHTML= (ingresos).toFixed(2);      
+    document.getElementById("Total_In").value= ingresos;
 
-    document.getElementById("TotalIngresosV").innerHTML= round(ingresos,2).toFixed(2);  
-    document.getElementById("TIngresos").value= round(ingresos,2);
+    document.getElementById("TotalIngresosV").innerHTML= (ingresos).toFixed(2);      
+    document.getElementById("TIngresos").value= ingresos;
     sumatotales();
 
 }
 function sumaegresos() { 
     var descuentos=0;
-    descuentos=Number(document.getElementById("vanti").value)+Number(descuentos);
     $("input[type='checkbox'][id='check']").each(function(){        
             if (this.checked) {
                 descuentos+=Number(document.getElementById('Descontar'+$(this).val()).value);
@@ -936,7 +891,7 @@ function sumaegresos() {
         });
         
         var quincena=0;
-        quincena=Number(document.getElementById("vquince").value)+Number(quincena);
+    
     $("input[type='checkbox'][id='Qcheck']").each(function(){        
             if (this.checked) {
                
@@ -944,29 +899,29 @@ function sumaegresos() {
             }
         });
         var alimentacion=0;
-        alimentacion=Number(document.getElementById("valim").value)+Number(alimentacion);
         $("input[type='checkbox'][id='checkal']").each(function(){        
         if (this.checked) {   
             alimentacion+=Number(document.getElementById('AValor'+$(this).val()).value);
         }    
         });
-        document.getElementById("anticipos").innerHTML=round(descuentos,2).toFixed(2);
-        document.getElementById("Vanticipos").value=round(descuentos,2);
-        document.getElementById("quincena").innerHTML=round(quincena,2).toFixed(2);
-        document.getElementById("Vquincena").value=round(quincena,2);
-        document.getElementById("comisariato").innerHTML=round(alimentacion,2).toFixed(2);
-        document.getElementById("Vcomisariato").value=round(alimentacion,2);
+
+        document.getElementById("anticipos").innerHTML=(descuentos).toFixed(2);
+        document.getElementById("Vanticipos").value=descuentos;
+        document.getElementById("quincena").innerHTML=(quincena).toFixed(2);
+        document.getElementById("Vquincena").value=quincena;
+        document.getElementById("comisariato").innerHTML=(alimentacion).toFixed(2);
+        document.getElementById("Vcomisariato").value=alimentacion;
 
     var egresos=0;
    
     $('#tablaegresos tr').each(function () {
         egresos=Number($(this).find("td").eq(1).html())+egresos;
     });
-    document.getElementById("Total_Egl").innerHTML= round(egresos,2).toFixed(2);      
-    document.getElementById("Total_Eg").value= round(egresos,2);
+    document.getElementById("Total_Egl").innerHTML= (egresos).toFixed(2);      
+    document.getElementById("Total_Eg").value= egresos;
 
-    document.getElementById("TotalEgresos").innerHTML= round(egresos,2).toFixed(2);      
-    document.getElementById("TEgresos").value= round(egresos,2);
+    document.getElementById("TotalEgresos").innerHTML= (egresos).toFixed(2);      
+    document.getElementById("TEgresos").value= egresos;
     sumatotales();
 
 
@@ -1069,7 +1024,7 @@ function agregarItem() {
        linea = linea.replace(/{hasta}/g, document.getElementById("fecha_hasta").value);
        linea = linea.replace(/{porcentaje}/g, document.getElementById("idTipo").value);
        linea = linea.replace(/{dias}/g, document.getElementById("dias").value);
-       linea = linea.replace(/{DCSueldo}/g, round(Number(document.getElementById("sueldo").value),2).toFixed(2));
+       linea = linea.replace(/{DCSueldo}/g, (Number(document.getElementById("sueldo").value)).toFixed(2));
        $("#tabladetallle tbody").append(linea);
        id_item = id_item + 1;
 
@@ -1343,14 +1298,14 @@ function dateDiffer (fecha1, fecha2) {
       return differDay;
 }
 function calculosueldo(){
-    document.getElementById("sueldo").value=round(Number(document.getElementById("dias").value)*Number(document.getElementById("sueldod").value),2).toFixed(2);
+    document.getElementById("sueldo").value=(Number(document.getElementById("dias").value)*Number(document.getElementById("sueldod").value)).toFixed(2);
   
     porcentaje();
 }
 
 
 function porcentaje() {
-    document.getElementById("sueldo").value= round(((Number(document.getElementById("dias").value)*Number(document.getElementById("sueldod").value))*Number(document.getElementById("idTipo").value))/100,2).toFixed(2);
+    document.getElementById("sueldo").value= (((Number(document.getElementById("dias").value)*Number(document.getElementById("sueldod").value))*Number(document.getElementById("idTipo").value))/100).toFixed(2);
     
  
 }
@@ -1413,8 +1368,8 @@ function getalimentacion(id) {
            
             nuevo= Number(document.getElementById("comisariato").innerHTML)+Number($("input[name='Valor[]']")[id].value);
         
-            document.getElementById("comisariato").innerHTML=round(nuevo,2).toFixed(2);
-            document.getElementById("Vcomisariato").value=round(nuevo,2);
+            document.getElementById("comisariato").innerHTML=Number(nuevo).toFixed(2);
+            document.getElementById("Vcomisariato").value=Number(nuevo).toFixed(2);
 
         }
         else{
@@ -1425,8 +1380,8 @@ function getalimentacion(id) {
     else{
        
             nuevo= Number(document.getElementById("comisariato").innerHTML)-Number($("input[name='Valor[]']")[id].value);
-            document.getElementById("comisariato").innerHTML=round(nuevo,2).toFixed(2);
-            document.getElementById("Vcomisariato").value=round(nuevo,2);
+            document.getElementById("comisariato").innerHTML=Number(nuevo).toFixed(2);
+            document.getElementById("Vcomisariato").value=Number(nuevo).toFixed(2);
            
     }
 
@@ -1444,7 +1399,7 @@ function SumaAdelantos(id) {
                 
                     
                         $("input[name='TDescont[]']")[id].value=$("input[name='TDescontar[]']")[id].value;
-                        document.getElementById("anticipos").innerHTML=round(nuevo,2).toFixed(2);  
+                        document.getElementById("anticipos").innerHTML=(nuevo).toFixed(2);  
                         document.getElementById("Vanticipos").value=nuevo;  
                    
                     
@@ -1468,7 +1423,7 @@ function SumaQuincena(id) {
                     nuevo+=Number(document.getElementById('QDescontar'+$(this).val()).value);
                     
                         $("input[name='QTDescont[]']")[id].value=$("input[name='QTDescontar[]']")[id].value;
-                        document.getElementById("quincena").innerHTML=round(nuevo,2).toFixed(2); 
+                        document.getElementById("quincena").innerHTML=(nuevo).toFixed(2); 
                         document.getElementById("Vquincena").value=nuevo;   
                       
                     
@@ -1483,17 +1438,21 @@ function SumaQuincena(id) {
     sumaegresos();
 }
 function sumatotales(){
-    
-   
-    document.getElementById("TIngreEgreV").innerHTML=round(Number( document.getElementById("Total_Inl").innerHTML)-Number(document.getElementById("Total_Egl").innerHTML),2).toFixed(2);
+    var otros=0;
+    $('#tablatotal tr').each(function () {
+        otros=otros+Number(($(this).find('td').eq(1).find('input').val()));
   
-    document.getElementById("LiquidacionTotal").innerHTML=round(Number(document.getElementById("TIngreEgreV").innerHTML)
+    });
+   
+    document.getElementById("TIngreEgreV").innerHTML=(Number( document.getElementById("Total_Inl").innerHTML)-Number(document.getElementById("Total_Egl").innerHTML)).toFixed(2);
+  
+    document.getElementById("LiquidacionTotal").innerHTML=(Number(document.getElementById("TIngreEgreV").innerHTML)
     +Number(document.getElementById("TotalFondosV").innerHTML)
     +Number(document.getElementById("TotalTerceroV").innerHTML)
-    +Number(document.getElementById("TotalCuartoV").innerHTML)
-    +Number(document.getElementById("Viaticos").value),2).toFixed(2);
+    +Number(document.getElementById("TotalCuartoV").innerHTML)+otros
+    ).toFixed(2);
     
-    document.getElementById("Liquidacion").value=Number(document.getElementById("LiquidacionTotal").innerHTML).toFixed(2);
+    document.getElementById("Liquidacion").value=Number(document.getElementById("LiquidacionTotal").innerHTML);
    
 }
 

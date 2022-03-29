@@ -18,6 +18,7 @@ use App\Models\Detalle_Rol;
 use App\Models\Detalle_Rol_CM;
 use App\Models\Diario;
 use App\Models\Empleado;
+use App\Models\Movimiento_Consumo_Rol;
 use App\Models\Punto_Emision;
 use App\Models\Quincena;
 use App\Models\Rango_Documento;
@@ -1129,6 +1130,7 @@ class rolIndividualCostaMarketController extends Controller
                 $count++;
             }
             $count=1;
+            
         foreach($rol2->diariopago->detalles as $detalle){
             if (isset($detalle->cheque)) {
                 $tipopago[$count]['iddetalle']=$detalle->detalle_id; 
@@ -1314,8 +1316,10 @@ class rolIndividualCostaMarketController extends Controller
                 $detalles->delete();
                 $auditoria->registrarAuditoria('Eliminacion de Detalle Rol de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
             }
-            
-            
+            foreach ($rol->detallesmovimientos as $detalle) {
+                $detalles = Movimiento_Consumo_Rol::findOrFail($detalle->movimiento_id);
+                $detalles->delete();
+            }
             
             $rol->delete();
             $auditoria->registrarAuditoria('Eliminacion de  de rol  tipo -> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' con valor '.$rol->cabecera_rol_pago ,'0','');

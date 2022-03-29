@@ -7,7 +7,7 @@
             <td class="text-center">{factura} </td>
             <td class="text-center">{Fecha} </td>
             <td> <input type="number" class="form-controltext"  id="AValor{ID}" name="Valor[]" value="{Valor}" required readonly>
-        
+            </td> 
         </tr>
     </tbody>
 </table>

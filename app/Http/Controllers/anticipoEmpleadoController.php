@@ -93,7 +93,7 @@ class anticipoEmpleadoController extends Controller
                             $puntoemeision = null;
                             $puntosEmision = Punto_Emision::PuntoxSucursal($diario->sucursal_id)->get();
                             foreach($puntosEmision as $punto){
-                                $rangoDocumento=Rango_Documento::PuntoRango($punto->punto_id, 'Anticipo de Proveedor')->first();
+                                $rangoDocumento=Rango_Documento::PuntoRango($punto->punto_id, 'Anticipo de Empleado')->first();
                                 if($rangoDocumento){
                                     $puntoemeision = $punto;
                                     break;
@@ -106,10 +106,7 @@ class anticipoEmpleadoController extends Controller
                                     $secuencial=$secuencialAux+1;
                                 }
                             }
-                           
                             $anticipoEmpleado = new Anticipo_Empleado();
-
-
                             $anticipoEmpleado->anticipo_numero = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie.substr(str_repeat(0, 9).$secuencial, - 9);
                             $anticipoEmpleado->anticipo_serie = $rangoDocumento->puntoEmision->sucursal->sucursal_codigo.$rangoDocumento->puntoEmision->punto_serie;
                             $anticipoEmpleado->anticipo_secuencial = $secuencial;

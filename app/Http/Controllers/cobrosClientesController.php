@@ -448,7 +448,7 @@ class cobrosClientesController extends Controller
     public function eliminarPagos(Request $request){
         try {
             DB::beginTransaction();
-
+            $jo=false;
             $general = new generalController();   
             $noTienecaja =null;
             $seleccion = $request->get('checkbox');
@@ -550,13 +550,13 @@ class cobrosClientesController extends Controller
                                             }
                                             if($bandera2){
                                                 foreach ($pago2->detalles as $detallePago) {
-                                                    if($detallePago->cuentaCobrar){
+                                                    if(isset($detallePago->cuentaCobrar->cuenta_id)){
                                                         if(isset(Detalle_Pago_CXC::DetallePago($detallePago->detalle_pago_id)->first()->detalle_pago_id)){
                                                             $cxcAux2 = $detallePago->cuentaCobrar;
                                                             $valorPago = $detallePago->detalle_pago_valor;
                                                             $detallePago->delete();
                                                             $general->registrarAuditoria('Eliminacion del detalle de pago cuentas por cobrar  '.$detallePago->cuentaCobrar->cuenta_descripcion,'','');  
-                                                            if($cxcAux2->facturaVenta){
+                                                            if(isset($cxcAux2->facturaVenta->factura_id)){
                                                                 if($pago2->pago_tipo == 'PAGO EN EFECTIVO'){
                                                                     $cxcAux2->cuenta_tipo = 'CREDITO';
                                                                     $factura = $cxcAux2->facturaVenta;
@@ -564,9 +564,9 @@ class cobrosClientesController extends Controller
                                                                     $factura->update();
                                                                 }
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux2->facturaVenta->factura_id)->sum('descuento_valor');
-                                                            }elseif($cxcAux2->notaDebito){
+                                                            }elseif(isset($cxcAux2->notaDebito->nd_id)){
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }elseif($cxcAux2->notaDebito){
+                                                            }elseif(isset($cxcAux2->notaEntrega->nt_id)){
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor');
                                                             }else{
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_saldo + $valorPago;
@@ -578,11 +578,11 @@ class cobrosClientesController extends Controller
                                                                 $cxcAux2->cuenta_estado = '1';
                                                             }
                                                             $cxcAux2->update();
-                                                            if($cxcAux2->facturaVenta){
+                                                            if(isset($cxcAux2->facturaVenta->factura_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux2->facturaVenta->factura_numero);
-                                                            }elseif($cxcAux2->notaEntrega){
+                                                            }elseif(isset($cxcAux2->notaEntrega->nt_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->notaEntrega->cliente->cliente_nombre.' con nota de entrega -> '.$cxcAux2->notaEntrega->nt_numero);
-                                                            }elseif($cxcAux2->notaDebito){
+                                                            }elseif(isset($cxcAux2->notaDebito->nd_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->notaDebito->factura->cliente->cliente_nombre.' con Nota de Débito -> '.$cxcAux2->notaDebito->nd_numero);
                                                             }else{
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->cliente->cliente_nombre.' '.$cxcAux2->cuenta_descripcion);
@@ -630,7 +630,6 @@ class cobrosClientesController extends Controller
                                     }
                                 }
                                 if(isset($detalle->voucher)){
-                                 
                                     foreach($detalle->voucher->detalleDiario as $detallevoucher){
                                         if(isset($detallevoucher->diario)){
                                             $pago2 = $detallevoucher->diario->pagocuentaCobrar;
@@ -679,7 +678,7 @@ class cobrosClientesController extends Controller
                                                             $valorPago = $detallePago->detalle_pago_valor;
                                                             $detallePago->delete();
                                                             $general->registrarAuditoria('Eliminacion del detalle de pago cuentas por cobrar  '.$detallePago->cuentaCobrar->cuenta_descripcion,'','');  
-                                                            if($cxcAux2->facturaVenta){
+                                                            if(isset($cxcAux2->facturaVenta->fctura_id)){
                                                                 if($pago2->pago_tipo == 'PAGO EN EFECTIVO'){
                                                                     $cxcAux2->cuenta_tipo = 'CREDITO';
                                                                     $factura = $cxcAux2->facturaVenta;
@@ -687,9 +686,9 @@ class cobrosClientesController extends Controller
                                                                     $factura->update();
                                                                 }
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux2->facturaVenta->factura_id)->sum('descuento_valor');
-                                                            }elseif($cxcAux2->notaEntrega){
+                                                            }elseif(isset($cxcAux2->notaEntrega->nt_id)){
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor');
-                                                            }elseif($cxcAux2->notaDebito){
+                                                            }elseif(isset($cxcAux2->notaDebito->nd_id)){
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux2->cuenta_id)->sum('detalle_pago_valor');
                                                             }else{
                                                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_saldo + $valorPago;
@@ -701,11 +700,11 @@ class cobrosClientesController extends Controller
                                                                 $cxcAux2->cuenta_estado = '1';
                                                             }
                                                             $cxcAux2->update();
-                                                            if($cxcAux2->facturaVenta){
+                                                            if(isset($cxcAux2->facturaVenta->fctura_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux2->facturaVenta->factura_numero);
-                                                            }elseif($cxcAux2->notaEntrega){
+                                                            }elseif(isset($cxcAux2->notaEntrega->nt_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->notaEntrega->cliente->cliente_nombre.' con nota de entrega -> '.$cxcAux2->notaEntrega->nt_numero);
-                                                            }elseif($cxcAux2->notaDebito){
+                                                            }elseif(isset($cxcAux2->notaDebito->nd_id)){
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->notaDebito->factura->cliente->cliente_nombre.' con Nota de Débito -> '.$cxcAux2->notaDebito->nd_numero);
                                                             }else{
                                                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->cliente->cliente_nombre.' '.$cxcAux2->cuenta_descripcion);
@@ -746,9 +745,8 @@ class cobrosClientesController extends Controller
                             }
                         }
                     }
-                    if(isset(Detalle_Pago_CXC::DetallePago($detallePago->detalle_pago_id)->first()->detalle_pago_id)){
+                    if(isset(Detalle_Pago_CXC::DetallePago($detalle_pago->detalle_pago_id)->first()->detalle_pago_id)){
                         if($jo){
-                        
                             foreach ($pago->detalles as $detalle) {
                                 $detalle->delete();
                                 $general->registrarAuditoria('Eliminacion del detalle de pago cuentas por cobrar  '.$detalle->cuentaCobrar->cuenta_descripcion,'','');  
@@ -799,7 +797,7 @@ class cobrosClientesController extends Controller
                                     $general->registrarAuditoria('Eliminacion de diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de diario por eliminacion de pago de cuentas por cobrar');  
                                 }
                             }
-                            if($cxcAux->facturaVenta){
+                            if(isset($cxcAux->facturaVenta->factura_id)){
                                 if($pago->pago_tipo == 'PAGO EN EFECTIVO'){
                                     $cxcAux->cuenta_tipo = 'CREDITO';
                                     $factura = $cxcAux->facturaVenta;
@@ -807,9 +805,9 @@ class cobrosClientesController extends Controller
                                     $factura->update();
                                 }
                                 $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
-                            }elseif($cxcAux->notaEntrega){
+                            }elseif(isset($cxcAux->notaEntrega->nt_id)){
                                 $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor');
-                            }elseif($cxcAux->notaDebito){
+                            }elseif(isset($cxcAux->notaDebito->nd_id)){
                                 $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor');
                             }else{
                                 $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_saldo + $valorPagoGeneral;
@@ -822,11 +820,11 @@ class cobrosClientesController extends Controller
                                 $cxcAux->cuenta_estado = '1';
                             }
                             $cxcAux->update();
-                            if($cxcAux->facturaVenta){
+                            if(isset($cxcAux->facturaVenta->factura_id)){
                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
-                            }elseif($cxcAux->notaEntrega){
+                            }elseif(isset($cxcAux->notaEntrega->nt_id)){
                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux->notaEntrega->cliente->cliente_nombre.' con nota de entrega -> '.$cxcAux->notaEntrega->nt_numero);
-                            }elseif($cxcAux2->notaDebito){
+                            }elseif(isset($cxcAux->notaDebito->nd_id)){
                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux->notaDebito->factura->cliente->cliente_nombre.' con Nota de Débito -> '.$cxcAux->notaDebito->nd_numero);
                             }else{
                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->cliente->cliente_nombre.' '.$cxcAux2->cuenta_descripcion);

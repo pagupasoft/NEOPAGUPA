@@ -712,6 +712,7 @@ Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregar
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
+Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');

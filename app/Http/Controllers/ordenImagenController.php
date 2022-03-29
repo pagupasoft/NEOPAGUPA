@@ -38,13 +38,11 @@ class ordenImagenController extends Controller
      */
     public function index()
     {
-        //try{
+        try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();         
             $ordenesAtencion=Orden_Examen::OrdenExamenesHOY()->select('orden_examen.orden_id as orden_examen_id', 'orden_atencion.orden_id', 'orden_fecha','orden_codigo','orden_numero', 'paciente_apellidos','paciente_nombres','orden_otros','orden_examen.orden_estado')->get();
             $ordenesImagen=Orden_Imagen::ordenImagenes()->get();
-
-            //return $ordenesImagen;
 
             foreach($ordenesImagen as $ordenImagen){
                 if($ordenImagen->expediente){
@@ -60,18 +58,16 @@ class ordenImagenController extends Controller
                 }
             }
 
-            //return $ordenesImagen;
-
-            return view('admin.laboratorio.ordenesImagen.index',['sucursales'=>Sucursal::Sucursales()->get(),'ordenesAtencion'=>$ordenesImagen,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        //}
-        //catch(\Exception $ex){      
-            //return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+            return view('admin.laboratorio.ordenesImagen.index',['sucursales'=>Sucursal::Sucursales()->get(),'ordenesImagen'=>$ordenesImagen,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     public function subirImagenes($id)
     {
-        //try{
+        try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             
@@ -85,14 +81,44 @@ class ordenImagenController extends Controller
                     $d=$det->imagen->producto;
                 }
             }
-            
-
-            //return $orden;
 
             return view('admin.laboratorio.ordenesImagen.subirImagen',['orden'=>$orden,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        //}catch(\Exception $ex){
-        //    return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+        }catch(\Exception $ex){
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function verResultadosImagenes($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            
+            
+            $orden = Orden_Imagen::findOrFail($id);
+
+            $detalle=$orden->detalleImagen;
+
+            if($detalle){
+                foreach($detalle as $det){
+                    $d=$det->imagen->producto;
+                }
+            }
+
+            $expediente=$orden->expediente;
+
+            if($expediente){
+                $ordenAtencion=$expediente->ordenAtencion;
+            }
+
+            $empresa=Empresa::findOrFail(Auth::user()->empresa_id);
+            //return $empresa;
+            
+
+            return view('admin.laboratorio.ordenesImagen.verResultadosImagen',['empresa'=>$empresa, 'orden'=>$orden, 'ordenAtencion'=>$ordenAtencion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     public function guardarImagenes(Request $request){
@@ -102,7 +128,6 @@ class ordenImagenController extends Controller
             $orden_imagen=Orden_Imagen::findOrFail($request->orden_id);
             $orden_atencion=$orden_imagen->expediente->ordenAtencion;
 
-            $imagenes=[];
             $empresa = Empresa::empresa()->first();
             $fecha = (new DateTime("$orden_atencion->orden_fecha"))->format('d-m-Y');
 
@@ -122,16 +147,8 @@ class ordenImagenController extends Controller
                     foreach($file as $documento){
                         $c++;
                         $name = 'imagen_resultado'.$detalleId.'_'.$c.'.pdf';
-
-                        $path = $documento->move(public_path().'/'.$ruta, $name);
-                        $temp = [
-                            'ruta'=>$ruta,
-                            'nombre'=>$name,
-                            'path'=>$path
-                        ];
-
-                        $imagenes[] = $temp;
-
+                        $documento->move(public_path().'/'.$ruta, $name);
+                        
                         $actualizados[]=$detalleId;
                         $detalleImagen=Detalle_Imagen::findOrFail($detalleId);
                         $detalleImagen->detalle_estado=2;
@@ -145,7 +162,6 @@ class ordenImagenController extends Controller
                 foreach($detalleImagen as $detalle){
                     if($detalle->detalle_estado!=2){
                         $listo=false;
-                        
                     }
                 }
                 

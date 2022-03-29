@@ -65,7 +65,7 @@ class mayorClientesController extends Controller
                 $datos[$count]['hab'] = $detalle->detalle_haber;
                 $datos[$count]['act'] = doubleval($datos[$count-1]['act']) + doubleval($datos[$count]['deb']) - doubleval($datos[$count]['hab']);;
                 $datos[$count]['dia'] = $detalle->diario->diario_codigo;
-                $datos[$count]['com'] = $detalle->detalle_comentario;
+                $datos[$count]['com'] = 'Decripcion: '.$detalle->detalle_comentario.' '.'Comentario: '.$detalle->diario->diario_comentario; 
                 $datos[$count]['suc'] = $detalle->diario->sucursal->sucursal_nombre;
                 $datos[$count]['tot'] = '0';
                 $debe = $debe + doubleval($datos[$count]['deb']);

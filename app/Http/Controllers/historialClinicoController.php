@@ -52,7 +52,7 @@ class historialClinicoController extends Controller
     }
 
     public function informacion($id){
-        //try{
+        try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
 
@@ -97,11 +97,13 @@ class historialClinicoController extends Controller
             $examen=$expediente->ordenExamen;
             
             if($examen){
-                if($examen->analisis->detalles){
-                    $analisisDetalle=$examen->analisis->detalles;
+                if($examen->analisis){
+                    if($examen->analisis->detalles){
+                        $analisisDetalle=$examen->analisis->detalles;
 
-                    foreach($analisisDetalle as $detalle){
-                        $detalle->detalles;
+                        foreach($analisisDetalle as $detalle){
+                            $detalle->detalles;
+                        }
                     }
                 }
             }
@@ -130,17 +132,10 @@ class historialClinicoController extends Controller
 
 
             return $data;
-            
-        
-            //if($orden_atencion){
-            //    return view('admin.citasMedicas.historialClinico.ver',['historial'=>$historial,'paciente'=>$paciente,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-            //}else{
-            //    return redirect('/denegado');
-            //}
-        //}
-        //catch(\Exception $ex){      
-        //    return response()->json(['result'=>'error', 'message'=>$ex->getMessage()], 500);
-        //}
+        }
+        catch(\Exception $ex){      
+            return response()->json(['result'=>'error', 'message'=>$ex->getMessage()], 500);
+        }
     }
 
     public function ver($id)

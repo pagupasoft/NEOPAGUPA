@@ -101,6 +101,7 @@ class Quincena extends Model
             $query->where('sucursal.sucursal_id','=',$sucursal);
         }
         $query->where('quincena_fecha','>=',$fechadesde)->where('quincena_fecha','<=',$fechahasta)->orderBy('quincena_fecha','asc');
+        return $query;
     }
     public function scopeQuincenasEmpleado($query,$empleado_id){
         return $query->join('diario','diario.diario_id','=','quincena.diario_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)

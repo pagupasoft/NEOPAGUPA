@@ -63,7 +63,7 @@ class Decimo_Cuarto extends Model
         if($sucursal != '0'){
             $query->where('sucursal.sucursal_id','=',$sucursal);
         }   
-       
+        return $query;
     }
     public function scopedecimo($query, $id){
         return $query->join('empleado','empleado.empleado_id','=','decimo_cuarto.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('decimo_id','=',$id);

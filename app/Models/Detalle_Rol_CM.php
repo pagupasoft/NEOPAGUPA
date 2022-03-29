@@ -15,7 +15,8 @@ class Detalle_Rol_CM extends Model
         'detalle_rol_fecha_inicio',
         'detalle_rol_fecha_fin',  
         'detalle_rol_descripcion',       
-        'detalle_rol_valor',     
+        'detalle_rol_valor',  
+        'detalle_rol_tipo',     
         'detalle_rol_contabilizado',     
         'detalle_rol_estado',     
         'rubro_id',     
@@ -29,6 +30,7 @@ class Detalle_Rol_CM extends Model
     public function rol(){
         return $this->belongsTo(Cabecera_Rol_CM::class, 'cabecera_rol_id', 'cabecera_rol_id');
     }
+   
     public function movimiento(){
         return $this->belongsTo(Rubro::class, 'rubro_id', 'rubro_id');
     }

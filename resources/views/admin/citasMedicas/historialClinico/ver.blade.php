@@ -225,6 +225,8 @@
                                 </div>  
                             </div> 
                         </div>
+
+                        <iframe id="frameImagenes" height="100%" width="100%"></iframe>
                     </div>
                 </div>
             </div>
@@ -450,7 +452,8 @@
 
                     ////borrar tabla
                     $('#cargarItemImagen tbody tr').remove();
-                    
+                    $iframe=document.getElementById("frameImagenes")
+                    $iframe.src=""
 
                     if(data.imagen){
                         observacion_imagen.value=data.imagen.orden_observacion
@@ -459,26 +462,37 @@
                             data.imagen.detalle_imagen.forEach(det=>{
                                 var linea = $("#plantillaItemImagen").html();
 
-                                //console.log(linea)
-
+                                //linea = linea.replace(/{ID}/g, det.imagen.imagen_id);
+                                linea = linea.replace(/{ID}/g, det.detalle_id);
                                 linea = linea.replace(/{ImagenNombre}/g, det.imagen.imagen_nombre);
                                 linea = linea.replace(/{ImagenId}/g, det.imagen_id);
                                 linea = linea.replace(/{Iobservacion}/g, det.detalle_indicacion);
 
                                 $("#cargarItemImagen tbody").append(linea);
+
+                                tr=document.getElementById("row_"+det.detalle_id)
+                                td=$(tr).find("td:eq(2)")
+
+                                var boton=document.createElement("button")
+                                boton.classList.add('btn', 'btn-primary')
+                                boton.innerHTML="<i class='fa fa-eye'></i>"
+                                boton.setAttribute("tittle", "Ver Resultados")
+
+                                ruc=data.ruc
+                                fecha=data.fecha
+                                numero=data.ordenAtencion.orden_numero
+
+                                boton.addEventListener("click", function(){
+                                    $iframe.src="http://"+window.location.host+"/DocumentosOrdenAtencion/"+ruc+"/"+fecha+"/"+numero+"/Documentos/Imagenes/imagen_resultado"+det.detalle_id+"_1.pdf"
+                                })
+                                //cargarIframe('http://127.0.0.1:8000/DocumentosOrdenAtencion/0702932179001/28-03-2022/OA-MATRIZCOMERCIAL-000000083/Documentos/Imagenes/imagen_resultado105_1.pdf')
+                                td.append(boton)
                             })
                         }
                     }
                     
-                    //https://neopagupa.com/public/analisisLaboratorio/23/resultados
-
                     ////////////////////////  Analisis de Laboratorio  /////////////////////////////
-                    
-                    
-
                     if(data.examen){
-                        //console.log(data.examen)
-                        //console.log(data.orden_estado)
                         if(data.examen.orden_estado==3){
                             var frame = $('#frame');
                             var url = "/analisisLaboratorio/"+data.examen.analisis.analisis_laboratorio_id+"/resultados";

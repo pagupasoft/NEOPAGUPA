@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ciudad;
+use App\Models\Empresa;
 use App\Models\Expediente;
 use App\Models\Orden_Atencion;
 use App\Models\Paciente;
@@ -11,6 +12,7 @@ use App\Models\Tipo_Identificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use DateTime;
 
 class historialClinicoController extends Controller
 {
@@ -56,9 +58,10 @@ class historialClinicoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
 
+            $empresa_ruc=Empresa::findOrFail(Auth::user()->empresa_id)->empresa_ruc;
             $orden=Orden_Atencion::findOrFail($id);
             $expediente=$orden->expediente;
-            
+            $fecha=(new DateTime($orden->orden_fecha))->format('d-m-Y');
             
             ///////////////detalle  expediente///////////////////////////////
             $detalle_expediente=$expediente->detalleExpediente;
@@ -122,6 +125,9 @@ class historialClinicoController extends Controller
             
 
             $data=[
+                'ruc'=>$empresa_ruc,
+                'fecha'=>$fecha,
+                'ordenAtencion'=>$orden,
                 'diagnostico'=>$diagnostico,
                 'examen'=>$examen,
                 'prescripcion'=>$prescripcion,

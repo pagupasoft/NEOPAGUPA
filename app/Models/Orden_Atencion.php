@@ -165,7 +165,7 @@ class Orden_Atencion extends Model
     }
     public function scopeHistorial($query, $id){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
-                    )->where('orden_estado','=','3'
+                    )->where('orden_estado','>=','3'
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
                     )->where('paciente_id','=',$id
                     )->orderByDesc('orden_atencion.orden_fecha');

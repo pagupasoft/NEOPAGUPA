@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Provincia;
 use App\Http\Controllers\Controller;
+use App\Models\Empresa;
 use App\Models\Pais;
 use App\Models\Punto_Emision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class provinciaController extends Controller
 {
@@ -30,7 +32,51 @@ class provinciaController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
-
+    public function CargarExcel(){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            return view('admin.configuracion.provincia.cargarExcel',['PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function CargarExcelProvincia(Request $request){
+        try{
+            DB::beginTransaction();
+            if($request->file('excelEmpl')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelEmpl')->getClientOriginalExtension();
+                $path = $request->file('excelEmpl')->move(public_path().'\temp', $name); 
+                $array = Excel::toArray(new Provincia(), $path); 
+                for ($i=1;$i < count($array[0]);$i++) {
+                    $validar=trim($array[0][$i][0]);
+                    if ($validar) {
+                        $validacion=Provincia::Existe($validar)->get();
+                        if (count($validacion)==0) {
+                            $provincia = new Provincia();
+                            $provincia->provincia_nombre = ($array[0][$i][0]);
+                            $provincia->provincia_codigo = ($array[0][$i][1]);
+                          
+                            $provincia->provincia_estado ='1';
+                            $pais=Pais::PaisNombre($array[0][$i][2])->first();
+                            $provincia->pais_id = $pais->pais_id;
+                            $provincia->save();
+                            /*Inicio de registro de auditoria */
+                            $auditoria = new generalController();
+                            $auditoria->registrarAuditoria('Registro de Provincia '.$provincia->provincia_nombre, 0, '');
+                        }
+                    }
+                }
+            }
+        DB::commit();
+        return redirect('excelProvincia')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('excelProvincia')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
+        }
+    }
     /**
      * Store a newly created resource in storage.
      *

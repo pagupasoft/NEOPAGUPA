@@ -590,6 +590,11 @@ Route::post('/usuario/guardarRoles/{id}', [usuarioController::class, 'guardarRol
 Route::get('/caja/{id}/cajausers', [cajaController::class, 'verusers'])->middleware('auth')->middleware('acceso');
 Route::post('/caja/guardarUsuario/{id}', [cajaController::class, 'guardarUsuario'])->name('caja.guardarUsuario')->middleware('auth');
 /***************/
+Route::get('/excelProvincia', [provinciaController::class, 'CargarExcel'])->middleware('auth');
+Route::post('/excelProvincia', [provinciaController::class, 'CargarExcelProvincia'])->middleware('auth');
+Route::get('/excelCiudad', [ciudadController::class, 'CargarExcel'])->middleware('auth');
+Route::post('/excelCiudad', [ciudadController::class, 'CargarExcelCiudad'])->middleware('auth');
+
 Route::get('/excelProducto', [productoController::class, 'excelProducto'])->middleware('auth');
 Route::post('/excelProducto', [productoController::class, 'CargarExcelProducto'])->middleware('auth');
 Route::get('/excelEnfermedad', [enfermedadController::class, 'excelEnfermedad'])->middleware('auth');
@@ -712,7 +717,6 @@ Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregar
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
-Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');

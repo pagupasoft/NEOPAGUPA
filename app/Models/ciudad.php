@@ -24,6 +24,9 @@ class Ciudad extends Model
         return $query->join('provincia','provincia.provincia_id','=','ciudad.provincia_id')->join('pais','pais.pais_id','=','provincia.pais_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('ciudad_estado','=','1')->orderBy('ciudad_nombre','asc');
     }
     public function scopeCiudad($query, $id){
+        return $query->join('provincia','provincia.provincia_id','=','ciudad.provincia_id')->join('pais','pais.pais_id','=','provincia.pais_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('ciudad_nombre','=',$id);
+    }
+    public function scopeExiste($query, $id){
         return $query->join('provincia','provincia.provincia_id','=','ciudad.provincia_id')->join('pais','pais.pais_id','=','provincia.pais_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('ciudad_id','=',$id);
     }
     public function scopeCiudadNombre($query, $nombre){

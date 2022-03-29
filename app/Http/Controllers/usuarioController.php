@@ -103,13 +103,13 @@ class usuarioController extends Controller
         try {
             $mail->isSMTP(); // tell to use smtp
             $mail->CharSet = 'utf-8'; // set charset to utf8
-            $mail->Host = trim('mail.pagupasoft.com');
+            $mail->Host = trim('pagupasoft-com.correoseguro.dinaserver.com');
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';//$mail->SMTPSecure = false;
             $mail->SMTPAutoTLS = false;
             $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
             $mail->Username = trim('neopagupa@pagupasoft.com');
-            $mail->Password = trim('PagupaServer07@');
+            $mail->Password = trim('Pagupaneo07#');
             $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
             $mail->Subject = 'NEOPAGUPA-Sistema Contable';
             $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);

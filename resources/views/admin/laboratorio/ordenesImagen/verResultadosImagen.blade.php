@@ -1,16 +1,16 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="min-height: 600px">
     <div class="col-12">
-        <div class="card card-secondary">
+        <div class="card card-secondary"  style="min-height: 550px">
             <div class="card-header">
                 <h3 class="card-title">Ver Resultados de Imagen Guardados</h3>
                 <div class="float-right">
                     <button type="button" onclick='history.back()' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                 </div>
             </div>
-            <div class="p-5">
-                <div class="row">
+            <div class="p-5" style="height:550px">
+                <div class="row" style="height:550px">
                     <div class="col-4">
                         <div class="card-body">
                             <table>

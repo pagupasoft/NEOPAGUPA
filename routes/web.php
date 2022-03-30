@@ -222,6 +222,7 @@ use App\Http\Controllers\listaRolReporteController;
 use App\Http\Controllers\modificarRolController;
 use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
+use App\Http\Controllers\ReporteConsumoController;
 use App\Http\Controllers\reporteUtilidadController;
 use App\Http\Controllers\reporteVentasProductoController;
 use App\Http\Controllers\repoteBancarioController;
@@ -462,6 +463,7 @@ Route::resource('individualrol', cabeceraRolAdministrativoController::class)->mi
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
 Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middleware('auth');
 Route::resource('reporteVentaProductoC', reporteVentasProductoController::class)->middleware('auth');
+Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 

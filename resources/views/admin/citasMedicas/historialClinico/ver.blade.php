@@ -27,7 +27,6 @@
 <div class="card card-secondary">
     <div class="card-header">
         <div class="float-right">
-            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
             <button onclick="window.history.back();" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
         </div>
     </div>

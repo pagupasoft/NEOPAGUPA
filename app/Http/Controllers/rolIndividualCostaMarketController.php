@@ -1325,10 +1325,7 @@ class rolIndividualCostaMarketController extends Controller
                 $detalles->delete();
                 $auditoria->registrarAuditoria('Eliminacion de Detalle Rol de pago de Rol tipo-> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' para la eliminacion de rol con valor '.$rol->cabecera_rol_pago ,'0','');
             }
-            foreach ($rol->detallesmovimientos as $detalle) {
-                $detalles = Movimiento_Consumo_Rol::findOrFail($detalle->movimiento_id);
-                $detalles->delete();
-            }
+            
             
             $rol->delete();
             $auditoria->registrarAuditoria('Eliminacion de  de rol  tipo -> '.$rol->cabecera_rol_tipo.' del empleado '.$rol->empleado->empleado_nombre.' con valor '.$rol->cabecera_rol_pago ,'0','');

@@ -65,61 +65,63 @@ class analisis_LaboratorioController extends Controller
                     if($orden->orden_numero_referencia!=null){
                         $ordenes_externo=(Object)json_decode($this->getOrdenes($orden->orden_numero_referencia));
 
-                        foreach($ordenes_externo->data as $orden){
-                            $orden_laboratorio= (Object) $orden;
-                            
-                            if($orden_laboratorio->estado=='V'  || $orden_laboratorio->estado=='R'){
-                                foreach($orden_laboratorio->examenes as $detalle_array){
-                                    $detalleRequest = (Object) $detalle_array;
-                                    
-                                    //actualizar el detalle de analisis
-                                    $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id, $detalleRequest->id_externo)->first();
-                                    $detalle_analisis->tecnica="$detalleRequest->tecnica";
-                            
-                                    if(isset($detalleRequest->fecha_recepcion_muestra)){
-                                        $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
-                                    }
+                        if($ordenes_externo){
+                            foreach($ordenes_externo->data as $orden){
+                                $orden_laboratorio= (Object) $orden;
+                                
+                                if($orden_laboratorio->estado=='V'  || $orden_laboratorio->estado=='R'){
+                                    foreach($orden_laboratorio->examenes as $detalle_array){
+                                        $detalleRequest = (Object) $detalle_array;
+                                        
+                                        //actualizar el detalle de analisis
+                                        $detalle_analisis=Detalle_Analisis::detalleExamen($analisis->analisis_laboratorio_id, $detalleRequest->id_externo)->first();
+                                        $detalle_analisis->tecnica="$detalleRequest->tecnica";
+                                
+                                        if(isset($detalleRequest->fecha_recepcion_muestra)){
+                                            $detalle_analisis->fecha_recepcion_muestra="$detalleRequest->fecha_recepcion_muestra";
+                                        }
 
-                                    $detalle_analisis->fecha_reporte="$detalleRequest->fecha_reporte";
-                                    $detalle_analisis->fecha_validacion="$detalleRequest->fecha_validacion";
-                                    $detalle_analisis->usuario_validacion=json_encode($detalleRequest->usuario_validacion);
-                                    $detalle_analisis->estado=$detalleRequest->estado;
-                                    $detalle_analisis->save();
+                                        $detalle_analisis->fecha_reporte="$detalleRequest->fecha_reporte";
+                                        $detalle_analisis->fecha_validacion="$detalleRequest->fecha_validacion";
+                                        $detalle_analisis->usuario_validacion=json_encode($detalleRequest->usuario_validacion);
+                                        $detalle_analisis->estado=$detalleRequest->estado;
+                                        $detalle_analisis->save();
 
-                                    //borrar resultados en caso que haya algún detalle guardado (el API devuelve todos otra vez)
-                                    foreach($analisis->detalles as $detalle){
-                                        foreach($detalle->detalles as $fila){
-                                            $newfila=Detalles_Analisis_Valores::findOrFail($fila->detalle_valores_id);
-                                            $newfila->delete();
+                                        //borrar resultados en caso que haya algún detalle guardado (el API devuelve todos otra vez)
+                                        foreach($analisis->detalles as $detalle){
+                                            foreach($detalle->detalles as $fila){
+                                                $newfila=Detalles_Analisis_Valores::findOrFail($fila->detalle_valores_id);
+                                                $newfila->delete();
+                                            }
+                                        }
+
+                                        //actualizar resultados de cada analisis
+                                        foreach($detalleRequest->resultados as $resultado_array){
+                                            $resultadoObject=(Object) $resultado_array;
+                                            $valores = new Detalles_Analisis_Valores();
+
+                                            $valores->detalle_id=$detalle_analisis->detalle_id;
+                                            $valores->id_externo_parametro=$resultadoObject->id_externo_parametro;
+                                            $valores->nombre_parametro=$resultadoObject->nombre_parametro;
+                                            $valores->resultado=$resultadoObject->resultado;
+                                            $valores->unidad_medida=$resultadoObject->unidad_medida;
+
+                                            $valores->valor_minimo=$resultadoObject->valor_minimo;
+                                            $valores->valor_maximo=$resultadoObject->valor_maximo;
+                                            $valores->valor_normal=$resultadoObject->valor_normal;
+
+                                            $valores->interpretacion=$resultadoObject->interpretacion;
+                                            $valores->comentario=$resultadoObject->comentario;
+
+                                            $valores->save();
                                         }
                                     }
+                                    $cantidad++;
+                                    $analisis->analisis_estado=3;
+                                    $analisis->save();
 
-                                    //actualizar resultados de cada analisis
-                                    foreach($detalleRequest->resultados as $resultado_array){
-                                        $resultadoObject=(Object) $resultado_array;
-                                        $valores = new Detalles_Analisis_Valores();
-
-                                        $valores->detalle_id=$detalle_analisis->detalle_id;
-                                        $valores->id_externo_parametro=$resultadoObject->id_externo_parametro;
-                                        $valores->nombre_parametro=$resultadoObject->nombre_parametro;
-                                        $valores->resultado=$resultadoObject->resultado;
-                                        $valores->unidad_medida=$resultadoObject->unidad_medida;
-
-                                        $valores->valor_minimo=$resultadoObject->valor_minimo;
-                                        $valores->valor_maximo=$resultadoObject->valor_maximo;
-                                        $valores->valor_normal=$resultadoObject->valor_normal;
-
-                                        $valores->interpretacion=$resultadoObject->interpretacion;
-                                        $valores->comentario=$resultadoObject->comentario;
-
-                                        $valores->save();
-                                    }
+                                    $auditoria->registrarAuditoria('Se ha actualizado correctamente un analisis desde el exterior, orden examen: '.$orden->orden_id,'0','');
                                 }
-                                $cantidad++;
-                                $analisis->analisis_estado=3;
-                                $analisis->save();
-
-                                $auditoria->registrarAuditoria('Se ha actualizado correctamente un analisis desde el exterior, orden examen: '.$orden->orden_id,'0','');
                             }
                         }
                     }

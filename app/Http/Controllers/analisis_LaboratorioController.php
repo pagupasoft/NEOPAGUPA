@@ -65,7 +65,7 @@ class analisis_LaboratorioController extends Controller
                     if($orden->orden_numero_referencia!=null){
                         $ordenes_externo=(Object)json_decode($this->getOrdenes($orden->orden_numero_referencia));
 
-                        if($ordenes_externo){
+                        if(isset($ordenes_externo)){
                             foreach($ordenes_externo->data as $orden){
                                 $orden_laboratorio= (Object) $orden;
                                 

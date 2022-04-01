@@ -169,9 +169,6 @@ class ordenImagenController extends Controller
                     $orden_imagen->orden_estado=3;
                     $orden_imagen->save();
                 }
-                else{
-                    return $detalleImagen;
-                }
             }
 
             $auditoria = new generalController();

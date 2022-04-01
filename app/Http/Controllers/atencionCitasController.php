@@ -374,12 +374,16 @@ class atencionCitasController extends Controller
                     $especialidad=$orden->especialidad;
                     $tipoSeguro=$orden->tipoSeguro;
 
+
+                    $procedimientoEspecialidad=Procedimiento_Especialidad::procedimientoProductoEspecialidad($producto->producto_id, $especialidad->especialidad_id)->first();
+                    $procedimientoAseguradora=Aseguradora_Procedimiento::procedimientosAsignados($procedimientoEspecialidad->procedimiento_id, $orden->cliente_id)->first();
+                    $datos[$orden->orden_id][$producto->producto_id]=$procedimientoAseguradora;
+
                     if($paciente){
                         $dependencia=$paciente->tipoDependencia;
                     }
 
                     ///////////////diagnóstico///////////////////////////////
-
                     if($expediente){
                         $diagnostico=$expediente->diagnostico;
 
@@ -391,12 +395,24 @@ class atencionCitasController extends Controller
                             }
                         }
 
+                        $ordenExamen=$expediente->ordenExamen;
+
+                        if($ordenExamen){
+                            $detalleExamen=$ordenExamen->detalle;
+
+                            foreach($detalleExamen as $detalle){
+                                $examen=$detalle->examen;
+
+                                if($examen){
+                                    $productoExamen=$examen->producto;
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             $datos['ordenes']= $ordenes;
-
             return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
         }catch(\Exception $ex){
             return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

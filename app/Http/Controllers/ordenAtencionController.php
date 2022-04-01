@@ -537,7 +537,7 @@ class ordenAtencionController extends Controller
             return redirect('ordenAtencion')
                     ->with('success', 'Datos guardados exitosamente')
                     //->with('diario',$url)->with('error2', 'ERROR --> '.$facturaAux->factura_xml_estado.' : '.$facturaAux->factura_xml_mensaje)
-                    ->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$dateNew.'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
+                    ->with('pdf2', 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.(new DateTime("$dateNew"))->format('d-m-Y').'/'.$ordenAtencion->orden_numero.'/Documentos/'.$nombreArchivo.'.pdf');
         //}
         //catch(\Exception $ex){    
         //   DB::rollBack();  

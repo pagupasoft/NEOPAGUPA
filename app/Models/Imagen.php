@@ -17,6 +17,7 @@ class Imagen extends Model
         'imagen_nombre',
         'imagen_estado',
         'tipo_id',
+        'producto_id'
     ];
     protected $guarded =[];
     
@@ -37,5 +38,10 @@ class Imagen extends Model
                     )->where('tipo_imagen.empresa_id', '=', Auth::user()->empresa_id
                     )->where(DB::raw('lower(imagen_nombre)'), 'like', '%'.strtolower($buscar).'%'
                     )->where('imagen.imagen_estado','=','1')->orderBy('imagen_nombre','asc');
+    }
+
+    public function producto()
+    {
+        return $this->hasOne(Producto::class, 'producto_id', 'producto_id');
     }
 }

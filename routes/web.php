@@ -665,6 +665,7 @@ Route::post('/reporteCompras', [reporteComprasController::class, 'consultar'])->
 Route::get('/listaCc', [listaCentroConsumoController::class, 'vista'])->middleware('auth');
 Route::post('/listaCc', [listaCentroConsumoController::class, 'listarCentrosconsumo'])->middleware('auth');
 Route::get('/notaDebito/new/{id}', [notaDebitoController::class, 'nuevo'])->middleware('auth');
+Route::post('cargarControldias', [controlDiasController::class, 'cargarControldias'])->middleware('auth');
 Route::get('/liquidacionCompra/new/{id}', [liquidacionCompraController::class, 'nuevo'])->middleware('auth');
 Route::get('/entidadProcedimiento/{id}/procedimientos', [entidadProcedimientoController::class, 'procedimientos'])->middleware('auth')->middleware('acceso');
 Route::post('/entidadProcedimiento/guardarProcedimientos/{id}', [entidadProcedimientoController::class, 'guardarProcedimientos'])->name('entidadProcedimiento.guardarProcedimientos')->middleware('auth');

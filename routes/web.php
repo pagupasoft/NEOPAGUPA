@@ -722,7 +722,7 @@ Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimir
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
-Route::post('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');
+Route::post('/facturarOrdenImagen', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');

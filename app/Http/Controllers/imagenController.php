@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Categoria_Producto;
 use App\Models\Imagen;
+use App\Models\Producto;
 use App\Models\Tipo_Imagen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +26,13 @@ class imagenController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $imagenes=Imagen::Imagenes()->get();        
             $tipoImagenes=Tipo_Imagen::TipoImagenes()->get();
-            return view('admin.citasMedicas.imagen.index',['imagenes'=>$imagenes,'tipoImagenes'=>$tipoImagenes,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+
+            $productosImagen=Producto::productosImagen()->get();
+
+            //return $productosImagen;
+
+
+            return view('admin.citasMedicas.imagen.index',['imagenes'=>$imagenes, 'productos'=>$productosImagen, 'tipoImagenes'=>$tipoImagenes,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -52,7 +60,8 @@ class imagenController extends Controller
         try{         
             DB::beginTransaction();   
             $imagen = new Imagen();
-            $imagen->imagen_nombre = $request->get('imagen_nombre');         
+            //$imagen->imagen_nombre = $request->get('imagen_nombre');
+            $imagen->producto_id=$request->get('producto_id');
             $imagen->imagen_estado = 1;  
             $imagen->tipo_id = $request->get('tipo_imagen');      
             $imagen->save();

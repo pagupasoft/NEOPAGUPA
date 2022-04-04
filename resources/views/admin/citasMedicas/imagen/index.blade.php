@@ -23,7 +23,7 @@
                         <a href="{{ url("imagen/{$imagen->imagen_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>                   
                         <a href="{{ url("imagen/{$imagen->imagen_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                        
                     </td>                                        
-                    <td>{{ $imagen->imagen_nombre }}</td>         
+                    <td>{{ isset($imagen->producto) ? $imagen->producto->producto_nombre: $imagen->imagen_nombre }}</td>         
                     <td>
                         @foreach($tipoImagenes as $tipoImagen)
                             @if($tipoImagen->tipo_id == $imagen->tipo_id)
@@ -53,13 +53,18 @@
                 <div class="modal-body">
                     <div class="card-body">             
                         <div class="form-group row">
-                            <label for="imagen_nombre" class="col-sm-3 col-form-label">Nombre de la Imagen</label>
+                            <label for="tipo_imagen" class="col-sm-3 col-form-label">Nombre de Imagen</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="imagen_nombre" name="imagen_nombre" placeholder="Nombre" required> 
+                                <select class="custom-select select2" id="producto_id" name="producto_id" required>
+                                    <option value="" label>--Seleccione una opcion--</option>                                    
+                                    @foreach($productos as $producto)                                                                                      
+                                        <option value="{{ $producto->producto_id}}">{{ isset($producto)? $producto->producto_nombre: ""}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="tipo_imagen" class="col-sm-3 col-form-label">Tipo de la Imagen</label>
+                            <label for="tipo_imagen" class="col-sm-3 col-form-label">Tipo de Imagen</label>
                             <div class="col-sm-9">
                                 <select class="custom-select select2" id="tipo_imagen" name="tipo_imagen" required>
                                     <option value="" label>--Seleccione una opcion--</option>                                    

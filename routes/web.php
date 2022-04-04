@@ -173,6 +173,7 @@ use App\Http\Controllers\decimoCuartoController;
 use App\Http\Controllers\decimoTerceroController;
 use App\Http\Controllers\depositoCajaController;
 use App\Http\Controllers\depreciacionMensualController;
+use App\Http\Controllers\descuentoManualAnticipoProveedorController;
 use App\Http\Controllers\detalleLaboratorioController;
 use App\Http\Controllers\diasPlazoController;
 use App\Http\Controllers\egresoBancoController;
@@ -463,6 +464,7 @@ Route::resource('individualrol', cabeceraRolAdministrativoController::class)->mi
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
 Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middleware('auth');
 Route::resource('reporteVentaProductoC', reporteVentasProductoController::class)->middleware('auth');
+Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorController::class)->middleware('auth');
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
@@ -665,6 +667,7 @@ Route::post('/reporteCompras', [reporteComprasController::class, 'consultar'])->
 Route::get('/listaCc', [listaCentroConsumoController::class, 'vista'])->middleware('auth');
 Route::post('/listaCc', [listaCentroConsumoController::class, 'listarCentrosconsumo'])->middleware('auth');
 Route::get('/notaDebito/new/{id}', [notaDebitoController::class, 'nuevo'])->middleware('auth');
+Route::post('cargarControldias', [controlDiasController::class, 'cargarControldias'])->middleware('auth');
 Route::get('/liquidacionCompra/new/{id}', [liquidacionCompraController::class, 'nuevo'])->middleware('auth');
 Route::get('/entidadProcedimiento/{id}/procedimientos', [entidadProcedimientoController::class, 'procedimientos'])->middleware('auth')->middleware('acceso');
 Route::post('/entidadProcedimiento/guardarProcedimientos/{id}', [entidadProcedimientoController::class, 'guardarProcedimientos'])->name('entidadProcedimiento.guardarProcedimientos')->middleware('auth');
@@ -721,7 +724,7 @@ Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimir
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
-Route::post('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');
+Route::post('/facturarOrdenImagen', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');

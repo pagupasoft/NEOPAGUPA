@@ -109,6 +109,15 @@ class Producto extends Model
                     )->where('producto.producto_estado','=','1'
                     )->orderBy('producto.producto_nombre','asc');
     }
+
+    public function scopeProductosImagen($query){
+        return $query->join('grupo_producto','grupo_producto.grupo_id','=','producto.grupo_id'
+                    )->where('grupo_producto.grupo_nombre','=','Imagen'
+                    )->where('producto.empresa_id','=',Auth::user()->empresa_id
+                    )->where('producto.producto_estado','=','1'
+                    )->orderBy('producto.producto_nombre','asc');
+    }
+
     public function scopeProductosMedicamentos($query){
         return $query->join('grupo_producto','grupo_producto.grupo_id','=','producto.grupo_id'
                     )->where('grupo_producto.grupo_nombre','=','Medicamentos'

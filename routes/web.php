@@ -713,6 +713,9 @@ Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'aten
 Route::get('/informehistoricoplano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
 Route::post('/generarreportehistoricoplano', [atencionCitasController::class, 'informeHistoricoPlano'])->middleware('auth')->middleware('acceso');
 
+Route::get('/informecargamasiva', [atencionCitasController::class, 'informeCargaMasivaIndex'])->middleware('auth')->middleware('acceso');
+Route::post('/generarreportecargamasiva', [atencionCitasController::class, 'informeCargaMasiva'])->middleware('auth')->middleware('acceso');
+
 
 
 Route::get('/receta', [atencionRecetasController::class, 'index'])->middleware('auth')->middleware('acceso');
@@ -722,6 +725,7 @@ Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregar
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
+Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
 Route::post('/facturarOrdenImagen', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');

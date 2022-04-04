@@ -281,7 +281,13 @@ class atencionCitasController extends Controller
 
             if (count($ImagenId)>1) {
                 $ordenImagen = new Orden_Imagen();
-                $ordenImagen->orden_estado = 2;
+
+                 ///////////  si es iess pasa directo a subir examenes (estado 2)
+                 if($atencion->orden_iess == '0')
+                    $ordenImagen->orden_estado = 1; 
+                else
+                    $ordenImagen->orden_estado = 2; 
+
                 if ($request->get('otros_imagen')) {
                     $ordenImagen->orden_observacion=$request->get('otros_imagen');
                 }
@@ -420,7 +426,7 @@ class atencionCitasController extends Controller
     }
 
 
-    private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
+        private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
         $empresa = Empresa::empresa()->first();
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 

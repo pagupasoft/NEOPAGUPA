@@ -399,24 +399,18 @@ class conciliacionBancariaController extends Controller
             $depositosConciliados = Deposito::DepositosByCuenta($request->get('cuenta_id'))
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))->where('deposito.deposito_fecha','<=',$request->get('idHasta'))
             ->where('deposito.deposito_conciliacion','=', true)->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
-            ->where(function($query){
-                $query->where(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO')
-                    ->orwhere(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO DE CHEQUE');                  
-            })->sum('deposito_valor');
+            ->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA')
+            ->sum('deposito_valor');
 
             $depositosNoConciliados = Deposito::DepositosByCuenta($request->get('cuenta_id'))
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))->where('deposito.deposito_fecha','<=',$request->get('idHasta'))
             ->where('deposito.deposito_conciliacion','=', false)
-            ->where(function($query){
-                $query->where(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO')
-                    ->orwhere(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO DE CHEQUE');                  
-            })->sum('deposito_valor');
+            ->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA')
+            ->sum('deposito_valor');
 
-            $depositosConciliadosOtros = Deposito::DepositosByCuenta($request->get('cuenta_id'))           
-            ->where(function($query){
-                $query->where(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO')
-                    ->orwhere(DB::raw('deposito.deposito_tipo'), '=', 'DEPOSITO DE CHEQUE');                  
-            })->where('deposito.deposito_fecha','<',$request->get('idDesde'))
+            $depositosConciliadosOtros = Deposito::DepositosByCuenta($request->get('cuenta_id'))     
+            ->where('deposito.deposito_tipo','<>', 'TRANSFERENCIA')      
+            ->where('deposito.deposito_fecha','<',$request->get('idDesde'))
             ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))
             ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
 

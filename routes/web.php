@@ -173,6 +173,7 @@ use App\Http\Controllers\decimoCuartoController;
 use App\Http\Controllers\decimoTerceroController;
 use App\Http\Controllers\depositoCajaController;
 use App\Http\Controllers\depreciacionMensualController;
+use App\Http\Controllers\descuentoManualAnticipoProveedorController;
 use App\Http\Controllers\detalleLaboratorioController;
 use App\Http\Controllers\diasPlazoController;
 use App\Http\Controllers\egresoBancoController;
@@ -463,6 +464,7 @@ Route::resource('individualrol', cabeceraRolAdministrativoController::class)->mi
 Route::resource('operativorol', cabeceraRolController::class)->middleware('auth');
 Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middleware('auth');
 Route::resource('reporteVentaProductoC', reporteVentasProductoController::class)->middleware('auth');
+Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorController::class)->middleware('auth');
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */

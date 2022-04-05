@@ -481,7 +481,8 @@ class conciliacionBancariaController extends Controller
              ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))               
             ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
             //SALDO DEL ESTADO DE CUENTA BANCO
-            $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado)+ floatval($transferenciasEgresosNoConciliadas)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+            $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado) + floatval($transferenciasEgresosNoConciliadas) + floatval($chequeGiradoNoCobrado)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+
             /*------------FIN---------------------------------------------------*/
             
             $conciliacionBancariaMatriz = [];

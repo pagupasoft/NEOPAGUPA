@@ -26,7 +26,7 @@
                             <option value="{{ $sucursal->sucursal_id }}"@if(isset($sucursalS)) @if($sucursalS == $sucursal->sucursal_id) selected @endif @endif>{{ $sucursal->sucursal_nombre }}</option>
                         @endforeach
                     </select>
-                </div>                    
+                </div> 
             </div>
             <div class="form-group row">                
                 <label for="idDesde" class="col-sm-1 col-form-label"><center>Desde:</center></label>
@@ -44,37 +44,30 @@
                 @else
                     <input type="date" class="form-control" id="idHasta" name="idHasta"  value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' required>
                 @endif
-                </div>          
-                <div class="col-sm-1">
+                </div>
+               
+                    <div class="col-sm-1">
                     <button type="submit" id="buscarReporte" name="buscarReporte" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                </div>                 
+                </div>
+                                  
             </div>            
             <div class="form-group row">
-                    <label for="idValor" class="col-sm-1 col-form-label"><center>Total Seleccionado</center></label>
-                    <div class="col-sm-3">
-                        <input type="text" class="form-control" id="idValor" name="idValor" placeholder="0.00">
-                    </div> 
-                    <label for="idCaja" class="col-sm-1 col-form-label">Caja</label>
-                    <div class="col-sm-3">
-                        <select class="custom-select select2" id="idCaja" name="idCaja" required>
-                            <option value="" label>--Seleccione una caja--</option>
-                            @if($cajasxusuario)
-                            @foreach($cajas as $caja)
-                            @if($caja->caja_id == $cajasxusuario->caja_id)
-                            <option value="{{$caja->caja_id}}" selected>{{$caja->caja_nombre}}</option>
-                            @endif
-                            @endforeach
-                            @endif
-                        </select>
-                    </div>                   
-                     
-            </div> 
-            <div class="form-group row">                    
-                    <label for="idFechaCruze" class="col-sm-1 col-form-label"><center>Fecha Cruze:</center></label>
+                    <label for="idValorSeleccionado" class="col-sm-1 col-form-label">Total Seleccionado</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="idValorSeleccionado" name="idValorSeleccionado" placeholder="0.00">
+                        </div>
+                        <label for="idFechaCruze" class="col-sm-1 col-form-label">Fecha Cruze:</label>
                     <div class="col-sm-3">                
                          <input type="date" class="form-control" id="idFechaCruze" name="idFechaCruze"  value='<?php echo(date("Y")."-".date("m")."-".date("d")); ?>' required>
                     </div>  
-                    <label for="banco_id" class="col-sm-1 col-form-label">Banco</label>
+                </div>
+                <div class="form-group row"> 
+                <div class="col-sm-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">Cruzar con Banco</label>                
+                    </div> 
+                </div>  
                     <div class="col-sm-3">
                         <select class="custom-select" id="banco_id" name="banco_id" onchange="cargarCuenta();" required>
                             <option value="" label>--Seleccione una opcion--</option>
@@ -88,43 +81,62 @@
                         <select class="custom-select" id="cuenta_id" name="cuenta_id" required>
                             <option value="" label>--Seleccione una opcion--</option>
                         </select>
+                    </div>  
+                </div> 
+                <div class="form-group row">
+                    <div class="col-sm-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                            <label class="form-check-label" for="flexRadioDefault1">Cruzar con Caja</label>
+                        </div> 
                     </div>
-            </div>            
-            <div class="card-body table-responsive p-0" style="height: 350px;">
-                <table id="example4" class="table table-head-fixed text-nowrap">
-                    <thead>
-                        <tr>  
-                            <th></th>
-                            <th>Proveedor</th>
-                            <th>Monto</th>
-                            <th>Saldo</th> 
-                            <th>Valor a Cruzar</th>
-                            <th>Diario</th>     
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>            
-                    <tbody>
-                    @if(isset($anticiposProveedoresMatriz))
-                        @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i)               
-                        <tr class="text-left">
-                            <td>
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="{{ $anticiposProveedoresMatriz[$i]['ID']}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
-                                    <label for="{{ $anticiposProveedoresMatriz[$i]['ID'] }}" class="custom-control-label"></label>
-                                </div>                               
-                            </td> 
-                            <td>{{ $anticiposProveedoresMatriz[$i]['Proveedor']}}</td>
-                            <td> {{ number_format( $anticiposProveedoresMatriz[$i]['Valor'],2,'.','')}}</td>
-                            <td>{{ number_format($anticiposProveedoresMatriz[$i]['Saldo'],2,'.','')}}<input type="hidden" name="Dsaldo[]" value="{{number_format($anticiposProveedoresMatriz[$i]['Saldo'],2,'.','')}}" readonly/></td>
-                            <td><input style="width: 110px !important;" class="text-center" name="Ddescontar[]" value="0.00" onkeyup="totalSeleccion('{{$i-1}}');" readonly/></td>
-                            <td>{{ $anticiposProveedoresMatriz[$i]['Diario']}}</td>
-                            <td>{{ $anticiposProveedoresMatriz[$i]['Fecha'] }}</td>
-                        </tr>
-                        @endfor
-                    @endif                
-                    </tbody>
-                </table>
-            </div>                     
+                    <div class="col-sm-3">
+                        <select class="custom-select select2" id="idCaja" name="idCaja" required>
+                            <option value="" label>--Seleccione una caja--</option>
+                            @if($cajasxusuario)
+                            @foreach($cajas as $caja)
+                            @if($caja->caja_id == $cajasxusuario->caja_id)
+                            <option value="{{$caja->caja_id}}" selected>{{$caja->caja_nombre}}</option>
+                            @endif
+                            @endforeach
+                            @endif
+                        </select>
+                    </div> 
+                </div>                
+                <div class="card-body table-responsive p-0" style="height: 350px;">
+                    <table id="example4" class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>  
+                                <th></th>
+                                <th>Proveedor</th>
+                                <th>Monto</th>
+                                <th>Saldo</th> 
+                                <th>Valor a Cruzar</th>
+                                <th>Diario</th>     
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>            
+                        <tbody>
+                        @if(isset($anticiposProveedoresMatriz))
+                            @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i)               
+                            <tr class="text-left">
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="{{ $anticiposProveedoresMatriz[$i]['ID']}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
+                                        <label for="{{ $anticiposProveedoresMatriz[$i]['ID'] }}" class="custom-control-label"></label>
+                                    </div>                               
+                                </td> 
+                                <td>{{ $anticiposProveedoresMatriz[$i]['Proveedor']}}</td>
+                                <td> {{ number_format( $anticiposProveedoresMatriz[$i]['Valor'],2,'.','')}}</td>
+                                <td>{{ number_format($anticiposProveedoresMatriz[$i]['Saldo'],2,'.','')}}<input type="hidden" name="Dsaldo[]" value="{{number_format($anticiposProveedoresMatriz[$i]['Saldo'],2,'.','')}}" readonly/></td>
+                                <td><input style="width: 110px !important;" class="text-center" name="Ddescontar[]" value="0.00" onkeyup="totalSeleccion('{{$i-1}}');" readonly/></td>
+                                <td>{{ $anticiposProveedoresMatriz[$i]['Diario']}}</td>
+                                <td>{{ $anticiposProveedoresMatriz[$i]['Fecha'] }}</td>
+                            </tr>
+                            @endfor
+                        @endif                
+                        </tbody>
+                    </table>
         </form>           
     </div>     
 </div>
@@ -165,11 +177,11 @@ function cargarCuenta() {
                 $("input[name='Ddescontar[]']")[id].value = Number(Number($("input[name='Dsaldo[]']")[id].value)).toFixed(2);
             }
 
-            /*document.getElementById("idValorSeleccionado").value = 0.00;
+            document.getElementById("idValorSeleccionado").value = 0.00;
             for (var i = 1; i < id_item; i++) {
                 document.getElementById("idValorSeleccionado").value = Number(Number(document.getElementById("idValorSeleccionado").value) + Number($("input[name='Ddescontar[]']")[i].value)).toFixed(2);
             }
-            document.getElementById("idValorCheque").value = document.getElementById("idValorSeleccionado").value;
+            /*document.getElementById("idValorCheque").value = document.getElementById("idValorSeleccionado").value;
             if(document.getElementById("idValorSeleccionado").value > 0){
                 document.getElementById("guardarID").disabled = false;
             }else{

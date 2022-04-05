@@ -86,10 +86,15 @@ class descuentoManualAnticipoProveedorController extends Controller
             $sucursalS =  $request->get('sucursalID');
             $proveedores = Proveedor::Proveedores()->get();
             $sucursales = sucursal::Sucursales()->get();
+            $cajasxusuario=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();                 
+            $cajas = Caja::cajas()->get();
             return view('admin.cuentasPagar.descuentoManual.index',
             ['anticiposProveedoresMatriz'=>$anticiposProveedoresMatriz,            
             'fechaselect'=>$fechaselect, 
-            'fechaselect2'=>$fechaselect2,          
+            'fechaselect2'=>$fechaselect2, 
+            'cajasxusuario'=>$cajasxusuario,
+            'cajas'=>$cajas,
+            'bancos'=>Banco::bancos()->get(),         
             'sucursalS'=>$sucursalS,
             'proveedorS'=>$proveedorS,           
             'sucursales'=>$sucursales,

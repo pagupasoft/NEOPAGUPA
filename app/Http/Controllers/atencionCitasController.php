@@ -426,7 +426,110 @@ class atencionCitasController extends Controller
     }
 
 
-        private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
+    public function informeCargaMasivaIndex(Request $request){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $medicos = Medico::medicos()->get();
+            $id = 0;
+
+            foreach($medicos as $medico){
+                if($medico->user_id == Auth::user()->user_id){
+                    $id = $medico->medico_id;
+                }
+            }
+            
+            $medico = Medico::medico($id)->first();
+            $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
+            $prescripciones = Prescripcion::prescripcionesPaciente()->get();
+            $pacientes = Paciente::pacientes()->get();
+
+
+            $sucursales=Sucursal::sucursales()->get();
+            
+
+            //return $prescripciones;
+
+            return view('admin.citasMedicas.atencionCitas.cargamasiva',['medico'=>$medico, 'sucursales'=>$sucursales, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function informeCargaMasiva(Request $request){
+        //try{   
+            $sucursal=Sucursal::findOrFail($request->sucursal);
+            $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+            
+            if($ordenes){
+                foreach($ordenes as $orden){
+                    $expediente=$orden->expediente;
+                    $producto=$orden->producto;
+                    $paciente=$orden->paciente;
+                    $especialidad=$orden->especialidad;
+                    $medico=$orden->medico->empleado;
+                    $tipoSeguro=$orden->tipoSeguro;
+                    $sucursal_nombre=$orden->sucursal->sucursal_nombre;
+
+
+                    if($producto){
+                        $procedimientoEspecialidad=Procedimiento_Especialidad::procedimientoProductoEspecialidad($producto->producto_id, $especialidad->especialidad_id)->first();
+                        $procedimientoAseguradora=Aseguradora_Procedimiento::procedimientosAsignados($procedimientoEspecialidad->procedimiento_id, $orden->cliente_id)->first();
+                        $datos[$orden->orden_id][$producto->producto_id]=$procedimientoAseguradora;
+
+                        if($paciente){
+                            $dependencia=$paciente->tipoDependencia;
+                        }
+
+                        ///////////////diagnóstico///////////////////////////////
+                        if($expediente){
+                            $diagnostico=$expediente->diagnostico;
+
+                            if($diagnostico){
+                                $diagDetalle=$diagnostico->detallediagnostico;
+
+                                foreach($diagDetalle as $detalle){
+                                    $detalle->enfermedad;
+                                }
+                            }
+
+                            $ordenExamen=$expediente->ordenExamen;
+
+                            if($ordenExamen){
+                                $detalleExamen=$ordenExamen->detalle;
+
+                                foreach($detalleExamen as $detalle){
+                                    $examen=$detalle->examen;
+
+                                    if($examen){
+                                        $productoExamen=$examen->producto;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $datos['ordenes']= $ordenes;
+            //$datos['sucursal_nombre']='$sucursal->sucursal_nombre';
+
+            //return $ordenes;
+
+            return Excel::download(new ViewExcel('admin.formatosExcel.cargamasiva', $datos), 'NEOPAGUPA  Sistema Contable.xls');
+        //}catch(\Exception $ex){
+        //    return redirect('informecargamasiva')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
+    }
+
+
+
+
+
+
+
+
+    private function crearOrdenExamenPdf($atencion, $ordenExamen, $tipos){
         $empresa = Empresa::empresa()->first();
         $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Deposito;
+use App\Models\Detalle_Diario;
 use App\Models\Diario;
 use App\Models\Ingreso_Banco;
 use App\Models\Punto_Emision;
@@ -134,43 +135,34 @@ class listaIngresoBancoController extends Controller
     {
         try{
             DB::beginTransaction();
-            $ingresoBanco = Ingreso_Banco::findOrFail($id);
-            $general = new generalController();
-           
+            $ingresoBanco = Ingreso_Banco::ingresoBanco($id)->first();            
+            $general = new generalController();           
             $cierre = $general->cierre($ingresoBanco->ingreso_fecha);          
             if($cierre){
                 return redirect('listaIngresoBanco')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-            if(isset($ingresoBanco->deposito)){
-                $ingreso= Ingreso_Banco::findOrFail($id);
-                $ingreso->deposito_id=null;    
-                $ingreso->save();
-
-                $deposito=Deposito::findOrFail($ingresoBanco->deposito_id);
-            }
-            foreach($ingresoBanco->diario->detalles as $detalle){                            
+            $depositoID = $ingresoBanco->deposito_id;
+            $diarioID = $ingresoBanco->diario_id;
+            $ingresoAux = $ingresoBanco;         
+            $ingresoBanco->delete();
+            $diario = Diario::DiarioXID($diarioID)->first();
+            $diarioAux = $diario;
+            foreach($diario->detalles as $detalle){                                       
                 $detalle->delete();
-                $general->registrarAuditoria('Eliminacion de detalles de Ingreso de banco numero: -> '.$ingresoBanco->ingreso_numero, $id, '');
+                $general->registrarAuditoria('Eliminacion de detalles de Diario Ingreso de banco numero: -> '.$ingresoAux->ingreso_numero, $id, 'Codigo de diario'.' '.$diario->diario_codigo);
             } 
-            if(isset($deposito)){
-                $deposito->delete();
-                $general->registrarAuditoria('Eliminacion de Deposito: -> '.$ingresoBanco->deposito->deposito_numero, $id, 'Con Tipo -> '.$ingresoBanco->deposito->deposito_tipo.'Con valor de -> '.$ingresoBanco->deposito->deposito_valor);
-            }
-            $ingreso= Ingreso_Banco::findOrFail($id);
-            $ingreso->diario_id=null;
-            $ingreso->save();   
-            
-            $diario = Diario::findOrFail($ingresoBanco->diario->diario_id);
-            $ingresoBanco->diario->delete();                        
-            $general->registrarAuditoria('Eliminacion de Diario de Ingreso de banco numero: -> '.$ingresoBanco->ingreso_numero, $id, 'Con el diario-> '.$diario->diario_codigo.'Comentario -> '.$diario->diario_comentario);
-                                    
-            $aux=$ingresoBanco;
-            $general->registrarAuditoria('Eliminacion de Ingreso de banco numero: -> '.$aux->ingreso_numero, $id, 'Con Valor -> '.$aux->ingreso_valor.' Descripcion -> '.$aux->ingreso_descripcion);
+            $diario->delete();
+            $general->registrarAuditoria('Eliminacion de Diario de Ingreso de banco numero: -> '.$ingresoAux->ingreso_numero, $id, 'Con el diario-> '.$diarioAux->diario_codigo.'Comentario -> '.$diarioAux->diario_comentario);
+
+            $deposito=Deposito::Deposito($depositoID)->first();            
+            $deposito->delete();
+            $general->registrarAuditoria('Eliminacion de Deposito: -> '.$deposito->deposito_numero, $id, 'Con Tipo -> '.$deposito->deposito_tipo.'Con valor de -> '.$deposito->deposito_valor);
+            $general->registrarAuditoria('Eliminacion de Ingreso de banco numero: -> '.$ingresoAux->ingreso_numero, $id, 'Con Valor -> '.$ingresoAux->ingreso_valor.' Descripcion -> '.$ingresoAux->ingreso_descripcion);
             DB::commit();
             return redirect('listaIngresoBanco')->with('success','Datos Eliminados exitosamente');            
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('listaIngresoBanco')->with('error','El registro no pudo ser borrado, tiene resgitros adjuntos.');
+            return redirect('listaIngresoBanco')->with('error',$ex);
         }    
     }
 }

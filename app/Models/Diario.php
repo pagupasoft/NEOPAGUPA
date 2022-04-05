@@ -79,6 +79,9 @@ class  Diario extends Model
     public function scopeDiarioCodigo($query, $codigo){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_codigo','=',$codigo);
     }
+    public function scopeDiarioXID($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('diario_id','=',$id);
+    }
     public function scopeDiarioSucursal($query){
         return $query->join('sucursal','sucursal.sucursal_id','=','diario.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('sucursal_nombre','asc');
     }

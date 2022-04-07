@@ -770,7 +770,7 @@ class cobrosClientesController extends Controller
                                     }
                                 }else{
                                     foreach($diario->detalles as $detalle){
-                                        if(isset($detalle->deposito)){
+                                        if(isset($detalle->deposito->deposito_id)){
                                             if(isset($detalle->deposito->chequeCliente)){
                                                 if(is_null($detalle->deposito->chequeCliente) == false){
                                                     $general->registrarAuditoria('Eliminacion de cheque de cliente '.$detalle->deposito->chequeCliente->cheque_dueno,'','Eliminacion de cheque de cliente '.$detalle->deposito->chequeCliente->cheque_dueno.' numero '.$detalle->deposito->chequeCliente->cheque_numero.' por un valor de '.$detalle->deposito->chequeCliente->cheque_valor.' por eliminacion de pago de cuenta por cobrar');  
@@ -810,7 +810,7 @@ class cobrosClientesController extends Controller
                             }elseif(isset($cxcAux->notaDebito->nd_id)){
                                 $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor');
                             }else{
-                                $cxcAux2->cuenta_saldo = $cxcAux2->cuenta_saldo + $valorPagoGeneral;
+                                $cxcAux->cuenta_saldo = $cxcAux->cuenta_saldo + $valorPagoGeneral;
                             }
                             
                             if(round($cxcAux->cuenta_saldo,2) == 0){
@@ -827,7 +827,7 @@ class cobrosClientesController extends Controller
                             }elseif(isset($cxcAux->notaDebito->nd_id)){
                                 $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux->notaDebito->factura->cliente->cliente_nombre.' con Nota de Débito -> '.$cxcAux->notaDebito->nd_numero);
                             }else{
-                                $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux2->cliente->cliente_nombre.' '.$cxcAux2->cuenta_descripcion);
+                                $general->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente','0','Actualizacion de cuenta por cobrar por eliminacion de pagos de cliente -> '.$cxcAux->cliente->cliente_nombre.' '.$cxcAux->cuenta_descripcion);
                             }
                         }
                     }

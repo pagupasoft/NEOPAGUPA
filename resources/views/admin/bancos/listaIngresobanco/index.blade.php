@@ -51,14 +51,21 @@
                         
                         </td>
                             <td class="text-center">{{ $ingresoBanco->ingreso_fecha}}</td>
-                            
-                                <td class="text-center">{{ $ingresoBanco->deposito->cuentaBancaria->banco->bancoLista->banco_lista_nombre}}</td>                        
-                                <td class="text-center">{{ $ingresoBanco->deposito->cuentaBancaria->cuenta_bancaria_numero}}</td>
-                           
+                                @if($ingresoBanco->deposito_id)
+                                    <td class="text-center">{{ $ingresoBanco->deposito->cuentaBancaria->banco->bancoLista->banco_lista_nombre}}</td>                        
+                                    <td class="text-center">{{ $ingresoBanco->deposito->cuentaBancaria->cuenta_bancaria_numero}}</td>
+                                @else
+                                <td></td>
+                                <td></td>
+                                @endif
                             <td class="text-center">{{ $ingresoBanco->ingreso_descripcion}}</td>
                             <td class="text-center">{{ $ingresoBanco->ingreso_beneficiario}}</td> 
-                            <td class="text-center"><a href="{{ url("asientoDiario/ver/{$ingresoBanco->diario->diario_codigo}")}}" target="_blank">{{ $ingresoBanco->diario->diario_codigo}}</a></td>                   
-                        <td class="text-rigth">${{ number_format($ingresoBanco->ingreso_valor,2)}}</td>                        
+                            @if($ingresoBanco->diario_id)
+                                <td class="text-center"><a href="{{ url("asientoDiario/ver/{$ingresoBanco->diario->diario_codigo}")}}" target="_blank">{{ $ingresoBanco->diario->diario_codigo}}</a></td>                   
+                            @else
+                                <td></td>
+                            @endif
+                            <td class="text-rigth">${{ number_format($ingresoBanco->ingreso_valor,2)}}</td>                        
                     </tr>                         
                 @endforeach   
             @endif            

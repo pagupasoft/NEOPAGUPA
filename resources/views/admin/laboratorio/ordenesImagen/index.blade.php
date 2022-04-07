@@ -38,8 +38,9 @@
             <thead>
                 <tr class="text-center neo-fondo-tabla">
                     <th>Acción</th>
+                    <th>Estado</th> 
                     <th>Codigo</th>
-                    <th>Número</th> 
+                    <th>Número</th>
                     <th>Paciente</th> 
                     <th>Fecha</th> 
                     <th>Otros Examenes</th>                                                                                       
@@ -50,21 +51,32 @@
             @foreach($ordenesImagen as $ordenImagen)
                 <tr class="text-center">
                     <td>
-                        {{--$ordenImagen->orden_estado--}}  {{--$ordenImagen->orden_id--}}
                         @if($ordenImagen->orden_estado == 1)
-                            <a class="btn btn-xs btn-outline-danger " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="No Facturado">
-                                <i class="fas fa-info-circle"></i> Pendiente
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="NO FACTURADO">
+                                <i class="fas fa-edit"></i> Facturar
                             </a>
                         @elseif($ordenImagen->orden_estado==2)
-                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/subirImagenes") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Subir Resultados">
-                                <i class="fas fa-edit"></i> Subir
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/subirImagenes") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="Subir Resultados">
+                                <i class="fas fa-upload"></i> &nbsp;&nbsp;&nbsp; Subir
                             </a>
                         @else
-                            <a class="btn btn-xs btn-outline-success" style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Subidos">
-                                <i class="fas fa-check"></i>
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/verResultadosImagen") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="ver Resultados">
+                                <i class="fa fa-eye"></i>&nbsp;&nbsp;&nbsp; Mostrar
                             </a>
-                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/verResultadosImagen") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="ver Resultados">
-                                <i class="fa fa-folder-open"></i>
+                        @endif
+                    </td>
+                    <td>
+                    @if($ordenImagen->orden_estado == 1)
+                            <a class="btn btn-xs btn-outline-danger " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top">
+                                PENDIENTE
+                            </a>
+                        @elseif($ordenImagen->orden_estado==2)
+                            <a class="btn btn-xs btn-outline-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top">
+                                POR SUBIR
+                            </a>
+                        @else
+                            <a class="btn btn-xs btn-outline-success" style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top">
+                                TODO LISTO
                             </a>
                         @endif
                     </td>

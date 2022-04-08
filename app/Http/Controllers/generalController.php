@@ -112,6 +112,22 @@ class generalController extends Controller
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
         return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y').'/'.$nombreArchivo;
     }
+    public function pdfVariosDiario($diarios, $fecha){
+        $empresa = Empresa::empresa()->first();
+        $nombre = '';
+        for ($i = 1; $i <= count($diarios); ++$i){
+            $diario=Diario::findOrFail($diarios[$i]->diario_id);
+            $nombre = $nombre.' - '.$diario->diario_codigo;
+        }
+        $ruta = public_path().'/DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $fecha)->format('d-m-Y');
+        if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+        }
+        $nombreArchivo = $nombre. ".pdf";
+        $view =  \View::make('admin.formatosPDF.variosDiarios', ['empresa'=> $empresa,'diarios'=> $diarios]);
+        PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
+        return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $fecha)->format('d-m-Y').'/'.$nombreArchivo;
+    }
     public function pdfDiarioEgreso(Diario $diario){
         $empresa = Empresa::empresa()->first();
         $diario=Diario::findOrFail($diario->diario_id);

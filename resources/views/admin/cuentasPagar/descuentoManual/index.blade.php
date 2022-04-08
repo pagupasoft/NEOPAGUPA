@@ -9,9 +9,9 @@
         @csrf
         <div class="form-group row">
                 <label for="nombre_cuenta" class="col-sm-1 col-form-label"><center>Proveedor:</center></label>
-                <div class="col-sm-3">
+                <div class="col-sm-7">
                     <select class="custom-select select2" id="proveedorID" name="proveedorID" require>
-                        <option value="0">Todos</option>
+                    <option value="" label>--Seleccione una opcion--</option>
                         @foreach($proveedores as $proveedor)
                             <option value="{{$proveedor->proveedor_id}}" @if(isset($proveedorS)) @if($proveedorS == $proveedor->proveedor_id) selected @endif @endif>{{$proveedor->proveedor_nombre}}</option>
                         @endforeach
@@ -59,13 +59,13 @@
                             <div class="form-group row">
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="myFunctionDivBanco();" checked>
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="BANCO" onclick="myFunctionDivBanco();" checked>
                                         <label class="form-check-label" for="flexRadioDefault2">CRUZAR CON BANCO</label>                
                                     </div> 
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="myFunctionDivCaja();">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="CAJA" onclick="myFunctionDivCaja();">
                                         <label class="form-check-label" for="flexRadioDefault1">CRUZAR CON CAJA</label>
                                     </div> 
                                 </div>
@@ -130,7 +130,7 @@
                                 </div>
                                 </div>
                                 <div class="card-footer">
-                            <button type="submit" class="btn btn-info">CRUZAR</button>
+                            <button type="submit" name="cruzarAnticipos" class="btn btn-info">CRUZAR</button>
                         </div>
                      </div>
                     </div>
@@ -158,7 +158,7 @@
                             <tr class="text-left">
                                 <td>
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="{{ $anticiposProveedoresMatriz[$i]['ID']}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
+                                        <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="check{{$contador}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
                                         <label for="{{ $anticiposProveedoresMatriz[$i]['ID'] }}" class="custom-control-label"></label>
                                     </div>                               
                                 </td> 

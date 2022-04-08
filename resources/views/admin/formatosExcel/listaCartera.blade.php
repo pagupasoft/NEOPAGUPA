@@ -10,6 +10,7 @@
             <th style="font-weight: bold;">Nombre</th>
             <th style="font-weight: bold;">Documento</th>
             <th style="font-weight: bold;">Monto</th>
+            <th style="font-weight: bold;">Pagos</th>
             <th style="font-weight: bold;">Saldo</th>
             <th style="font-weight: bold;">Fecha</th>
             <th style="font-weight: bold;">Termino</th>
@@ -28,6 +29,7 @@
                     <td>{{ $datos[$i]['nom'] }}</td>
                     <td>{{ $datos[$i]['doc'] }}</td>
                     <td>{{ $datos[$i]['mon'] }}</td>
+                    <td>{{ $datos[$i]['pag'] }}</td>
                     <td>{{ $datos[$i]['sal'] }}</td>
                     <td>{{ $datos[$i]['fec'] }}</td>
                     @if($datos[$i]['tot'] == '2')

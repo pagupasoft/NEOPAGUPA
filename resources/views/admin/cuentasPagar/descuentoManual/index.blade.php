@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Descuento Manual Anticipo Proveedores</h3>
+        <h3 class="card-title">Cruzar Ant. Proveedor Banco/Caja</h3>
     </div>
     <div class="card-body">
         <form class="form-horizontal" method="POST" action="{{ url("descuentoManualProveedores") }}">

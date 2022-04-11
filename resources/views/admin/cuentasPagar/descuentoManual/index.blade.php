@@ -119,7 +119,7 @@
                                 <div class="form-group row">
                                         <label for="idValorSeleccionado" class="col-sm-6 col-form-label">Total Seleccionado</label>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="idValorSeleccionado" name="idValorSeleccionado" readonly placeholder="0.00">
+                                            <input type="text" class="form-control" id="idValorSeleccionado" name="idValorSeleccionado" readonly placeholder="0">
                                         </div>
                                     </div>  
                                     <div class="form-group row">                                    
@@ -129,9 +129,10 @@
                                         </div>  
                                 </div>
                                 </div>
-                                <div class="card-footer">
-                            <button type="submit" name="cruzarAnticipos" class="btn btn-info">CRUZAR</button>
-                        </div>
+                                <div class="card-footer">                       
+                                    <button type="button" name="IDcruzarAnticipos" id="IDcruzarAnticipos" class="btn btn-info" onclick="validacion();">CRUZAR</button>
+                                    <button type="submit"  id="cruzarAnticipos" name="cruzarAnticipos" class="invisible"><i class="fa fa-trash"></i></button>
+                                </div>
                      </div>
                     </div>
                 </div>
@@ -180,7 +181,33 @@
     id_item = '<?=$contador?>';
     id_item = Number(id_item);
 
-    
+    function validacion(){
+        var bandera = true;
+        if (document.getElementById('flexRadioDefault2').checked == true){
+            if(document.getElementById("banco_id").value ==""){
+                alert("Seleccione un Banco");
+                bandera=false;            
+            }
+            if(document.getElementById("cuenta_id").value ==""){
+                alert("Seleccione una Cuenta Bancaria"); 
+                bandera=false;      
+            }
+        }
+        if (document.getElementById('flexRadioDefault1').checked == true){
+            if(document.getElementById("idCaja").value ==""){
+                alert("Seleccione una Caja Disponible");
+                bandera=false;    
+            }
+        }
+        if(document.getElementById("idValorSeleccionado").value <= 0){
+            alert("El valor seleccionado no puede ser 0");
+            bandera=false;
+        }
+        if(bandera){
+            $("#cruzarAnticipos").click();
+        }
+    }
+
 function myFunctionDivBanco(){
     document.getElementById("idCaja").disabled=true;
     document.getElementById("banco_id").disabled=false;

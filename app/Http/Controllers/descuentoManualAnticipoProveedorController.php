@@ -169,7 +169,7 @@ class descuentoManualAnticipoProveedorController extends Controller
             if($request->get('flexRadioDefault') == 'BANCO'){
                 $deposito =  new Deposito();
                 $deposito->deposito_fecha = $request->get('idFechaCruze');
-                $deposito->deposito_tipo = "DEPSOTIO";
+                $deposito->deposito_tipo = "DEPOSTIO";
                 $deposito->deposito_valor = $request->get('idValorSeleccionado');
                 $deposito->deposito_descripcion = 'CRUCE DE ANTICIPOS DE PROVEEDORES CON BANCO';
                 $deposito->deposito_estado = '1';

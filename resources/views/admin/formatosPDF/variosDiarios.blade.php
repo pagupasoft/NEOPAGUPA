@@ -1,17 +1,35 @@
+
 @extends ('admin.layouts.formatoPDFDiario')
 @section('contenido')
+<style>
+@page {
+    margin-top: 100px;
+    margin-bottom: 60px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+header {
+    position: fixed;
+    left: 0px;
+    top: -80px;
+    right: 0px;
+    height: 150px;
+    text-align: center;
+}
+</style>
     @foreach($diarios as $diario)
-        @section('titulo')
-            <tr><td colspan="2" class="centrar letra15 negrita">
-                @if($diario->diario_tipo == 'CEPP' or $diario->diario_tipo == 'CEAP' or $diario->diario_tipo == 'CEAE' 
-                or $diario->diario_tipo == 'CEPV' or $diario->diario_tipo == 'CPRE')
-                    COMPROBANTE DE EGRESO
-                @else
-                    COMPROBANTE DE DIARIO
-                @endif
-            </td></tr>
-            <tr><td colspan="2" class="centrar letra15 borde-gris">No. {{ $diario->diario_codigo }}</td></tr>
-        @endsection
+    <br>
+    <table>
+        <tr><td colspan="2" class="centrar letra15 negrita">
+            @if($diario->diario_tipo == 'CEPP' or $diario->diario_tipo == 'CEAP' or $diario->diario_tipo == 'CEAE' 
+            or $diario->diario_tipo == 'CEPV' or $diario->diario_tipo == 'CPRE')
+                COMPROBANTE DE EGRESO
+            @else
+                COMPROBANTE DE DIARIO
+            @endif
+        </td></tr>
+        <tr><td colspan="2" class="centrar letra15 borde-gris">No. {{ $diario->diario_codigo }}</td></tr>
+    </table>
         <table style="white-space: normal!important;">
             <tr class="letra12">
                 <td class="negrita" style="width: 105px;">FECHA:</td>

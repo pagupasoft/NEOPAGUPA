@@ -138,7 +138,7 @@
             </div>
             </div>           
                 <div class="card-body table-responsive p-0" style="height: 350px;">
-                    <table id="example4" class="table table-head-fixed text-nowrap">
+                    <table id="cargarItemFactura" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>  
                                 <th></th>
@@ -153,8 +153,7 @@
                         <tbody>
                         <?php $contador = 0; ?>
                         @if(isset($anticiposProveedoresMatriz))                            
-                            @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i) 
-                            <?php $contador++; ?>                                          
+                            @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i)                  
                             <tr class="text-left">
                                 <td>
                                     <div class="custom-control custom-checkbox">
@@ -169,6 +168,7 @@
                                 <td>{{ $anticiposProveedoresMatriz[$i]['Diario']}}</td>
                                 <td>{{ $anticiposProveedoresMatriz[$i]['Fecha'] }}</td>
                             </tr>
+                            <?php $contador++; ?>                  
                             @endfor
                         @endif                
                         </tbody>

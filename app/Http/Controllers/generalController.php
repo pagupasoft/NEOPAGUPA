@@ -115,7 +115,7 @@ class generalController extends Controller
     public function pdfVariosDiario($diarios, $fecha){
         $empresa = Empresa::empresa()->first();
         $nombre = '';
-        for ($i = 1; $i <= count($diarios); ++$i){
+        for ($i = 0; $i < count($diarios); ++$i){
             $diario=Diario::findOrFail($diarios[$i]->diario_id);
             $nombre = $nombre.' - '.$diario->diario_codigo;
         }

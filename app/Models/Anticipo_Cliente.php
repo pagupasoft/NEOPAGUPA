@@ -40,6 +40,22 @@ class Anticipo_Cliente extends Model
         ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
         ->where('anticipo_cliente.diario_id','=',$diario)->orderBy('anticipo_fecha','asc');
     }
+    public function scopeAnticipoClienteByFechaSucursal($query,$cliente, $sucursal,$desde, $hasta){
+        $query->join('rango_documento','rango_documento.rango_id','=','anticipo_cliente.rango_id')
+        ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')
+        ->join('punto_emision','punto_emision.punto_id','=','rango_documento.punto_id')
+        ->where('anticipo_fecha','>=',$desde)
+        ->where('anticipo_fecha','<=',$hasta)
+        ->where('anticipo_estado','=','1')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id);
+        if($cliente != '0'){
+            $query->where('cliente_id', '=', $cliente);
+        }
+        if($sucursal != '0'){
+            $query->where('punto_emision.sucursal_id', '=', $sucursal);
+        }
+        return $query;
+    }
     public function scopeAnticipo($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','anticipo_cliente.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('anticipo_id','=',$id);
     }

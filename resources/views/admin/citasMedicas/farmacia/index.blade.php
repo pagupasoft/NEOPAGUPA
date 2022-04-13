@@ -79,31 +79,33 @@
             </thead>
             <tbody>
             @foreach($prescripciones as $prescripcion)
-                <tr class="text-center">
-                    <td>
-                        <a href="{{ url("receta/{$prescripcion->orden_id}")}}" style="width:30px" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Ver Prescripción"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                        
-                        @if($prescripcion->prescripcion_estado==2)
-                            <a target="_blank" href="{{ url("receta/imprimir/{$prescripcion->orden_id}")}}" style="width:35px" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="Imprimir Prescripción"><i class="fa fa-print" aria-hidden="true"></i></a>
-                        @endif
-                    </td>
-                    <td>{{ $prescripcion->orden_numero }}</td>
-                    <td>{{ $prescripcion->paciente_cedula }}</td>
-                    <td>{{ $prescripcion->paciente_apellidos}} <br>
-                        {{ $prescripcion->paciente_nombres }} </td>
-                    <td>{{ $prescripcion->orden_fecha }}</td>
-                    <td>{{ $prescripcion->orden_hora }}</td>
-                    <td>
-                        @if ($prescripcion->prescripcion_estado==0 )
-                            <a class="btn btn-xs btn-outline-danger">ANULADO</a>
-                        @elseif ( $prescripcion->prescripcion_estado==1 )
-                            <a class="btn btn-xs btn-outline-primary">ATENDIDO</a>
-                        @else
-                            <a class="btn btn-xs btn-outline-success">ENTREGADO</a>
-                        @endif
-                    </td>
-                    <td>{{ $prescripcion->orden_observacion }}</td>                                         
-                </tr>
+                @if($prescripcion->orden_estado>0)
+                    <tr class="text-center">
+                        <td>
+                            <a href="{{ url("receta/{$prescripcion->orden_id}")}}" style="width:30px" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Ver Prescripción"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                            
+                            @if($prescripcion->prescripcion_estado==2)
+                                <a target="_blank" href="{{ url("receta/imprimir/{$prescripcion->orden_id}")}}" style="width:35px" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="Imprimir Prescripción"><i class="fa fa-print" aria-hidden="true"></i></a>
+                            @endif
+                        </td>
+                        <td>{{ $prescripcion->orden_numero }}</td>
+                        <td>{{ $prescripcion->paciente_cedula }}</td>
+                        <td>{{ $prescripcion->paciente_apellidos}} <br>
+                            {{ $prescripcion->paciente_nombres }} </td>
+                        <td>{{ $prescripcion->orden_fecha }}</td>
+                        <td>{{ $prescripcion->orden_hora }}</td>
+                        <td>
+                            @if ($prescripcion->prescripcion_estado==0 )
+                                <a class="btn btn-xs btn-outline-danger">ANULADO</a>
+                            @elseif ( $prescripcion->prescripcion_estado==1 )
+                                <a class="btn btn-xs btn-outline-primary">ATENDIDO</a>
+                            @else
+                                <a class="btn btn-xs btn-outline-success">ENTREGADO</a>
+                            @endif
+                        </td>
+                        <td>{{ $prescripcion->orden_observacion }}</td>                                         
+                    </tr>
+                @endif
             @endforeach
             </tbody>
         </table>

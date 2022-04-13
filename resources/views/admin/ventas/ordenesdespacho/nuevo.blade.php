@@ -394,8 +394,9 @@
                                                     <div class="form-group">
                                                         <div class="form-line">
                                                             <input id="idMontoCredito" type="number"
-                                                                class="form-control " placeholder="00" required
-                                                                disabled>
+                                                                class="form-control " placeholder="00" value="0.00"
+                                                                readonly>
+                                                            <input id="idTieneCredito" value="0" type="hidden">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -409,7 +410,7 @@
                                                         <div class="form-line">
                                                             <input id="idMontoordendo" type="number"
                                                                 class="form-control " placeholder="00" required
-                                                                disabled>
+                                                                readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -417,44 +418,14 @@
                                             <div class="row clearfix form-horizontal">
                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
                                                     style="margin-bottom : 0px;">
-                                                    <label>Saldo:</label>
+                                                    <label>Saldo Pendiente:</label>
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
                                                     style="margin-bottom : 0px;">
                                                     <div class="form-group">
                                                         <div class="form-line">
-                                                            <input type="number" class="form-control " placeholder="00"
-                                                                required disabled>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                               <!-- <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Dias de plazo:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input type="number" id="orden_dias_plazo"
-                                                                name="orden_dias_plazo" class="form-control "
-                                                                placeholder="00" value="0" onkeyup="calcularFecha()"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                </div>-->
-                                            </div>
-                                            <div class="row clearfix form-horizontal">
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Tipo de Credito:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input id="idTipoCredito" type="text" class="form-control "
-                                                                placeholder="00" required disabled>
+                                                            <input type="number" id="saldoPendienteID" class="form-control " value="0.00" placeholder="00"
+                                                             readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -473,7 +444,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
                                             </div>
                                         </div>
                                     </div>
@@ -695,16 +665,27 @@ function credito(){
     }
 }
 function validacion() {
-    if (document.getElementById("idTotalorden").value > 0) {      
-        return true;     
-    } else {
+    if (document.getElementById("idTotalorden").value <= 0) {      
         bootbox.alert({
             message: "El total de la orden de despacho debe ser mayor a cero.",
             size: 'small'
         });
         return false;
     }
-
+    if(document.getElementById("orden_tipo_pago").value == "CREDITO"){
+        if(document.getElementById("idTieneCredito").value == "1"){
+            monto = Number(document.getElementById("idMontoCredito").value);
+            valor = Number(document.getElementById("saldoPendienteID").value) + Number(document.getElementById("idMontoordendo").value);
+            if(valor > monto){
+                bootbox.alert({
+                    message: "El cliente esta excediendo el monto de credito asignado.",
+                    size: 'small'
+                });
+                return false;
+            }
+        }
+    }
+    return true; 
 }
 </script>
 @endsection

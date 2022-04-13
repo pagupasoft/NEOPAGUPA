@@ -104,17 +104,23 @@
                 </div>                
             </div>
             <div class="form-group row">
-                <label for="idCredito" class="col-sm-2 col-form-label">Tiene Credito</label>
+                <label for="idTienecredito" class="col-sm-2 col-form-label">Tiene Credito</label>
                 <div class="col-sm-10">
                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                         @if($cliente->cliente_tiene_credito=="1")
-                            <input type="checkbox" class="custom-control-input" id="idCredito" name="idCredito" checked>
+                            <input type="checkbox" class="custom-control-input" id="idTienecredito" name="idTienecredito" checked>
                         @else
-                            <input type="checkbox" class="custom-control-input" id="idCredito" name="idCredito">
+                            <input type="checkbox" class="custom-control-input" id="idTienecredito" name="idTienecredito">
                         @endif
-                        <label class="custom-control-label" for="idCredito"></label>
+                        <label class="custom-control-label" for="idTienecredito"></label>
                     </div>
                 </div>                
+            </div>
+            <div class="form-group row">
+                <label for="idCupoCredito" class="col-sm-2 col-form-label">Cupo Credito</label>
+                <div class="col-sm-10">                    
+                    <input type="number" class="form-control" id="idCupoCredito" name="idCupoCredito" value="{{$cliente->cliente_credito}}" placeholder="0.00" value="0.00" step="any">
+                </div>                    
             </div>   
             @if($parametrizacionContable->parametrizacion_cuenta_general == '0')             
                 @if(Auth::user()->empresa->empresa_contabilidad == '1')
@@ -149,7 +155,7 @@
                     </div>                    
                 </div>
                 @endif
-            @endif
+            @endif             
             <div class="form-group row">
                 <label for="idCiudad" class="col-sm-2 col-form-label">Ciudad</label>
                 <div class="col-sm-10">
@@ -159,21 +165,6 @@
                                 <option value="{{$ciudad->ciudad_id}}" selected>{{$ciudad->ciudad_nombre}}</option>
                             @else 
                                 <option value="{{$ciudad->ciudad_id}}">{{$ciudad->ciudad_nombre}}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>                    
-            </div>
-            
-            <div class="form-group row">
-                <label for="idCredito" class="col-sm-2 col-form-label">Credito</label>
-                <div class="col-sm-10">
-                    <select class="custom-select select2" id="idCredito" name="idCredito" required>
-                        @foreach($creditos as $credito)
-                            @if($credito->credito_id == $cliente->credito_id)
-                                <option value="{{$credito->credito_id}}" selected>{{$credito->credito_nombre}}</option>
-                            @else 
-                                <option value="{{$credito->credito_id}}">{{$credito->credito_nombre}}</option>
                             @endif
                         @endforeach
                     </select>

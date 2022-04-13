@@ -74,6 +74,12 @@
                         <label class="custom-control-label" for="idTienecredito"></label>                                 
                     </div>
                 </div>                
+            </div> 
+            <div class="form-group row">
+                <label for="idCupoCredito" class="col-sm-3 col-form-label">Cupo Credito</label>
+                <div class="col-sm-9">                    
+                    <input type="number" class="form-control" id="idCupoCredito" name="idCupoCredito" placeholder="0.00" value="0.00" step="any">
+                </div>                    
             </div>      
             @if($parametrizacionContable->parametrizacion_cuenta_general == '0')         
                 @if(Auth::user()->empresa->empresa_contabilidad == '1')                                  
@@ -140,17 +146,7 @@
                         @endforeach
                     </select>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label for="idCredito" class="col-sm-3 col-form-label">Credito</label>
-                <div class="col-sm-9">
-                    <select class="custom-select select2" id="idCredito" name="idCredito" require>
-                        @foreach($credito as $credito)
-                            <option value="{{$credito->credito_id}}">{{$credito->credito_nombre}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+            </div>            
         </div>
     </div>
 </form>

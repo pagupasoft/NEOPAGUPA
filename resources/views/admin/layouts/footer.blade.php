@@ -148,7 +148,10 @@
         if (document.getElementById("urlrol")) {
             window.open(document.getElementById("urlrol").value);
         }
-        cargarmetodo();
+        if(window.cargarmetodo){
+            cargarmetodo();
+        }
+        
     
     }
     $(document).ready(function() {

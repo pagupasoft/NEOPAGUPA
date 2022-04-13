@@ -90,4 +90,8 @@ class Anticipo_Proveedor extends Model
     {
         return $this->belongsTo(Proveedor::class, 'proveedor_id', 'proveedor_id');
     }
+    public function rangoDocumento()
+    {
+        return $this->belongsTo(Rango_Documento::class, 'rango_id', 'rango_id');
+    }
 }

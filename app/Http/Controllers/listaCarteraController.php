@@ -177,6 +177,7 @@ class listaCarteraController extends Controller
                 $datos[$count]['doc'] = '';
                 $datos[$count]['cheque'] = '';
                 $datos[$count]['banco'] ='';
+                $datos[$count]['pag'] = ''; 
                 $datos[$count]['mon'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->sum('cuenta_monto'); 
                 $datos[$count]['sal'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->sum('cuenta_saldo'); 
                 $datos[$count]['fec'] = ''; 
@@ -211,6 +212,7 @@ class listaCarteraController extends Controller
                         $datos[$count]['nom'] = 'FACTURA'; 
                         $datos[$count]['ide'] = $cxc->cuenta_id;
                     }
+                    $datos[$count]['pag'] = ''; 
                     $datos[$count]['cheque'] = $cxc->cuenta_cheque_anticipado;
                     $datos[$count]['banco'] = $cxc->cuenta_banco_anticipado;
                     $datos[$count]['mon'] = $cxc->cuenta_monto; 
@@ -247,7 +249,8 @@ class listaCarteraController extends Controller
                         $datos[$count]['doc'] = '';
                         $datos[$count]['cheque'] = '';
                         $datos[$count]['banco'] ='';
-                        $datos[$count]['mon'] = $pago->detalle_pago_valor; 
+                        $datos[$count]['mon'] = ''; 
+                        $datos[$count]['pag'] = $pago->detalle_pago_valor; 
                         $datos[$count]['sal'] = ''; 
                         $datos[$count]['fec'] = $pago->pagoCXC->pago_fecha; 
                         $datos[$count]['ter'] = $pago->detalle_pago_descripcion; 
@@ -265,7 +268,8 @@ class listaCarteraController extends Controller
                             $datos[$count]['doc'] = '';
                             $datos[$count]['cheque'] = '';
                             $datos[$count]['banco'] ='';
-                            $datos[$count]['mon'] = $pago->descuento_valor; 
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor; 
                             $datos[$count]['sal'] = ''; 
                             $datos[$count]['fec'] = $pago->descuento_fecha; 
                             $datos[$count]['ter'] = 'DESCUENTO DE ANTICIPO DE CLIENTE'; 
@@ -317,6 +321,7 @@ class listaCarteraController extends Controller
                 $datos[$count]['doc'] = '';
                 $datos[$count]['cheque'] = '';
                 $datos[$count]['banco'] ='';
+                $datos[$count]['pag'] = ''; 
                 $datos[$count]['mon'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','1')->sum('cuenta_monto'); 
                 $datos[$count]['sal'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','1')->sum('cuenta_saldo'); 
                 $datos[$count]['fec'] = ''; 
@@ -351,6 +356,7 @@ class listaCarteraController extends Controller
                         $datos[$count]['nom'] = 'FACTURA'; 
                         $datos[$count]['ide'] = $cxc->cuenta_id;
                     }
+                    $datos[$count]['pag'] = ''; 
                     $datos[$count]['mon'] = $cxc->cuenta_monto; 
                     $datos[$count]['cheque'] = $cxc->cuenta_cheque_anticipado;
                     $datos[$count]['banco'] = $cxc->cuenta_banco_anticipado;
@@ -387,7 +393,8 @@ class listaCarteraController extends Controller
                         $datos[$count]['doc'] = '';
                         $datos[$count]['cheque'] = '';
                         $datos[$count]['banco'] ='';
-                        $datos[$count]['mon'] = $pago->detalle_pago_valor; 
+                        $datos[$count]['mon'] = ''; 
+                        $datos[$count]['pag'] = $pago->detalle_pago_valor; 
                         $datos[$count]['sal'] = ''; 
                         $datos[$count]['fec'] = $pago->pagoCXC->pago_fecha; 
                         $datos[$count]['ter'] = $pago->detalle_pago_descripcion; 
@@ -405,7 +412,8 @@ class listaCarteraController extends Controller
                             $datos[$count]['doc'] = '';
                             $datos[$count]['cheque'] = '';
                             $datos[$count]['banco'] ='';
-                            $datos[$count]['mon'] = $pago->descuento_valor; 
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor; 
                             $datos[$count]['sal'] = ''; 
                             $datos[$count]['fec'] = $pago->descuento_fecha; 
                             $datos[$count]['ter'] = 'DESCUENTO DE ANTICIPO DE CLIENTE'; 
@@ -457,6 +465,7 @@ class listaCarteraController extends Controller
                 $datos[$count]['cheque'] = '';
                 $datos[$count]['banco'] ='';
                 $datos[$count]['doc'] = '';
+                $datos[$count]['pag'] =''; 
                 $datos[$count]['mon'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','2')->sum('cuenta_monto'); 
                 $datos[$count]['sal'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','2')->sum('cuenta_saldo'); 
                 $datos[$count]['fec'] = ''; 
@@ -492,6 +501,7 @@ class listaCarteraController extends Controller
                         $datos[$count]['ide'] = $cxc->cuenta_id;
                     }
                     $datos[$count]['mon'] = $cxc->cuenta_monto; 
+                    $datos[$count]['pag'] =''; 
                     $datos[$count]['cheque'] = $cxc->cuenta_cheque_anticipado;
                     $datos[$count]['banco'] = $cxc->cuenta_banco_anticipado;
                     $datos[$count]['sal'] = $cxc->cuenta_saldo; 
@@ -527,7 +537,8 @@ class listaCarteraController extends Controller
                         $datos[$count]['cheque'] = ''; 
                         $datos[$count]['banco'] ='';
                         $datos[$count]['doc'] = '';
-                        $datos[$count]['mon'] = $pago->detalle_pago_valor; 
+                        $datos[$count]['mon'] = ''; 
+                        $datos[$count]['pag'] = $pago->detalle_pago_valor; 
                         $datos[$count]['sal'] = ''; 
                         $datos[$count]['fec'] = $pago->pagoCXC->pago_fecha; 
                         $datos[$count]['ter'] = $pago->detalle_pago_descripcion; 
@@ -545,7 +556,8 @@ class listaCarteraController extends Controller
                             $datos[$count]['cheque'] = '';
                             $datos[$count]['banco'] ='';
                             $datos[$count]['doc'] = '';
-                            $datos[$count]['mon'] = $pago->descuento_valor; 
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor; 
                             $datos[$count]['sal'] = ''; 
                             $datos[$count]['fec'] = $pago->descuento_fecha; 
                             $datos[$count]['ter'] = 'DESCUENTO DE ANTICIPO DE CLIENTE'; 
@@ -597,6 +609,7 @@ class listaCarteraController extends Controller
                 $datos[$count]['doc'] = '';
                 $datos[$count]['cheque'] = '';
                 $datos[$count]['banco'] ='';
+                $datos[$count]['pag'] =''; 
                 $datos[$count]['mon'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','1')->sum('cuenta_monto'); 
                 $datos[$count]['sal'] = Cuenta_Cobrar::CuentasCartera($cliente->cliente_id,$request->get('fecha_desde'),$request->get('fecha_hasta'),$todo,$request->get('sucursal_id'),$request->get('formaCredito'),$request->get('formaContado'),$request->get('formaEfectivo'))->where('cuenta_estado','=','1')->sum('cuenta_saldo'); 
                 $datos[$count]['fec'] = ''; 
@@ -631,6 +644,7 @@ class listaCarteraController extends Controller
                         $datos[$count]['nom'] = 'FACTURA'; 
                         $datos[$count]['ide'] = $cxc->cuenta_id;
                     }
+                    $datos[$count]['pag'] =''; 
                     $datos[$count]['mon'] = $cxc->cuenta_monto; 
                     $datos[$count]['cheque'] = $cxc->cuenta_cheque_anticipado;
                     $datos[$count]['banco'] = $cxc->cuenta_banco_anticipado;
@@ -694,6 +708,7 @@ class listaCarteraController extends Controller
             $cheque = $request->get('ncheque');
             $doc = $request->get('idDoc');
             $mon = $request->get('idMon');
+            $pag = $request->get('idPag');
             $sal = $request->get('idSal');
             $fec = $request->get('idFec');
             $ter = $request->get('idTer');
@@ -710,7 +725,7 @@ class listaCarteraController extends Controller
                     $datos[$count]['nom'] = $nom[$i]; 
                     $datos[$count]['doc'] = $doc[$i]; 
                     $datos[$count]['mon'] = $mon[$i]; 
-                 
+                    $datos[$count]['pag'] = $pag[$i]; 
                     $datos[$count]['sal'] = $sal[$i];
                     $datos[$count]['fec'] = $fec[$i]; 
                     $datos[$count]['ter'] = $ter[$i]; 

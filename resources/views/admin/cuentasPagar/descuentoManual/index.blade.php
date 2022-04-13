@@ -2,16 +2,16 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Descuento Manual Anticipo Proveedores</h3>
+        <h3 class="card-title">Cruzar Ant. Proveedor Banco/Caja</h3>
     </div>
     <div class="card-body">
         <form class="form-horizontal" method="POST" action="{{ url("descuentoManualProveedores") }}">
         @csrf
         <div class="form-group row">
                 <label for="nombre_cuenta" class="col-sm-1 col-form-label"><center>Proveedor:</center></label>
-                <div class="col-sm-3">
+                <div class="col-sm-7">
                     <select class="custom-select select2" id="proveedorID" name="proveedorID" require>
-                        <option value="0">Todos</option>
+                    <option value="" label>--Seleccione una opcion--</option>
                         @foreach($proveedores as $proveedor)
                             <option value="{{$proveedor->proveedor_id}}" @if(isset($proveedorS)) @if($proveedorS == $proveedor->proveedor_id) selected @endif @endif>{{$proveedor->proveedor_nombre}}</option>
                         @endforeach
@@ -59,13 +59,13 @@
                             <div class="form-group row">
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="myFunctionDivBanco();" checked>
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="BANCO" onclick="myFunctionDivBanco();" checked>
                                         <label class="form-check-label" for="flexRadioDefault2">CRUZAR CON BANCO</label>                
                                     </div> 
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="myFunctionDivCaja();">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="CAJA" onclick="myFunctionDivCaja();">
                                         <label class="form-check-label" for="flexRadioDefault1">CRUZAR CON CAJA</label>
                                     </div> 
                                 </div>
@@ -119,7 +119,7 @@
                                 <div class="form-group row">
                                         <label for="idValorSeleccionado" class="col-sm-6 col-form-label">Total Seleccionado</label>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="idValorSeleccionado" name="idValorSeleccionado" readonly placeholder="0.00">
+                                            <input type="text" class="form-control" id="idValorSeleccionado" name="idValorSeleccionado" readonly placeholder="0">
                                         </div>
                                     </div>  
                                     <div class="form-group row">                                    
@@ -129,16 +129,17 @@
                                         </div>  
                                 </div>
                                 </div>
-                                <div class="card-footer">
-                            <button type="submit" class="btn btn-info">CRUZAR</button>
-                        </div>
+                                <div class="card-footer">                       
+                                    <button type="button" name="IDcruzarAnticipos" id="IDcruzarAnticipos" class="btn btn-info" onclick="validacion();">CRUZAR</button>
+                                    <button type="submit"  id="cruzarAnticipos" name="cruzarAnticipos" class="invisible"><i class="fa fa-trash"></i></button>
+                                </div>
                      </div>
                     </div>
                 </div>
             </div>
             </div>           
                 <div class="card-body table-responsive p-0" style="height: 350px;">
-                    <table id="example4" class="table table-head-fixed text-nowrap">
+                    <table id="cargarItemFactura" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>  
                                 <th></th>
@@ -153,12 +154,11 @@
                         <tbody>
                         <?php $contador = 0; ?>
                         @if(isset($anticiposProveedoresMatriz))                            
-                            @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i) 
-                            <?php $contador++; ?>                                          
+                            @for ($i = 1; $i <= count($anticiposProveedoresMatriz); ++$i)                  
                             <tr class="text-left">
                                 <td>
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="{{ $anticiposProveedoresMatriz[$i]['ID']}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
+                                        <input type="checkbox" class="custom-control-input" onchange="calcularSeleccion('{{ $anticiposProveedoresMatriz[$i]['ID'] }}','{{$i-1}}');" id="{{ $anticiposProveedoresMatriz[$i]['ID']}}" name="check{{$contador}}" value="{{$anticiposProveedoresMatriz[$i]['ID']}}">
                                         <label for="{{ $anticiposProveedoresMatriz[$i]['ID'] }}" class="custom-control-label"></label>
                                     </div>                               
                                 </td> 
@@ -169,6 +169,7 @@
                                 <td>{{ $anticiposProveedoresMatriz[$i]['Diario']}}</td>
                                 <td>{{ $anticiposProveedoresMatriz[$i]['Fecha'] }}</td>
                             </tr>
+                            <?php $contador++; ?>                  
                             @endfor
                         @endif                
                         </tbody>
@@ -180,7 +181,33 @@
     id_item = '<?=$contador?>';
     id_item = Number(id_item);
 
-    
+    function validacion(){
+        var bandera = true;
+        if (document.getElementById('flexRadioDefault2').checked == true){
+            if(document.getElementById("banco_id").value ==""){
+                alert("Seleccione un Banco");
+                bandera=false;            
+            }
+            if(document.getElementById("cuenta_id").value ==""){
+                alert("Seleccione una Cuenta Bancaria"); 
+                bandera=false;      
+            }
+        }
+        if (document.getElementById('flexRadioDefault1').checked == true){
+            if(document.getElementById("idCaja").value ==""){
+                alert("Seleccione una Caja Disponible");
+                bandera=false;    
+            }
+        }
+        if(document.getElementById("idValorSeleccionado").value <= 0){
+            alert("El valor seleccionado no puede ser 0");
+            bandera=false;
+        }
+        if(bandera){
+            $("#cruzarAnticipos").click();
+        }
+    }
+
 function myFunctionDivBanco(){
     document.getElementById("idCaja").disabled=true;
     document.getElementById("banco_id").disabled=false;

@@ -73,7 +73,7 @@
                                     
                                     <input type="text" id="idTotalFactura" name="idTotalFactura"
                                         class="form-control campo-total-global derecha-texto"  placeholder="Total"
-                                        disabled style="background-color: black" ">
+                                        disabled style="background-color: black">
                                 </div>
                             </div>
                         </div>
@@ -381,7 +381,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
                             <div class="table-responsive">
-                                @include ('admin.ventas.facturas.itemFactura')
+                                @include ('admin.ventas.guiaremision.itemFactura')
                                 <table id="cargarItemFactura"
                                     class="table table-striped table-hover boder-sar tabla-item-factura"
                                     style="margin-bottom: 6px;">
@@ -395,7 +395,6 @@
                                             <th>P.U.</th>
                                             <th>Descuento</th>
                                             <th>Total</th>
-                                           
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -460,8 +459,9 @@
                                                     <div class="form-group">
                                                         <div class="form-line">
                                                             <input id="idMontoCredito" type="number"
-                                                                class="form-control "  placeholder="00" value="" required
-                                                                disabled>
+                                                                class="form-control " placeholder="00" value="{{$guiadatos->cliente->cliente_credito}}"
+                                                                readOnly>
+                                                                <input id="idTieneCredito" value="{{$guiadatos->cliente->cliente_tiene_credito}}" type="hidden">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -475,7 +475,7 @@
                                                         <div class="form-line">
                                                             <input id="idMontoFacturado" type="number"
                                                                 class="form-control " placeholder="00" required
-                                                                disabled>
+                                                                readOnly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -483,29 +483,13 @@
                                             <div class="row clearfix form-horizontal">
                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
                                                     style="margin-bottom : 0px;">
-                                                    <label>Saldo:</label>
+                                                    <label>Saldo Pendiente:</label>
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
                                                     style="margin-bottom : 0px;">
                                                     <div class="form-group">
                                                         <div class="form-line">
-                                                            <input type="number" class="form-control " placeholder="00"
-                                                                required disabled>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row clearfix form-horizontal">
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Tipo de Credito:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input id="idTipoCredito" type="text" class="form-control "
-                                                                placeholder="00" value="" required disabled>
+                                                            <input type="number" id="saldoPendienteID" class="form-control " value="{{$saldoCliente}}" placeholder="00" readOnly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -774,7 +758,27 @@ function validacion(){
         });
         return false
     }
-    return true;
+    if (document.getElementById("idTotalFactura").value <= 0) {      
+        bootbox.alert({
+            message: "El total de la factura debe ser mayor a cero.",
+            size: 'small'
+        });
+        return false;
+    }
+    if(document.getElementById("factura_tipo_pago").value == "CREDITO"){
+        if(document.getElementById("idTieneCredito").value == "1"){
+            monto = Number(document.getElementById("idMontoCredito").value);
+            valor = Number(document.getElementById("saldoPendienteID").value) + Number(document.getElementById("idMontoFacturado").value);
+            if(valor > monto){
+                bootbox.alert({
+                    message: "El cliente esta excediendo el monto de credito asignado.",
+                    size: 'small'
+                });
+                return false;
+            }
+        }
+    }
+     return true; 
 }
 </script>
 

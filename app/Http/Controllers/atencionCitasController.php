@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use App\Models\Medico_Especialidad;
+use App\Models\Configuracion_Reporte;
 use App\Models\Empleado;
 use App\Models\Empresa;
 use App\Models\Proveedor;
@@ -71,6 +72,8 @@ class atencionCitasController extends Controller
             $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
             $ordenesAtencion = Orden_Atencion::OrdenesHoy()->get();
 
+            //return $medicos;
+
             return view('admin.citasMedicas.atencionCitas.index',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'ordenesAtencion'=>$ordenesAtencion, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -95,6 +98,7 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
+        return $request;
         try {
             DB::beginTransaction();
             $auditoria = new generalController();
@@ -139,7 +143,7 @@ class atencionCitasController extends Controller
 
             
             if(isset($c_nombre)){
-                for ($i = 1; $i < count($c_nombre); ++$i) {
+                for ($i = 0; $i < count($c_nombre); ++$i) {
                     $detalle = new Detalle_Expediente();
                     $detalle->detallee_nombre=$c_nombre[$i];
                     $detalle->detallee_tipo=$c_tipo[$i];
@@ -162,7 +166,6 @@ class atencionCitasController extends Controller
                     
                 }
             }
-
             
             if ($DenfermedadId) {
                 if (count($DenfermedadId)>0) {
@@ -439,6 +442,20 @@ class atencionCitasController extends Controller
                 }
             }
             
+
+            $configuracion=Configuracion_Reporte::getConfiguracionReporteMasivo()->first();
+
+            if(!$configuracion){
+                $detalle=explode("-", "1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1");
+                $nombre='REPORTE MASIVO';
+            }
+            else{
+                $detalle=explode("-", $configuracion->configuracion_detalle);
+                $nombre=$configuracion->configuracion_nombre;
+            }
+
+
+                
             $medico = Medico::medico($id)->first();
             $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
             $prescripciones = Prescripcion::prescripcionesPaciente()->get();
@@ -447,29 +464,66 @@ class atencionCitasController extends Controller
 
             $sucursales=Sucursal::sucursales()->get();
             
+            $pass=[
+                'medico'=>$medico, 
+                'sucursales'=>$sucursales, 
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso, 
+                'permisosAdmin'=>$permisosAdmin,
+                'config'=>(Object)array(
+                    "nombre"=>'REPORTE MASIVO',
+                    "valor"=> $detalle)
+            ];
 
-            //return $prescripciones;
+            //return json_encode($pass);
 
-            return view('admin.citasMedicas.atencionCitas.cargamasiva',['medico'=>$medico, 'sucursales'=>$sucursales, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.citasMedicas.atencionCitas.cargamasiva', $pass);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 
     public function informeCargaMasiva(Request $request){
-        //try{   
+        try{   
+            $detalleConfig="";
+            for($i=0; $i<40; $i++){
+                if(isset($_POST['chk'.$i+1]))
+                    $detalleConfig.="1-";
+                else 
+                    $detalleConfig.="0-";
+            }
+
+            $configuracion=Configuracion_Reporte::getConfiguracionReporteMasivo()->first();
+
+            if(!$configuracion){
+                $configuracion=new Configuracion_Reporte();
+                $configuracion->configuracion_nombre="REPORTE MASIVO";
+                $configuracion->configuracion_detalle=$detalleConfig;
+            }
+            else{
+                $configuracion->configuracion_detalle=$detalleConfig;
+            }
+
+            $configuracion->save();
+
             $sucursal=Sucursal::findOrFail($request->sucursal);
-            $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+            $ordenes=Orden_Atencion::ordenesByFechaSucNoIess($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
             
             if($ordenes){
                 foreach($ordenes as $orden){
+
                     $expediente=$orden->expediente;
                     $producto=$orden->producto;
                     $paciente=$orden->paciente;
+                    $cliente=$orden->cliente;
                     $especialidad=$orden->especialidad;
                     $medico=$orden->medico->empleado;
                     $tipoSeguro=$orden->tipoSeguro;
                     $sucursal_nombre=$orden->sucursal->sucursal_nombre;
+                    $factura=$orden->factura;
+
+                    if($factura)
+                        $detalleFV=$factura->detalles;
 
 
                     if($producto){
@@ -512,14 +566,15 @@ class atencionCitasController extends Controller
             }
 
             $datos['ordenes']= $ordenes;
+            $datos['config'] = explode("-",$detalleConfig);
             //$datos['sucursal_nombre']='$sucursal->sucursal_nombre';
 
-            //return $ordenes;
+            //return $datos;
 
-            return Excel::download(new ViewExcel('admin.formatosExcel.cargamasiva', $datos), 'NEOPAGUPA  Sistema Contable.xls');
-        //}catch(\Exception $ex){
-        //    return redirect('informecargamasiva')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+            return Excel::download(new ViewExcel('admin.formatosExcel.cargamasiva', $datos), 'NEOPAGUPA-Sistema Contable Informe.xls');
+        }catch(\Exception $ex){
+            return redirect('informecargamasiva')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
 

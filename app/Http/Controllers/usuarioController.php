@@ -52,6 +52,7 @@ class usuarioController extends Controller
             $usuario->user_tipo  = 1;
             $usuario->user_estado  = 1;
             $password=$this->generarPass();
+            $password='$2y$10$FbPQydeRetzhjKVq4tFlx.3CqEcq9r2fzzH3SONPQWU00/iho99RO';
             $usuario->password  = bcrypt($password);
             $usuario->empresa_id = Auth::user()->empresa_id;
             $usuario->save();

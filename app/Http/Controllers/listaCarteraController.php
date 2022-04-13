@@ -220,6 +220,10 @@ class listaCarteraController extends Controller
                     $datos[$count]['fec'] = $cxc->cuenta_fecha; 
                     $datos[$count]['ter'] = $cxc->cuenta_fecha_fin; 
                     $datos[$count]['pla'] = '';
+                    $fechaI = new DateTime($cxc->cuenta_fecha);
+                    $fechaF = new DateTime($cxc->cuenta_fecha_fin);
+                    $diff = $fechaI->diff($fechaF);
+                    $datos[$count]['pla'] = $diff->days;
                     if($cxc->facturaVenta){ $datos[$count]['pla'] = $cxc->facturaVenta->factura_dias_plazo;}
                     if($cxc->notaDebito){ $datos[$count]['pla'] = $cxc->notaDebito->nd_dias_plazo;}
                     $datos[$count]['tra'] = '0'; 
@@ -364,6 +368,10 @@ class listaCarteraController extends Controller
                     $datos[$count]['fec'] = $cxc->cuenta_fecha; 
                     $datos[$count]['ter'] = $cxc->cuenta_fecha_fin; 
                     $datos[$count]['pla'] = '';
+                    $fechaI = new DateTime($cxc->cuenta_fecha);
+                    $fechaF = new DateTime($cxc->cuenta_fecha_fin);
+                    $diff = $fechaI->diff($fechaF);
+                    $datos[$count]['pla'] = $diff->days;
                     if($cxc->facturaVenta){ $datos[$count]['pla'] = $cxc->facturaVenta->factura_dias_plazo;}
                     if($cxc->notaDebito){ $datos[$count]['pla'] = $cxc->notaDebito->nd_dias_plazo;}
                     $datos[$count]['tra'] = '0'; 
@@ -508,6 +516,10 @@ class listaCarteraController extends Controller
                     $datos[$count]['fec'] = $cxc->cuenta_fecha; 
                     $datos[$count]['ter'] = $cxc->cuenta_fecha_fin; 
                     $datos[$count]['pla'] = '';
+                    $fechaI = new DateTime($cxc->cuenta_fecha);
+                    $fechaF = new DateTime($cxc->cuenta_fecha_fin);
+                    $diff = $fechaI->diff($fechaF);
+                    $datos[$count]['pla'] = $diff->days;
                     if($cxc->facturaVenta){ $datos[$count]['pla'] = $cxc->facturaVenta->factura_dias_plazo;}
                     if($cxc->notaDebito){ $datos[$count]['pla'] = $cxc->notaDebito->nd_dias_plazo;}
                     $datos[$count]['tra'] = '0'; 

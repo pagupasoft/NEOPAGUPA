@@ -158,6 +158,7 @@ use App\Http\Controllers\vacacionController;
 use App\Http\Controllers\signosVitalesController;
 use App\Http\Controllers\atencionCitasController;
 use App\Http\Controllers\atencionRecetasController;
+use App\Http\Controllers\beneficiosSocialesConsolidadaController;
 use App\Http\Controllers\cabeceraRolAdministrativoController;
 use App\Http\Controllers\cabeceraRolController;
 use App\Http\Controllers\cargarBalancesController;
@@ -232,6 +233,8 @@ use App\Http\Controllers\rolConsolidadoCostaMarketController;
 use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
+use App\Http\Controllers\tipoMovimientoEmpleadoController;
+use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
 use App\Models\Imagen;
 use App\Models\Movimiento_Producto;
@@ -345,6 +348,8 @@ Route::resource('listaRolCM', listaRolCMController::class)->middleware('auth');
 Route::resource('categoriaRol', categoriaRolController::class)->middleware('auth');
 Route::resource('cargaBalances', cargarBalancesController::class)->middleware('auth');
 Route::resource('listacontroldia', listaControlDiaController::class)->middleware('auth');
+Route::resource('beneficiosSociales', beneficiosSocialesConsolidadaController::class)->middleware('auth');
+Route::resource('tipoMovimientoEmpleado', tipoMovimientoEmpleadoController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -403,7 +408,8 @@ Route::resource('reporteRol', listaRolReporteController::class)->middleware('aut
 Route::resource('rolreporteDetallado', RolReporteDetalladoController::class)->middleware('auth');
 Route::resource('modificacionRoles', modificarRolController::class)->middleware('auth');
 Route::resource('listadecimocuarto', listadecimoCuartoController::class)->middleware('auth');
-
+Route::resource('contabilizacionMensual', contabilizacionMensualController::class)->middleware('auth');
+Route::resource('contabilizacionMensual', contabilizacionMensualController::class)->middleware('auth');
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
 Route::resource('tipoExamen', tipoExamenController::class)->middleware('auth');
@@ -582,6 +588,7 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 /*RUTAS ADICIONALES*/
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
 Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
+Route::get('/beneficiosSociales/new/{id}', [beneficiosSocialesConsolidadaController::class, 'nuevo'])->middleware('auth');
 
 Route::get('/vacacion/new/{id}', [vacacionController::class, 'nuevo'])->middleware('auth');
 Route::get('/quincenaConsolidada/new/{id}', [quincenaConsolidadaController::class, 'nuevo'])->middleware('auth');

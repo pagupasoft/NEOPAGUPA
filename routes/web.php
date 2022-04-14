@@ -593,6 +593,7 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
 Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
 Route::get('/beneficiosSociales/new/{id}', [beneficiosSocialesConsolidadaController::class, 'nuevo'])->middleware('auth');
+Route::get('/beneficioSocial/new/{id}', [beneficiosSocialesController::class, 'nuevo'])->middleware('auth');
 
 Route::get('/vacacion/new/{id}', [vacacionController::class, 'nuevo'])->middleware('auth');
 Route::get('/quincenaConsolidada/new/{id}', [quincenaConsolidadaController::class, 'nuevo'])->middleware('auth');

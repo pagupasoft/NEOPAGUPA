@@ -43,6 +43,17 @@ class Beneficios_Sociales extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('beneficios_estado','=','1')->orderBy('sucursal_nombre','asc');
     }
+    public function scopevalidarbeneficio($query, $fechaI, $tipo, $sucursal, $empleado){
+        return $query->join('empleado','empleado.empleado_id','=','beneficios_sociales.empleado_id')
+       ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+       ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+       ->join('sucursal', 'sucursal.sucursal_id','=','tipo_empleado.sucursal_id')
+       ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+       ->where('beneficios_estado','=','1')->where('beneficios_sociales.tipo_id','=',$tipo)->where('sucursal.sucursal_id','=',$sucursal)->where('beneficios_fecha','=',$fechaI)
+       ->where('empleado.empleado_id','=',$empleado);
+
+      
+   }
     public function scopeExtraerbeneficios($query,$fecha,$tipo,$sucursal){
         return $query->join('empleado','empleado.empleado_id','=','beneficios_sociales.empleado_id')
         ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')

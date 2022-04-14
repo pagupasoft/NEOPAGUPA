@@ -7,7 +7,7 @@
     <!-- /.card-header -->
     <div class="card-body">
         <h5 class="form-control" style="color:#fff; background:#17a2b8;">Datos</h5>
-            <form class="form-horizontal" method="POST" action="{{ url("beneficiosSociales") }} ">
+            <form class="form-horizontal" method="POST" action="{{ url("beneficioSocial") }} ">
             @csrf
             <div class="card-body">     
                                         <input id="punto_id" name="punto_id"
@@ -21,11 +21,11 @@
                         <div class="form-group row">
                             <label for="idSucursal" class="col-sm-2 col-form-label">Mes y Año</label>
                             <div class="col-sm-2">
-                                <input type="month" name="fecha_desde" id="fecha_desde" class="form-control" value='<?php echo((date("Y")-1)."-".date("03")); ?>'>
+                                <input type="month" name="fecha_desde" id="fecha_desde" class="form-control" value='<?php echo((date("Y"))."-".date("01")); ?>'>
                                 
                             </div>
                             <div class="col-sm-2">
-                            <input type="month" name="fecha_hasta" id="fecha_desde" class="form-control" value='<?php echo((date("Y"))."-".date("02")); ?>'>
+                            <input type="month" name="fecha_hasta" id="fecha_desde" class="form-control" value='<?php echo((date("Y"))."-".date("12")); ?>'>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -69,8 +69,8 @@
                         <div class="form-group row">
                             <label for="idMensaje" class="col-sm-2 col-form-label">Descripcion</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="idMensaje" name="idMensaje" value="Decimo Cuarto de Empleado : " required>
-                                <input type="hidden" class="form-control" id="descripcion" name="descripcion" value="Decimo Cuarto de Empleado : " required>
+                                <input type="text" class="form-control" id="idMensaje" name="idMensaje" value="Utilidades del Empleado : " required>
+                                <input type="hidden" class="form-control" id="descripcion" name="descripcion" value="Utilidades del Empleado : " required>
                             </div>
                         </div>  
                         
@@ -171,8 +171,8 @@ function empleado(){
         document.getElementById("idBeneficiario").value =  combo.options[combo.selectedIndex].text;
      }
     
-     document.getElementById("idMensaje").value ="Decimo Cuarto de Empleado : "+ combo.options[combo.selectedIndex].text;
-     document.getElementById("descripcion").value ="Decimo Cuarto Empleado : "+ combo.options[combo.selectedIndex].text;
+     document.getElementById("idMensaje").value ="Utilidades del Empleado : "+ combo.options[combo.selectedIndex].text;
+     document.getElementById("descripcion").value ="Utilidades del Empleado : "+ combo.options[combo.selectedIndex].text;
      
     
 }

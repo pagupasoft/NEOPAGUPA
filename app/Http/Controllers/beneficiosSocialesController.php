@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banco;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cheque;
+use App\Models\Cuenta;
 use App\Models\Detalle_Diario;
 use App\Models\Diario;
 use App\Models\Empleado;
@@ -27,13 +29,7 @@ class beneficiosSocialesController extends Controller
      */
     public function index()
     {
-        try{
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();       
-            return view('admin.recursosHumanos.decimoCuarto.index',['movimientos'=>Tipo_Movimiento_Empleado::TipoMovimientos()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
+       
     }
 
     /**
@@ -73,15 +69,15 @@ class beneficiosSocialesController extends Controller
             $urlcheque = '';
             $general = new generalController();
             $fechadesde=$request->get('fecha_desde')."-01";
-
+           
             $fechahasta=$request->get('fecha_hasta')."-01";
             $dth = new DateTime($fechahasta);
             $fechahasta=($dth->format('Y-m-t'));
-            $emplead=Beneficios_Sociales::validarDecimoCuarto($fechadesde,$request->get('sucursal_id'),$request->get('empleado_id'))->get();
+            $emplead=Beneficios_Sociales::validarbeneficio($fechadesde,$request->get('Tipo_id'),$request->get('sucursal_id'),$request->get('empleado_id'))->get();
          
             $empleado=Empleado::findOrFail($request->get('empleado_id'));
             if(count($emplead)>0){
-                return redirect('individualdecimoCuarto/new/'.$request->get('punto_id'))->with('error2', 'Ya existe el decimo caurto del empleado');
+                return redirect('beneficioSocial/new/'.$request->get('punto_id'))->with('error2', 'Ya existe el Beneficio del empleado');
             }
         
             $dt = new DateTime($fechadesde);
@@ -95,8 +91,8 @@ class beneficiosSocialesController extends Controller
             $beneficio->beneficios_descripcion =   $request->get('idMensaje');
             $beneficio->empleado_id =  $request->get('empleado_id');
             $beneficio->beneficios_estado = 1;
+            $beneficio->tipo_id = $request->get('Tipo_id');
             $tipo = Tipo_Movimiento_Empleado::findOrFail($request->get('Tipo_id'));
-            
 
             if ($request->get('idTipo') == 'Cheque'){      
                 $formatter = new NumeroALetras();
@@ -113,7 +109,7 @@ class beneficiosSocialesController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $beneficio->beneficios_descripcion.' con el valor de: -> '.$request->get('idValor'));
             } 
             /*REGISTRO DE TRANSFERENCIA*/            
             if ($request->get('idTipo') == 'Transferencia'){       
@@ -126,7 +122,7 @@ class beneficiosSocialesController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $beneficio->beneficios_descripcion.' con el valor de: -> '.$request->get('idValor'));
             }  
 
             $diario = new Diario();
@@ -146,7 +142,7 @@ class beneficiosSocialesController extends Controller
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
             $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechaCheque'))->format('m');
             $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFechaCheque'))->format('Y');
-            $diario->diario_comentario = 'COMPROBANTE DE EMISION DE UTILIDADES DEL EMPLEADO: '.$empleado->empleado_nombre;
+            $diario->diario_comentario = 'COMPROBANTE DE PAGO DE UTILIADADES CORRESPONDIENTE AL AÑO '.DateTime::createFromFormat('Y-m-d', ($dt->format('Y-m-d')))->format('Y');
 
             $diario->diario_cierre = '0';
             $diario->diario_estado = '1';
@@ -159,7 +155,7 @@ class beneficiosSocialesController extends Controller
 
             $beneficio->save();
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Registro de Utilidades de Empleado -> '.$request->get('empleado_id'),'0','Con motivo:'. $decimo->decimo_descripcion);
+            $auditoria->registrarAuditoria('Registro de Utilidades de Empleado -> '.$request->get('empleado_id'),'0','Con motivo:'. $beneficio->beneficios_descripcion);
             
             
             $detalleDiario = new Detalle_Diario();
@@ -191,7 +187,7 @@ class beneficiosSocialesController extends Controller
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';
             $detalleDiario->detalle_estado = '1';           
-            $detalleDiario->cuenta_id = $tipo->cuenta_haber;   
+            $detalleDiario->cuenta_id = $tipo->cuenta_id;   
             $detalleDiario->empleado_id = $request->get('empleado_id');     
             $diario->detalles()->save($detalleDiario);
             $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo,'0','En la cuenta del Haber -> '.$request->get('idCuentaContable').' con el valor de: -> '.$request->get('idValor'));
@@ -201,18 +197,18 @@ class beneficiosSocialesController extends Controller
             $url = $general->pdfDiario($diario);
             if ($request->get('idTipo') == 'Cheque') {
                 DB::commit(); 
-                return redirect('beneficiosSociales/new/'.$request->get('punto_id'))->with('success', 'Datos guardados exitosamente')->with('pdf', $url)->with('cheque',$urlcheque);;
+                return redirect('beneficioSocial/new/'.$request->get('punto_id'))->with('success', 'Datos guardados exitosamente')->with('pdf', $url)->with('cheque',$urlcheque);;
             }
 
             /*Inicio de registro de auditoria */
            
             /*Fin de registro de auditoria */
             DB::commit(); 
-            return redirect('beneficiosSociales/new/'.$request->get('punto_id'))->with('success', 'Datos guardados exitosamente')->with('pdf', $url);
+            return redirect('beneficioSocial/new/'.$request->get('punto_id'))->with('success', 'Datos guardados exitosamente')->with('pdf', $url);
 
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('beneficiosSociales/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('beneficioSocial/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
     public function eliminar($id)
@@ -285,7 +281,7 @@ class beneficiosSocialesController extends Controller
             $beneficio=Beneficios_Sociales::findOrFail($id);
             $diario=Diario::findOrFail($beneficio->diario_id);
             $general = new generalController();
-            $cierre = $general->cierre($beneficio->decimo_fecha);          
+            $cierre = $general->cierre($beneficio->beneficios_fecha);          
             if($cierre){
                 return redirect('listabeneficios')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
@@ -320,7 +316,7 @@ class beneficiosSocialesController extends Controller
     
                     $i->delete();
                     $general = new generalController();
-                    $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento.'con empleado '.$decimo->empleado->emepleado_nombre, $id,'Con UTILIDADES  id -> '.$i.'con codigo de diario'.$decimo->diario->diario_codigo);
+                    $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento.'con empleado '.$beneficio->empleado->emepleado_nombre, $id,'Con UTILIDADES  id -> '.$i.'con codigo de diario'.$beneficio->diario->diario_codigo);
                    
                 }    
                 $beneficio->delete();
@@ -362,16 +358,7 @@ class beneficiosSocialesController extends Controller
             return redirect('listabeneficios')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         } 
     }
-    public function ver($fecha)
-    {
-        try{
-            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
-            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            return view('admin.recursosHumanos.beneficiosSociales.impresion', ['decimo'=>Decimo_Cuarto::ExtraerDecimoCuarto($fecha)->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-        }catch(\Exception $ex){
-            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
-        }
-    }
+    
    
     public function imprimirdiario($id)
     { 

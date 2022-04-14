@@ -15,7 +15,15 @@
                 <div class="col-sm-2">
                     <input type="month" name="fecha_hasta" id="fecha_hasta" class="form-control" value='<?php echo((date("Y"))."-".date("12")); ?>'> 
                 </div>
-                <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Succursal:</center></label>
+                <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Tipo Movmiento:</center></label>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="Tipo_id" name="Tipo_id"   >
+                        @foreach($movimientos as $movimiento)
+                                    <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option>
+                        @endforeach                                          
+                    </select>
+                </div>
+                <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
                 <input id="punto_id" name="punto_id" value="{{ $rangoDocumento->puntoEmision->punto_id }}" type="hidden">
                 <input id="rango_id" name="rango_id" value="{{ $rangoDocumento->rango_id }}"
                     type="hidden">
@@ -25,7 +33,7 @@
                     type="text" readonly>
                 </div>
                 <div class="col-sm-1">         
-                <button type="submit" id="extraer" name="extraer" class="btn btn-success float-right"><i class="fa fa-search"></i><span> Buscar Rol</span></button>                   
+                <button type="submit" id="extraer" name="extraer" class="btn btn-success float-right"><i class="fa fa-search"></i><span> Buscar</span></button>                   
                 </div>
             <br>
         </div>
@@ -85,21 +93,7 @@
                     <a href="{{ url("beneficiosSociales") }}" class="btn btn-danger btn-sm">Cancelar</a>
                 </div>
             </div>
-            <h5 class="form-control" style="color:#fff; background:#17a2b8;">Tipo Movimento</h5>
-            <div class="card-body">
-                <div class="form-group row">
-                    <label for="idTipo" class="col-sm-2 col-form-label">Movimento</label>
-                    <div class="col-sm-10">
-                        
-                        <select class="custom-select" id="Tipo_id" name="Tipo_id"   >
-                        <option value='' label>--Seleccione una opcion--</option>
-                            @foreach($movimientos as $movimiento)
-                                        <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option>
-                            @endforeach                                          
-                        </select>
-                    </div>
-                </div>
-            </div>
+            
             <h5 class="form-control" style="color:#fff; background:#17a2b8;">Forma de Pago</h5>   
             <div class="card-body">
                 <div class="form-group row">

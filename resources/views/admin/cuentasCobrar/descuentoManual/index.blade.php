@@ -59,13 +59,13 @@
                             <div class="form-group row">
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="myFunctionDivBanco();" checked>
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="BANCO" onclick="myFunctionDivBanco();" checked>
                                         <label class="form-check-label" for="flexRadioDefault2">CRUZAR CON BANCO</label>                
                                     </div> 
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="myFunctionDivCaja();">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="CAJA" onclick="myFunctionDivCaja();">
                                         <label class="form-check-label" for="flexRadioDefault1">CRUZAR CON CAJA</label>
                                     </div> 
                                 </div>

@@ -439,7 +439,7 @@ class anticipoClienteController extends Controller
                 $datos[$count]['chk'] = '0'; 
                 $datos[$count]['tot'] = '2'; 
                 $count ++;
-                foreach(Descuento_Anticipo_Cliente::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_cliente.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_cliente.diario_id','descuento_anticipo_cliente.factura_id')->get() as $descuento){
+                foreach(Descuento_Anticipo_Cliente::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_cliente.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_cliente.diario_id','descuento_anticipo_cliente.factura_id','descuento_descripcion')->get() as $descuento){
                     $datos[$count]['cod'] = $descuento->descuento_id;
                     $datos[$count]['ben'] = ''; 
                     $datos[$count]['mon'] = ''; 
@@ -449,10 +449,15 @@ class anticipoClienteController extends Controller
                     $datos[$count]['fep'] = $descuento->descuento_fecha; 
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
-                    if(isset($descuento->factura->factura_numero)){
-                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->factura->factura_numero; 
+                    if($descuento->descuento_descripcion == 'CRUCE DE ANTICIPO CON BANCO' or
+                    $descuento->descuento_descripcion == 'CRUCE DE ANTICIPO CON CAJA'){
+                        $datos[$count]['fac'] = $descuento->descuento_descripcion;
                     }else{
-                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
+                        if(isset($descuento->factura->factura_numero)){
+                            $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->factura->factura_numero; 
+                        }else{
+                            $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
+                        }
                     }
                     $datos[$count]['chk'] = '1'; 
                     $datos[$count]['tot'] = '3'; 

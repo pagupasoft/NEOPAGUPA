@@ -54,7 +54,7 @@ class descuentoManualAnticipoProveedorController extends Controller
      */
     public function create()
     {
-        //
+        return redirect('/denegado');
     }
 
     /**
@@ -126,9 +126,9 @@ class descuentoManualAnticipoProveedorController extends Controller
         try{
             DB::beginTransaction();
             $general = new generalController();
-            $cierre = $general->cierre($request->get('fechaPago'));         
+            $cierre = $general->cierre($request->get('idFechaCruze'));         
             if($cierre){
-                return redirect('pagosCXP')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                return redirect('descuentoManualProveedores')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
             if($request->get('sucursalID') == '0'){
                 $sucursales = sucursal::Sucursales()->get();
@@ -143,6 +143,7 @@ class descuentoManualAnticipoProveedorController extends Controller
             $datosSuc = null;
             $filS=0;
             $numerosAnticipos = '';
+            $contDiarios = 0;
             foreach($sucursales as $sucursal){
                 $datosSuc[$filS]['sucursal_id'] = $sucursal->sucursal_id;
                 $datosAnticipos = null;
@@ -202,7 +203,8 @@ class descuentoManualAnticipoProveedorController extends Controller
                                 $diario->sucursal_id = $datosSuc[$i]['sucursal_id'];
                                 $diario->save();
                                 $general->registrarAuditoria('Registro de Diario de Diario codigo: -> '.$diario->diario_codigo,'0','Tipo de Diario -> '.$diario->diario_referencia.'');
-                                $diarios[$i] = $diario;
+                                $diarios[$contDiarios] = $diario;
+                                $contDiarios ++;
                             }
                             if($request->get('flexRadioDefault') == 'CAJA'){
                                 /**********************movimiento caja****************************/
@@ -314,7 +316,7 @@ class descuentoManualAnticipoProveedorController extends Controller
      */
     public function show($id)
     {
-        //
+        return redirect('/denegado');
     }
 
     /**
@@ -325,7 +327,7 @@ class descuentoManualAnticipoProveedorController extends Controller
      */
     public function edit($id)
     {
-        //
+        return redirect('/denegado');
     }
 
     /**
@@ -337,7 +339,7 @@ class descuentoManualAnticipoProveedorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        return redirect('/denegado');
     }
 
     /**
@@ -348,6 +350,6 @@ class descuentoManualAnticipoProveedorController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return redirect('/denegado');
     }
 }

@@ -2,12 +2,12 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">DECIMO CUARTO</h3>
+        <h3 class="card-title">BENEFICIOS SOCIAL</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
         <h5 class="form-control" style="color:#fff; background:#17a2b8;">Datos</h5>
-            <form class="form-horizontal" method="POST" action="{{ url("individualbeneficios") }} ">
+            <form class="form-horizontal" method="POST" action="{{ url("beneficiosSociales") }} ">
             @csrf
             <div class="card-body">     
                                         <input id="punto_id" name="punto_id"
@@ -39,6 +39,18 @@
                                 </select>
                             </div>
                            
+                        </div>
+                        <div class="form-group row">
+                            <label for="idTipo" class="col-sm-2 col-form-label">Movimento</label>
+                            <div class="col-sm-10">
+                                
+                                <select class="custom-select" id="Tipo_id" name="Tipo_id"   >
+                                <option value='' label>--Seleccione una opcion--</option>
+                                    @foreach($movimientos as $movimiento)
+                                                <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option>
+                                    @endforeach                                          
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group row">
                             <label for="" class="col-sm-2 col-form-label">Fecha de Emision</label>

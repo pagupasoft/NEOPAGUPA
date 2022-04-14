@@ -40,7 +40,7 @@ class Beneficios_Sociales extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
         ->where('beneficios_estado','=','1')
         ->where('beneficios_fecha', '=', $fecha)
-        ->where('tipo_id', '=', $tipo)
+        ->where('beneficios_sociales.tipo_id', '=', $tipo)
         ->orderBy('empleado.empleado_nombre','asc');
     }
     public function scopeValidacion($query, $id){

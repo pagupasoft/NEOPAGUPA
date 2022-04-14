@@ -93,7 +93,7 @@ class beneficiosSocialesConsolidadaController extends Controller
             $Utilidades=Empleado::EmpleadosBySucursal($request->get('sucursal_id'))->get();
             $count = 1;
             $emplead=Beneficios_Sociales::ExtraerBeneficios($fechadesde,$request->get('Tipo_id'),$request->get('sucursal_id'))->get();
-          
+           
             foreach ($Utilidades as $empleado) {
                 $activa=false;
                 foreach ($emplead as $emplea) {

@@ -161,18 +161,18 @@ class beneficiosSocialesConsolidadaController extends Controller
             if ($request->get('idTipo') == 'Transferencia') {
                 $general = new generalController();
                 $diario = new Diario();
-                $diario->diario_codigo = $general->generarCodigoDiario(($request->get('idFechaemision')), 'CPDC');
+                $diario->diario_codigo = $general->generarCodigoDiario(($request->get('idFechaemision')), 'CPUE');
                 $diario->diario_fecha = $request->get('idFechaemision');
-                $diario->diario_referencia = 'COMPROBANTE DE EMISION DE UTILIDADES DE EMPLEADOS';
+                $diario->diario_referencia = 'COMPROBANTE DE PAGO DE UTILIDADES DE EMPLEADOS';
                 
                 $diario->diario_tipo_documento = 'TRANSFERENCIA BANCARIA';
                 $diario->diario_numero_documento = 0;
                 $diario->diario_beneficiario = "UTILIDADES CONSOLIDADO DE EMPELADOS";
-                $diario->diario_tipo = 'CPDC';
+                $diario->diario_tipo = 'CPUE';
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechaemision'))->format('m');
                 $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFechaemision'))->format('Y');
-                $diario->diario_comentario = 'COMPROBANTE DE EMISION DEL UTILIDADES CONSOLIDADO DE EMPLEADOS';
+                $diario->diario_comentario = 'COMPROBANTE DE EMISION DE UTILIDADES CONSOLIDADO DE EMPLEADOS';
     
                 $diario->diario_cierre = '0';
                 $diario->diario_estado = '1';
@@ -202,7 +202,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                         $formatter = new NumeroALetras();
                         $cheque = new Cheque();
                         $cheque->cheque_numero = $ncheque;
-                        $cheque->cheque_descripcion =  'PAGO DE UTILIDADES CUARTO: '.$nombre[$contador[$i]];
+                        $cheque->cheque_descripcion =  'PAGO DE UTILIDADES: '.$nombre[$contador[$i]];
                         $cheque->cheque_beneficiario = $nombre[$contador[$i]];
                         $cheque->cheque_fecha_emision = $request->get('idFechaemision');
                         $cheque->cheque_fecha_pago = $request->get('idFechaCheque');
@@ -220,18 +220,18 @@ class beneficiosSocialesConsolidadaController extends Controller
                         /**********************asiento diario****************************/
                         $general = new generalController();
                         $diario = new Diario();
-                        $diario->diario_codigo = $general->generarCodigoDiario(($request->get('idFechaemision')), 'CPDC');
+                        $diario->diario_codigo = $general->generarCodigoDiario(($request->get('idFechaemision')), 'CPUE');
                         $diario->diario_fecha = $request->get('idFechaemision');
-                        $diario->diario_referencia = 'COMPROBANTE DE PAGO DE UTILIDADES';
+                        $diario->diario_referencia = 'COMPROBANTE DE PAGO DE UTILIDADES DE EMPLEADO';
                         $diario->diario_tipo_documento = 'UTILIDADES';
 
                         $diario->diario_numero_documento =$ncheque;
                         $diario->diario_beneficiario = $nombre[$i];
-                        $diario->diario_tipo = 'CPDC';
+                        $diario->diario_tipo = 'CPUE';
                         $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                         $diario->diario_mes = DateTime::createFromFormat('Y-m-d', ($request->get('idFechaemision')))->format('m');
                         $diario->diario_ano = DateTime::createFromFormat('Y-m-d', ($request->get('idFechaemision')))->format('Y');
-                        $diario->diario_comentario = 'COMPROBANTE DE EMISION DE UTILIDADES DEL EMPLEADO '.$nombre[$contador[$i]];
+                        $diario->diario_comentario = 'COMPROBANTE DE PAGO DE UTILIDADES DE EMPLEADO '.$nombre[$contador[$i]];
                         $diario->diario_cierre = '0';
                         $diario->diario_estado = '1';
                         $diario->empresa_id = Auth::user()->empresa_id;
@@ -259,7 +259,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                         $detalleDiario = new Detalle_Diario();
                         $detalleDiario->detalle_debe =$valor[$contador[$i]];
                         $detalleDiario->detalle_haber =  0.00;
-                        $detalleDiario->detalle_comentario = 'P/R PAGO DEL UTILIDADES DESDE '.strtoupper(strftime("%B", strtotime($fechadesde))).' '.DateTime::createFromFormat('Y-m-d', $fechadesde)->format('Y').' HASTA '.strtoupper(strftime("%B", strtotime($fechahasta))).' '.DateTime::createFromFormat('Y-m-d', $fechahasta)->format('Y');
+                        $detalleDiario->detalle_comentario = 'P/R PAGO DE UTILIDADES DESDE '.strtoupper(strftime("%B", strtotime($fechadesde))).' '.DateTime::createFromFormat('Y-m-d', $fechadesde)->format('Y').' HASTA '.strtoupper(strftime("%B", strtotime($fechahasta))).' '.DateTime::createFromFormat('Y-m-d', $fechahasta)->format('Y');
                         $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                         $detalleDiario->detalle_tipo_documento = 'UTILIDADES';
                         $detalleDiario->detalle_conciliacion = '0';
@@ -287,7 +287,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                         $beneficios->diario()->associate($diario);
                         $beneficios->save();
                         $auditoria = new generalController();
-                        $auditoria->registrarAuditoria('Registro deUTILIDADES de Empleado -> '.$empleado->empleado_nombre, '0', 'Con Valor:'. $valor[$contador[$i]]);
+                        $auditoria->registrarAuditoria('Registro de UTILIDADES de Empleado -> '.$empleado->empleado_nombre, '0', 'Con Valor:'. $valor[$contador[$i]]);
                         $datos[$COUNT]["id"]=$beneficios->beneficios_id;
                         $COUNT++;
                     }
@@ -329,7 +329,7 @@ class beneficiosSocialesConsolidadaController extends Controller
            
             if ($request->get('idTipo') == 'Transferencia') {
                 $transferencia = new Transferencia();
-                $transferencia->transferencia_descripcion = 'PAGO DE UTILIDADES CONSOLIDADO';
+                $transferencia->transferencia_descripcion = 'PAGO DE UTILIDADES CONSOLIDADO DE EMPLEADOS';
                 $transferencia->transferencia_beneficiario ='PAGO DE UTILIDADES CONSOLIDADO';
                 $transferencia->transferencia_fecha = $request->get('idFechaemision');
                 $transferencia->transferencia_valor = $total;

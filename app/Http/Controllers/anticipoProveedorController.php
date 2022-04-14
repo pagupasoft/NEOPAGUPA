@@ -489,10 +489,15 @@ class anticipoProveedorController extends Controller
                     $datos[$count]['fep'] = $descuento->descuento_fecha; 
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
-                    if(isset($descuento->transaccionCompra)){
-                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->transaccionCompra->transaccion_numero; 
+                    if($descuento->descuento_descripcion == 'CRUCE DE ANTICIPO CON BANCO' or
+                    $descuento->descuento_descripcion == 'CRUCE DE ANTICIPO CON CAJA'){
+                        $datos[$count]['fac'] = $descuento->descuento_descripcion;
                     }else{
-                        $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
+                        if(isset($descuento->transaccionCompra)){
+                            $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->transaccionCompra->transaccion_numero; 
+                        }else{
+                            $datos[$count]['fac'] = 'Cruce con factura No. '.$descuento->descuento_descripcion;
+                        }
                     }
                     $datos[$count]['chk'] = '1'; 
                     $datos[$count]['tot'] = '3'; 

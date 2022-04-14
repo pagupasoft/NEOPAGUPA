@@ -469,44 +469,13 @@
                                             <div class="row clearfix form-horizontal">
                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
                                                     style="margin-bottom : 0px;">
-                                                    <label>Saldo:</label>
+                                                    <label>Saldo Pendiente:</label>
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
                                                     style="margin-bottom : 0px;">
                                                     <div class="form-group">
                                                         <div class="form-line">
-                                                            <input type="number" class="form-control " placeholder="00"
-                                                                required disabled>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                              <!--  <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Dias de plazo:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input type="number" id="factura_dias_plazo"
-                                                                name="factura_dias_plazo" class="form-control "
-                                                                placeholder="00" value="0" onkeyup="calcularFecha()"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                </div>-->
-                                            </div>
-                                            <div class="row clearfix form-horizontal">
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Tipo de Credito:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input id="idTipoCredito" type="text" class="form-control "
-                                                                placeholder="00" required disabled>
+                                                            <input type="number" class="form-control " value="0.00" placeholder="00" readOnly>
                                                         </div>
                                                     </div>
                                                 </div>

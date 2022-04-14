@@ -31,8 +31,6 @@
                     <th>Cuenta Anticipo</th>
                     @endif
                     <th>Ciudad</th>
-                   
-                   
                     <th>Categoria de Cliente</th>       
                     <th>Credito</th>                            
                 </tr>
@@ -81,10 +79,8 @@
                         @endif
                     @endif
                     <td>{{ $cliente->ciudad->ciudad_nombre}}</td>
-                    
-                   
-                    <td>{{ $cliente->credito->credito_nombre}}</td>
-                    <td>{{ $cliente->categoriaCliente->categoria_cliente_nombre}}</td>                                     
+                    <td>{{ $cliente->categoriaCliente->categoria_cliente_nombre}}</td>  
+                    <td>{{ $cliente->cliente_credito}}</td>                                   
                 </tr>
                 @endforeach
             </tbody>
@@ -192,7 +188,13 @@
                                     <label class="custom-control-label" for="idTienecredito"></label>                                 
                                </div>
                             </div>                
-                        </div>     
+                        </div> 
+                        <div class="form-group row">
+                            <label for="idCupoCredito" class="col-sm-3 col-form-label">Cupo Credito</label>
+                            <div class="col-sm-9">                    
+                                <input type="number" class="form-control" id="idCupoCredito" name="idCupoCredito" placeholder="0.00" value="0.00" step="any">
+                            </div>                    
+                        </div>    
                         @if($parametrizacionContable->parametrizacion_cuenta_general == '0')          
                             @if(Auth::user()->empresa->empresa_contabilidad == '1')                                  
                             <div class="form-group row">
@@ -216,18 +218,7 @@
                                 </div>
                             </div>
                             @endif
-                        @endif
-                        <div class="form-group row">
-                            <label for="idCiudad" class="col-sm-3 col-form-label">Ciudad</label>
-                            <div class="col-sm-9">
-                                <select class="custom-select select2" id="idCiudad" name="idCiudad" require>
-                                    @foreach($ciudad as $ciudad)
-                                        <option value="{{$ciudad->ciudad_id}}">{{$ciudad->ciudad_nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        
+                        @endif                        
                         <div class="form-group row">
                             <label for="idCategoria" class="col-sm-3 col-form-label">Categoria de Cliente</label>
                             <div class="col-sm-9">
@@ -238,16 +229,16 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="idCredito" class="col-sm-3 col-form-label">Credito</label>
+                         <div class="form-group row">
+                            <label for="idCiudad" class="col-sm-3 col-form-label">Ciudad</label>
                             <div class="col-sm-9">
-                                <select class="custom-select select2" id="idCredito" name="idCredito" require>
-                                    @foreach($credito as $credito)
-                                        <option value="{{$credito->credito_id}}">{{$credito->credito_nombre}}</option>
+                                <select class="custom-select select2" id="idCiudad" name="idCiudad" require>
+                                    @foreach($ciudad as $ciudad)
+                                        <option value="{{$ciudad->ciudad_id}}">{{$ciudad->ciudad_nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div>                        
                         <div class="form-group row">
                             <label for="lista_id" class="col-sm-3 col-form-label">Lista de Precio</label>
                             <div class="col-sm-9">

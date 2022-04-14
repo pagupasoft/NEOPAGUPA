@@ -198,7 +198,11 @@
                                         ?>
 
                                         <td>{{1}}</td>
-                                        <td>{{ $detalle->examen-product->producto_precio }}</td>
+                                        @if($detalle->examen)
+                                            <td>{{ $detalle->examen-product->producto_precio }}</td>
+                                        @else
+                                            <td>-</td>
+                                        @endif
                                         <td>{{--$tiempo--}}</td>
 
                                         <td>{{ $orden->paciente->tipoDependencia->tipod_codigo }}</td>

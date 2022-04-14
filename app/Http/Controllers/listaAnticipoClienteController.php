@@ -92,7 +92,7 @@ class listaAnticipoClienteController extends Controller
                         array_pop($datos);
                         $count = $count - 1;
                     }else{
-                        foreach(Descuento_Anticipo_Cliente::DescuentosAnticipo($anticipo->anticipo_id, $request->get('idCorte'))->select('descuento_valor','descuento_fecha','descuento_anticipo_cliente.diario_id','descuento_anticipo_cliente.factura_id')->get() as $descuento){
+                        foreach(Descuento_Anticipo_Cliente::DescuentosAnticipo($anticipo->anticipo_id, $request->get('idCorte'))->select('descuento_valor','descuento_fecha','descuento_anticipo_cliente.diario_id','descuento_anticipo_cliente.factura_id','descuento_descripcion')->get() as $descuento){
                             $datos[$count]['ben'] = ''; 
                             $datos[$count]['mon'] = ''; 
                             $datos[$count]['sal'] = ''; 
@@ -101,7 +101,11 @@ class listaAnticipoClienteController extends Controller
                             $datos[$count]['fep'] = $descuento->descuento_fecha; 
                             $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                             $datos[$count]['tip'] = ''; 
-                            $datos[$count]['fac'] = $descuento->factura->factura_numero; 
+                            if(isset($descuento->factura->factura_numero)){
+                                $datos[$count]['fac'] = $descuento->factura->factura_numero; 
+                            }else{
+                                $datos[$count]['fac'] = $descuento->descuento_descripcion;
+                            }
                             $datos[$count]['tot'] = '2'; 
                             $count ++;
                         }

@@ -104,7 +104,7 @@ class clienteController extends Controller
             $cliente->ciudad_id = $request->get('idCiudad');
             $cliente->tipo_identificacion_id = $request->get('idTidentificacion');
             $cliente->tipo_cliente_id = $request->get('idTipoCliente');
-            $cliente->credito_id = $request->get('idCredito');
+            $cliente->cliente_credito = $request->get('idCupoCredito');
             $cliente->categoria_cliente_id = $request->get('idCategoria');
             if($request->get('lista_id')){
                 $cliente->lista_id  = $request->get('lista_id'); 
@@ -203,7 +203,7 @@ class clienteController extends Controller
             }else{
                 $cliente->cliente_lleva_contabilidad = 0;
             } 
-            if ($request->get('idCredito') == "on"){
+            if ($request->get('idTienecredito') == "on"){
                 $cliente->cliente_tiene_credito = 1;
             }else{
                 $cliente->cliente_tiene_credito = 0;
@@ -215,7 +215,7 @@ class clienteController extends Controller
             $cliente->ciudad_id = $request->get('idCiudad');
             $cliente->tipo_identificacion_id = $request->get('idTipo');
             $cliente->tipo_cliente_id = $request->get('idTcliente');
-            $cliente->credito_id = $request->get('idCredito');
+            $cliente->cliente_credito = $request->get('idCupoCredito');
             $cliente->categoria_cliente_id = $request->get('idCategoria');          
 
             if ($request->get('idEstado') == "on"){
@@ -688,7 +688,9 @@ class clienteController extends Controller
     }
 
     public function buscarByNombre($buscar){
-        return Cliente::ClientesByNombre($buscar)->get();
+        return Cliente::ClientesByNombre($buscar)->select("cliente.cliente_nombre","cliente.cliente_cedula","cliente.cliente_direccion",
+        "cliente.cliente_telefono","cliente.cliente_id","tipo_cliente.tipo_cliente_nombre","cliente.cliente_credito","cliente.cliente_tiene_credito",
+        DB::raw('(SELECT sum(cuenta_cobrar.cuenta_saldo) FROM cuenta_cobrar WHERE cuenta_cobrar.cliente_id = cliente.cliente_id) as saldo_pendiente'))->get();
     }
     public function buscarByNombreCedula($buscar){
         return Cliente::ClientesByCedulaRuc($buscar)->get();

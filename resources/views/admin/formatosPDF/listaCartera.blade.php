@@ -24,6 +24,7 @@
                 <th>Nombre</th>
                 <th style="width: 100px;">Documento</th>
                 <th style="width: 110px;">Monto</th>
+                <th style="width: 110px;">Pagos</th>
                 <th style="width: 110px;">Saldo</th>  
                 <th style="width: 70px;">Fecha</th>
                 <th style="width: 70px;">Termino</th>                  
@@ -43,6 +44,7 @@
                         <td @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>{{ $datos[$i]['nom'] }}</td>
                         <td @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>{{ $datos[$i]['doc'] }}</td>
                         <td class="centrar" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>@if($datos[$i]['mon'] <> '') {{ number_format($datos[$i]['mon'],2) }} @endif</td>
+                        <td class="centrar" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>@if($datos[$i]['pag'] <> '') {{ number_format($datos[$i]['pag'],2) }} @endif</td>
                         <td class="centrar" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>@if($datos[$i]['sal'] <> '') {{ number_format($datos[$i]['sal'],2) }} @endif</td>
                         <td class="centrar" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif  @if($datos[$i]['tot'] == '2') style="background:  #B1E2DD;" @endif>{{ $datos[$i]['fec'] }}</td>
                         @if($datos[$i]['tot'] == '2')

@@ -172,7 +172,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFechaemision'))->format('m');
                 $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFechaemision'))->format('Y');
-                $diario->diario_comentario = 'COMPROBANTE DE PAGO DE UTILIADADES CORRESPONDIENTE AL AÑO '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('Y');
+                $diario->diario_comentario = 'COMPROBANTE DE PAGO DE UTILIADADES CORRESPONDIENTE AL AÑO '.DateTime::createFromFormat('Y-m-d', ($dt->format('Y-m-d')))->format('Y');
                 $diario->diario_cierre = '0';
                 $diario->diario_estado = '1';
                 $diario->empresa_id = Auth::user()->empresa_id;

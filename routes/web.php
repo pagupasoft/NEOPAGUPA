@@ -159,6 +159,7 @@ use App\Http\Controllers\signosVitalesController;
 use App\Http\Controllers\atencionCitasController;
 use App\Http\Controllers\atencionRecetasController;
 use App\Http\Controllers\beneficiosSocialesConsolidadaController;
+use App\Http\Controllers\beneficiosSocialesController;
 use App\Http\Controllers\cabeceraRolAdministrativoController;
 use App\Http\Controllers\cabeceraRolController;
 use App\Http\Controllers\cargarBalancesController;
@@ -216,6 +217,7 @@ use App\Http\Controllers\formulariosController;
 use App\Http\Controllers\inicializarCuentasCobrarController;
 use App\Http\Controllers\inicializarCuentasPagarController;
 use App\Http\Controllers\listaAsientosDiariosController;
+use App\Http\Controllers\listaBeneficiosController;
 use App\Http\Controllers\listaControlDiaController;
 use App\Http\Controllers\listadecimoCuartoController;
 use App\Http\Controllers\tarjetaCreditoController;
@@ -431,6 +433,8 @@ Route::resource('tarjetaCredito', tarjetaCreditoController::class)->middleware('
 Route::resource('listaPrecio', listaPrecioController::class)->middleware('auth');
 Route::resource('ajusteInventario', ajusteInventarioController::class)->middleware('auth');
 
+Route::resource('listabeneficios', listaBeneficiosController::class)->middleware('auth');
+Route::resource('beneficiosSociales', beneficiosSocialesController::class)->middleware('auth');
 //GuiaRemision
 Route::resource('listaGuiasOrdenes', listaGuiasRemisionOrdenesController::class)->middleware('auth');
 Route::resource('guiaremision', guiaremisionController::class)->middleware('auth');

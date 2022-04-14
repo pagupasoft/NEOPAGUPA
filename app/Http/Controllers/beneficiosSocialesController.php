@@ -233,7 +233,7 @@ class beneficiosSocialesController extends Controller
                 }
             }
             
-            return view('admin.recursosHumanos.beneficiosSociales.eliminar', ['transferencia'=>$transferencia,'cheque'=>$cheque,'decimo'=>$decimo,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.recursosHumanos.beneficiosSociales.eliminar', ['transferencia'=>$transferencia,'cheque'=>$cheque,'beneficios'=>$beneficios,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
         }
@@ -323,7 +323,7 @@ class beneficiosSocialesController extends Controller
                     $general->registrarAuditoria('Eliminacion del detalle diario tipo documento numero: -> '.$i->detalle_tipo_documento.'con empleado '.$decimo->empleado->emepleado_nombre, $id,'Con UTILIDADES  id -> '.$i.'con codigo de diario'.$decimo->diario->diario_codigo);
                    
                 }    
-                $decimo->delete();
+                $beneficio->delete();
                 $general->registrarAuditoria('Eliminacion del Beneficio Social: -> '.$id.'con empleado '.$beneficio->empleado->emepleado_nombre, $id, 'Con UTILIDADES  id -> '.$id);     
     
                 $diario->delete();
@@ -352,7 +352,7 @@ class beneficiosSocialesController extends Controller
                         }
                     }
                    
-                    $decimo->delete();
+                    $beneficio->delete();
                     $general->registrarAuditoria('Eliminacion del Beneficio Social: -> '.$id.'con empleado '.$beneficio->empleado->emepleado_nombre, $id, 'Con Beneficio Social  id -> '.$id); 
                     $url = $general->pdfDiario($diario);       
                     DB::commit();

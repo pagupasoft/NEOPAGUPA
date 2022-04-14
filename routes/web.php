@@ -434,7 +434,7 @@ Route::resource('listaPrecio', listaPrecioController::class)->middleware('auth')
 Route::resource('ajusteInventario', ajusteInventarioController::class)->middleware('auth');
 
 Route::resource('listabeneficios', listaBeneficiosController::class)->middleware('auth');
-Route::resource('beneficiosSociales', beneficiosSocialesController::class)->middleware('auth');
+Route::resource('beneficioSocial', beneficiosSocialesController::class)->middleware('auth');
 //GuiaRemision
 Route::resource('listaGuiasOrdenes', listaGuiasRemisionOrdenesController::class)->middleware('auth');
 Route::resource('guiaremision', guiaremisionController::class)->middleware('auth');
@@ -1168,7 +1168,8 @@ Route::get('/decimoCuarto/{id}/imprimir', [decimoCuartoController::class, 'impri
 Route::get('/decimoCuarto/{id}/eliminar', [decimoCuartoController::class, 'eliminar'])->middleware('auth');
 Route::get('/diarioTercero/{id}/imprimir', [decimoTerceroController::class, 'imprimirdiario'])->middleware('auth');
 Route::get('/diarioCuarto/{id}/imprimir', [decimoCuartoController::class, 'imprimirdiario'])->middleware('auth');
-
+Route::get('/beneficioSocial/{id}/imprimir', [beneficiosSocialesController::class, 'imprimirdiario'])->middleware('auth');
+Route::get('/beneficioSocial/{id}/eliminar', [beneficiosSocialesController::class, 'eliminar'])->middleware('auth');
 
 Route::get('/Roloperativo/{id}/cambiocheque', [rolConsolidadoController::class, 'verChequeoperativo'])->middleware('auth');
 Route::get('/Rol/{id}/cambiocheque', [rolConsolidadoController::class, 'verChequeindividual'])->middleware('auth');

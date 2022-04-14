@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Beneficios_Sociales;
+use App\Models\Punto_Emision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,7 @@ class listaBeneficiosController extends Controller
             $sucursales=Beneficios_Sociales::Sucursal()->select('sucursal.sucursal_id', 'sucursal.sucursal_nombre')->distinct()->get();
             $fecha=$request->get('fecha_desde').'-01';
             $decimos=Beneficios_Sociales::buscar($fecha, $request->get('nombre_empleado'), $request->get('sucursal'))->get();
+            
             $datos=null;
             $count=1;
             foreach ($decimos as $x) {

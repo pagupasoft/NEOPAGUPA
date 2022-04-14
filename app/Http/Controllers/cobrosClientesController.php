@@ -141,6 +141,7 @@ class cobrosClientesController extends Controller
             $sucursales = Cuenta_Cobrar::ScucursalesxCXC($request->get('idCliente'))->select('sucursal_id')->distinct('sucursal_id')->get();
             $datosSuc = null;
             $filS=0;
+            $contDiarios = 0;
             foreach($sucursales as $sucursal){
                 $datosSuc[$filS]['sucursal_id'] = $sucursal->sucursal_id;
                 $datosCuentas = null;
@@ -189,6 +190,8 @@ class cobrosClientesController extends Controller
                                 $diario->sucursal_id = $datosSuc[$i]['sucursal_id'];
                                 $diario->save();
                                 $general->registrarAuditoria('Registro de Diario de Diario codigo: -> '.$diario->diario_codigo,'0','Tipo de Diario -> '.$diario->diario_referencia.'');
+                                $diarios[$contDiarios] = $diario;
+                                $contDiarios ++;
                             }
                             $pago = new Pago_CXC();
                             $pago->pago_descripcion = $request->get('idConcepto');
@@ -342,8 +345,7 @@ class cobrosClientesController extends Controller
                 $movimientoCaja->save();
                 /*********************************************************************/
             }
-            /*revisar varios diarios*/
-            $url = '';
+            $url = $general->pdfVariosDiario($diarios, $request->get('fechaPago'));
             if(Auth::user()->empresa->empresa_contabilidad == '1'){
                 $url = $general->pdfDiario($diario);
             }

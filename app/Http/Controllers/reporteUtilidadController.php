@@ -73,6 +73,11 @@ class reporteUtilidadController extends Controller
             foreach($productos as $producto){
                 $datos[$count]['gru'] = $producto->grupo->grupo_nombre;
                 $datos[$count]['cod'] = $producto->producto_codigo;
+                if(isset($producto->sucursal->sucursal_nombre)){
+                    $datos[$count]['suc'] = $producto->sucursal->sucursal_nombre;
+                }else{
+                    $datos[$count]['suc'] = 'TODAS';
+                }
                 $datos[$count]['nom'] = $producto->producto_nombre;
                 $resultado = $this->calcular($producto, $request->get('fecha_desde'), $request->get('fecha_hasta'),0);
                 $datos[$count]['can'] = $resultado[0];
@@ -97,6 +102,7 @@ class reporteUtilidadController extends Controller
             }
             $datos[$count]['gru'] = '';
             $datos[$count]['cod'] = '';
+            $datos[$count]['suc'] = '';
             $datos[$count]['nom'] = '';
             $datos[$count]['can'] = '';
             $datos[$count]['vec'] = $totalVC;

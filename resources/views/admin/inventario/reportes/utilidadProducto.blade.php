@@ -40,6 +40,7 @@
                 <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
                     <thead>
                         <tr class="text-center">
+                            <th>Sucursal</th>
                             <th>Grupo</th>
                             <th>Codigo</th>
                             <th>Producto</th>
@@ -52,6 +53,7 @@
                     <tbody>
                         @for ($i = 1; $i <= count($datos); ++$i)    
                         <tr>
+                            <td>{{ $datos[$i]['suc'] }}</td>
                             <td>{{ $datos[$i]['gru'] }}</td>
                             <td>{{ $datos[$i]['cod'] }}</td>
                             <td>{{ $datos[$i]['nom'] }}</td>

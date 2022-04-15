@@ -551,4 +551,59 @@ class documentosElectronicosController extends Controller
             return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+
+    public function respuesSRIFac($id)
+    {
+        try{            
+            $factura = Factura_Venta::factura($id)->first();
+            return $factura->factura_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function respuesSRIGR($id)
+    {
+        try{            
+            $guia = Guia_Remision::Guia($id)->first();
+            return $guia->gr_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function respuesSRINC($id)
+    {
+        try{            
+            $nc = Nota_Credito::NotaCredito($id)->first();
+            return $nc->nc_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function respuesSRIND($id)
+    {
+        try{            
+            $nd = Nota_Debito::NotaDebito($id)->first();
+            return $nd->nd_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function respuesSRILQ($id)
+    {
+        try{            
+            $lc = Liquidacion_Compra::LiquidacionCompra($id)->first();
+            return $lc->lc_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function respuesSRIRet($id)
+    {
+        try{            
+            $ret = Retencion_Compra::Retencion($id)->first();
+            return $ret->retencion_xml_respuestaSRI;
+        }catch(\Exception $ex){
+            return redirect('docsElectronicos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
 }

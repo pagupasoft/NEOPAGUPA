@@ -231,7 +231,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="0.00" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="{{number_format($ant615,2)}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Saldo crédito tributario del mes anterior Por retenciones en la fuente de IVA que le han sido efectuadas (trasládese el campo 617 de la declaración del período anterior)</td>
@@ -240,7 +240,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="0.00" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="{{number_format($ant617,2)}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Retenciones en la fuente de IVA que le han sido efectuadas en este período</td>

@@ -707,6 +707,12 @@ Route::get('/consultarDocElec/{id}', [documentosElectronicosController::class, '
 Route::get('/nuevaOrden', [ordenAtencionController::class, 'nuevaOrden'])->middleware('auth');
 Route::get('/ordenAtencionIess', [ordenAtencionIessController::class, 'nuevaOrdenIess'])->middleware('auth');
 Route::post('/listaEmpleadoSucursal', [empleadoController::class, 'consultar'])->middleware('auth');
+Route::get('/respuesSRIFac/{id}', [documentosElectronicosController::class, 'respuesSRIFac'])->middleware('auth');
+Route::get('/respuesSRIGR/{id}', [documentosElectronicosController::class, 'respuesSRIGR'])->middleware('auth');
+Route::get('/respuesSRINC/{id}', [documentosElectronicosController::class, 'respuesSRINC'])->middleware('auth');
+Route::get('/respuesSRIND/{id}', [documentosElectronicosController::class, 'respuesSRIND'])->middleware('auth');
+Route::get('/respuesSRILQ/{id}', [documentosElectronicosController::class, 'respuesSRILQ'])->middleware('auth');
+Route::get('/respuesSRIRet/{id}', [documentosElectronicosController::class, 'respuesSRIRet'])->middleware('auth');
 
 
 Route::get('/facturarOrden/{id}', [ordenAtencionController::class, 'facturarOrden'])->middleware('auth');

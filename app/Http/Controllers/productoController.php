@@ -303,10 +303,10 @@ class productoController extends Controller
         }
     }
     public function buscarByNombre($buscar){
-        return Producto::ProductosByNombre($buscar)->get();
+        return Producto::ProductosByNombreCodigo($buscar)->get();
     }
     public function buscarByNombreVenta($buscar){
-        return Producto::ProductosByNombre($buscar)
+        return Producto::ProductosByNombreCodigo($buscar)
         ->where(function ($query){
             $query->where('producto_compra_venta','=','2')->orwhere('producto_compra_venta','=','3');
         })->get(); 

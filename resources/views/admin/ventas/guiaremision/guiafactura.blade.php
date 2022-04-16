@@ -639,7 +639,6 @@ function calcularTotales() {
 
     document.getElementById("total").innerHTML = total;
     document.getElementById("idTotal").value = total;
-    document.getElementById("idMontoFacturado").value = total;
     document.getElementById("idTotalFactura").value = total;
 }
 

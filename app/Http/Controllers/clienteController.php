@@ -690,7 +690,8 @@ class clienteController extends Controller
     public function buscarByNombre($buscar){
         return Cliente::ClientesByNombre($buscar)->select("cliente.cliente_nombre","cliente.cliente_cedula","cliente.cliente_direccion",
         "cliente.cliente_telefono","cliente.cliente_id","tipo_cliente.tipo_cliente_nombre","cliente.cliente_credito","cliente.cliente_tiene_credito",
-        DB::raw('(SELECT sum(cuenta_cobrar.cuenta_saldo) FROM cuenta_cobrar WHERE cuenta_cobrar.cliente_id = cliente.cliente_id) as saldo_pendiente'))->get();
+        DB::raw("((SELECT sum(cuenta_cobrar.cuenta_saldo) FROM cuenta_cobrar WHERE cuenta_cobrar.cliente_id = cliente.cliente_id) + 
+        (SELECT sum(orden_despacho.orden_total) FROM orden_despacho WHERE orden_despacho.cliente_id = cliente.cliente_id and (orden_estado='1' or orden_estado='2'))) as saldo_pendiente"))->get();
     }
     public function buscarByNombreCedula($buscar){
         return Cliente::ClientesByCedulaRuc($buscar)->get();

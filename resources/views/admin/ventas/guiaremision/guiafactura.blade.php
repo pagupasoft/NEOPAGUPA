@@ -418,12 +418,6 @@
                                                 aria-controls="custom-tabs-four-otros"
                                                 aria-selected="false"><b>Otros</b></a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="custom-tabs-four-credito-tab" data-toggle="pill"
-                                                href="#custom-tabs-four-credito" role="tab"
-                                                aria-controls="custom-tabs-four-credito"
-                                                aria-selected="true"><b>Credito</b></a>
-                                        </li>
                                     </ul>
                                 </div>
                                 <div class="card-body">
@@ -446,53 +440,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="custom-tabs-four-credito" role="tabpanel"
-                                            aria-labelledby="custom-tabs-four-credito-tab">
                                             <div class="row clearfix form-horizontal">
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Monto de Credito:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input id="idMontoCredito" type="number"
-                                                                class="form-control " placeholder="00" value="{{$guiadatos->cliente->cliente_credito}}"
-                                                                readOnly>
-                                                                <input id="idTieneCredito" value="{{$guiadatos->cliente->cliente_tiene_credito}}" type="hidden">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Monto facturado:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input id="idMontoFacturado" type="number"
-                                                                class="form-control " placeholder="00" required
-                                                                readOnly>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row clearfix form-horizontal">
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                                                    style="margin-bottom : 0px;">
-                                                    <label>Saldo Pendiente:</label>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"
-                                                    style="margin-bottom : 0px;">
-                                                    <div class="form-group">
-                                                        <div class="form-line">
-                                                            <input type="number" id="saldoPendienteID" class="form-control " value="{{$saldoCliente}}" placeholder="00" readOnly>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
                                                     style="margin-bottom : 0px;">
                                                     <label>Fecha Termino:</label>
@@ -691,7 +639,6 @@ function calcularTotales() {
 
     document.getElementById("total").innerHTML = total;
     document.getElementById("idTotal").value = total;
-    document.getElementById("idMontoFacturado").value = total;
     document.getElementById("idTotalFactura").value = total;
 }
 
@@ -765,20 +712,7 @@ function validacion(){
         });
         return false;
     }
-    if(document.getElementById("factura_tipo_pago").value == "CREDITO"){
-        if(document.getElementById("idTieneCredito").value == "1"){
-            monto = Number(document.getElementById("idMontoCredito").value);
-            valor = Number(document.getElementById("saldoPendienteID").value) + Number(document.getElementById("idMontoFacturado").value);
-            if(valor > monto){
-                bootbox.alert({
-                    message: "El cliente esta excediendo el monto de credito asignado.",
-                    size: 'small'
-                });
-                return false;
-            }
-        }
-    }
-     return true; 
+    return true; 
 }
 </script>
 

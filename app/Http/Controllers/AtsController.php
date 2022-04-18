@@ -1162,6 +1162,32 @@ class AtsController extends Controller
             //ventas
             xmlwriter_start_element($xml, 'ventas');
             foreach (Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->select('cliente_id', DB::raw('COUNT(factura_id) as cantidad'), DB::raw('SUM(factura_tarifa0) as tarifa0'), DB::raw('SUM(factura_tarifa12) as tarifa12'), DB::raw('SUM(factura_iva) as iva'),'factura_emision')->groupBy('cliente_id')->groupBy('factura_emision')->get() as $factura) {
+                /*Ecnontrar facturas de reembolso por cliente*/
+                $totRem0 = 0;
+                $totRem12 = 0;
+                $totRemIva = 0;
+                $countFacturaR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+                ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+                ->where('factura_venta.cliente_id','=',$factura->cliente->cliente_id)->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+                if(isset($countFacturaR->cantidad)){
+                    $countFacturaR = $countFacturaR->cantidad;
+                }else{
+                    $countFacturaR = 0;
+                }
+
+                $facturasR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+                ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+                ->where('factura_venta.cliente_id','=',$factura->cliente->cliente_id)->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
+
+                foreach($facturasR as $facturaR){
+                    if(floatval($facturaR->detalle_iva) > 0){
+                        $totRem12 = $totRem12 + floatval($facturaR->detalle_total);
+                    }else{
+                        $totRem0 = $totRem0 + floatval($facturaR->detalle_total);
+                    }          
+                    $totRemIva = $totRemIva + floatval($facturaR->detalle_iva);
+                }
+                /*Fin ecnontrar facturas de reembolso por cliente*/
                 //detalleVentas
                 xmlwriter_start_element($xml, 'detalleVentas');
                 //tpIdCliente
@@ -1209,7 +1235,7 @@ class AtsController extends Controller
                 // final 'tipoEmision'
                 //numeroComprobantes
                 xmlwriter_start_element($xml, 'numeroComprobantes');
-                xmlwriter_text($xml, $factura->cantidad);
+                xmlwriter_text($xml, ($factura->cantidad - $countFacturaR));
                 xmlwriter_end_element($xml);
                 // final 'numeroComprobantes'
                 //baseNoGraIva
@@ -1219,17 +1245,17 @@ class AtsController extends Controller
                 // final 'baseNoGraIva'
                 //baseImponible
                 xmlwriter_start_element($xml, 'baseImponible');
-                xmlwriter_text($xml, number_format($factura->tarifa0, 2, '.', ''));
+                xmlwriter_text($xml, number_format($factura->tarifa0 - $totRem0, 2, '.', ''));
                 xmlwriter_end_element($xml);
                 // final 'baseImponible'
                 //baseImpGrav
                 xmlwriter_start_element($xml, 'baseImpGrav');
-                xmlwriter_text($xml, number_format($factura->tarifa12, 2, '.', ''));
+                xmlwriter_text($xml, number_format($factura->tarifa12 - $totRem12, 2, '.', ''));
                 xmlwriter_end_element($xml);
                 // final 'baseImpGrav'
                 //montoIva
                 xmlwriter_start_element($xml, 'montoIva');
-                xmlwriter_text($xml, number_format($factura->iva, 2, '.', ''));
+                xmlwriter_text($xml, number_format($factura->iva  - $totRemIva, 2, '.', ''));
                 xmlwriter_end_element($xml);
                 // final 'montoIva'
                 //montoIce
@@ -1250,6 +1276,131 @@ class AtsController extends Controller
                 //formasDePago
                 xmlwriter_start_element($xml, 'formasDePago');
                 foreach (Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->where('factura_venta.cliente_id', '=', $factura->cliente->cliente_id)->select('forma_pago_id')->distinct()->get() as $formaPago) {
+                    //formaPago
+                    xmlwriter_start_element($xml, 'formaPago');
+                    xmlwriter_text($xml, $formaPago->formaPago->forma_pago_codigo);
+                    xmlwriter_end_element($xml);
+                    // final 'formaPago'
+                }
+                                
+                xmlwriter_end_element($xml);
+                // final 'formasDePago'
+                xmlwriter_end_element($xml);
+                // final 'detalleVentas'
+            }
+            //ventas de reembolso
+            $clientesReembolso = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+            ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+            ->select('factura_venta.cliente_id')->distinct()->get();
+            foreach($clientesReembolso as $clienteReembolso){
+                $totRem0 = 0;
+                $totRem12 = 0;
+                $totRemIva = 0;
+                $countFacturaR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+                ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+                ->where('factura_venta.cliente_id','=',$clienteReembolso->cliente->cliente_id)->select(DB::raw('COUNT(distinct factura_venta.factura_id) as cantidad'))->first();
+                $countFacturaR = $countFacturaR->cantidad;
+                $facturasR = Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->join('detalle_fv','detalle_fv.factura_id','=','factura_venta.factura_id')
+                ->join('producto','producto.producto_id','=','detalle_fv.producto_id')->where('producto_nombre','like','%REEMBOLSO DE GASTO%')
+                ->where('factura_venta.cliente_id','=',$clienteReembolso->cliente->cliente_id)->select('detalle_fv.detalle_total', 'detalle_fv.detalle_iva')->get();
+
+                foreach($facturasR as $facturaR){
+                    if(floatval($facturaR->detalle_iva) > 0){
+                        $totRem12 = $totRem12 + floatval($facturaR->detalle_total);
+                    }else{
+                        $totRem0 = $totRem0 + floatval($facturaR->detalle_total);
+                    }          
+                    $totRemIva = $totRemIva + floatval($facturaR->detalle_iva);
+                }
+
+                //detalleVentas
+                xmlwriter_start_element($xml, 'detalleVentas');
+                //tpIdCliente
+                xmlwriter_start_element($xml, 'tpIdCliente');
+                xmlwriter_text($xml, Transaccion_Identificacion::Identificacion($clienteReembolso->cliente->tipo_identificacion_id, 'Venta')->first()->transaccion_codigo);
+                xmlwriter_end_element($xml);
+                // final 'tpIdCliente'
+                //idCliente
+                xmlwriter_start_element($xml, 'idCliente');
+                xmlwriter_text($xml, $clienteReembolso->cliente->cliente_cedula);
+                xmlwriter_end_element($xml);
+                // final 'idCliente'
+                if(Transaccion_Identificacion::Identificacion($clienteReembolso->cliente->tipo_identificacion_id, 'Venta')->first()->transaccion_codigo != '07'){
+                    //parteRelVtas
+                    xmlwriter_start_element($xml, 'parteRelVtas');
+                    xmlwriter_text($xml, 'NO');//revisar
+                    xmlwriter_end_element($xml);
+                    // final 'parteRelVtas'
+                }
+                if (Transaccion_Identificacion::Identificacion($clienteReembolso->cliente->tipo_identificacion_id, 'Venta')->first()->transaccion_codigo == '06') {
+                    //tipoCliente
+                    xmlwriter_start_element($xml, 'tipoCliente');
+                    xmlwriter_text($xml, 'REVISAR');
+                    xmlwriter_end_element($xml);
+                    // final 'tipoCliente'
+                    //DenoCli
+                    xmlwriter_start_element($xml, 'DenoCli');
+                    xmlwriter_text($xml, 'REVISAR');
+                    xmlwriter_end_element($xml);
+                    // final 'DenoCli'
+                }
+                //tipoComprobante
+                xmlwriter_start_element($xml, 'tipoComprobante');
+                xmlwriter_text($xml, '41');
+                xmlwriter_end_element($xml);
+                // final 'tipoComprobante'
+                //tipoEmision
+                xmlwriter_start_element($xml, 'tipoEmision');
+                if($factura->factura_emision == 'ELECTRONICA'){
+                    xmlwriter_text($xml, 'E');
+                }else{
+                    xmlwriter_text($xml, 'F');
+                }
+                xmlwriter_end_element($xml);
+                // final 'tipoEmision'
+                //numeroComprobantes
+                xmlwriter_start_element($xml, 'numeroComprobantes');
+                xmlwriter_text($xml, ($countFacturaR));
+                xmlwriter_end_element($xml);
+                // final 'numeroComprobantes'
+                //baseNoGraIva
+                xmlwriter_start_element($xml, 'baseNoGraIva');
+                xmlwriter_text($xml, '0.00');
+                xmlwriter_end_element($xml);
+                // final 'baseNoGraIva'
+                //baseImponible
+                xmlwriter_start_element($xml, 'baseImponible');
+                xmlwriter_text($xml, number_format($totRem0, 2, '.', ''));
+                xmlwriter_end_element($xml);
+                // final 'baseImponible'
+                //baseImpGrav
+                xmlwriter_start_element($xml, 'baseImpGrav');
+                xmlwriter_text($xml, number_format($totRem12, 2, '.', ''));
+                xmlwriter_end_element($xml);
+                // final 'baseImpGrav'
+                //montoIva
+                xmlwriter_start_element($xml, 'montoIva');
+                xmlwriter_text($xml, number_format($totRemIva, 2, '.', ''));
+                xmlwriter_end_element($xml);
+                // final 'montoIva'
+                //montoIce
+                xmlwriter_start_element($xml, 'montoIce');
+                xmlwriter_text($xml, '0.00');
+                xmlwriter_end_element($xml);
+                // final 'montoIce'
+                //valorRetIva
+                xmlwriter_start_element($xml, 'valorRetIva');
+                xmlwriter_text($xml, '0.00');
+                xmlwriter_end_element($xml);
+                // final 'valorRetIva'
+                //valorRetRenta
+                xmlwriter_start_element($xml, 'valorRetRenta');
+                xmlwriter_text($xml, '0.00');
+                xmlwriter_end_element($xml);
+                // final 'valorRetRenta'
+                //formasDePago
+                xmlwriter_start_element($xml, 'formasDePago');
+                foreach (Factura_Venta::FacturasbyFecha($fechaInicio, $fechaFin)->where('factura_venta.cliente_id', '=', $clienteReembolso->cliente->cliente_id)->select('forma_pago_id')->distinct()->get() as $formaPago) {
                     //formaPago
                     xmlwriter_start_element($xml, 'formaPago');
                     xmlwriter_text($xml, $formaPago->formaPago->forma_pago_codigo);

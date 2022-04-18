@@ -60,7 +60,6 @@ class listaGuiasRemisionOrdenesController extends Controller
     {
         try{
             $gr_id = $request->get('checkbox');
-            $saldoCliente = 0;
             DB::beginTransaction();           
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono', 'grupo_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->join('grupo_permiso', 'grupo_permiso.grupo_id', '=', 'permiso.grupo_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('grupo_orden', 'asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso', 'usuario_rol.rol_id', '=', 'rol_permiso.rol_id')->join('permiso', 'permiso.permiso_id', '=', 'rol_permiso.permiso_id')->where('permiso_estado', '=', '1')->where('usuario_rol.user_id', '=', Auth::user()->user_id)->orderBy('permiso_orden', 'asc')->get();
@@ -112,7 +111,6 @@ class listaGuiasRemisionOrdenesController extends Controller
                     
                 }
             }
-            $saldoCliente = Cuenta_Cobrar::CuentasClientes($guiadatos->cliente->cliente_id)->sum("cuenta_saldo");
             $rangoDocumento=Rango_Documento::PuntoRango($puntoemeision->punto_id, 'Factura')->first();
             $secuencial=1;      
             if($rangoDocumento){
@@ -135,8 +133,7 @@ class listaGuiasRemisionOrdenesController extends Controller
                 'PE'=>Punto_Emision::puntos()->get(),
                 'rangoDocumento'=>$rangoDocumento,
                 'gruposPermiso'=>$gruposPermiso, 
-                'permisosAdmin'=>$permisosAdmin,
-                'saldoCliente'=>$saldoCliente]
+                'permisosAdmin'=>$permisosAdmin]
                     );
             }else{
                 $puntosEmision = Punto_Emision::PuntoxSucursal($puntoemeision->sucursal_id)->get();
@@ -164,8 +161,7 @@ class listaGuiasRemisionOrdenesController extends Controller
                     'PE'=>Punto_Emision::puntos()->get(),
                     'rangoDocumento'=>$rangoDocumento,
                     'gruposPermiso'=>$gruposPermiso, 
-                    'permisosAdmin'=>$permisosAdmin,
-                    'saldoCliente'=>$saldoCliente]
+                    'permisosAdmin'=>$permisosAdmin]
                         );
                 }else{
                     return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir facturas de venta, configueros y vuelva a intentar');

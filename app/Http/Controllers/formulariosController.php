@@ -51,7 +51,17 @@ class formulariosController extends Controller
             if($request->get('valor5')){$valor5 = str_replace(',','',$request->get('valor5'));}
             if($request->get('valor6')){$valor6 = str_replace(',','',$request->get('valor6'));}
             if (isset($_POST['consultar'])){
-                return view('admin.sri.formularios.reporteTributario',['fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                $ant615 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','615')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant615 = $reporteAnt->reporte_viva;
+                }
+                $ant617 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','617')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant617 = $reporteAnt->reporte_viva;
+                }
+            return view('admin.sri.formularios.reporteTributario',['ant615'=>$ant615,'ant617'=>$ant617,'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }
             if (isset($_POST['pdf'])){
                 $empresa =  Empresa::empresa()->first();

@@ -154,4 +154,12 @@ class Producto extends Model
     public function scopeProductosByNombre($query, $buscar){
         return $query->join('empresa','empresa.empresa_id','=','producto.empresa_id')->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%')->orderBy('producto_nombre','asc');
     }
+    public function scopeProductosByNombreCodigo($query, $buscar){
+        return $query->join('empresa','empresa.empresa_id','=','producto.empresa_id')
+        ->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')
+        ->where(function ($query) use ($buscar) { 
+            $query->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%')
+            ->orwhere(DB::raw('lower(producto_codigo)'), 'like', '%'.strtolower($buscar).'%');
+        })->orderBy('producto_nombre','asc');        
+    }
 }

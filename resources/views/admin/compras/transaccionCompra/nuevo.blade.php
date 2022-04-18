@@ -1072,7 +1072,7 @@ function calcularTotal() {
 
 function seleccionarIva() {
     var combo = document.getElementById("transaccion_porcentaje_iva");
-    var porcentajeIva = combo.options[combo.selectedIndex].text;
+    porcentajeIva = combo.options[combo.selectedIndex].text;
     porcentajeIva = parseFloat(porcentajeIva) / 100;
     document.getElementById("porcentajeIva").innerHTML = "Tarifa " + combo.options[combo.selectedIndex].text;
     document.getElementById("iva12").innerHTML = "Iva " + combo.options[combo.selectedIndex].text;

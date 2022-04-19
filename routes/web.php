@@ -783,7 +783,7 @@ Route::get('/producto/precio/{id}', [productoController::class, 'nuevoPrecio'])-
 Route::post('/producto/precio', [productoController::class, 'guardarPrecio'])->middleware('auth');
 /*CODIGO PRODUCTO PROVEEDOR*/
 Route::get('/producto/codigo/{id}', [productoController::class, 'nuevoCodigo'])->middleware('auth');
-Route::post('/producto/codigo', [productoController::class, 'guardarPrecio'])->middleware('auth');
+Route::post('/producto/codigo', [productoController::class, 'guardarCodigo'])->middleware('auth');
 /*ANEXO TRANSACCIONAL SIMPLIFICADO*/
 Route::get('/atsSRI', [AtsController::class, 'nuevo'])->middleware('auth');
 Route::post('/atsSRI', [AtsController::class, 'consultar'])->middleware('auth');

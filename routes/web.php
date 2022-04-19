@@ -93,6 +93,7 @@ use App\Http\Controllers\descontarAnticipoProveedorController;
 use App\Http\Controllers\liquidacionCompraController;
 use App\Http\Controllers\listaCentroConsumoController;
 use App\Http\Controllers\listaChequeController;
+use App\Http\Controllers\listaChequeAnuladoController;
 use App\Http\Controllers\listaRetencionEmitidaController;
 use App\Http\Controllers\pacienteController;
 use App\Http\Controllers\notaCreditoController;
@@ -716,6 +717,9 @@ Route::get('/respuesSRIND/{id}', [documentosElectronicosController::class, 'resp
 Route::get('/respuesSRILQ/{id}', [documentosElectronicosController::class, 'respuesSRILQ'])->middleware('auth');
 Route::get('/respuesSRIRet/{id}', [documentosElectronicosController::class, 'respuesSRIRet'])->middleware('auth');
 
+Route::get('/listaChequesAnulados', [listaChequeAnuladoController::class, 'listarChequesAnulados'])->middleware('auth');
+Route::post('/listaChequesAnulados', [listaChequeAnuladoController::class, 'listarChequesAnulados'])->middleware('auth');
+Route::post('/eliminarChequeAnulado', [listaChequeAnuladoController::class, 'eliminarChequeAnulado'])->middleware('auth');
 
 Route::get('/facturarOrden/{id}', [ordenAtencionController::class, 'facturarOrden'])->middleware('auth');
 Route::post('/facturarOrden', [ordenAtencionController::class, 'facturarOrdenGuardar'])->middleware('auth');

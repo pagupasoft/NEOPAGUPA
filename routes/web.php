@@ -783,6 +783,9 @@ Route::post('/cuentaBancaria/guardarConfigCheque/{id}', [cuentaBancariaControlle
 /*PRECIOS PRODUCTO*/
 Route::get('/producto/precio/{id}', [productoController::class, 'nuevoPrecio'])->middleware('auth');
 Route::post('/producto/precio', [productoController::class, 'guardarPrecio'])->middleware('auth');
+/*CODIGO PRODUCTO PROVEEDOR*/
+Route::get('/producto/codigo/{id}', [productoController::class, 'nuevoCodigo'])->middleware('auth');
+Route::post('/producto/codigo', [productoController::class, 'guardarPrecio'])->middleware('auth');
 /*ANEXO TRANSACCIONAL SIMPLIFICADO*/
 Route::get('/atsSRI', [AtsController::class, 'nuevo'])->middleware('auth');
 Route::post('/atsSRI', [AtsController::class, 'consultar'])->middleware('auth');

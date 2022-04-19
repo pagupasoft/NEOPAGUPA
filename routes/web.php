@@ -236,6 +236,7 @@ use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
+use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
 use App\Models\Imagen;
@@ -352,6 +353,7 @@ Route::resource('cargaBalances', cargarBalancesController::class)->middleware('a
 Route::resource('listacontroldia', listaControlDiaController::class)->middleware('auth');
 Route::resource('beneficiosSociales', beneficiosSocialesConsolidadaController::class)->middleware('auth');
 Route::resource('tipoMovimientoEmpleado', tipoMovimientoEmpleadoController::class)->middleware('auth');
+Route::resource('verificadorComprasSri', verificarComprasSriController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');

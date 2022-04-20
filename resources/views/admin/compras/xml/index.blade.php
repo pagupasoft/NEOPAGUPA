@@ -35,7 +35,8 @@
                 @if(isset($datos))
                     @for ($i = 1; $i <= count($datos); ++$i)   
                     <tr class="text-center">
-                        <td><a href="{{ url("compras/xmlProcesar/{$datos[$i]['clave']}/{$punto}") }}" class="btn btn-sm btn-success"  data-toggle="tooltip" data-placement="top" title="Cargar"><i class="fas fa-file-upload" aria-hidden="true"></i></a></td>
+                        <td><a href="{{ url("compras/xmlProcesar/{$datos[$i]['clave']}/{$punto}") }}" class="btn btn-sm btn-success"  data-toggle="tooltip" data-placement="top" title="Cargar Factura"><i class="fas fa-file-upload" aria-hidden="true"></i></a>
+                            <a href="{{ url("compras/xmlProducto/{$datos[$i]['clave']}/{$punto}") }}" class="btn btn-sm btn-primary"  data-toggle="tooltip" data-placement="top" title="Cargar Prodcutos"><i class="fas fa-file-upload" aria-hidden="true"></i></a></td>
                         <td>{{ $datos[$i]['proveedor'] }}</td>
                         <td>{{ $datos[$i]['fecha'] }}</td>
                         <td>{{ $datos[$i]['doc'] }}</td>

@@ -12,9 +12,11 @@ use App\Models\Grupo_Producto;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Codigo_Producto;
 use App\Models\Detalle_Lista;
 use App\Models\Empresa;
 use App\Models\Precio_Producto;
+use App\Models\Proveedor;
 use App\Models\Punto_Emision;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
@@ -829,6 +831,49 @@ class productoController extends Controller
             return redirect('producto')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    public function nuevoCodigo($id){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $producto=Producto::producto($id)->first();
+            $proveedores=Proveedor::Proveedores()->get();
+            if($producto){
+                return view('admin.inventario.producto.codigoProveedor',['producto'=>$producto,'proveedores'=>$proveedores,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin]);
+            }else{
+                return redirect('/denegado');
+            }
+        }
+        catch(\Exception $ex){      
+            return redirect('producto')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function guardarCodigo(Request $request){
+        try {
+            DB::beginTransaction();
+            $nombre = $request->get('DLdias');
+            $provedor = $request->get('idpr');
+            $producto = Producto::findOrFail($request->get('idProducto'));
+            $codigo=Codigo_Producto::where('producto_id','=',$producto->producto_id)->delete();
+            for ($i=1; $i < count($nombre); $i++) { 
+                $codigo = new Codigo_Producto();
+                $codigo->codigo_nombre = $nombre[$i];
+                $codigo->proveedor_id = $provedor[$i];
+                $codigo->codigo_estado = 1;
+                $codigo->producto_id = $producto->producto_id;
+                $codigo->save();
+            }
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$producto->producto_nomrbe,'0','');
+            DB::commit();
+            return redirect('producto')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('producto')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     public function guardarPrecio(Request $request){
         try {
             DB::beginTransaction();
@@ -853,4 +898,7 @@ class productoController extends Controller
             return redirect('producto')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    public function buscarByProducto($buscar){
+        return Producto::Producto($buscar)->get();
+    }   
 }

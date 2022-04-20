@@ -46,15 +46,17 @@ class cargarXMLController extends Controller
             $provedor = $request->get('idproveedor');
             $producto = $request->get('productos');
             for ($i=0; $i < count($nombre); $i++) { 
-                $codigo = new Codigo_Producto();
-                $codigo->codigo_nombre = trim($nombre[$i]);
-                $codigo->proveedor_id = $provedor;
-                $codigo->codigo_estado = 1;
-                $codigo->producto_id = $producto[$i];
-                $codigo->save();
-                $product=Producto::findOrFail($producto[$i]);
-                $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nomrbe,'0','');
+                if ($producto[$i]!=0) {
+                    $codigo = new Codigo_Producto();
+                    $codigo->codigo_nombre = trim($nombre[$i]);
+                    $codigo->proveedor_id = $provedor;
+                    $codigo->codigo_estado = 1;
+                    $codigo->producto_id = $producto[$i];
+                    $codigo->save();
+                    $product=Producto::findOrFail($producto[$i]);
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nomrbe, '0', '');
+                }
             }
             
             $firmaElectronica = Firma_Electronica::firma()->first();

@@ -40,7 +40,7 @@
                                         <td>{{$datos[$i]['descripcion']}}</td>
                                         <td>
                                             <select class="custom-select select2" id="productos{{$i}}" name="productos[]" onchange="ShowSelected({{$i}});" >
-                                                <option value="" label>--Seleccione una opcion--</option>
+                                                <option value="0" label>--Seleccione una opcion--</option>
                                                     @foreach($productos as $producto)
                                                         <option value="{{$producto->producto_id}}" >{{$producto->producto_nombre}}</option>
                                                     @endforeach

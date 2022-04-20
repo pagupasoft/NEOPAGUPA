@@ -1211,14 +1211,11 @@ Route::get('/transaccioncompra/{id}/edit',  [transaccionCompraController::class,
 Route::get('/transaccioncompra/{id}/eliminar',  [transaccionCompraController::class, 'eliminar'])->middleware('auth');
 
 Route::get('/factura/{id}/ver',  [listaFacturaController::class, 'ver'])->middleware('auth');
+Route::get('/factura/{id}/editar',  [listaFacturaController::class, 'editar']);
 Route::get('/factura/{id}/ordenDespacho',  [listaFacturaController::class, 'ordenDespacho'])->middleware('auth');
 Route::get('/factura/{id}/eliminar',  [listaFacturaController::class, 'eliminar'])->middleware('auth');
 Route::get('/factura/{id}/imprimir',  [listaFacturaController::class, 'imprimir'])->middleware('auth');
 Route::get('/factura/{id}/imprimirRecibo    ',  [listaFacturaController::class, 'imprimirRecibo'])->middleware('auth');
-
-Route::get('/editarFactura',  [editarFacturaController::class, 'listarFacturas'])->middleware('auth');
-Route::get('/editarFactura/{id}/ver',  [editarFacturaController::class, 'editarFactura'])->middleware('auth');
-Route::post('/guardarFactura',  [editarFacturaController::class, 'guardarFactura'])->middleware('auth');
 
 Route::get('/transaccioncompra/{id}/ver',  [listatransaccionCompraController::class, 'ver'])->middleware('auth');
 Route::get('/liquidacioncompras/{id}/ver',  [listaliquidacionCompraController::class, 'ver'])->middleware('auth');

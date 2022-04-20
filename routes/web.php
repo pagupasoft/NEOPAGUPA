@@ -187,6 +187,7 @@ use App\Http\Controllers\grupoActivoController;
 use App\Http\Controllers\ingresoBancoController;
 use App\Http\Controllers\listaCierreCajaController;
 use App\Http\Controllers\listaEgresoBancoController;
+use App\Http\Controllers\editarFacturaController;
 use App\Http\Controllers\listaFacturaController;
 use App\Http\Controllers\listaIngresoBancoController;
 use App\Http\Controllers\listaliquidacionCompraController;
@@ -1214,6 +1215,10 @@ Route::get('/factura/{id}/ordenDespacho',  [listaFacturaController::class, 'orde
 Route::get('/factura/{id}/eliminar',  [listaFacturaController::class, 'eliminar'])->middleware('auth');
 Route::get('/factura/{id}/imprimir',  [listaFacturaController::class, 'imprimir'])->middleware('auth');
 Route::get('/factura/{id}/imprimirRecibo    ',  [listaFacturaController::class, 'imprimirRecibo'])->middleware('auth');
+
+Route::get('/editarFactura',  [editarFacturaController::class, 'listarFacturas'])->middleware('auth');
+Route::get('/editarFactura/{id}/ver',  [editarFacturaController::class, 'editarFactura'])->middleware('auth');
+Route::get('/guardarFactura/{id}',  [editarFacturaController::class, 'guardarFactura'])->middleware('auth');
 
 Route::get('/transaccioncompra/{id}/ver',  [listatransaccionCompraController::class, 'ver'])->middleware('auth');
 Route::get('/liquidacioncompras/{id}/ver',  [listaliquidacionCompraController::class, 'ver'])->middleware('auth');

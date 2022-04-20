@@ -69,7 +69,7 @@ class formulariosController extends Controller
                 if (!is_dir($ruta)) {
                     mkdir($ruta, 0777, true);
                 }
-                $view =  \View::make('admin.formatosPDF.reporteTributario', ['valor1'=>$valor1,'valor2'=>$valor2,'valor3'=>$valor3,'valor4'=>$valor4,'valor5'=>$valor5,'valor6'=>$valor6,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa]);
+                $view =  \View::make('admin.formatosPDF.reporteTributario', ['valor1'=>$valor1,'valor2'=>$valor2,'valor3'=>$valor3,'valor4'=>$valor4,'valor5'=>$valor5,'valor6'=>$valor6,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa, 'base_imponible'=>$request->get('base_imponible'), 'valor_retenido'=>$request->get('valor_retenido')]);
                 $nombreArchivo = 'REPORTE TRIBUTARIO DEL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             } 
@@ -475,7 +475,23 @@ class formulariosController extends Controller
                                 }                         
                         }
 
-                        if(count($datos[14]) > 0){                        
+                        if(count($datos[14]) > 0){ 
+                            $reporteTributario = new Reporte_Tributario();
+                            $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                            $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
+                            $reporteTributario->reporte_tipo = $datos[14][$i]['cantidad'];
+                            $reporteTributario->reporte_casillero = $datos[14][$i]['codigo'];
+                            $reporteTributario->reporte_vbruto = 0;
+                            $reporteTributario->reporte_vnc = 0;
+                            $reporteTributario->reporte_vneto = $datos[14][$i]['base'];
+                            $reporteTributario->reporte_viva = $datos[14][$i]['valor'];
+                            $reporteTributario->reporte_estado = 1;
+                            $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                            $reporteTributario->save();
+
+
+                           
+
                             for ($i = 1; $i <= count($datos[14]); ++$i){  
                                 $reporteTributario = new Reporte_Tributario();
                                 $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
@@ -535,7 +551,7 @@ class formulariosController extends Controller
                     $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                     $reporteTributario->save();
 
-                    if(count($datos[18]) > 0){                        
+                    if(count($datos[18]) > 0){
                         for ($i = 1; $i <= count($datos[18]); ++$i){  
                             $reporteTributario = new Reporte_Tributario();
                             $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       

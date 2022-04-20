@@ -1254,3 +1254,6 @@ Route::post('/reporteTributario',  [formulariosController::class, 'consultar'])-
 //reporte utilidad por producto
 Route::get('/utilidadProducto',  [reporteUtilidadController::class, 'nuevo'])->middleware('auth');
 Route::post('/utilidadProducto',  [reporteUtilidadController::class, 'consultar'])->middleware('auth');
+Route::get('/compras/xmlProducto/{clave}/{punto}',  [cargarXMLController::class, 'procesarproducto'])->middleware('auth');
+Route::post('/producto/compra',  [cargarXMLController::class, 'cargarproducto'])->middleware('auth');
+Route::get('/buscarProducto/searchN/{buscar}',  [productoController::class, 'buscarByProducto'])->middleware('auth');

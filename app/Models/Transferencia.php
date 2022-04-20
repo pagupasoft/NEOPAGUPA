@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Transferencia extends Model
 {
@@ -50,5 +51,16 @@ class Transferencia extends Model
     public function egresoBanco()
     {
         return $this->belongsTo(Egreso_Banco::class, 'transferencia_id', 'transferencia_id');
+    }
+    public function scopeTransferenciasSumtorias($query,$idCuentaBancaria,$fechaHasta){
+        return $query->select(DB::raw('SUM(transferencia_valor) as sumatransferencia'))
+        ->join('cuenta_bancaria','cuenta_bancaria.cuenta_bancaria_id','=','transferencia.cuenta_bancaria_id')
+        ->join('cuenta','cuenta.cuenta_id','=','cuenta_bancaria.cuenta_id')
+        ->where('cuenta.empresa_id','=',Auth::user()->empresa_id)
+        ->where('transferencia_estado','=','1')
+        ->where('transferencia.cuenta_bancaria_id','=',$idCuentaBancaria)    
+        ->where('transferencia_conciliacion','=',true)       
+        ->where('transferencia_fecha','<=',$fechaHasta)
+        ->where('transferencia_fecha_conciliacion','<=',$fechaHasta);
     }
 }

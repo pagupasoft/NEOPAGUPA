@@ -14,6 +14,7 @@ use App\Models\Nota_Credito_banco;
 use App\Models\Nota_Debito_banco;
 use App\Models\Punto_Emision;
 use App\Models\Transferencia;
+use App\Models\User;
 use App\NEOPAGUPA\ViewExcel;
 use PDF;
 use DateTime;
@@ -96,11 +97,13 @@ class conciliacionBancariaController extends Controller
                 $datos[24] = $request->get('idDesde');
                 $datos[25] = $request->get('idHasta');
                 $empresa =  Empresa::empresa()->first();
+                Auth::user()->user_nombre;
+
                 $ruta = public_path().'/PDF/'.$empresa->empresa_ruc;
                 if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
                 }
-                $view =  \View::make('admin.formatosPDF.conciliacionBancariapdf',['empresa'=>$empresa,'datos'=>$datos,'banco'=>$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'cuentaBancariaB'=>$cuentaBancaria->cuenta_bancaria_numero]);
+                $view =  \View::make('admin.formatosPDF.conciliacionBancariapdf',['user'=>Auth::user()->user_nombre,'empresa'=>$empresa,'datos'=>$datos,'banco'=>$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'cuentaBancariaB'=>$cuentaBancaria->cuenta_bancaria_numero]);
                 $nombreArchivo = 'REPORTE BANCARIO '.'-'.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.'-'.$cuentaBancaria->cuenta_bancaria_numero.DateTime::createFromFormat('Y-m-d', $request->get('idDesde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('idHasta'))->format('d-m-Y');
                 
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');

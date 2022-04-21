@@ -164,6 +164,7 @@
                     @foreach($productosGastos as $productosGasto)
                     <tr class="text-center">
                         <td>
+                            <a href="{{ url("producto/codigo/{$productosGasto->producto_id}") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Configurar Codigos"><i class="fa fa-cog" aria-hidden="true"></i></a>       
                             <a href="{{ url("producto/precio/{$productosGasto->producto_id}") }}" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Configurar precios"><i class="fa fa-tasks" aria-hidden="true"></i></a>
                             <a href="{{ url("producto/{$productosGasto->producto_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                             <a href="{{ url("producto/{$productosGasto->producto_id}") }}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>

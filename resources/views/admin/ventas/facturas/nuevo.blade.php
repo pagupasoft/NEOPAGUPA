@@ -702,6 +702,7 @@ function eliminarTodo() {
     document.getElementById("iva").innerHTML = "0.00";
     document.getElementById("total").innerHTML = "0.00";
     resetearCampos();
+    document.getElementById("idTotalFactura").value = "0.00";
 }
 
 function calcularTotal() {
@@ -759,10 +760,11 @@ function validacion() {
         });
         return false
     }
+    
     if (document.getElementById("idTotalFactura").value <= 0) {      
         bootbox.alert({
             message: "El total de la factura debe ser mayor a cero.",
-            size: 'small'
+            size: 'large'
         });
         return false;
     }

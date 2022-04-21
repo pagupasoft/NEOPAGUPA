@@ -10,12 +10,11 @@
                 </div>
                 <div class="col-sm-5">
                     <div class="float-right">
-                        
+                        <a id="xmlID" href="{{ url("compras/xml/{$rangoDocumento->puntoEmision->punto_id}") }}" class="btn btn-secondary btn-sm" disabled><i
+                                class="fas fa-file-code"></i><span> Archivo TXT</span></a>
                         <button id="guardarID" type="submit" class="btn btn-success btn-sm" @if(isset($poveedorXML) == false) disabled @endif><i
                                 class="fa fa-save"></i><span> Guardar</span></button>
-                        <button type="button" id="cancelarID" name="cancelarID" onclick="javascript:location.reload()"
-                            class="btn btn-danger btn-sm not-active-neo" ><i
-                                class="fas fa-times-circle"></i><span> Cancelar</span></button>
+                        <a href="javascript: history.go(-1)" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</a>  
                     </div>
                 </div>
             </div>
@@ -436,8 +435,9 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select class="form-control select2" id="Dcconsumo" name="Dcconsumo[]"
-                                                    data-live-search="true" >
+                                                <select class="form-control select2" id="cconsumos" name="Dcconsumo[]" onchange="cargarSustento2();"
+                                                    >
+                                                    <option value="" label>--Seleccione una opcion--</option>
                                                     @foreach($centros as $centro)
                                                     <option value="{{$centro->centro_consumo_id}}">{{$centro->centro_consumo_nombre}}
                                                     </option>
@@ -955,6 +955,12 @@ function cargarmetodo(){
 
 function cargarSustento(){
     var centroConsumo = document.getElementById("ccProducto");
+    var centroConsumoSustento = document.getElementById("idCCSustento");
+    document.getElementById("sustento_id").value = centroConsumoSustento.options[centroConsumo.selectedIndex].value;
+    $("#sustento_id").val(centroConsumoSustento.options[centroConsumo.selectedIndex].value).trigger('change');
+}
+function cargarSustento2(){
+    var centroConsumo = document.getElementById("cconsumos");
     var centroConsumoSustento = document.getElementById("idCCSustento");
     document.getElementById("sustento_id").value = centroConsumoSustento.options[centroConsumo.selectedIndex].value;
     $("#sustento_id").val(centroConsumoSustento.options[centroConsumo.selectedIndex].value).trigger('change');

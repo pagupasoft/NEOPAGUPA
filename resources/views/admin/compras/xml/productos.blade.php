@@ -7,6 +7,7 @@
             <h3 class="card-title">Configurar Codigos de Producto</h3>
             <div class="float-right">
                 <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                <a href="javascript: history.go(-1)" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</a>  
             </div>
         </div>
         <div class="card-body">

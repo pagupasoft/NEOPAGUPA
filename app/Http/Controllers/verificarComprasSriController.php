@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Transaccion_Compra;
+use App\Models\Punto_Emision;
+
 class verificarComprasSriController extends Controller
 {
     /**
@@ -14,7 +19,16 @@ class verificarComprasSriController extends Controller
      */
     public function index()
     {
-        //
+        try{ 
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $proveedores=Transaccion_Compra::ProveedorDistinsc()->select('proveedor.proveedor_id','proveedor.proveedor_nombre')->distinct()->get();
+            $sucursales=Transaccion_Compra::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            return view('admin.compras.verificarCompras.index',['proveedores'=>$proveedores,'sucursales'=>$sucursales,'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**
@@ -35,7 +49,49 @@ class verificarComprasSriController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{ 
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $proveedores=Transaccion_Compra::ProveedorDistinsc()->select('proveedor.proveedor_id','proveedor.proveedor_nombre')->distinct()->get();
+            $sucursales=Transaccion_Compra::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $transaccionCompras=null;
+
+            $transaccionCompras=Transaccion_Compra::transaccionesSoloFacturas()
+;
+
+            if ($request->get('fecha_todo') != "on"){
+                $transaccionCompras->where('transaccion_fecha','>=',$request->get('idDesde'))
+                                   ->where('transaccion_fecha','<=',$request->get('idHasta'));
+            }
+
+            if ($request->get('idProveedor') != "--TODOS--")
+                $transaccionCompras->where('proveedor_id','=',$request->get('idProveedor'));
+
+            
+            if ($request->get('sucursal') != "--TODOS--")
+                $transaccionCompras->where('sucursal_nombre','=',$request->get('sucursal'));
+
+            $transaccionCompras= $transaccionCompras->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
+                                                    ->where('transaccion_estado','=','1')
+                                                    ->distinct()
+                                                    ->orderBy('transaccion_fecha','asc')
+                                                    ->get();
+
+            //return $transaccionCompras;
+            /*
+            $docElectronico = new facturacionElectronicaController();
+            foreach($transaccionCompras as $registro){
+                $respuesta = $docElectronico->consultarDOC("1307202001070180546700120011010000068923611481714"); //$registro->transaccion_autorizacion);
+
+                return $respuesta;
+            }
+            */
+
+            return view('admin.compras.verificarCompras.index',['sucursales'=>$sucursales,'idsucursal'=>$request->get('sucursal'),'fecha_todo'=>$request->get('fecha_todo'),'fecI'=>$request->get('idDesde'),'fecF'=>$request->get('idHasta'),'transaccionCompras'=>$transaccionCompras,'proveedores'=>$proveedores,'nombre_cliente'=>$request->get('idProveedor'),'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]); 
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**

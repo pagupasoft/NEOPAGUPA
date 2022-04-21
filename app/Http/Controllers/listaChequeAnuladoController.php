@@ -63,7 +63,11 @@ class listaChequeAnuladoController extends Controller
     public function eliminarChequeAnulado(Request $request){
         try{
             DB::beginTransaction();
-            $cheque=Cheque::cheque($request->get("cheque_id"));
+            $cheque=Cheque::cheque($request->get("cheque_id"))->first();
+
+            $general = new generalController();
+            $general->registrarAuditoria('Eliminado Cheque #'.$cheque->cheque_numero.' con valor de $'.$cheque->cheque_valor.' y cuenta bancaria id: '.$cheque->cuenta_bancaria_id.', beneficiario '.$cheque->cheque_beneficiario, $cheque->cheque_id, $cheque->cheque_descripcion);
+            
             $cheque->delete();
 
             DB::commit();

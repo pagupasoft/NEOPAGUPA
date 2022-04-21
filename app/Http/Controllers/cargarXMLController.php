@@ -68,6 +68,7 @@ class cargarXMLController extends Controller
             $rangoDocumento=Rango_Documento::PuntoRango($request->get('punto'),'Comprobante de Retención')->first();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
             $secuencial=1;
+            $iva[1]['codigo']='02';
             if($rangoDocumento){
                 $secuencial=$rangoDocumento->rango_inicio;
                 $secuencialAux=Retencion_Compra::secuencial($rangoDocumento->rango_id)->max('retencion_secuencial');
@@ -79,21 +80,56 @@ class cargarXMLController extends Controller
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
-                   
+                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
+                            if ($adicional->codigoPorcentaje>0) {
+                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                            }
+                    }
+                    $porcentaje=Tarifa_Iva::TarifaIvaCodigo($iva[1]['codigo'])->first();
+
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();
-                    $codigos = Codigo_Producto::codigoproductos()->get();
+                    $codigos = Codigo_Producto::buscarproductoproveedor($poveedorXML->proveedor_id)->get();
                     $coun=1;
                    
                     foreach($xmlEnvio->detalles->detalle as $adicional){ 
                         $activador=false;
+                        $vari=trim(strval($adicional->codigoPrincipal));
+                          
                         foreach ($codigos as $codigo) {
-                            if( $adicional->codigoPrincipal==$codigo->codigo_nombre){
+                            if( $vari==$codigo->codigo_nombre){
                                 $activador=true;
                             }
                         }
+                        if ($activador==true) {
+                            if ($datos!=null) {
+                                $product=Codigo_Producto::buscarproducto($vari, $poveedorXML->proveedor_id)->first();
+                                for ($i = 1; $i <= count($datos); ++$i) {
+                                    if ($product->producto_id==$datos[$i]['id']) {
+                                        $datos[$i]['cantidad']=$datos[$i]['cantidad']+floatval($adicional->cantidad);
+                                        $datos[$i]['subtotal2']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['subtotal']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2)-round(floatval($adicional->descuento), 2);
+                                        $datos[$i]['t0']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['descuento']=$datos[$i]['descuento']+round(floatval($adicional->descuento), 2);
+                                        if ($product->producto_tiene_iva==1) {
+                                            $datos[$i]['diva']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            $datos[$i]['t12']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                            $datos[$i]['t0']=0;
+                                            if ($product->producto_tipo==1) {
+                                                $datos[$i]['sb']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['ss']=0;
+                                            }
+                                            else{
+                                                $datos[$i]['sb']=0.00;
+                                                $datos[$i]['ss']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            }
+                                        }
+                                        $datos[$i]['total']=$datos[$i]['subtotal2']+$datos[$i]['diva']-$datos[$i]['descuento'];
+                                        $activador=false;
+                                    }
+                                }
+                            }
+                        }
                         if($activador==true){
-                            $vari=trim(strval($adicional->codigoPrincipal));
-                            
                             $product=Codigo_Producto::buscarproducto($vari,$poveedorXML->proveedor_id)->first();
                             
                             $datos[$coun]['id']=$product->producto_id;
@@ -104,15 +140,19 @@ class cargarXMLController extends Controller
                             $datos[$coun]['diva']=0.00;
                             $datos[$coun]['sb']=0.00;
                             $datos[$coun]['t0']=round($adicional->precioUnitario*$adicional->cantidad,2); 
-                            $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);    
+                            $datos[$coun]['ss']=0.00;    
                             if($product->producto_tiene_iva==1){
                                 $datos[$coun]['iva']='SI';
-                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);
+                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 $datos[$coun]['t12']=round($adicional->precioUnitario*$adicional->cantidad,2);
                                 $datos[$coun]['t0']=0;
                                 if ($product->producto_tipo==1) {
-                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);
+                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                     $datos[$coun]['ss']=0;
+                                }
+                                else{
+                                    $datos[$coun]['sb']=0;
+                                    $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 }
                                 
                             }
@@ -133,10 +173,10 @@ class cargarXMLController extends Controller
                        
                     }
                     DB::commit();
-                    return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($request->get('punto'))->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                    return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($request->get('punto'))->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                 }
                 DB::commit();
-                return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($request->get('punto'))->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($request->get('punto'))->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 DB::commit();
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
@@ -197,36 +237,49 @@ class cargarXMLController extends Controller
             $rangoDocumento=Rango_Documento::PuntoRango($punto,'Comprobante de Retención')->first();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
             $secuencial=1;
+            $datos[1]['codigo']='';
             $productos=Producto::Productos()->get();
+            $iva[1]['codigo']='02';
             if($rangoDocumento){
                 $secuencial=$rangoDocumento->rango_inicio;
                 $secuencialAux=Retencion_Compra::secuencial($rangoDocumento->rango_id)->max('retencion_secuencial');
                 if($secuencialAux){$secuencial=$secuencialAux+1;}
                 $electrocnico = new facturacionElectronicaController();
                 $consultaDoc = $electrocnico->consultarDOC($clave);
-               
+                
                 if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
+                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
+                            if ($adicional->codigoPorcentaje>0) {
+                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                            }
+                    }
                    
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();
                     if(!$poveedorXML){
                         return redirect('/transaccionCompra/new/'.$punto)->with('error','No tiene resgistrado el proveedor, configure y vuelva a intentar');
                     }
-                    $codigos = Codigo_Producto::codigoproductos()->get();
+                    $codigos = Codigo_Producto::buscarproductoproveedor($poveedorXML->proveedor_id)->get();
                     $coun=1;
                    
                     foreach($xmlEnvio->detalles->detalle as $adicional){ 
                         $activador=false;
+                        $vari=trim(strval($adicional->codigoPrincipal));
                         foreach ($codigos as $codigo) {
-                            if( $adicional->codigoPrincipal==$codigo->codigo_nombre){
-
+                            if( $vari==$codigo->codigo_nombre){
+                                $activador=true;
+                            }
+                            
+                        }
+                        for ($i = 1; $i <= count($datos); ++$i){
+                            if($datos[$i]['codigo']==$vari){
                                 $activador=true;
                             }
                         }
                         if($activador==false){
-                            $datos[$coun]['codigo']=$adicional->codigoPrincipal;
+                            $datos[$coun]['codigo']=$vari;
                             $datos[$coun]['descripcion']=$adicional->descripcion;
                             $datos[$coun]['valor']=$adicional->precioUnitario;
                             $datos[$coun]['cantidad']=$adicional->cantidad;
@@ -238,10 +291,10 @@ class cargarXMLController extends Controller
                     if($datos!=null){
                         return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'poveedorXML'=>$poveedorXML,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                     }
-                    return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                    return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                 }
                
-                return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
             }
@@ -262,6 +315,7 @@ class cargarXMLController extends Controller
             $rangoDocumento=Rango_Documento::PuntoRango($punto,'Comprobante de Retención')->first();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
             $secuencial=1;
+            $iva[1]['codigo']='02';
             if($rangoDocumento){
                 $secuencial=$rangoDocumento->rango_inicio;
                 $secuencialAux=Retencion_Compra::secuencial($rangoDocumento->rango_id)->max('retencion_secuencial');
@@ -272,27 +326,59 @@ class cargarXMLController extends Controller
                 if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
-                   
-                   
+                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
+                            if ($adicional->codigoPorcentaje>0) {
+                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                            }
+                    }
+               
+                    $porcentaje=Tarifa_Iva::TarifaIvaCodigo($iva[1]['codigo'])->first();
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();
                     if(!$poveedorXML){
                         return redirect('/transaccionCompra/new/'.$punto)->with('error','No tiene resgistrado el proveedor, configure y vuelva a intentar');
                     }
-                    $codigos = Codigo_Producto::codigoproductos()->get();
+                    $codigos = Codigo_Producto::buscarproductoproveedor($poveedorXML->proveedor_id)->get();
                     $coun=1;
                    
                     foreach($xmlEnvio->detalles->detalle as $adicional){ 
                         $activador=false;
+                        $vari=trim(strval($adicional->codigoPrincipal));
                         foreach ($codigos as $codigo) {
-                            if( $adicional->codigoPrincipal==$codigo->codigo_nombre){
+                            if( $vari==$codigo->codigo_nombre){
                                 $activador=true;
                             }
                         }
+                        if ($activador==true) {
+                            if ($datos!=null) {
+                                $product=Codigo_Producto::buscarproducto($vari, $poveedorXML->proveedor_id)->first();
+                                for ($i = 1; $i <= count($datos); ++$i) {
+                                    if ($product->producto_id==$datos[$i]['id']) {
+                                        $datos[$i]['cantidad']=$datos[$i]['cantidad']+floatval($adicional->cantidad);
+                                        $datos[$i]['subtotal2']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['subtotal']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2)-round(floatval($adicional->descuento), 2);
+                                        $datos[$i]['t0']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['descuento']=$datos[$i]['descuento']+round(floatval($adicional->descuento), 2);
+                                        if ($product->producto_tiene_iva==1) {
+                                            $datos[$i]['diva']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            $datos[$i]['t12']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                            $datos[$i]['t0']=0;
+                                            if ($product->producto_tipo==1) {
+                                                $datos[$i]['sb']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['ss']=0;
+                                            }
+                                            else{
+                                                $datos[$i]['sb']=0.00;
+                                                $datos[$i]['ss']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            }
+                                        }
+                                        $datos[$i]['total']=$datos[$i]['subtotal2']+$datos[$i]['diva']-$datos[$i]['descuento'];
+                                        $activador=false;
+                                    }
+                                }
+                            }
+                        }
                         if($activador==true){
-                            $vari=trim(strval($adicional->codigoPrincipal));
-                            
                             $product=Codigo_Producto::buscarproducto($vari,$poveedorXML->proveedor_id)->first();
-                            
                             $datos[$coun]['id']=$product->producto_id;
                             $datos[$coun]['codigo']=$product->producto_codigo;
                             $datos[$coun]['descripcion']=$product->producto_nombre;
@@ -301,15 +387,19 @@ class cargarXMLController extends Controller
                             $datos[$coun]['diva']=0.00;
                             $datos[$coun]['sb']=0.00;
                             $datos[$coun]['t0']=round($adicional->precioUnitario*$adicional->cantidad,2); 
-                            $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);    
+                            $datos[$coun]['ss']=0.00;
                             if($product->producto_tiene_iva==1){
                                 $datos[$coun]['iva']='SI';
-                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);
+                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 $datos[$coun]['t12']=round($adicional->precioUnitario*$adicional->cantidad,2);
                                 $datos[$coun]['t0']=0;
                                 if ($product->producto_tipo==1) {
-                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*0.12,2);
+                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                     $datos[$coun]['ss']=0;
+                                }
+                                else{
+                                    $datos[$coun]['sb']=0.00;
+                                    $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 }
                                 
                             }
@@ -330,9 +420,9 @@ class cargarXMLController extends Controller
                         
                     }
                    
-                    return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                    return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                 }
-                return view('admin.compras.xml.nuevo',['datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                 
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');

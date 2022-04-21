@@ -26,6 +26,9 @@ class Tarifa_Iva extends Model
     public function scopeTarifaIva($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('tarifa_iva_id','=',$id);
     }
+    public function scopeTarifaIvaCodigo($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('tarifa_iva_codigo','=',$id);
+    }
     public function empresa(){
         return $this->belongsTo(Empresa::class, 'empresa_id', 'empresa_id');
     }

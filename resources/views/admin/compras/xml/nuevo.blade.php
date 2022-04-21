@@ -242,9 +242,9 @@
                             <div class="form-group">
                                 <select class="form-control custom-select" id="transaccion_porcentaje_iva"
                                     name="transaccion_porcentaje_iva" data-live-search="true"
-                                    onclick="seleccionarIva()">
+                                    onclick="seleccionarIva()" >
                                     @foreach($tarifasIva as $iva)
-                                    <option value="{{$iva->tarifa_iva_porcentaje}}">{{$iva->tarifa_iva_porcentaje}}%
+                                    <option value="{{$iva->tarifa_iva_porcentaje}}" @if($civa[1]["codigo"]==$iva->tarifa_iva_codigo) selected @endif>{{$iva->tarifa_iva_porcentaje}}%
                                     </option>
                                     @endforeach
                                 </select>
@@ -399,16 +399,16 @@
                                             <th width="40"></th>
                                             <th width="90">Cantidad</th>
                                             <th width="120">Codigo</th>
-                                            <th width="250">Producto</th>
-                                            <th width="75">Con Iva</th>
-                                            <th width="100">Iva</th>
+                                            <th width="200">Producto</th>
+                                            <th width="50">Con Iva</th>
+                                            <th width="75">Iva</th>
                                             <th width="100">P.U.</th>
                                             <th width="100">Descuento</th>
                                             <th width="100">Total</th>
-                                            <th>Bodega</th>
-                                            <th>C. Consumo</th>
-                                            <th>Descripcion</th>
-                                            <th>Bien/Serv.</th>
+                                            <th width="150">Bodega</th>
+                                            <th width="150">C. Consumo</th>
+                                            <th width="300">Descripcion</th>
+                                            <th width="90">Bien/Serv.</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -421,7 +421,7 @@
                                             <td><a onclick="eliminarItem({{$i}}, '{{ $datos[$i]['iva']}}', {{ $datos[$i]['subtotal2']}}, {{ $datos[$i]['descuento']}},'{{ $datos[$i]['bien']}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
                                             <td>{{ $datos[$i]['cantidad']}}<input class="invisible" name="Dcantidad[]" value="{{ $datos[$i]['cantidad']}}" /></td>
                                             <td>{{ $datos[$i]['codigo']}}<input class="invisible" name="DprodcutoID[]" value="{{ $datos[$i]['id']}}" /><input class="invisible" name="Dcodigo[]" value="{{ $datos[$i]['codigo']}}" /></td>
-                                            <td>{{ $datos[$i]['descripcion']}}<input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['descripcion']}}" /></td>
+                                            <td style="white-space: pre-wrap;">{{ $datos[$i]['descripcion']}}<input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['descripcion']}}" /></td>
                                             <td>{{ $datos[$i]['iva']}}<input class="invisible" name="Diva[]" value="{{ $datos[$i]['iva']}}" /></td>
                                             <td>{{ $datos[$i]['diva']}}<input class="invisible" name="DViva[]" value="{{ $datos[$i]['diva']}}" /></td>
                                             <td>{{ $datos[$i]['valor']}}<input class="invisible" name="Dpu[]" value="{{ $datos[$i]['valor']}}" /></td>
@@ -444,7 +444,7 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td><input type="text" name="Ddescripcion[]" value="{{ $datos[$i]['descripcion']}}" /></td>
+                                            <td><input type="text" class="form-control" name="Ddescripcion[]" value="{{ $datos[$i]['descripcion']}}" /></td>
                                             <td>{{ $datos[$i]['bien']}}<input class="invisible" name="DbienServ[]" value="{{ $datos[$i]['bien']}}" /></td>
                                             <?php $iva =$iva+$datos[$i]['diva']; 
                                             $subtotal =$subtotal+$datos[$i]['subtotal2']; 
@@ -931,6 +931,7 @@ var porcentajeIva = combo.options[combo.selectedIndex].text;
 porcentajeIva = parseFloat(porcentajeIva) / 100;
 
 function cargarmetodo(){
+    $('#transaccion_porcentaje_iva').css('pointer-events', 'none');
      id_item =<?php echo $count;?>;
     document.getElementById("subtotal").innerHTML = (<?php echo $subtotal;?>).toFixed(2);
     document.getElementById("idSubtotal").value = <?php echo $subtotal;?>;

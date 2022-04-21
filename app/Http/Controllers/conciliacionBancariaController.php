@@ -481,7 +481,42 @@ class conciliacionBancariaController extends Controller
              ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))               
             ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
             //SALDO DEL ESTADO DE CUENTA BANCO
-            $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado) + floatval($transferenciasEgresosNoConciliadas) + floatval($chequeGiradoNoCobrado)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+            //$saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado) + floatval($transferenciasEgresosNoConciliadas) + floatval($chequeGiradoNoCobrado)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+            //otro forma de calcular el estado de cuenta banco con el saldo inicial del mismo.
+            $saldoInicialBanco = $cuentaBancaria->cuenta_bancaria_saldo_inicial;            
+            $sumatoriaDepositosTransferenciasIngresos = Deposito::DepositoSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaDepositosTransferenciasIngresos->sumadeposito)){
+                $sumDepositosTransferencias = $sumatoriaDepositosTransferenciasIngresos->sumadeposito; 
+            }else{                          
+                $sumDepositosTransferencias = 0;
+            }
+            $sumatoriaNotasCreditos = Nota_Credito_banco::NotaCreditoSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaNotasCreditos->sumanotacredito)){
+                $sumNotasCreditos = $sumatoriaNotasCreditos->sumanotacredito; 
+            }else{                          
+                $sumNotasCreditos = 0;
+            }
+            $sumatoriaNotasDebito = Nota_Debito_banco::NotaDebitoSumatoria($cuentaBancaria->cuenta_bancaria_id, $request->get('idHasta'))->first();
+            if(isset($sumatoriaNotasDebito->sumanotadebito)){
+                $sumNotasDebito = $sumatoriaNotasDebito->sumanotadebito; 
+            }else{                          
+                $sumNotasDebito = 0;
+            }
+            $sumatoriaCheques = Cheque::ChequeSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaCheques->sumacheque)){
+                $sumCheque = $sumatoriaCheques->sumacheque; 
+            }else{                          
+                $sumCheque = 0;
+            }
+            $sumatoriaTransferenciasEgresos = Transferencia::TransferenciasSumtorias($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaTransferenciasEgresos->sumatransferencia)){
+                $sumTransferencia = $sumatoriaTransferenciasEgresos->sumatransferencia; 
+            }else{                          
+                $sumTransferencia = 0;
+            }
+
+            $saldoEstadoCuenta = floatval($saldoInicialBanco) + floatval($sumDepositosTransferencias) + floatval($sumNotasCreditos) - floatval($sumNotasDebito) - floatval($sumCheque) - floatval($sumTransferencia);
+            //$saldoEstadoCuenta = floatval($sumTransferencia);
 
             /*------------FIN---------------------------------------------------*/
             

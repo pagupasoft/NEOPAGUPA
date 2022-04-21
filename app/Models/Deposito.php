@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Deposito extends Model
 {
@@ -44,5 +45,15 @@ class Deposito extends Model
     }
     public function chequeCliente(){
         return $this->hasOne(Cheque_Cliente::class, 'deposito_id', 'deposito_id');
+    }
+    public function scopeDepositoSumatoria($query, $idCuentaBancaria,$fechaHasta){
+        return $query->select(DB::raw('SUM(deposito_valor) as sumadeposito')) 
+        ->where('deposito.cuenta_bancaria_id','=',$idCuentaBancaria)      
+        ->where('empresa_id','=',Auth::user()->empresa_id)
+        ->where('deposito_conciliacion','=',true)
+        ->where('deposito_estado','=','1')
+        ->where('deposito_fecha','<=',$fechaHasta)
+        ->where('deposito_fecha_conciliacion','<=',$fechaHasta);
+
     }
 }

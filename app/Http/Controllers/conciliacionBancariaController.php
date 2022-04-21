@@ -8,12 +8,14 @@ use App\Models\Cuenta_Bancaria;
 use App\Models\Deposito;
 use App\Models\Detalle_Diario;
 use App\Models\Egreso_Banco;
+use App\Models\Empresa;
 use App\Models\Ingreso_Banco;
 use App\Models\Nota_Credito_banco;
 use App\Models\Nota_Debito_banco;
 use App\Models\Punto_Emision;
 use App\Models\Transferencia;
 use App\NEOPAGUPA\ViewExcel;
+use PDF;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +38,7 @@ class conciliacionBancariaController extends Controller
     }
     public function consultar(Request $request)
     {
-        if (isset($_POST['buscar']) or isset($_POST['excel'])){
+        if (isset($_POST['buscar']) or isset($_POST['excel']) or isset($_POST['pdf'])){
             return $this->procesar($request);
         }
         if (isset($_POST['guardar'])){
@@ -89,6 +91,20 @@ class conciliacionBancariaController extends Controller
                 $datos[25] = $request->get('idHasta');
                 return Excel::download(new ViewExcel('admin.formatosExcel.conciliacionBancaria',$datos), 'NEOPAGUPA  Sistema Contable.xls');
             }
+            if (isset($_POST['pdf'])){
+                $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();
+                $datos[24] = $request->get('idDesde');
+                $datos[25] = $request->get('idHasta');
+                $empresa =  Empresa::empresa()->first();
+                $ruta = public_path().'/PDF/'.$empresa->empresa_ruc;
+                if (!is_dir($ruta)) {
+                mkdir($ruta, 0777, true);
+                }
+                $view =  \View::make('admin.formatosPDF.conciliacionBancariapdf',['empresa'=>$empresa,'datos'=>$datos,'banco'=>$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'cuentaBancariaB'=>$cuentaBancaria->cuenta_bancaria_numero]);
+                $nombreArchivo = 'REPORTE BANCARIO '.'-'.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.'-'.$cuentaBancaria->cuenta_bancaria_numero.DateTime::createFromFormat('Y-m-d', $request->get('idDesde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('idHasta'))->format('d-m-Y');
+                
+                return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
+                }
        /* }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }*/

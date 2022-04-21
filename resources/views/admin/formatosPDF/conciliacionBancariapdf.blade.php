@@ -54,6 +54,7 @@
             @endif
         </tbody>
     </table>
+    <div style="page-break-inside: avoid;">
     <br>
     <table class="conBorder" style="padding-left: 5px; padding-right: 560px;">
         <tr class="letra12">            

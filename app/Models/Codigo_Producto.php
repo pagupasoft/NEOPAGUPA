@@ -26,8 +26,11 @@ class Codigo_Producto extends Model
     public function scopecodigoproducto($query, $id){
         return $query->join('producto','producto.producto_id','=','codigo_producto.producto_id')->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('codigo_producto.codigo_id','=',$id);
     }
+    public function scopebuscarproductoproveedor($query, $id){
+        return $query->join('producto','codigo_producto.producto_id','=','producto.producto_id')->where('codigo_producto.proveedor_id','=',$id);
+    }
     public function scopebuscarproducto($query, $codigo, $id){
-        return $query->join('producto','codigo_producto.producto_id','=','producto.producto_id')->where('codigo_producto.codigo_nombre','=',$codigo);
+        return $query->join('producto','codigo_producto.producto_id','=','producto.producto_id')->where('codigo_producto.codigo_nombre','=',$codigo)->where('codigo_producto.proveedor_id','=',$id);
     }
     public function producto()
     {

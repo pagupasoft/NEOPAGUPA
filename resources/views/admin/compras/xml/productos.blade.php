@@ -22,31 +22,33 @@
             <div class="form-group row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
                     <div id="mien" class="table-responsive">
-                        <table id="cargarItemPrecio" class="table table-striped table-hover" style="margin-bottom: 6px;">
+                        <<table id="cargarItemFactura"
+                                    class="table table-striped table-hover boder-sar tabla-item-factura sin-salto"
+                                    style="margin-bottom: 6px;">
                             <thead>
-                                <tr class="letra-blanca fondo-azul-claro text-center">                                                
-                                    <th>Codigo Proveedor</th>
-                                    <th>Descripcion Proveedor</th>
+                            <tr class="letra-blanca fondo-azul-claro">                                 
+                                    <th >Codigo Proveedor</th>
+                                    <th >Descripcion Proveedor</th>
                                     <th>Codigo</th> 
-                                    <th>Descripcion</th>                                        
+                                    <th >Descripcion</th>                                        
                                 </tr>
                             </thead>
                             <tbody>
                                
                                 @if(isset($datos))
                                     @for($i = 1; $i <= count($datos); ++$i)
-                                    <tr class="text-center">
+                                    <tr >
                                         <td>{{$datos[$i]['codigo']}}<input class="invisible" name="DLdias[]" value="{{ $datos[$i]['codigo']}}"/></td>
                                         <td>{{$datos[$i]['descripcion']}}</td>
-                                        <td>
-                                            <select class="custom-select select2" id="productos{{$i}}" name="productos[]" onchange="ShowSelected({{$i}});" >
+                                        <td><select class="form-control select2" id="productos<?php echo $i;?>" name="productos[]"
+                                                    data-live-search="true" onchange="ShowSelected(<?php echo $i;?>);">
                                                 <option value="0" label>--Seleccione una opcion--</option>
                                                     @foreach($productos as $producto)
                                                         <option value="{{$producto->producto_id}}" >{{$producto->producto_nombre}}</option>
                                                     @endforeach
                                             </select>
                                         </td>   
-                                        <td><input id="codigoProducto{{$i}}" name="codigoProducto[]" class="form-control" readonly>
+                                        <td><input type="text" id="codigoProducto<?php echo $i;?>" name="codigoProducto[]" class="form-control" readonly>
                                         </td> 
                                     </tr>
                                     @endfor

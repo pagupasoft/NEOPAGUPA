@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
-        <h3 class="card-title">Lista de Compras</h3>
+        <h3 class="card-title">Verificar Compras</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -69,12 +69,12 @@
                     <th>Proveedor</th>
                     <th>Forma de Pago</th>
                     <th># Autorizacion</th>
-                    <!--th>Subtotal</th>
+                    <th>Subtotal</th>
                     <th>Tarifa 0%</th>                  
                     <th>Tarifa 12%</th>
                     <th>Descuento</th>
                     <th>Iva</th>
-                    <th>Total</th-->
+                    <th>Total</th>
                 </tr>
             </thead>
             <?php $cont = $sub_total = $tarifa0 = $tarifa12 = $desc = $iva = $total = 0.00;?> 
@@ -87,7 +87,8 @@
             <tbody> 
                 @if(isset($transaccionCompras))
                     <tr class="text-center">
-                        <!--td></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -98,7 +99,7 @@
                         <td> <?php echo '$' . number_format($tarifa12, 2) ?> </td>
                         <td> <?php echo '$' . number_format($desc, 2) ?> </td>
                         <td> <?php echo '$' . number_format($iva, 2) ?> </td>
-                        <td> <?php echo '$' . number_format($total, 2) ?> </td-->
+                        <td> <?php echo '$' . number_format($total, 2) ?> </td>
                     </tr>   
                     @foreach($transaccionCompras as $transaccionCompra)
                     <tr>
@@ -123,12 +124,12 @@
                         <td class="text-center">{{ $transaccionCompra->transaccion_tipo_pago}}</td>
                         <td class="text-center">{{ $transaccionCompra->transaccion_autorizacion}}</td>
                         
-                        <!--td class="text-rigth">${{ number_format($transaccionCompra->transaccion_subtotal,2)}}</td>
+                        <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_subtotal,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_tarifa0,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_tarifa12,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_descuento,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_iva,2)}}</td>
-                        <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_total,2)}}</td-->
+                        <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_total,2)}}</td>
                     </tr>                         
                     @endforeach
                 @endif

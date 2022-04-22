@@ -149,11 +149,9 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane col-12 oculto" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
-                        <br>
-                        <div class="row">  
-                            <iframe style='display:none' id='frame' width='100%' height='100%' frameborder='0'></iframe>
-                        </div>
+                    <div style="min-height: 500px" class="tab-pane col-12 oculto" id="examenes" role="tabpanel" aria-labelledby="examenes-tab">
+                        <iframe style='display:none' id='frame' width='100%' height='100%' frameborder='0'></iframe>
+                        
                     </div>
                     
                     <div class="tab-pane col-12 oculto" id="imagenes" role="tabpanel" aria-labelledby="imagenes-tab">
@@ -482,7 +480,7 @@
                                 numero=data.ordenAtencion.orden_numero
 
                                 boton.addEventListener("click", function(){
-                                    $iframe.src="http://"+window.location.host+"/DocumentosOrdenAtencion/"+ruc+"/"+fecha+"/"+numero+"/Documentos/Imagenes/imagen_resultado"+det.detalle_id+"_1.pdf"
+                                    $iframe.src='{{ url("DocumentosOrdenAtencion") }}'+"/"+ruc+"/"+fecha+"/"+numero+"/Documentos/Imagenes/imagen_resultado"+det.detalle_id+"_1.pdf"
                                 })
                                 //cargarIframe('http://127.0.0.1:8000/DocumentosOrdenAtencion/0702932179001/28-03-2022/OA-MATRIZCOMERCIAL-000000083/Documentos/Imagenes/imagen_resultado105_1.pdf')
                                 td.append(boton)
@@ -492,15 +490,22 @@
                     
                     ////////////////////////  Analisis de Laboratorio  /////////////////////////////
                     if(data.examen){
-                        if(data.examen.orden_estado==3){
+                        if(data.examen.orden_estado==2){
                             var frame = $('#frame');
-                            var url = "/analisisLaboratorio/"+data.examen.analisis.analisis_laboratorio_id+"/resultados";
+                            var url = "{{ url('analisisLaboratorio') }}/"+data.examen.analisis.analisis_laboratorio_id+"/resultados";
                             frame.attr('src',url).show();
+
+                            console.log("sadsadsadasdsad 0")
                         }
                         else{
-
+                            console.log("sadsadsadasdsad 1")
                         }
                     }
+                    else{
+                        console.log("sadsadsadasdsad 2")
+                    }
+
+
 
                     /////////////////signos vitales
                     marco_signos=document.getElementById('marco-signos')

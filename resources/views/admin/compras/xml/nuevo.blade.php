@@ -10,6 +10,8 @@
                 </div>
                 <div class="col-sm-5">
                     <div class="float-right">
+                        <button type="button" id="nuevoID" onclick="nuevo()" class="btn btn-primary btn-sm"><i
+                                    class="fas fa-receipt"></i><span> Nuevo</span></button>
                         <a id="xmlID" href="{{ url("compras/xml/{$rangoDocumento->puntoEmision->punto_id}") }}" class="btn btn-secondary btn-sm" disabled><i
                                 class="fas fa-file-code"></i><span> Archivo TXT</span></a>
                         <button id="guardarID" type="submit" class="btn btn-success btn-sm" @if(isset($poveedorXML) == false) disabled @endif><i
@@ -978,9 +980,8 @@ function cambioPago(){
 }
 function nuevo() {
     $('#transaccion_porcentaje_iva').css('pointer-events', 'none');
+    document.getElementById("nuevoID").disabled = true;
     document.getElementById("guardarID").disabled = false;
-    document.getElementById("cancelarID").disabled = false;
-
     document.getElementById("buscarProducto").disabled = false;
     document.getElementById("buscarProveedor").disabled = false;
     document.getElementById("baseFuente").disabled = false;

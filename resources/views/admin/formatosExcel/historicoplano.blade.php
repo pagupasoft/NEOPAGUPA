@@ -199,7 +199,7 @@
 
                                         <td>{{1}}</td>
                                         @if($detalle->examen)
-                                            <td>{{ $detalle->examen-product->producto_precio }}</td>
+                                            <td>{{ $detalle->examen->producto->producto_precio }}</td>
                                         @else
                                             <td>-</td>
                                         @endif

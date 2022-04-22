@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transaccion_Compra;
 use App\Models\Punto_Emision;
+use PhpParser\Node\Stmt\Else_;
 
 class verificarComprasSriController extends Controller
 {
@@ -56,8 +57,7 @@ class verificarComprasSriController extends Controller
             $sucursales=Transaccion_Compra::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
             $transaccionCompras=null;
 
-            $transaccionCompras=Transaccion_Compra::transaccionesSoloFacturas()
-;
+            $transaccionCompras=Transaccion_Compra::reporteTransacciones();
 
             if ($request->get('fecha_todo') != "on"){
                 $transaccionCompras->where('transaccion_fecha','>=',$request->get('idDesde'))
@@ -87,7 +87,41 @@ class verificarComprasSriController extends Controller
             }
             */
 
-            return view('admin.compras.verificarCompras.index',['sucursales'=>$sucursales,'idsucursal'=>$request->get('sucursal'),'fecha_todo'=>$request->get('fecha_todo'),'fecI'=>$request->get('idDesde'),'fecF'=>$request->get('idHasta'),'transaccionCompras'=>$transaccionCompras,'proveedores'=>$proveedores,'nombre_cliente'=>$request->get('idProveedor'),'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]); 
+
+            $electrocnico = new facturacionElectronicaController();
+            $estado = null;
+            
+            foreach($transaccionCompras as $registro){
+                $consultaDoc = $electrocnico->consultarDOC($registro->transaccion_autorizacion);
+                if(isset($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'])){
+                    if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO'){
+                        $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"SI");
+                        //return $consultaDoc;
+                    
+                    }
+                    else
+                        $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"NO");
+                }
+                else
+                    $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"NO");
+            }
+
+            $data=[
+                'sucursales'=>$sucursales,
+                'idsucursal'=>$request->get('sucursal'),
+                'fecha_todo'=>$request->get('fecha_todo'),
+                'fecI'=>$request->get('idDesde'),
+                'fecF'=>$request->get('idHasta'),
+                'transaccionCompras'=>$transaccionCompras,
+                'estados'=>$estado,
+                'proveedores'=>$proveedores,
+                'nombre_cliente'=>$request->get('idProveedor'),
+                'gruposPermiso'=>$gruposPermiso,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'permisosAdmin'=>$permisosAdmin
+            ];
+
+            return view('admin.compras.verificarCompras.index',$data); 
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

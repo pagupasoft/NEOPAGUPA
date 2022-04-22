@@ -98,7 +98,6 @@ class atencionCitasController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
         try {
             DB::beginTransaction();
             $auditoria = new generalController();
@@ -179,7 +178,7 @@ class atencionCitasController extends Controller
                     }
                     $diagnosticos->save();
                     $auditoria->registrarAuditoria('Ingreso de Diagnostico con expediente -> ' .  $request->get('expediente_id'), $atencion->orden_id, '');
-                    for ($i = 1; $i < count($DenfermedadId); ++$i) {
+                    for ($i = 0; $i < count($DenfermedadId); ++$i) {
                         $Detalle=new Detalle_Diagnostico();
                         $Detalle->detalled_estado = 1;
                         $Detalle->enfermedad_id = $DenfermedadId[$i];
@@ -487,7 +486,7 @@ class atencionCitasController extends Controller
         try{   
             $detalleConfig="";
             for($i=0; $i<40; $i++){
-                if(isset($_POST['chk'.$i+1]))
+                if(isset($_POST['chk'.($i+1)]))
                     $detalleConfig.="1-";
                 else 
                     $detalleConfig.="0-";

@@ -23,7 +23,7 @@
                 @foreach($mespecialidadM as $mespe)
                     @if($mespe->mespecialidad_id == $ordenAtencion->mespecialidad_id && $ordenAtencion->orden_estado == 3)
                     <tr class="text-center">
-                        <td>                        
+                        <td>
                             <a href="{{ url("atencionCitas/{$ordenAtencion->orden_id}/atender")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Atender"><i class="fa fa-calendar-check"></i></a> 
                         </td>    
                             <td>{{ $ordenAtencion->orden_codigo }}</td>

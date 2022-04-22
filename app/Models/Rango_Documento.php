@@ -19,7 +19,7 @@ class Rango_Documento extends Model
         'rango_fecha_inicio',
         'rango_fecha_fin',
         'rango_autorizacion', 
-        'rango_estado',    
+        'rango_estado',
         'tipo_comprobante_id',
         'punto_id',
     ];

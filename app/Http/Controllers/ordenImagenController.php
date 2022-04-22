@@ -213,7 +213,6 @@ class ordenImagenController extends Controller
                     $tcopago=0;
 
 
-                    //return $ordenes->imagen;
 
                     $procedimiento=Procedimiento_Especialidad::ProcedimientoProductoEspecialidad($ordenes->imagen->producto->producto_id, $especialidad->especialidad_id)->first();
 
@@ -237,7 +236,7 @@ class ordenImagenController extends Controller
                     $copago=Entidad_Procedimiento::ValorAsignado($procedimiento->procedimiento_id, $Paciente->entidad_id)->get();
                     
                     foreach($copago as $copagos){
-                        if($copagos->procedimiento->producto_id==$ordenes->examen->producto->producto_id){
+                        if($copagos->procedimiento->producto_id==$ordenes->imagen->producto->producto_id){
                             
                             $datos[$count]['%Cobertura']=$copagos->ep_valor.' %';
                             $datos[$count]['Cobertura']=(($producto->procedimientoA_valor*$copagos->ep_valor)/100);

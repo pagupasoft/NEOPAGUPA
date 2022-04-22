@@ -418,7 +418,7 @@ class examenController extends Controller
                     $detallePago->cuenta_id = $cxc->cuenta_id; 
                     $detallePago->pagoCXC()->associate($pago);
                     $detallePago->save();
-        
+
                 }
         
                 $detalleDiario = new Detalle_Diario();
@@ -590,7 +590,7 @@ class examenController extends Controller
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir facturas de venta, configueros y vuelva a intentar');
             }
-            
+
 
             $orden = Orden_Examen::findOrFail($request->get('orden_id'));
             $ordenes = Orden_Examen::Ordenanalisis($request->get('orden_id'))->get();

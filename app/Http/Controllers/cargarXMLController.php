@@ -45,20 +45,21 @@ class cargarXMLController extends Controller
             $nombre = $request->get('DLdias');
             $provedor = $request->get('idproveedor');
             $producto = $request->get('productos');
-            for ($i=0; $i < count($nombre); $i++) { 
-                if ($producto[$i]!=0) {
-                    $codigo = new Codigo_Producto();
-                    $codigo->codigo_nombre = trim($nombre[$i]);
-                    $codigo->proveedor_id = $provedor;
-                    $codigo->codigo_estado = 1;
-                    $codigo->producto_id = $producto[$i];
-                    $codigo->save();
-                    $product=Producto::findOrFail($producto[$i]);
-                    $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nomrbe, '0', '');
+            if (isset($nombre)) {
+                for ($i=0; $i < count($nombre); $i++) {
+                    if ($producto[$i]!=0) {
+                        $codigo = new Codigo_Producto();
+                        $codigo->codigo_nombre = trim($nombre[$i]);
+                        $codigo->proveedor_id = $provedor;
+                        $codigo->codigo_estado = 1;
+                        $codigo->producto_id = $producto[$i];
+                        $codigo->save();
+                        $product=Producto::findOrFail($producto[$i]);
+                        $auditoria = new generalController();
+                        $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nomrbe, '0', '');
+                    }
                 }
             }
-            
             $firmaElectronica = Firma_Electronica::firma()->first();
             $pubKey =Crypt::decryptString($firmaElectronica->firma_pubKey);
             $data=openssl_x509_parse($pubKey,true);
@@ -237,7 +238,7 @@ class cargarXMLController extends Controller
             $rangoDocumento=Rango_Documento::PuntoRango($punto,'Comprobante de Retención')->first();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
             $secuencial=1;
-            $datos[1]['codigo']='';
+            
             $productos=Producto::Productos()->get();
             $iva[1]['codigo']='02';
             if($rangoDocumento){
@@ -273,11 +274,13 @@ class cargarXMLController extends Controller
                             }
                             
                         }
-                        for ($i = 1; $i <= count($datos); ++$i){
-                            if($datos[$i]['codigo']==$vari){
-                                $activador=true;
+                        if ($datos!=null) {
+                            for ($i = 1; $i <= count($datos); ++$i) {
+                                if ($datos[$i]['codigo']==$vari) {
+                                    $activador=true;
+                                }
                             }
-                        }
+                        }   
                         if($activador==false){
                             $datos[$coun]['codigo']=$vari;
                             $datos[$coun]['descripcion']=$adicional->descripcion;
@@ -288,13 +291,16 @@ class cargarXMLController extends Controller
                        
                     }
                    
-                    if($datos!=null){
+                   
                         return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'poveedorXML'=>$poveedorXML,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-                    }
-                    return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'poveedorXML'=>$poveedorXML,'xml'=>$xmlEnvio,'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                    
+                    
+                    
+                   
                 }
                
-                return view('admin.compras.xml.nuevo',['civa'=>$iva,'datos'=>$datos,'caduca'=>$data['validTo_time_t'],'cajaAbierta'=>$cajaAbierta,'rangoDocumento'=>$rangoDocumento,'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'conceptosFuente'=>Concepto_Retencion::ConceptosFuente()->get(),'conceptosIva'=>Concepto_Retencion::ConceptosIva()->get(),'centros'=>Centro_Consumo::CentroConsumos()->get(),'bodegas'=>Bodega::bodegasSucursal($punto)->get(),'sustentos'=>Sustento_Tributario::Sustentos()->get(),'comprobantes'=>Tipo_Comprobante::tipos()->get(),'tarifasIva'=>Tarifa_Iva::TarifaIvas()->get(),'proveedores'=>Proveedor::proveedores()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'poveedorXML'=>$poveedorXML,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                    
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
             }

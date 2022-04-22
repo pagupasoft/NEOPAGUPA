@@ -23,7 +23,7 @@
             <div class="form-group row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
                     <div id="mien" class="table-responsive">
-                        <<table id="cargarItemFactura"
+                        <table id="cargarItemFactura"
                                     class="table table-striped table-hover boder-sar tabla-item-factura sin-salto"
                                     style="margin-bottom: 6px;">
                             <thead>

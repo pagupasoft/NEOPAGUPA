@@ -19,9 +19,9 @@
 					success: function(data){
 						response($.map(data, function(imagen){
 							return {
-								nombre: imagen.imagen_nombre,
+								nombre: imagen.producto_nombre,
 								id: imagen.imagen_id,
-								label: imagen.imagen_nombre
+								label: imagen.producto_nombre
 							};
 						}));
 					},

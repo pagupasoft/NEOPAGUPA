@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
-        <h3 class="card-title">Lista de Compras</h3>
+        <h3 class="card-title">Verificar Compras</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -87,13 +87,14 @@
             <tbody> 
                 @if(isset($transaccionCompras))
                     <tr class="text-center">
-                        <!--td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td> <?php echo '$' . number_format($sub_total, 2) ?> </td>
+                        <td></td>
+                        <td></td>
+                        <!--td> <?php echo '$' . number_format($sub_total, 2) ?> </td>
                         <td> <?php echo '$' . number_format($tarifa0, 2) ?> </td>
                         <td> <?php echo '$' . number_format($tarifa12, 2) ?> </td>
                         <td> <?php echo '$' . number_format($desc, 2) ?> </td>

@@ -21,7 +21,7 @@ class CreateCodigoProductoTable extends Migration
             $table->foreign('proveedor_id')->references('proveedor_id')->on('proveedor');
             $table->integer('producto_id');
             $table->foreign('producto_id')->references('producto_id')->on('producto');
-            
+            $table->unique(['codigo_nombre', 'proveedor_id'], 'codigo_unique_proveedor_id');
             $table->timestamps();
         });
     }

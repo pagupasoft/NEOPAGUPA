@@ -1,13 +1,13 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
         <h3 class="card-title">Lista de Compras</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
         <form class="form-horizontal" method="POST" action="{{ url("verificadorComprasSri") }} "> 
-        @csrf
+            @csrf
             <div class="form-group row">
                 <label for="idDescripcion" class="col-sm-1 col-form-label"><center>Proveedor</center></label>
                 <div class="col-sm-4">
@@ -48,20 +48,27 @@
                     </select>  
                 </div>
                 <div class="col-sm-1">
-                    <center><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button></center>
+                    <center><button onclick="girarGif()" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button></center>
                 </div>
             </div>            
         </form>
         <hr>
+
+        <style>
+            .container-fluid{
+                position: relative;
+            }
+        </style>
         <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
             <thead>
                 <tr class="text-center neo-fondo-tabla">
+                    <th>Estado</th>
                     <th>Documento</th>
                     <th>Fecha</th>
                     <th>Numero</th>
                     <th>Proveedor</th>
                     <th>Forma de Pago</th>
-                    <th># Autorizacion</th>  
+                    <th># Autorizacion</th>
                     <!--th>Subtotal</th>
                     <th>Tarifa 0%</th>                  
                     <th>Tarifa 12%</th>
@@ -95,12 +102,27 @@
                     </tr>   
                     @foreach($transaccionCompras as $transaccionCompra)
                     <tr>
+                        <td>
+                            <?php 
+                                $bus=$clave = array_search($transaccionCompra->transaccion_autorizacion, array_column($estados, 'clave'));
+
+                                if($bus!=""){
+                                    if($estados[$bus]['estado']=="SI")
+                                        echo '<i class="fa fa-check" aria-hidden="true" style="color: green"></i>';
+                                    else
+                                        echo '<i class="fa fa-minus-square" aria-hidden="true" style="color: red"></i>';
+                                }
+                                else
+                                    echo '<i class="fa fa-minus-square" aria-hidden="true" style="color: red"></i>';
+                            ?>
+                        </td>
                         <td class="text-center">{{ $transaccionCompra->tipoComprobante->tipo_comprobante_nombre}}</td>
                         <td class="text-center">{{ $transaccionCompra->transaccion_fecha}}</td>
                         <td class="text-center">{{ $transaccionCompra->transaccion_numero}}</td>
                         <td class="text-center">{{ $transaccionCompra->proveedor->proveedor_nombre}}</td>
                         <td class="text-center">{{ $transaccionCompra->transaccion_tipo_pago}}</td>
-                        <td class="text-center">{{ $transaccionCompra->transaccion_autorizacion}}</td> 
+                        <td class="text-center">{{ $transaccionCompra->transaccion_autorizacion}}</td>
+                        
                         <!--td class="text-rigth">${{ number_format($transaccionCompra->transaccion_subtotal,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_tarifa0,2)}}</td>
                         <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_tarifa12,2)}}</td>
@@ -114,6 +136,10 @@
         </table>
     </div>
     <!-- /.card-body -->
+</div>
+
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px">
+    <img id="cargaID" src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center; display: none">
 </div>
 <!-- /.card -->
 <script>
@@ -132,5 +158,12 @@
          <?php
     }
     ?>
+</script>
+
+<script>
+    function girarGif(){
+        document.getElementById("cargaID").style.display="inline"
+        console.log("girando")
+    }
 </script>
 @endsection

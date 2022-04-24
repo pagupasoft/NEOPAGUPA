@@ -31,7 +31,7 @@
                                 @if(isset($cuentaBancaria)) <option value="{{ $cuentaBancaria->cuenta_bancaria_id }}" selected>{{ $cuentaBancaria->cuenta_bancaria_numero }}</option> @endif
                             </select>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="row">
                                 <label for="idDesde" class="col-lg-2 col-md-2 col-form-label">
                                     <center>Desde :</center>
@@ -51,9 +51,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-1 centrar-texto">
+                        <div class="col-md-2 centrar-texto">
                             <button type="submit" id="buscar" name="buscar" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Buscar"><i class="fa fa-search"></i></button>
                             <button type="submit" id="excel" name="excel" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar a Excel"><i class="fas fa-file-excel"></i></button>
+                            <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                         </div>
                     </div>
                     <div class=" row">

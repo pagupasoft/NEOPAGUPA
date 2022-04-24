@@ -93,6 +93,7 @@ use App\Http\Controllers\descontarAnticipoProveedorController;
 use App\Http\Controllers\liquidacionCompraController;
 use App\Http\Controllers\listaCentroConsumoController;
 use App\Http\Controllers\listaChequeController;
+use App\Http\Controllers\listaChequeAnuladoController;
 use App\Http\Controllers\listaRetencionEmitidaController;
 use App\Http\Controllers\pacienteController;
 use App\Http\Controllers\notaCreditoController;
@@ -187,6 +188,7 @@ use App\Http\Controllers\grupoActivoController;
 use App\Http\Controllers\ingresoBancoController;
 use App\Http\Controllers\listaCierreCajaController;
 use App\Http\Controllers\listaEgresoBancoController;
+use App\Http\Controllers\editarFacturaController;
 use App\Http\Controllers\listaFacturaController;
 use App\Http\Controllers\listaIngresoBancoController;
 use App\Http\Controllers\listaliquidacionCompraController;
@@ -237,6 +239,7 @@ use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
+use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
 use App\Models\Imagen;
@@ -353,6 +356,7 @@ Route::resource('cargaBalances', cargarBalancesController::class)->middleware('a
 Route::resource('listacontroldia', listaControlDiaController::class)->middleware('auth');
 Route::resource('beneficiosSociales', beneficiosSocialesConsolidadaController::class)->middleware('auth');
 Route::resource('tipoMovimientoEmpleado', tipoMovimientoEmpleadoController::class)->middleware('auth');
+Route::resource('verificadorComprasSri', verificarComprasSriController::class)->middleware('auth');
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -715,6 +719,9 @@ Route::get('/respuesSRIND/{id}', [documentosElectronicosController::class, 'resp
 Route::get('/respuesSRILQ/{id}', [documentosElectronicosController::class, 'respuesSRILQ'])->middleware('auth');
 Route::get('/respuesSRIRet/{id}', [documentosElectronicosController::class, 'respuesSRIRet'])->middleware('auth');
 
+Route::get('/listaChequesAnulados', [listaChequeAnuladoController::class, 'listarChequesAnulados'])->middleware('auth');
+Route::post('/listaChequesAnulados', [listaChequeAnuladoController::class, 'listarChequesAnulados'])->middleware('auth');
+Route::post('/eliminarChequeAnulado', [listaChequeAnuladoController::class, 'eliminarChequeAnulado'])->middleware('auth');
 
 Route::get('/facturarOrden/{id}', [ordenAtencionController::class, 'facturarOrden'])->middleware('auth');
 Route::post('/facturarOrden', [ordenAtencionController::class, 'facturarOrdenGuardar'])->middleware('auth');
@@ -782,6 +789,9 @@ Route::post('/cuentaBancaria/guardarConfigCheque/{id}', [cuentaBancariaControlle
 /*PRECIOS PRODUCTO*/
 Route::get('/producto/precio/{id}', [productoController::class, 'nuevoPrecio'])->middleware('auth');
 Route::post('/producto/precio', [productoController::class, 'guardarPrecio'])->middleware('auth');
+/*CODIGO PRODUCTO PROVEEDOR*/
+Route::get('/producto/codigo/{id}', [productoController::class, 'nuevoCodigo'])->middleware('auth');
+Route::post('/producto/codigo', [productoController::class, 'guardarCodigo'])->middleware('auth');
 /*ANEXO TRANSACCIONAL SIMPLIFICADO*/
 Route::get('/atsSRI', [AtsController::class, 'nuevo'])->middleware('auth');
 Route::post('/atsSRI', [AtsController::class, 'consultar'])->middleware('auth');
@@ -1202,6 +1212,7 @@ Route::get('/transaccioncompra/{id}/edit',  [transaccionCompraController::class,
 Route::get('/transaccioncompra/{id}/eliminar',  [transaccionCompraController::class, 'eliminar'])->middleware('auth');
 
 Route::get('/factura/{id}/ver',  [listaFacturaController::class, 'ver'])->middleware('auth');
+Route::get('/factura/{id}/editar',  [listaFacturaController::class, 'editar']);
 Route::get('/factura/{id}/ordenDespacho',  [listaFacturaController::class, 'ordenDespacho'])->middleware('auth');
 Route::get('/factura/{id}/eliminar',  [listaFacturaController::class, 'eliminar'])->middleware('auth');
 Route::get('/factura/{id}/imprimir',  [listaFacturaController::class, 'imprimir'])->middleware('auth');
@@ -1248,3 +1259,7 @@ Route::post('/utilidadProducto',  [reporteUtilidadController::class, 'consultar'
 //retencion recibida XML
 Route::get('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'nuevo'])->middleware('auth');
 Route::post('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'consultar'])->middleware('auth');
+
+Route::get('/compras/xmlProducto/{clave}/{punto}',  [cargarXMLController::class, 'procesarproducto'])->middleware('auth');
+Route::post('/producto/compra',  [cargarXMLController::class, 'cargarproducto'])->middleware('auth');
+Route::get('/buscarProducto/searchN/{buscar}',  [productoController::class, 'buscarByProducto'])->middleware('auth');

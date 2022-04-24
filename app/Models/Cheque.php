@@ -6,6 +6,7 @@ use App\Observers\RangoChequeObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Cheque extends Model
 {
@@ -66,6 +67,19 @@ class Cheque extends Model
     public function scopeBuscarRol($query, $id){
 
         return $query->join('detalle_diario','cheque.cheque_id','=','detalle_diario.cheque_id')->join('diario','diario.diario_id','=','detalle_diario.diario_id')->join('cabecera_rol','diario.diario_id','=','cabecera_rol.diario_pago_id')->join('empleado','empleado.empleado_id','=','cabecera_rol.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('cabecera_rol.cabecera_rol_id','=',$id);
+    }
+
+    public function scopeChequeSumatoria($query, $idCuentaBancaria,$FechaHasta){
+        return $query->select(DB::raw('SUM(cheque_valor) as sumacheque'))
+        ->join('cuenta_bancaria','cuenta_bancaria.cuenta_bancaria_id','=','cheque.cuenta_bancaria_id')
+        ->join('cuenta','cuenta.cuenta_id','=','cuenta_bancaria.cuenta_id')
+        ->where('cuenta.empresa_id','=',Auth::user()->empresa_id)
+        ->where('cheque_estado','=','1')
+        ->where('cheque.cuenta_bancaria_id','=',$idCuentaBancaria)      
+        ->where('cheque_conciliacion','=',true)        
+        ->where('cheque_fecha_emision','<=',$FechaHasta)
+        ->where('cheque_fecha_conciliacion','<=',$FechaHasta);
+
     }
     
 }

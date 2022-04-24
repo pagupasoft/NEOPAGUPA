@@ -35,8 +35,9 @@ class Imagen extends Model
 
     public function scopeBuscarImagenes($query, $buscar){
         return $query->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'
+                    )->join('producto','producto.producto_id','=','imagen.producto_id'
                     )->where('tipo_imagen.empresa_id', '=', Auth::user()->empresa_id
-                    )->where(DB::raw('lower(imagen_nombre)'), 'like', '%'.strtolower($buscar).'%'
+                    )->where(DB::raw('lower(producto.producto_nombre)'), 'like', '%'.strtolower($buscar).'%'
                     )->where('imagen.imagen_estado','=','1')->orderBy('imagen_nombre','asc');
     }
 

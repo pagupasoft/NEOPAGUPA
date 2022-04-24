@@ -8,12 +8,15 @@ use App\Models\Cuenta_Bancaria;
 use App\Models\Deposito;
 use App\Models\Detalle_Diario;
 use App\Models\Egreso_Banco;
+use App\Models\Empresa;
 use App\Models\Ingreso_Banco;
 use App\Models\Nota_Credito_banco;
 use App\Models\Nota_Debito_banco;
 use App\Models\Punto_Emision;
 use App\Models\Transferencia;
+use App\Models\User;
 use App\NEOPAGUPA\ViewExcel;
+use PDF;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +39,7 @@ class conciliacionBancariaController extends Controller
     }
     public function consultar(Request $request)
     {
-        if (isset($_POST['buscar']) or isset($_POST['excel'])){
+        if (isset($_POST['buscar']) or isset($_POST['excel']) or isset($_POST['pdf'])){
             return $this->procesar($request);
         }
         if (isset($_POST['guardar'])){
@@ -89,6 +92,22 @@ class conciliacionBancariaController extends Controller
                 $datos[25] = $request->get('idHasta');
                 return Excel::download(new ViewExcel('admin.formatosExcel.conciliacionBancaria',$datos), 'NEOPAGUPA  Sistema Contable.xls');
             }
+            if (isset($_POST['pdf'])){
+                $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();
+                $datos[24] = date("d/m/Y", strtotime($request->get('idDesde')));
+                $datos[25] = date("d/m/Y", strtotime($request->get('idHasta')));
+                $empresa =  Empresa::empresa()->first();
+                Auth::user()->user_nombre;
+
+                $ruta = public_path().'/PDF/'.$empresa->empresa_ruc;
+                if (!is_dir($ruta)) {
+                mkdir($ruta, 0777, true);
+                }
+                $view =  \View::make('admin.formatosPDF.conciliacionBancariapdf',['user'=>Auth::user()->user_nombre,'empresa'=>$empresa,'datos'=>$datos,'banco'=>$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'cuentaBancariaB'=>$cuentaBancaria->cuenta_bancaria_numero]);
+                $nombreArchivo = 'REPORTE BANCARIO '.'-'.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.'-'.$cuentaBancaria->cuenta_bancaria_numero.DateTime::createFromFormat('Y-m-d', $request->get('idDesde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('idHasta'))->format('d-m-Y');
+                
+                return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
+                }
        /* }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }*/
@@ -481,7 +500,42 @@ class conciliacionBancariaController extends Controller
              ->where('deposito.deposito_fecha_conciliacion','=',$request->get('idHasta'))               
             ->where('deposito.deposito_conciliacion','=', true)->sum('deposito_valor');
             //SALDO DEL ESTADO DE CUENTA BANCO
-            $saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado) + floatval($transferenciasEgresosNoConciliadas) + floatval($chequeGiradoNoCobrado)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+            //$saldoEstadoCuenta = floatval($saldoContableActual) + (floatval($ndNoConciliado) + floatval($transferenciasEgresosNoConciliadas) + floatval($chequeGiradoNoCobrado)) - (floatval($depositosNoConciliados) + floatval($ncNoConciliado)+ floatval($transferenciaIngresosNoConciliados));
+            //otro forma de calcular el estado de cuenta banco con el saldo inicial del mismo.
+            $saldoInicialBanco = $cuentaBancaria->cuenta_bancaria_saldo_inicial;            
+            $sumatoriaDepositosTransferenciasIngresos = Deposito::DepositoSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaDepositosTransferenciasIngresos->sumadeposito)){
+                $sumDepositosTransferencias = $sumatoriaDepositosTransferenciasIngresos->sumadeposito; 
+            }else{                          
+                $sumDepositosTransferencias = 0;
+            }
+            $sumatoriaNotasCreditos = Nota_Credito_banco::NotaCreditoSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaNotasCreditos->sumanotacredito)){
+                $sumNotasCreditos = $sumatoriaNotasCreditos->sumanotacredito; 
+            }else{                          
+                $sumNotasCreditos = 0;
+            }
+            $sumatoriaNotasDebito = Nota_Debito_banco::NotaDebitoSumatoria($cuentaBancaria->cuenta_bancaria_id, $request->get('idHasta'))->first();
+            if(isset($sumatoriaNotasDebito->sumanotadebito)){
+                $sumNotasDebito = $sumatoriaNotasDebito->sumanotadebito; 
+            }else{                          
+                $sumNotasDebito = 0;
+            }
+            $sumatoriaCheques = Cheque::ChequeSumatoria($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaCheques->sumacheque)){
+                $sumCheque = $sumatoriaCheques->sumacheque; 
+            }else{                          
+                $sumCheque = 0;
+            }
+            $sumatoriaTransferenciasEgresos = Transferencia::TransferenciasSumtorias($cuentaBancaria->cuenta_bancaria_id,$request->get('idHasta'))->first();
+            if(isset($sumatoriaTransferenciasEgresos->sumatransferencia)){
+                $sumTransferencia = $sumatoriaTransferenciasEgresos->sumatransferencia; 
+            }else{                          
+                $sumTransferencia = 0;
+            }
+
+            $saldoEstadoCuenta = floatval($saldoInicialBanco) + floatval($sumDepositosTransferencias) + floatval($sumNotasCreditos) - floatval($sumNotasDebito) - floatval($sumCheque) - floatval($sumTransferencia);
+            //$saldoEstadoCuenta = floatval($sumTransferencia);
 
             /*------------FIN---------------------------------------------------*/
             
@@ -516,7 +570,7 @@ class conciliacionBancariaController extends Controller
                 //CHEQUES
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'CHEQUE';
                 $conciliacionBancariaMatriz[$count]['id'] = $cheque->cheque_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $cheque->cheque_fecha_emision; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($cheque->cheque_fecha_emision));
                 $conciliacionBancariaMatriz[$count]['tipo'] = 'CHEQUE';
                 $conciliacionBancariaMatriz[$count]['numero'] = $cheque->cheque_numero;
                 $conciliacionBancariaMatriz[$count]['debito'] = $cheque->cheque_valor;
@@ -530,14 +584,17 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $diarios;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = $cheque->cheque_beneficiario;
                 $conciliacionBancariaMatriz[$count]['referencia'] = $cheque->cheque_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $cheque->cheque_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($cheque->cheque_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($cheque->cheque_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($cheque->cheque_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
                 }  
                 $count = $count + 1;
             }          
@@ -545,7 +602,7 @@ class conciliacionBancariaController extends Controller
                 //DEPOSITOS
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'DEPOSITO';
                 $conciliacionBancariaMatriz[$count]['id'] = $deposito->deposito_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $deposito->deposito_fecha; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($deposito->deposito_fecha));
                 $conciliacionBancariaMatriz[$count]['tipo'] = $deposito->deposito_tipo;
                 $conciliacionBancariaMatriz[$count]['numero'] = $deposito->deposito_numero;
                 $conciliacionBancariaMatriz[$count]['debito'] = 0;
@@ -559,14 +616,17 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $diarios;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = '';
                 $conciliacionBancariaMatriz[$count]['referencia'] = $deposito->deposito_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $deposito->deposito_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($deposito->deposito_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($deposito->deposito_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($deposito->deposito_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
                 }
                 $count = $count + 1;
             }
@@ -574,7 +634,7 @@ class conciliacionBancariaController extends Controller
                 //TRANSFERENCIAS
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'TRANSFERENCIA';
                 $conciliacionBancariaMatriz[$count]['id'] = $transferencia->transferencia_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $transferencia->transferencia_fecha; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($transferencia->transferencia_fecha));
                 $conciliacionBancariaMatriz[$count]['tipo'] = 'TRANSFERENCIA';
                 $conciliacionBancariaMatriz[$count]['numero'] = '';
                 $conciliacionBancariaMatriz[$count]['debito'] = $transferencia->transferencia_valor;
@@ -588,14 +648,17 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $diarios;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = $transferencia->transferencia_beneficiario;
                 $conciliacionBancariaMatriz[$count]['referencia'] = $transferencia->transferencia_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion; 
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion; 
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $transferencia->transferencia_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($transferencia->transferencia_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($transferencia->transferencia_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($transferencia->transferencia_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion;
                 }                         
                           
                 $count = $count + 1;
@@ -604,7 +667,7 @@ class conciliacionBancariaController extends Controller
                 //transferencias ingresos
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'DEPOSITO';
                 $conciliacionBancariaMatriz[$count]['id'] = $transIngreso->deposito_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $transIngreso->deposito_fecha; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($transIngreso->deposito_fecha));
                 $conciliacionBancariaMatriz[$count]['tipo'] = $transIngreso->deposito_tipo;
                 $conciliacionBancariaMatriz[$count]['numero'] = $transIngreso->deposito_numero;
                 $conciliacionBancariaMatriz[$count]['debito'] = 0;
@@ -618,14 +681,17 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $diarios;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = '';
                 $conciliacionBancariaMatriz[$count]['referencia'] = $transIngreso->deposito_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transIngreso->deposito_fecha_conciliacion;
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transIngreso->deposito_fecha_conciliacion;
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $transIngreso->deposito_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($transIngreso->deposito_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($transIngreso->deposito_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($transIngreso->deposito_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $transIngreso->deposito_fecha_conciliacion;
                 }
                 $count = $count + 1;
             }           
@@ -633,7 +699,7 @@ class conciliacionBancariaController extends Controller
                 //NOTAS DE DEBITO BANCO
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'NOTA DEBITO BANCO';
                 $conciliacionBancariaMatriz[$count]['id'] = $ndBanco->nota_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $ndBanco->nota_fecha; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($ndBanco->nota_fecha));
                 $conciliacionBancariaMatriz[$count]['tipo'] = 'ND';
                 $conciliacionBancariaMatriz[$count]['numero'] = $ndBanco->nota_numero;
                 $conciliacionBancariaMatriz[$count]['debito'] = $ndBanco->nota_valor;
@@ -641,14 +707,18 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $ndBanco->diario->diario_codigo;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = $ndBanco->nota_beneficiario;
                 $conciliacionBancariaMatriz[$count]['referencia'] = $ndBanco->nota_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $ndBanco->nota_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($ndBanco->nota_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($ndBanco->nota_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($ndBanco->nota_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
+
                 }                              
                 $count = $count + 1;
             }
@@ -656,7 +726,7 @@ class conciliacionBancariaController extends Controller
                 //NOTAS DE CREDITO BANCO
                 $conciliacionBancariaMatriz[$count]['tabla'] = 'NOTA CREDITO BANCO';
                 $conciliacionBancariaMatriz[$count]['id'] = $ncBanco->nota_id;
-                $conciliacionBancariaMatriz[$count]['fecha'] = $ncBanco->nota_fecha; 
+                $conciliacionBancariaMatriz[$count]['fecha'] = date("d/m/Y", strtotime($ncBanco->nota_fecha));
                 $conciliacionBancariaMatriz[$count]['tipo'] = 'NC';
                 $conciliacionBancariaMatriz[$count]['numero'] = $ncBanco->nota_numero;
                 $conciliacionBancariaMatriz[$count]['debito'] = 0;
@@ -664,14 +734,17 @@ class conciliacionBancariaController extends Controller
                 $conciliacionBancariaMatriz[$count]['diario'] = $ncBanco->diario->diario_codigo;
                 $conciliacionBancariaMatriz[$count]['Beneficiario'] = $ncBanco->nota_beneficiario;
                 $conciliacionBancariaMatriz[$count]['referencia'] = $ncBanco->nota_descripcion;
-                $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion; 
+                //$conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion; 
                 $conciliacionBancariaMatriz[$count]['conciliacion'] = $ncBanco->nota_conciliacion;
                 $conciliacionBancariaMatriz[$count]['bloqueo'] = false;
                 if($ncBanco->nota_conciliacion){
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = date("d/m/Y", strtotime($ncBanco->nota_fecha_conciliacion));
                     $fecha_conciliacion = strtotime(date($ncBanco->nota_fecha_conciliacion));
                     if($fecha_conciliacion > $fecha_actual){
                         $conciliacionBancariaMatriz[$count]['bloqueo'] = true;
                     }
+                }else{
+                    $conciliacionBancariaMatriz[$count]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;
                 }   
                 $count = $count + 1;
             }
@@ -735,7 +808,7 @@ class conciliacionBancariaController extends Controller
                 //CHEQUES
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'CHEQUE';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $cheque->cheque_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $cheque->cheque_fecha_emision; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($cheque->cheque_fecha_emision));
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = 'CHEQUE';
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $cheque->cheque_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = $cheque->cheque_valor;
@@ -749,15 +822,20 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $cheque->cheque_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $cheque->cheque_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
-                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $cheque->cheque_conciliacion;                           
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
+                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $cheque->cheque_conciliacion; 
+                if($cheque->cheque_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($cheque->cheque_fecha_conciliacion));                    
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $cheque->cheque_fecha_conciliacion;
+                }                          
                 $count2 = $count2 + 1;
             }         
             foreach($depositosOtros as $deposito){                    
                 //DEPOSITOS
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'DEPOSITO';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $deposito->deposito_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $deposito->deposito_fecha; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($deposito->deposito_fecha));
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = $deposito->deposito_tipo;
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $deposito->deposito_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
@@ -771,15 +849,20 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $deposito->deposito_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
-                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $deposito->deposito_conciliacion;                           
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
+                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $deposito->deposito_conciliacion;
+                if($deposito->deposito_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($deposito->deposito_fecha_conciliacion));
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $deposito->deposito_fecha_conciliacion;
+                }                                     
                 $count2 = $count2 + 1;
             }
             foreach($transferenciasOtros as $transferencia){                    
                 //TRANSFERENCIAS
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'TRANSFERENCIA';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $transferencia->transferencia_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $transferencia->transferencia_fecha; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($transferencia->transferencia_fecha)); 
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = 'TRANSFERENCIA';
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = $transferencia->transferencia_valor;
@@ -793,15 +876,20 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $transferencia->transferencia_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $transferencia->transferencia_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion;
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion;
                 $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $transferencia->transferencia_conciliacion;
+                if($transferencia->transferencia_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($transferencia->transferencia_fecha_conciliacion));
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transferencia->transferencia_fecha_conciliacion;
+                } 
                 $count2 = $count2 + 1;
             }
             foreach($transIngresosOtros as $transIngresosOtro){                    
                 //transferencias ingresos
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'DEPOSITO';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $transIngresosOtro->deposito_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $transIngresosOtro->deposito_fecha; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($transIngresosOtro->deposito_fecha)); 
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = $transIngresosOtro->deposito_tipo;
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $transIngresosOtro->deposito_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
@@ -815,15 +903,20 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $diarios;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = '';
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $transIngresosOtro->deposito_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transIngresosOtro->deposito_fecha_conciliacion;
-                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $transIngresosOtro->deposito_conciliacion;                           
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transIngresosOtro->deposito_fecha_conciliacion;
+                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $transIngresosOtro->deposito_conciliacion;
+                if($transIngresosOtro->deposito_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($transIngresosOtro->deposito_fecha_conciliacion)); 
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $transIngresosOtro->deposito_fecha_conciliacion;
+                }                           
                 $count2 = $count2 + 1;
             }            
             foreach($ndBancosOtros as $ndBanco){                    
                 //NOTAS DE DEBITO BANCO
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'NOTA DEBITO BANCO';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $ndBanco->nota_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $ndBanco->nota_fecha; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($ndBanco->nota_fecha)); 
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = 'ND';
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $ndBanco->nota_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = $ndBanco->nota_valor;
@@ -831,15 +924,20 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $ndBanco->diario->diario_codigo;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $ndBanco->nota_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $ndBanco->nota_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
                 $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $ndBanco->nota_conciliacion;
+                if($ndBanco->nota_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($ndBanco->nota_fecha_conciliacion)); 
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ndBanco->nota_fecha_conciliacion;
+                } 
                 $count2 = $count2 + 1;
             }
             foreach($ncBancosOtros as $ncBanco){                    
                 //NOTAS DE CREDITO BANCO
                 $otrasconciliacionesBancariaMatriz[$count2]['tabla'] = 'NOTA CREDITO BANCO';
                 $otrasconciliacionesBancariaMatriz[$count2]['id'] = $ncBanco->nota_id;
-                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = $ncBanco->nota_fecha; 
+                $otrasconciliacionesBancariaMatriz[$count2]['fecha'] = date("d/m/Y", strtotime($ncBanco->nota_fecha)); 
                 $otrasconciliacionesBancariaMatriz[$count2]['tipo'] = 'NC';
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $ncBanco->nota_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
@@ -847,8 +945,13 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $ndBanco->diario->diario_codigo;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $ncBanco->nota_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $ncBanco->nota_descripcion;
-                $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;
-                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $ncBanco->nota_conciliacion;                           
+                //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;
+                $otrasconciliacionesBancariaMatriz[$count2]['conciliacion'] = $ncBanco->nota_conciliacion; 
+                if($ncBanco->nota_conciliacion){
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = date("d/m/Y", strtotime($ncBanco->nota_fecha_conciliacion)); 
+                }else{
+                    $otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;
+                }                           
                 $count2 = $count2 + 1;
             }     
             $datos[0] = $saldoAnteriorContable;

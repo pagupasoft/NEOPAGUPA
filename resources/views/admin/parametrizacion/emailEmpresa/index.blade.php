@@ -42,7 +42,7 @@
             <div class="form-group row">
                 <label for="idMensaje" class="col-sm-2 col-form-label">Mensaje</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="idMensaje" name="idMensaje"  value="@if(!empty($emailEmpresa)){{$emailEmpresa->email_mensaje}}@endif" required>
+                    <textarea class="form-control" id="idMensaje" name="idMensaje" rows="5" required> @if(!empty($emailEmpresa)){{$emailEmpresa->email_mensaje}}@endif </textarea>
                 </div>
             </div>                 
         </div>            

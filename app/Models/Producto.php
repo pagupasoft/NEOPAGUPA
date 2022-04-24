@@ -45,6 +45,9 @@ class Producto extends Model
     public function precios(){
         return $this->hasMany(Precio_Producto::class, 'producto_id', 'producto_id');
     }
+    public function codigos(){
+        return $this->hasMany(Codigo_Producto::class, 'producto_id', 'producto_id');
+    }
     public function cuentaInventario(){
         return $this->belongsTo(Cuenta::class, 'producto_cuenta_inventario', 'cuenta_id');
     }

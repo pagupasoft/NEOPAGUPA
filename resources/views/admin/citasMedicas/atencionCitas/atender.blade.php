@@ -288,11 +288,11 @@
                                             <div class="form-group row">
                                                 <div class="col-sm-1">                                
                                                     <div class="form-check ">
-                                                    <input style="width:20px; height:20px;" class="form-check-input" type="checkbox" name="laboratorio[]"  id="laboratorio[]" value="{{$examen->examen_id}}" >
+                                                    <input style="width:20px; height:20px;" class="form-check-input" type="checkbox" name="laboratorio[]"  id="laboratorio{{ $examen->examen_id }}" value="{{$examen->examen_id}}" >
                                                         <input class="invisible"  value="{{$examen->examen_id}}" >
                                                     </div>
                                                 </div>   
-                                                <label for="orientado" class="col-sm-7"  value="{{$examen->producto_id}}">{{$examen->producto_nombre}}</label>
+                                                <label for="laboratorio{{ $examen->examen_id }}" class="col-sm-7"  value="{{$examen->producto_id}}">{{$examen->producto_nombre}}</label>
                                             </div> 
                                             
                                             @endif 
@@ -498,7 +498,7 @@
                 },
                 success: function(data){
                     if(data.producto_stock<cant){
-                        alert('El producto '+data.producto_nombre+' ya no tiene el Stock suficiente para poder Continuar');
+                        alert('El producto '+data.producto_nombre+' ya no tiene el Stock('+data.producto_stock+'    '+cant+') suficiente para poder Continuar');
                         resultado=false
                     }
                 }

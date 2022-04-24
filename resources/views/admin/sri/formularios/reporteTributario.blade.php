@@ -314,6 +314,14 @@
                             <td class="centrar-texto" style="background: #3755B0; color: #FFFFFF;">Base Imponible</td>
                             <td class="centrar-texto" style="background: #3755B0; color: #FFFFFF;">Valor Retenido</td>
                         </tr>
+                        <tr>
+                            <td style="white-space: pre-wrap;">En relación de dependencia que supera o nó la base desgravada</td>
+                            <td class="centrar-texto"></td>
+                            <td class="centrar-texto">302</td>
+                            <td colspan="2"></td>
+                            <td class="centrar-texto"><input class="text-right" type="number" name="base_imponible" min="0" value="0" step="any"></input></td>
+                            <td class="centrar-texto"><input class="text-right" type="number" name="valor_retenido" min="0" value="0" step="any"></input></td>
+                        </tr>
                         @for ($i = 1; $i <= count($datos[14]); ++$i)
                         <tr>
                             <td style="white-space: pre-wrap;">{{ $datos[14][$i]['nombre'] }}</td>

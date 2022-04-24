@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Nota_Debito_banco extends Model
 {
@@ -57,5 +58,17 @@ class Nota_Debito_banco extends Model
     }
     public function detallesTipoMovimiento(){
         return $this->hasMany(movimiento_nota_debito::class, 'nota_id', 'nota_id');
+    }
+    public function scopeNotaDebitoSumatoria($query, $idCuentaBancaria,$fechaHasta){
+        return $query->select(DB::raw('SUM(nota_valor) as sumanotadebito'))
+        ->join('rango_documento','rango_documento.rango_id','=','nota_debito_banco.rango_id')
+        ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
+        ->where('nota_estado','=','1') 
+        ->where('cuenta_bancaria_id','=',$idCuentaBancaria)      
+        ->where('nota_conciliacion','=',true)        
+        ->where('nota_fecha','<=',$fechaHasta)
+        ->where('nota_fecha_conciliacion','<=',$fechaHasta);
+
     }
 }

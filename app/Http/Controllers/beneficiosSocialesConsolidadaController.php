@@ -225,7 +225,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                         $diario->diario_tipo_documento = 'UTILIDADES';
 
                         $diario->diario_numero_documento =$ncheque;
-                        $diario->diario_beneficiario = $nombre[$i];
+                        $diario->diario_beneficiario =$nombre[$contador[$i]];
                         $diario->diario_tipo = 'CPUE';
                         $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                         $diario->diario_mes = DateTime::createFromFormat('Y-m-d', ($request->get('idFechaemision')))->format('m');

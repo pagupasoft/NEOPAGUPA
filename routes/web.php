@@ -163,6 +163,7 @@ use App\Http\Controllers\beneficiosSocialesController;
 use App\Http\Controllers\cabeceraRolAdministrativoController;
 use App\Http\Controllers\cabeceraRolController;
 use App\Http\Controllers\cargarBalancesController;
+use App\Http\Controllers\cargarRetencionXMLController;
 use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\categoriaCostoController;
 use App\Http\Controllers\categoriaRolController;
@@ -1243,3 +1244,7 @@ Route::post('/reporteTributario',  [formulariosController::class, 'consultar'])-
 //reporte utilidad por producto
 Route::get('/utilidadProducto',  [reporteUtilidadController::class, 'nuevo'])->middleware('auth');
 Route::post('/utilidadProducto',  [reporteUtilidadController::class, 'consultar'])->middleware('auth');
+
+//retencion recibida XML
+Route::get('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'nuevo'])->middleware('auth');
+Route::post('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'consultar'])->middleware('auth');

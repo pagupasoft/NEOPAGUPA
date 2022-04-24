@@ -329,9 +329,9 @@ class retencionVentaController extends Controller
                 $pago->diario()->associate($diario);
                 $pago->save();
                 if($request->get('tipo_doc') == '0'){
-                    $general->registrarAuditoria('Registro de pago a Cliente -> '.$request->get('nombreCliente'),'0','Pago de factura No. '.$facturaAux->factura_numero.' con motivo: Retencion recibida').' No. '.$retencion->retencion_numero; 
+                    $general->registrarAuditoria('Registro de pago a Cliente -> '.$request->get('nombreCliente'),'0','Pago de factura No. '.$facturaAux->factura_numero.' con motivo: Retencion recibida'.' No. '.$retencion->retencion_numero); 
                 }else{
-                    $general->registrarAuditoria('Registro de pago a Cliente -> '.$request->get('nombreCliente'),'0','Pago de Nota de Debito No. '.$ndAux->factura_numero.' con motivo: Retencion recibida').' No. '.$retencion->retencion_numero; 
+                    $general->registrarAuditoria('Registro de pago a Cliente -> '.$request->get('nombreCliente'),'0','Pago de Nota de Debito No. '.$ndAux->factura_numero.' con motivo: Retencion recibida'.' No. '.$retencion->retencion_numero); 
                 }
                 $detallePago = new Detalle_Pago_CXC();
                 $detallePago->detalle_pago_descripcion = 'Retencion de venta No. '.$retencion->retencion_numero;
@@ -349,7 +349,7 @@ class retencionVentaController extends Controller
                     $general->registrarAuditoria('Registro de detalle a pago de Cliente -> '.$request->get('nombreCliente'),'0','Detalle de pago de factura No. '.$ndAux->nd_numero.' con motivo: Retencion recibida').' No. '.$retencion->retencion_numero; 
                     $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor');
                 }
-                if($cxcAux->cuenta_saldo == 0){
+                if(round($cxcAux->cuenta_saldo,2) == 0){
                     $cxcAux->cuenta_estado = '2';
                 }else{
                     $cxcAux->cuenta_estado = '1';
@@ -482,7 +482,7 @@ class retencionVentaController extends Controller
                     $general->registrarAuditoria('Registro de detalle a pago de Cliente -> '.$request->get('nombreCliente'),'0','Detalle de pago de nota de debito No. '.$ndAux->nd_numero.' con motivo: Retencion recibida').' No. '.$retencion->retencion_numero; 
                     $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor');
                 }
-                if($cxcAux->cuenta_saldo == 0){
+                if(round($cxcAux->cuenta_saldo,2) == 0){
                     $cxcAux->cuenta_estado = '2';
                 }else{
                     $cxcAux->cuenta_estado = '1';

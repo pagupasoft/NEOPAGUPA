@@ -993,10 +993,10 @@ function cargarIngreso(id) {
             let saludo         =  document.getElementById("VJornada").value;
             var saludoPalabras = saludo.split('-');
            
-                document.getElementById("DiaN").value=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);  
-                document.getElementById("sueldos").innerHTML=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);
-                document.getElementById("Vsueldos").value=(Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value);
-             
+            document.getElementById("DiaN").value=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);  
+            document.getElementById("sueldos").innerHTML=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);
+            document.getElementById("Vsueldos").value=(Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value);
+            
             sumaingresos();
 
             if (document.getElementById("VAfiliado").value=="1") {

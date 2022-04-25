@@ -1220,6 +1220,8 @@ Route::get('/factura/{id}/eliminar',  [listaFacturaController::class, 'eliminar'
 Route::get('/factura/{id}/imprimir',  [listaFacturaController::class, 'imprimir'])->middleware('auth');
 Route::get('/factura/{id}/imprimirRecibo    ',  [listaFacturaController::class, 'imprimirRecibo'])->middleware('auth');
 
+Route::post('/verificarEstadoCompra',  [verificarComprasSriController::class, 'verificarCompra'])->middleware('auth');
+
 Route::get('/transaccioncompra/{id}/ver',  [listatransaccionCompraController::class, 'ver'])->middleware('auth');
 Route::get('/liquidacioncompras/{id}/ver',  [listaliquidacionCompraController::class, 'ver'])->middleware('auth');
 

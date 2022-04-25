@@ -104,16 +104,38 @@ class cargarRetencionXMLController extends Controller
                                 $nd = Nota_Debito::NDbyNumero($impuesto->numDocSustento)->first();
                             }
                         }
-                        if(isset($factura->factura_id)){
-                            if($this->guardar($xmlRet)){
-                                $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
-                                $datos[$i]['estado'] = 'si';
+                        if($factura->factura_estado == '1'){
+                            if(isset($factura->factura_id)){
+                                if($this->guardar($xmlRet)){
+                                    $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
+                                    $datos[$i]['estado'] = 'si';
+                                }else{
+                                    $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                    $datos[$i]['estado'] = 'no';
+                                }
                             }else{
-                                $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
                                 $datos[$i]['estado'] = 'no';
                             }
                         }else{
-                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
+                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención se encuentra anulada.';
+                            $datos[$i]['estado'] = 'no';
+                        }
+                        if($nd->nd_estado == '1'){
+                            if(isset($nd->nd_id)){
+                                if($this->guardar($xmlRet)){
+                                    $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
+                                    $datos[$i]['estado'] = 'si';
+                                }else{
+                                    $datos[$i]['mensaje'] = 'La nota de debito ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                    $datos[$i]['estado'] = 'no';
+                                }
+                            }else{
+                                $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención no existe.';
+                                $datos[$i]['estado'] = 'no';
+                            }
+                        }else{
+                            $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención se encuentra anulada.';
                             $datos[$i]['estado'] = 'no';
                         }
                     }

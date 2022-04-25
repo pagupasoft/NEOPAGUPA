@@ -63,13 +63,16 @@ class cargarRetencionXMLController extends Controller
                             $datos[$count]['numero'] = $data[$i][1];
                             $datos[$count]['clave'] = $data[$i][9]; 
                             $datos[$count]['estado'] = 'nuevo';
+                            $datos[$count]['mensaje'] = '';
                             $retencion = Retencion_Venta::RetencionBySerieSecuancial($serie, $secuencial,$data[$i][2])->first();
                             if(isset($retencion->retencion_id)){
                                 $datos[$count]['estado'] = 'cargada';
+                                $datos[$count]['mensaje'] = 'Retención registrada previamente';
                             } 
                             $retencion = Retencion_Venta::RetencionBySerieSecuancialND($serie, $secuencial,$data[$i][2])->first();
                             if(isset($retencion->retencion_id)){
                                 $datos[$count]['estado'] = 'cargada';
+                                $datos[$count]['mensaje'] = 'Retención registrada previamente';
                             }           
                             $count ++;
                         }
@@ -93,19 +96,30 @@ class cargarRetencionXMLController extends Controller
                     if($retencionXML['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO'){
                         $xmlRet = simplexml_load_string($retencionXML['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                         $factura = null;
+                        $nd = null;
                         foreach($xmlRet->impuestos->impuesto as $impuesto){
-                            $factura = Factura_Venta::FacturasbyNumero($impuesto->numDocSustento)->first();
+                            if($impuesto->codDocSustento == '01'){
+                                $factura = Factura_Venta::FacturasbyNumero($impuesto->numDocSustento)->first();
+                            }else{
+                                $nd = Nota_Debito::NDbyNumero($impuesto->numDocSustento)->first();
+                            }
                         }
                         if(isset($factura->factura_id)){
                             if($this->guardar($xmlRet)){
+                                $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
                                 $datos[$i]['estado'] = 'si';
                             }else{
+                                $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
                                 $datos[$i]['estado'] = 'no';
                             }
                         }else{
+                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
                             $datos[$i]['estado'] = 'no';
                         }
                     }
+                }else{
+                    $datos[$i]['mensaje'] = 'La retencion se encuentra anulada.';
+                    $datos[$i]['estado'] = 'no';
                 }
             }
         }

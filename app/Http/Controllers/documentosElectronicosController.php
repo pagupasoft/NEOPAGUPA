@@ -538,8 +538,9 @@ class documentosElectronicosController extends Controller
                 if(array_key_exists('RespuestaAutorizacionComprobante', (array)$consultaDoc)){
                     if(array_key_exists('autorizaciones', (array)$consultaDoc['RespuestaAutorizacionComprobante'])){
                         if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {
+                            $fechaAutorizacion = $consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['fechaAutorizacion'];
                             $xml = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
-                            return $docElectronico->crearPDFdocElectronico($xml, DateTime::createFromFormat('Y-m-d', $factura->factura_fecha)->format('d/m/Y'), $factura->factura_xml_nombre,$empresa, $factura->factura_xml_fecha, $factura->factura_ambiente, 'FACTURA');
+                            return $docElectronico->crearPDFdocElectronico($xml, DateTime::createFromFormat('Y-m-d', $factura->factura_fecha)->format('d/m/Y'), $factura->factura_xml_nombre,$empresa, $fechaAutorizacion, $factura->factura_ambiente, 'FACTURA');
                         }   
                     }
                 }            

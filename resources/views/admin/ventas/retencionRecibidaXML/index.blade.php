@@ -35,13 +35,13 @@
                     <tr class="text-center">
                         <td>
                         @if($datos[$i]['estado'] == 'cargada')
-                            <i class="fa fa-circle neo-azul"></i>
+                            <i class="fa fa-circle neo-azul"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ $datos[$i]['mensaje'] }}
                         @endif
                         @if($datos[$i]['estado'] == 'si')
-                            <i class="fa fa-check neo-verde"></i>
+                            <i class="fa fa-check neo-verde"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ $datos[$i]['mensaje'] }}
                         @endif
                         @if($datos[$i]['estado'] == 'no')
-                            <i class="fa fa-times neo-rojo"></i>
+                            <i class="fa fa-times neo-rojo"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ $datos[$i]['mensaje'] }}
                         @endif
                         </td>
                         <td>{{ $datos[$i]['cliente'] }}</td>

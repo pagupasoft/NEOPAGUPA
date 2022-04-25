@@ -208,7 +208,7 @@
                     ultima=i
                     verificarCompras(i)
                 }
-            }, 500)
+            }, 650)
         });
 
         
@@ -219,7 +219,7 @@
                 ultima=i
                 verificarCompras(i)
             }
-        }, 500)
-    }, 1000)
+        }, 850)
+    }, 1100)
 </script>
 @endsection

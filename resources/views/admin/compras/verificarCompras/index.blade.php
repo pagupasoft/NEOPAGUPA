@@ -197,7 +197,7 @@
                 iniciar=(pagina==1? 2: 1)
                 console.log("iniciar "+iniciar)
                 
-                document.getElementById("example1_paginate").style.display="none"
+                //document.getElementById("example1_paginate").style.display="none"
 
                 for (var i = iniciar, row; row = tabla1.rows[i]; i++) {
                     tabla1.rows[i].cells[0].innerHTML ="<img src='{{ url('img/loading.gif') }}' width='35px'>"
@@ -213,7 +213,7 @@
 
         
         setTimeout(function(){
-            document.getElementById("example1_paginate").style.display="none"
+            //document.getElementById("example1_paginate").style.display="none"
             
             for (var i = 2, row; row = tabla1.rows[i]; i++) {
                 ultima=i

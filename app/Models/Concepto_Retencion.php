@@ -31,6 +31,9 @@ class Concepto_Retencion extends Model
     public function scopeConceptoRetencion($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('concepto_id','=',$id);
     }
+    public function scopeConceptoRetencionByCodigo($query, $codigo){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('concepto_codigo','=',$codigo);
+    }
     public function scopeConceptosFuente($query){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('concepto_estado','=','1')->where('concepto_tipo','=','1')->orderBy('concepto_nombre','asc');
     }

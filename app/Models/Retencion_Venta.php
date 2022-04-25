@@ -25,6 +25,19 @@ class Retencion_Venta extends Model
     ];
     protected $guarded =[
     ];
+    public function scopeRetencionBySerieSecuancial($query, $serie, $secuencial,$clienteRuc){
+        return $query->join('factura_venta', 'factura_venta.factura_id', '=', 'retencion_venta.factura_id')
+        ->join('cliente','cliente.cliente_id','=','factura_venta.cliente_id')
+        ->where('retencion_serie','=',$serie)->where('retencion_secuencial','=',$secuencial)
+        ->where('cliente.cliente_cedula','=',$clienteRuc);
+    }
+    public function scopeRetencionBySerieSecuancialND($query, $serie, $secuencial,$clienteRuc){
+        return $query->join('nota_debito','nota_debito.nd_id','=','retencion_venta.nd_id')
+        ->join('factura_venta', 'factura_venta.factura_id', '=', 'nota_debito.factura_id')
+        ->join('cliente','cliente.cliente_id','=','factura_venta.cliente_id')
+        ->where('retencion_serie','=',$serie)->where('retencion_secuencial','=',$secuencial)
+        ->where('cliente.cliente_cedula','=',$clienteRuc);
+    }
     public function scopelistadoRetencionesEmitidas($query, $fechaInicio, $fechaFin){
         return $query->join('factura_venta','factura_venta.factura_id','=','retencion_venta.factura_id')->join('rango_documento','rango_documento.rango_id','=','factura_venta.rango_id')
         ->join('punto_emision','punto_emision.punto_id','=','rango_documento.punto_id')

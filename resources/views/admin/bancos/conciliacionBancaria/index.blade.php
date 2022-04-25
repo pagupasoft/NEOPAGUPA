@@ -260,7 +260,7 @@
                         @if(isset($conciliacionBancariaMatriz))
                             @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
                             <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
-                            <tr class="text-center">                                
+                            <tr class="text-center" @if($conciliacionBancariaMatriz[$i]['conciliacion']) style="background:  #c7f0e4;" @endif>                                
                                 <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>                                
                                 <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
                                 <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
@@ -315,7 +315,7 @@
                 @if(isset($otrasconciliacionesBancariaMatriz))
                         @for ($c = 0; $c < count($otrasconciliacionesBancariaMatriz); ++$c)      
                         <?php $saldo = $saldo + $otrasconciliacionesBancariaMatriz[$c]['credito'] - $otrasconciliacionesBancariaMatriz[$c]['debito']; ?>         
-                        <tr class="text-center">                            
+                        <tr class="text-center" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion']) style="background:  #c7f0e4;" @endif>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>

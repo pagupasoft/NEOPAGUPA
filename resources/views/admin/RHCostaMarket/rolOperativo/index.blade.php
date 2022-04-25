@@ -992,16 +992,11 @@ function cargarIngreso(id) {
             }  
             let saludo         =  document.getElementById("VJornada").value;
             var saludoPalabras = saludo.split('-');
-            if(Number(document.getElementById("Ausentel").innerHTML)>0){
-                document.getElementById("DiaN").value=((30-Number(document.getElementById("Ausentel").innerHTML))*Number(document.getElementById("Normal").value)).toFixed(2);   
-                document.getElementById("sueldos").innerHTML=((30-Number(document.getElementById("Ausentel").innerHTML))*Number(document.getElementById("Normal").value)).toFixed(2);
-                document.getElementById("Vsueldos").value=((30-Number(document.getElementById("Ausentel").innerHTML))*Number(document.getElementById("Normal").value)).toFixed(2);
-            }
-            else{ 
+           
                 document.getElementById("DiaN").value=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);  
                 document.getElementById("sueldos").innerHTML=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);
                 document.getElementById("Vsueldos").value=(Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value);
-            }   
+             
             sumaingresos();
 
             if (document.getElementById("VAfiliado").value=="1") {

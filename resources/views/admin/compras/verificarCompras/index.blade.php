@@ -104,18 +104,7 @@
                     @foreach($transaccionCompras as $transaccionCompra)
                     <tr>
                         <td>
-                            <?php 
-                                $bus=$clave = array_search($transaccionCompra->transaccion_autorizacion, array_column($estados, 'clave'));
-
-                                if($bus!=""){
-                                    if($estados[$bus]['estado']=="SI")
-                                        echo '<i class="fa fa-check" aria-hidden="true" style="color: green"></i>';
-                                    else
-                                        echo '<i class="fa fa-minus-square" aria-hidden="true" style="color: red"></i>';
-                                }
-                                else
-                                    echo '<i class="fa fa-minus-square" aria-hidden="true" style="color: red"></i>';
-                            ?>
+                            <img src="{{ url('img/loading.gif') }}" width="25px">
                         </td>
                         <td class="text-center">{{ $transaccionCompra->tipoComprobante->tipo_comprobante_nombre}}</td>
                         <td class="text-center">{{ $transaccionCompra->transaccion_fecha}}</td>
@@ -166,5 +155,71 @@
         document.getElementById("cargaID").style.display="inline"
         console.log("girando")
     }
+</script>
+
+<script>
+    var tabla1 = document.getElementById("example1");
+    var pagina=0
+    var ultima= false
+
+    document.addEventListener('click', function(f){
+        pagina= parseInt(f.target.text)
+        console.log("pagina "+f.target.text)
+    })
+
+
+    function verificarCompras(i){
+        $.ajax({
+        url: '{{ url("verificarEstadoCompra/") }}',
+        dataType: "json",
+        async:true,
+        type: "POST",
+        data: {
+            "_token": "{{ csrf_token() }}",
+            clave:tabla1.rows[i].cells[6].innerText 
+        },
+        success: function(data){
+            console.log(data.estado)
+
+            if(data.estado=="SI")
+                tabla1.rows[i].cells[0].innerHTML ="<i class='fa fa-check' aria-hidden='true' style='color: green'></i>"
+            else
+                tabla1.rows[i].cells[0].innerHTML ="<i class='fa fa-minus-square' aria-hidden='true' style='color: red'></i>"
+
+            if(ultima==i) document.getElementById("example1_paginate").style.display="block"
+        },
+    });
+    }
+
+    setTimeout(function(){
+        $(document).on("click", ".paginate_button", function(e) {
+            setTimeout(function(){
+                iniciar=(pagina==1? 2: 1)
+                console.log("iniciar "+iniciar)
+                
+                document.getElementById("example1_paginate").style.display="none"
+
+                for (var i = iniciar, row; row = tabla1.rows[i]; i++) {
+                    tabla1.rows[i].cells[0].innerHTML ="<img src='{{ url('img/loading.gif') }}' width='35px'>"
+                }
+
+
+                for (var i = iniciar, row; row = tabla1.rows[i]; i++) {
+                    ultima=i
+                    verificarCompras(i)
+                }
+            }, 500)
+        });
+
+        
+        setTimeout(function(){
+            document.getElementById("example1_paginate").style.display="none"
+            
+            for (var i = 2, row; row = tabla1.rows[i]; i++) {
+                ultima=i
+                verificarCompras(i)
+            }
+        }, 500)
+    }, 1000)
 </script>
 @endsection

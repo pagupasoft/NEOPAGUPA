@@ -77,35 +77,6 @@ class verificarComprasSriController extends Controller
                                                     ->orderBy('transaccion_fecha','asc')
                                                     ->get();
 
-            //return $transaccionCompras;
-            /*
-            $docElectronico = new facturacionElectronicaController();
-            foreach($transaccionCompras as $registro){
-                $respuesta = $docElectronico->consultarDOC("1307202001070180546700120011010000068923611481714"); //$registro->transaccion_autorizacion);
-
-                return $respuesta;
-            }
-            */
-
-
-            $electrocnico = new facturacionElectronicaController();
-            $estado = null;
-            
-            foreach($transaccionCompras as $registro){
-                $consultaDoc = $electrocnico->consultarDOC($registro->transaccion_autorizacion);
-                if(isset($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'])){
-                    if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO'){
-                        $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"SI");
-                        //return $consultaDoc;
-                    
-                    }
-                    else
-                        $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"NO");
-                }
-                else
-                    $estado[] = array("clave"=>$registro->transaccion_autorizacion, "estado"=>"NO");
-            }
-
             $data=[
                 'sucursales'=>$sucursales,
                 'idsucursal'=>$request->get('sucursal'),
@@ -113,7 +84,6 @@ class verificarComprasSriController extends Controller
                 'fecI'=>$request->get('idDesde'),
                 'fecF'=>$request->get('idHasta'),
                 'transaccionCompras'=>$transaccionCompras,
-                'estados'=>$estado,
                 'proveedores'=>$proveedores,
                 'nombre_cliente'=>$request->get('idProveedor'),
                 'gruposPermiso'=>$gruposPermiso,
@@ -128,6 +98,20 @@ class verificarComprasSriController extends Controller
         }
     }
 
+    public function verificarCompra(Request $request){
+        $electrocnico = new facturacionElectronicaController();
+        $consultaDoc = $electrocnico->consultarDOC($request->clave);
+
+        if(isset($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'])){
+            if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO'){
+                echo json_encode(array("clave"=>$request->clave, "estado"=>"SI"));
+            }
+            else
+                echo json_encode(array("clave"=>$request->clave, "estado"=>"NO"));
+        }
+        else
+            echo json_encode(array("clave"=>$request->clave, "estado"=>"NO"));
+    }
     /**
      * Display the specified resource.
      *

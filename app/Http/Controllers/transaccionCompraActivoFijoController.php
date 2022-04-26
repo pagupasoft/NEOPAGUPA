@@ -840,7 +840,7 @@ class transaccionCompraActivoFijoController extends Controller
             $activoFijo->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Registro de Activo Fijo -> '.$request->get('idDescripcion'),'0','');
+            $auditoria->registrarAuditoria('Registro de Activo Fijo -> '.$request->get('idDescripcion').' Con Transaccion compra '.$transaccion->transaccion_numero,'0','');
 
             $url = $general->pdfDiario($diario);          
             DB::commit();

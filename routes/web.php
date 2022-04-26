@@ -239,6 +239,7 @@ use App\Http\Controllers\rolConsolidadoCostaMarketController;
 use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
+use App\Http\Controllers\tareasProgramadasController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
 use App\Http\Controllers\transaccionCompraActivoFijoController;
 use App\Http\Controllers\verificarComprasSriController;
@@ -405,6 +406,7 @@ Route::resource('ventaActivo', ventaActivoController::class)->middleware('auth')
 Route::resource('tipoMovimientoCaja', tipoMovimientoCajaController::class)->middleware('auth');
 Route::resource('tipoMovimientoBanco', tipoMovimientoBancoController::class)->middleware('auth');
 Route::resource('depreciacionMensual', depreciacionMensualController::class)->middleware('auth');
+Route::resource('tareasProgramadas', tareasProgramadasController::class)->middleware('auth');
 Route::resource('notaCreditoBanco', notaCreditoBancoController::class)->middleware('auth');
 Route::resource('notaDebitoBanco', notaDebitoBancoController::class)->middleware('auth');
 Route::resource('detallelaboratorio', detalleLaboratorioController::class)->middleware('auth');
@@ -758,6 +760,9 @@ Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])
 Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
+
+Route::get('/tareasProgramadas/{id}/edit', [tareasProgramadasController::class, 'editar'])->middleware('auth');
+Route::post('/tareasProgramadas/actualizar', [tareasProgramadasController::class, 'actualizar'])->middleware('auth');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');

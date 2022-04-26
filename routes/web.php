@@ -240,6 +240,7 @@ use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
+use App\Http\Controllers\transaccionCompraActivoFijoController;
 use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
@@ -486,6 +487,9 @@ Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorCo
 Route::resource('descuentoManualClientes', descuentoManualAnticipoClienteController::class)->middleware('auth');
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
+
+
+Route::resource('transaccionCActivoFijo', transaccionCompraActivoFijoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
@@ -1120,6 +1124,7 @@ Route::get('/guiaordenes/{id}/visualizar', [guiaremisionController::class, 'edit
 Route::post('/guiaordenes/consultar', [listaGuiasRemisionOrdenesController::class, 'verificar'])->middleware('auth');
 Route::get('/guiaordenes/{id}/eliminar', [listaGuiasRemisionOrdenesController::class, 'delete'])->middleware('auth')->middleware('acceso');
 
+Route::get('/transaccionCActivoFijo/new/{id}', [transaccionCompraActivoFijoController::class, 'nuevo'])->middleware('auth');
 Route::get('/ordenDespacho/new/{id}', [ordenDespachoController::class, 'nuevo'])->middleware('auth');
 Route::post('/ordenDespacho/consultar', [ordenDespachoController::class, 'consultar'])->middleware('auth');
 Route::get('/ordenDespacho/{id}/visualizar', [ordenDespachoController::class,'visualizar'])->middleware('auth')->middleware('acceso');

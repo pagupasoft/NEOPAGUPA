@@ -109,20 +109,20 @@ class cargarXMLController extends Controller
                                     if ($product->producto_id==$datos[$i]['id']) {
                                         $datos[$i]['cantidad']=$datos[$i]['cantidad']+floatval($adicional->cantidad);
                                         $datos[$i]['subtotal2']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
-                                        $datos[$i]['subtotal']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2)-round(floatval($adicional->descuento), 2);
-                                        $datos[$i]['t0']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['subtotal']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])-($adicional->descuento), 2);
+                                        $datos[$i]['t0']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'], 2);
                                         $datos[$i]['descuento']=$datos[$i]['descuento']+round(floatval($adicional->descuento), 2);
                                         if ($product->producto_tiene_iva==1) {
-                                            $datos[$i]['diva']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
-                                            $datos[$i]['t12']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                            $datos[$i]['diva']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            $datos[$i]['t12']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'], 2);
                                             $datos[$i]['t0']=0;
                                             if ($product->producto_tipo==1) {
-                                                $datos[$i]['sb']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['sb']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
                                                 $datos[$i]['ss']=0;
                                             }
                                             else{
                                                 $datos[$i]['sb']=0.00;
-                                                $datos[$i]['ss']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['ss']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
                                             }
                                         }
                                         $datos[$i]['total']=$datos[$i]['subtotal2']+$datos[$i]['diva']-$datos[$i]['descuento'];
@@ -141,20 +141,20 @@ class cargarXMLController extends Controller
                             $datos[$coun]['iva']='NO';
                             $datos[$coun]['diva']=0.00;
                             $datos[$coun]['sb']=0.00;
-                            $datos[$coun]['t0']=round($adicional->precioUnitario*$adicional->cantidad,2); 
+                            $datos[$coun]['t0']=round(($adicional->precioUnitario*$adicional->cantidad)-$adicional->descuento,2); 
                             $datos[$coun]['ss']=0.00;    
                             if($product->producto_tiene_iva==1){
                                 $datos[$coun]['iva']='SI';
-                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
-                                $datos[$coun]['t12']=round($adicional->precioUnitario*$adicional->cantidad,2);
+                                $datos[$coun]['diva']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                $datos[$coun]['t12']=round(($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento),2);
                                 $datos[$coun]['t0']=0;
                                 if ($product->producto_tipo==1) {
-                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                    $datos[$coun]['sb']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
                                     $datos[$coun]['ss']=0;
                                 }
                                 else{
                                     $datos[$coun]['sb']=0;
-                                    $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                    $datos[$coun]['ss']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 }
                                 
                             }
@@ -162,14 +162,14 @@ class cargarXMLController extends Controller
                             $datos[$coun]['valor']=floatval($adicional->precioUnitario);
                             $datos[$coun]['cantidad']=floatval($adicional->cantidad);
                             $datos[$coun]['subtotal2']=round($adicional->precioUnitario*$adicional->cantidad,2);
-                            $datos[$coun]['subtotal']=round($adicional->precioUnitario*$adicional->cantidad,2)-round(floatval($adicional->descuento),2);
+                            $datos[$coun]['subtotal']=round(($adicional->precioUnitario*$adicional->cantidad)-(floatval($adicional->descuento)),2);
                             if($product->producto_tipo==1){
                                 $datos[$coun]['bien']='Bien';
                             }
                             else{
                                 $datos[$coun]['bien']='Servicio';   
                             }
-                            $datos[$coun]['total']=round(floatval($adicional->precioUnitario)*floatval($adicional->cantidad),2)+$datos[$coun]['diva']-round(floatval($adicional->descuento),2);
+                            $datos[$coun]['total']=round((floatval($adicional->precioUnitario)*floatval($adicional->cantidad))+$datos[$coun]['diva']-floatval($adicional->descuento),2);
                             $coun++;
                         }
                        
@@ -358,20 +358,20 @@ class cargarXMLController extends Controller
                                     if ($product->producto_id==$datos[$i]['id']) {
                                         $datos[$i]['cantidad']=$datos[$i]['cantidad']+floatval($adicional->cantidad);
                                         $datos[$i]['subtotal2']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
-                                        $datos[$i]['subtotal']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2)-round(floatval($adicional->descuento), 2);
-                                        $datos[$i]['t0']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                        $datos[$i]['subtotal']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])-floatval($adicional->descuento), 2);
+                                        $datos[$i]['t0']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])-floatval($adicional->descuento), 2);
                                         $datos[$i]['descuento']=$datos[$i]['descuento']+round(floatval($adicional->descuento), 2);
                                         if ($product->producto_tiene_iva==1) {
-                                            $datos[$i]['diva']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
-                                            $datos[$i]['t12']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2);
+                                            $datos[$i]['diva']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                            $datos[$i]['t12']=round($adicional->precioUnitario*$datos[$i]['cantidad'], 2)-round(floatval($adicional->descuento), 2);
                                             $datos[$i]['t0']=0;
                                             if ($product->producto_tipo==1) {
-                                                $datos[$i]['sb']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['sb']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
                                                 $datos[$i]['ss']=0;
                                             }
                                             else{
                                                 $datos[$i]['sb']=0.00;
-                                                $datos[$i]['ss']=round(($adicional->precioUnitario*$datos[$i]['cantidad'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
+                                                $datos[$i]['ss']=round((($adicional->precioUnitario*$datos[$i]['cantidad'])-$datos[$i]['descuento'])*($porcentaje->tarifa_iva_porcentaje/100), 2);
                                             }
                                         }
                                         $datos[$i]['total']=$datos[$i]['subtotal2']+$datos[$i]['diva']-$datos[$i]['descuento'];
@@ -389,20 +389,20 @@ class cargarXMLController extends Controller
                             $datos[$coun]['iva']='NO';
                             $datos[$coun]['diva']=0.00;
                             $datos[$coun]['sb']=0.00;
-                            $datos[$coun]['t0']=round($adicional->precioUnitario*$adicional->cantidad,2); 
+                            $datos[$coun]['t0']=round(($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento),2); 
                             $datos[$coun]['ss']=0.00;
                             if($product->producto_tiene_iva==1){
                                 $datos[$coun]['iva']='SI';
-                                $datos[$coun]['diva']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
-                                $datos[$coun]['t12']=round($adicional->precioUnitario*$adicional->cantidad,2);
+                                $datos[$coun]['diva']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                $datos[$coun]['t12']=round(($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento),2);
                                 $datos[$coun]['t0']=0;
                                 if ($product->producto_tipo==1) {
-                                    $datos[$coun]['sb']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                    $datos[$coun]['sb']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
                                     $datos[$coun]['ss']=0;
                                 }
                                 else{
                                     $datos[$coun]['sb']=0.00;
-                                    $datos[$coun]['ss']=round(($adicional->precioUnitario*$adicional->cantidad)*($porcentaje->tarifa_iva_porcentaje/100),2);
+                                    $datos[$coun]['ss']=round((($adicional->precioUnitario*$adicional->cantidad)-($adicional->descuento))*($porcentaje->tarifa_iva_porcentaje/100),2);
                                 }
                                 
                             }
@@ -410,14 +410,14 @@ class cargarXMLController extends Controller
                             $datos[$coun]['valor']=floatval($adicional->precioUnitario);
                             $datos[$coun]['cantidad']=floatval($adicional->cantidad);
                             $datos[$coun]['subtotal2']=round($adicional->precioUnitario*$adicional->cantidad,2);
-                            $datos[$coun]['subtotal']=round($adicional->precioUnitario*$adicional->cantidad,2)-round(floatval($adicional->descuento),2);
+                            $datos[$coun]['subtotal']=round(($adicional->precioUnitario*$adicional->cantidad)-floatval($adicional->descuento),2);
                             if($product->producto_tipo==1){
                                 $datos[$coun]['bien']='Bien';
                             }
                             else{
                                 $datos[$coun]['bien']='Servicio';   
                             }
-                            $datos[$coun]['total']=round(floatval($adicional->precioUnitario)*floatval($adicional->cantidad),2)+$datos[$coun]['diva']-$datos[$coun]['descuento'];
+                            $datos[$coun]['total']=round(floatval(($adicional->precioUnitario)*floatval($adicional->cantidad))+$datos[$coun]['diva']-$datos[$coun]['descuento'],2);
                             $coun++;
                         }
                         

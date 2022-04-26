@@ -40,14 +40,15 @@ class cargarXMLController extends Controller
     }
     public function cargarproducto(Request $request)
     {
-        try{
+       
             DB::beginTransaction();
             $nombre = $request->get('DLdias');
             $provedor = $request->get('idproveedor');
             $producto = $request->get('productos');
+           
             if (isset($nombre)) {
                 for ($i=0; $i < count($nombre); $i++) {
-                    if ($producto[$i]!=0) {
+                    if ($producto[$i]!='0') {
                         $codigo = new Codigo_Producto();
                         $codigo->codigo_nombre = trim($nombre[$i]);
                         $codigo->proveedor_id = $provedor;
@@ -56,7 +57,7 @@ class cargarXMLController extends Controller
                         $codigo->save();
                         $product=Producto::findOrFail($producto[$i]);
                         $auditoria = new generalController();
-                        $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nomrbe, '0', '');
+                        $auditoria->registrarAuditoria('Registro de Codigo a producto-> '.$product->producto_nombre, '0', '');
                     }
                 }
             }
@@ -168,7 +169,7 @@ class cargarXMLController extends Controller
                             else{
                                 $datos[$coun]['bien']='Servicio';   
                             }
-                            $datos[$coun]['total']=round(floatval($adicional->precioUnitario)*floatval($adicional->cantidad),2)+$datos[$i]['diva']-round(floatval($adicional->descuento),2);
+                            $datos[$coun]['total']=round(floatval($adicional->precioUnitario)*floatval($adicional->cantidad),2)+$datos[$coun]['diva']-round(floatval($adicional->descuento),2);
                             $coun++;
                         }
                        
@@ -182,11 +183,7 @@ class cargarXMLController extends Controller
                 DB::commit();
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
             }
-        }
-        catch(\Exception $ex){ 
-            DB::rollBack();     
-            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+       
     }
     public function cargar(Request $request)
     {

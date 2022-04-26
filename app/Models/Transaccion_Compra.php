@@ -97,6 +97,19 @@ class Transaccion_Compra extends Model
     public function scopeTransaccionByFecha($query, $fechaInicio, $fechaFin){
         return $query->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('transaccion_fecha','>=',$fechaInicio)->where('transaccion_fecha','<=',$fechaFin);
     }
+    public function scopeMovimientoCConsumo($query, $cc, $fechaInicio, $fechaFin){
+        $query->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')
+        ->join('producto','producto.producto_id','=','detalle_tc.producto_id')
+        ->join('centro_consumo','centro_consumo.centro_consumo_id','=','detalle_tc.centro_consumo_id')
+        ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)
+        ->where('transaccion_fecha','>=',$fechaInicio)
+        ->where('transaccion_fecha','<=',$fechaFin);
+        if($cc != '0'){
+            $query->where('centro_consumo.centro_consumo_id','=',$cc);
+        } 
+        return $query; 
+    }
     public function scopeFacturaNumeroAnt($query, $numeroFactura, $proveedor){
         return $query->join('cuenta_pagar','transaccion_compra.cuenta_id','=','cuenta_pagar.cuenta_id')->join('proveedor','proveedor.proveedor_id','=','transaccion_compra.proveedor_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('transaccion_compra.proveedor_id','=',$proveedor)->where('transaccion_estado','=','1')->where('transaccion_numero','like','%'.$numeroFactura.'%')->orderBy('transaccion_numero','desc');
     }

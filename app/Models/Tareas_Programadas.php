@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Tareas_Programadas extends Model
 {
@@ -15,9 +16,14 @@ class Tareas_Programadas extends Model
     protected $fillable = [        
         'tarea_nombre',                    
         'tarea_tipo_tiempo',
-        'tarea_fecha_hora',      
-        'tarea_estado'   
+        'tarea_hora_ejecucion',      
+        'tarea_estado'
     ];
     protected $guarded =[
+
     ];
+
+    public function scopeTareas($query){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id);
+    }
 }

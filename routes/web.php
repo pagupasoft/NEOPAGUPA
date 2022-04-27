@@ -239,7 +239,9 @@ use App\Http\Controllers\rolConsolidadoCostaMarketController;
 use App\Http\Controllers\rolIndividualCostaMarketController;
 use App\Http\Controllers\rolOperactivoCostaMarketController;
 use App\Http\Controllers\RolReporteDetalladoController;
+use App\Http\Controllers\tareasProgramadasController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
+use App\Http\Controllers\transaccionCompraActivoFijoController;
 use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
@@ -404,6 +406,7 @@ Route::resource('ventaActivo', ventaActivoController::class)->middleware('auth')
 Route::resource('tipoMovimientoCaja', tipoMovimientoCajaController::class)->middleware('auth');
 Route::resource('tipoMovimientoBanco', tipoMovimientoBancoController::class)->middleware('auth');
 Route::resource('depreciacionMensual', depreciacionMensualController::class)->middleware('auth');
+Route::resource('tareasProgramadas', tareasProgramadasController::class)->middleware('auth');
 Route::resource('notaCreditoBanco', notaCreditoBancoController::class)->middleware('auth');
 Route::resource('notaDebitoBanco', notaDebitoBancoController::class)->middleware('auth');
 Route::resource('detallelaboratorio', detalleLaboratorioController::class)->middleware('auth');
@@ -486,6 +489,9 @@ Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorCo
 Route::resource('descuentoManualClientes', descuentoManualAnticipoClienteController::class)->middleware('auth');
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
+
+
+Route::resource('transaccionCActivoFijo', transaccionCompraActivoFijoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 
@@ -754,6 +760,9 @@ Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])
 Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
+
+Route::get('/tareasProgramadas/{id}/edit', [tareasProgramadasController::class, 'editar'])->middleware('auth');
+Route::post('/tareasProgramadas/actualizar', [tareasProgramadasController::class, 'actualizar'])->middleware('auth');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');
@@ -1120,6 +1129,7 @@ Route::get('/guiaordenes/{id}/visualizar', [guiaremisionController::class, 'edit
 Route::post('/guiaordenes/consultar', [listaGuiasRemisionOrdenesController::class, 'verificar'])->middleware('auth');
 Route::get('/guiaordenes/{id}/eliminar', [listaGuiasRemisionOrdenesController::class, 'delete'])->middleware('auth')->middleware('acceso');
 
+Route::get('/transaccionCActivoFijo/new/{id}', [transaccionCompraActivoFijoController::class, 'nuevo'])->middleware('auth');
 Route::get('/ordenDespacho/new/{id}', [ordenDespachoController::class, 'nuevo'])->middleware('auth');
 Route::post('/ordenDespacho/consultar', [ordenDespachoController::class, 'consultar'])->middleware('auth');
 Route::get('/ordenDespacho/{id}/visualizar', [ordenDespachoController::class,'visualizar'])->middleware('auth')->middleware('acceso');

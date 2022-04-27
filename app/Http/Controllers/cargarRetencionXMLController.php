@@ -104,8 +104,8 @@ class cargarRetencionXMLController extends Controller
                                 $nd = Nota_Debito::NDbyNumero($impuesto->numDocSustento)->first();
                             }
                         }
-                        if($factura->factura_estado == '1'){
-                            if(isset($factura->factura_id)){
+                        if(isset($factura->factura_id)){
+                            if($factura->factura_estado == '1'){
                                 if($this->guardar($xmlRet)){
                                     $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
                                     $datos[$i]['estado'] = 'si';
@@ -114,15 +114,15 @@ class cargarRetencionXMLController extends Controller
                                     $datos[$i]['estado'] = 'no';
                                 }
                             }else{
-                                $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
+                                $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención se encuentra anulada.';
                                 $datos[$i]['estado'] = 'no';
                             }
                         }else{
-                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención se encuentra anulada.';
+                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
                             $datos[$i]['estado'] = 'no';
                         }
-                        if($nd->nd_estado == '1'){
-                            if(isset($nd->nd_id)){
+                        if(isset($nd->nd_id)){
+                            if($nd->nd_estado == '1'){
                                 if($this->guardar($xmlRet)){
                                     $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
                                     $datos[$i]['estado'] = 'si';
@@ -131,11 +131,11 @@ class cargarRetencionXMLController extends Controller
                                     $datos[$i]['estado'] = 'no';
                                 }
                             }else{
-                                $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención no existe.';
+                                $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención se encuentra anulada.';
                                 $datos[$i]['estado'] = 'no';
                             }
                         }else{
-                            $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención se encuentra anulada.';
+                            $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención no existe.';
                             $datos[$i]['estado'] = 'no';
                         }
                     }

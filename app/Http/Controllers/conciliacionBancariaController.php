@@ -18,11 +18,14 @@ use App\Models\User;
 use App\NEOPAGUPA\ViewExcel;
 use PDF;
 use DateTime;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use TypeError;
+
+use function PHPUnit\Framework\throwException;
 
 class conciliacionBancariaController extends Controller
 {
@@ -39,15 +42,24 @@ class conciliacionBancariaController extends Controller
     }
     public function consultar(Request $request)
     {
-        if (isset($_POST['buscar']) or isset($_POST['excel']) or isset($_POST['pdf'])){
-            return $this->procesar($request);
-        }
-        if (isset($_POST['guardar'])){
-            return $this->guardar($request);
+        try{           
+            $mesDesde = date("m", strtotime($request->get('idDesde')));
+            $mesHasta = date("m", strtotime($request->get('idHasta')));
+            if( $mesDesde != $mesHasta){
+                throw new Exception('El rango de fechas seleccionado no es válido.');
+            }           
+            if (isset($_POST['buscar']) or isset($_POST['excel']) or isset($_POST['pdf'])){
+                return $this->procesar($request);
+            }
+            if (isset($_POST['guardar'])){
+                return $this->guardar($request);
+            }
+        }catch(\Exception $ex){
+            return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
     private function procesar(Request $request){
-        //try{ 
+        try{ 
             $datos =  $this->consulta($request);
             if (isset($_POST['buscar'])){
                 $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
@@ -108,9 +120,9 @@ class conciliacionBancariaController extends Controller
                 
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
                 }
-       /* }catch(\Exception $ex){
+       }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }*/
+    }
     }
     private function guardar(Request $request){
         try{            

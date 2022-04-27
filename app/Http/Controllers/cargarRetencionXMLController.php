@@ -97,46 +97,51 @@ class cargarRetencionXMLController extends Controller
                         $xmlRet = simplexml_load_string($retencionXML['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                         $factura = null;
                         $nd = null;
+                        $doc = '0';
                         foreach($xmlRet->impuestos->impuesto as $impuesto){
+                            $doc = $impuesto->codDocSustento;
                             if($impuesto->codDocSustento == '01'){
                                 $factura = Factura_Venta::FacturasbyNumero($impuesto->numDocSustento)->first();
                             }else{
                                 $nd = Nota_Debito::NDbyNumero($impuesto->numDocSustento)->first();
                             }
                         }
-                        if(isset($factura->factura_id)){
-                            if($factura->factura_estado == '1'){
-                                if($this->guardar($xmlRet)){
-                                    $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
-                                    $datos[$i]['estado'] = 'si';
+                        if($doc == '01'){
+                            if(isset($factura->factura_id)){
+                                if($factura->factura_estado == '1'){
+                                    if($this->guardar($xmlRet)){
+                                        $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
+                                        $datos[$i]['estado'] = 'si';
+                                    }else{
+                                        $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                        $datos[$i]['estado'] = 'no';
+                                    }
                                 }else{
-                                    $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                    $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención se encuentra anulada.';
                                     $datos[$i]['estado'] = 'no';
                                 }
                             }else{
-                                $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención se encuentra anulada.';
+                                $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
                                 $datos[$i]['estado'] = 'no';
                             }
                         }else{
-                            $datos[$i]['mensaje'] = 'La factura a la que pertenece esta retención no existe.';
-                            $datos[$i]['estado'] = 'no';
-                        }
-                        if(isset($nd->nd_id)){
-                            if($nd->nd_estado == '1'){
-                                if($this->guardar($xmlRet)){
-                                    $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
-                                    $datos[$i]['estado'] = 'si';
+                            if(isset($nd->nd_id)){
+                                if($nd->nd_estado == '1'){
+                                    if($this->guardar($xmlRet)){
+                                        $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
+                                        $datos[$i]['estado'] = 'si';
+                                    }else{
+                                        $datos[$i]['mensaje'] = 'La nota de debito ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                        $datos[$i]['estado'] = 'no';
+                                    }
                                 }else{
-                                    $datos[$i]['mensaje'] = 'La nota de debito ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
+                                    $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención se encuentra anulada.';
                                     $datos[$i]['estado'] = 'no';
                                 }
                             }else{
-                                $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención se encuentra anulada.';
+                                $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención no existe.';
                                 $datos[$i]['estado'] = 'no';
                             }
-                        }else{
-                            $datos[$i]['mensaje'] = 'La nota de debito a la que pertenece esta retención no existe.';
-                            $datos[$i]['estado'] = 'no';
                         }
                     }
                 }else{

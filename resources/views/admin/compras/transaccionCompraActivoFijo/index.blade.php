@@ -311,7 +311,7 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin-bottom : 0px;">
                             <div class="form-group">
-                                <input type="number" id="idDescripcion" name="idDescripcion"
+                                <input type="text" id="idDescripcion" name="idDescripcion"
                                     class="form-control " value="" required>
                             </div>
                         </div>

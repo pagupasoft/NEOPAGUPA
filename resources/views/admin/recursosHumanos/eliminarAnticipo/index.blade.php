@@ -95,7 +95,7 @@
                                 @endif
                                 @if($datos[$i]['tot'] == '3')
                                 <td colspan="5"></td>
-                                <td></td>
+                                <td><input type="checkbox" id="{{ $datos[$i]['cod'] }}" name="checkbox2[]" value="{{ $datos[$i]['cod'] }}"></td>
                                 <td>{{ number_format($datos[$i]['pag'],2) }}</td>
                                 <td>{{ $datos[$i]['fep'] }}</td>
                                 <td><a href="{{ url("asientoDiario/ver/{$datos[$i]['dir']}") }}" target="_blank">{{ $datos[$i]['dir'] }}</a></td>

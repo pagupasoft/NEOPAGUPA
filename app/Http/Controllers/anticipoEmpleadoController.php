@@ -484,7 +484,7 @@ class anticipoEmpleadoController extends Controller
                     }
                 }
                 $count ++;
-                foreach(Descuento_Anticipo_Empleado::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_empleado.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_empleado.diario_id','descuento_anticipo_empleado.cabecera_rol_id')->get() as $descuento){
+                foreach(Descuento_Anticipo_Empleado::DescuentosByAnticipo($anticipo->anticipo_id)->select('descuento_anticipo_empleado.descuento_id','descuento_valor','descuento_fecha','descuento_anticipo_empleado.diario_id','descuento_anticipo_empleado.cabecera_rol_cm_id','descuento_anticipo_empleado.cabecera_rol_id')->get() as $descuento){
                     $datos[$count]['cod'] = $descuento->descuento_id;
                     $datos[$count]['ben'] = ''; 
                     $datos[$count]['mon'] = ''; 
@@ -494,7 +494,14 @@ class anticipoEmpleadoController extends Controller
                     $datos[$count]['fep'] = $descuento->descuento_fecha; 
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
-                    $datos[$count]['fac'] = $descuento->rol->cabecera_rol_fecha; 
+                    $datos[$count]['fac'] = ''; 
+                    if($descuento->cabecera_rol_id=null){
+                        $datos[$count]['fac'] = $descuento->rol->cabecera_rol_fecha; 
+                    }
+                    if($descuento->cabecera_rol_cm_id=null){
+                        $datos[$count]['fac'] = $descuento->rolcm->cabecera_rol_fecha; 
+                    }
+                    
                     $datos[$count]['chk'] = '1'; 
                     $datos[$count]['tot'] = '3';
                     $datos[$count]['che'] = '0';  
@@ -597,6 +604,51 @@ class anticipoEmpleadoController extends Controller
                             $auditoria->registrarAuditoria('Eliminacion de diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de diario por eliminacion de anticipo');  
                         }
                     }
+                }
+            }
+            if($request->get('checkbox2')){
+                $seleccion2 = $request->get('checkbox2');
+                for ($i = 0; $i < count($seleccion2); ++$i) {
+                    $descuento =  Descuento_Anticipo_Empleado::findOrFail($seleccion2[$i]);
+                    $valorDescuento = $descuento->descuento_valor;
+                    $anticipo = Anticipo_Empleado::findOrFail($descuento->anticipo_id);
+                    
+                    $general = new generalController();
+                    $diario = null;
+                    
+                    $cierre = $general->cierre($descuento->descuento_fecha);                   
+                    if($cierre){
+                        return redirect('eliminatAntEmp')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
+                    $cierre = $general->cierre($anticipo->anticipo_fecha);    
+                    if($cierre){
+                        return redirect('eliminatAntEmp')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }  
+                    if(isset($descuento->diario->diario_id)){
+                        $diario = $descuento->diario;
+                    }
+                    foreach($diario->detalles as $detalle){
+                        $detalle->delete();
+                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por pagar');  
+                    }
+                    $descuento->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de anticipo empleado','0','Empleado '.$descuento->anticipo->empleado->empleado_nombre.' con descripcion -> '.$descuento->descuento_descripcion);
+                    $diario->delete();
+                    $auditoria->registrarAuditoria('Eliminacion de dairio de anticipo empleado','0','Empleado '.$descuento->anticipo->empleado->empleado_nombre.' con diario -> '.$descuento->diario->diario_codigo);
+                    $aux = Anticipo_Empleado::findOrFail($descuento->anticipo_id);
+                    if(is_null($aux->anticipo_documento)){
+                        $aux->anticipo_saldo = $anticipo->anticipo_saldo + $valorDescuento;
+                    }else{
+                        $aux->anticipo_saldo = $anticipo->anticipo_valor-Anticipo_Empleado::AnticipoEmpleadoDescuentos($aux->anticipo_id)->sum('descuento_valor');
+                    }
+                    if($aux->anticipo_saldo == 0){
+                        $aux->anticipo_estado = '2';
+                    }else{
+                        $aux->anticipo_estado = '1';
+                    }
+                    $anticipo->update();
+                    $auditoria->registrarAuditoria('Actualizacion de anticipo empleado','0','Actualizacion de eliminacion de cruce de anticipos de empleado -> '.$descuento->anticipo->empleado->empleado_nombre.' con descripcion -> '.$descuento->descuento_descripcion);
+                
                 }
             }
             DB::commit();

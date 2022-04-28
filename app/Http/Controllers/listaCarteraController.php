@@ -737,7 +737,9 @@ class listaCarteraController extends Controller
                     $datos[$count]['nom'] = $nom[$i]; 
                     $datos[$count]['doc'] = $doc[$i]; 
                     $datos[$count]['mon'] = $mon[$i]; 
-                    $datos[$count]['pag'] = $pag[$i]; 
+                    if($request->get('tipoConsulta') != 3){
+                        $datos[$count]['pag'] = $pag[$i]; 
+                    }
                     $datos[$count]['sal'] = $sal[$i];
                     $datos[$count]['fec'] = $fec[$i]; 
                     $datos[$count]['ter'] = $ter[$i]; 
@@ -763,7 +765,7 @@ class listaCarteraController extends Controller
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
-            $view =  \View::make('admin.formatosPDF.listaCartera', ['vencidas'=>$request->get('idVencidas'),'vencer'=>$request->get('idAVencer'),'monto'=>$request->get('idMonto'),'saldo'=>$request->get('idSaldo'),'todo'=>$todo,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'actual'=>DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d/m/Y'),'empresa'=>$empresa]);
+            $view =  \View::make('admin.formatosPDF.listaCartera', ['tipo'=>$request->get('tipoConsulta'),'vencidas'=>$request->get('idVencidas'),'vencer'=>$request->get('idAVencer'),'monto'=>$request->get('idMonto'),'saldo'=>$request->get('idSaldo'),'todo'=>$todo,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'actual'=>DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d/m/Y'),'empresa'=>$empresa]);
             if($todo == 1){
                 $nombreArchivo = 'LISTA DE CARTERA AL '.DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->format('d-m-Y');
             }else{

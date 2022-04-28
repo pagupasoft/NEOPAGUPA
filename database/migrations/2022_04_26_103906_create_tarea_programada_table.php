@@ -18,8 +18,11 @@ class CreateTareaProgramadaTable extends Migration
 
             $table->string("tarea_nombre_proceso");
             $table->integer("tarea_tipo_tiempo");
-            $table->date("tarea_fecha_ejecucion")->nullable();
+            $table->string("tarea_hora_ejecucion", 5)->nullable();
             $table->integer("tarea_estado");
+            $table->integer('empresa_id');
+
+            $table->foreign('empresa_id')->references('empresa_id')->on('empresa');
 
             $table->timestamps();
         });

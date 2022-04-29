@@ -391,18 +391,6 @@ class facturaVentaController extends Controller
                 /*********************************************************************/
             }
             /*******************************************************************/
-            if($factura->factura_emision == 'ELECTRONICA'){
-                $facturaAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlFactura($factura),'FACTURA');
-                $factura->factura_xml_estado = $facturaAux->factura_xml_estado;
-                $factura->factura_xml_mensaje = $facturaAux->factura_xml_mensaje;
-                $factura->factura_xml_respuestaSRI = $facturaAux->factura_xml_respuestaSRI;
-                if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
-                    $factura->factura_xml_nombre = $facturaAux->factura_xml_nombre;
-                    $factura->factura_xml_fecha = $facturaAux->factura_xml_fecha;
-                    $factura->factura_xml_hora = $facturaAux->factura_xml_hora;
-                }
-                $factura->update();
-            }
 
             if ($request->get('iddespacho')) {
                 /********************cabecera de orden de venta ********************/
@@ -454,6 +442,18 @@ class facturaVentaController extends Controller
             $urlRecibo = $general->FacturaRecibo($factura,1);
             $url = $general->pdfDiario($diario);
             DB::commit();
+            if($factura->factura_emision == 'ELECTRONICA'){
+                $facturaAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlFactura($factura),'FACTURA');
+                $factura->factura_xml_estado = $facturaAux->factura_xml_estado;
+                $factura->factura_xml_mensaje = $facturaAux->factura_xml_mensaje;
+                $factura->factura_xml_respuestaSRI = $facturaAux->factura_xml_respuestaSRI;
+                if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
+                    $factura->factura_xml_nombre = $facturaAux->factura_xml_nombre;
+                    $factura->factura_xml_fecha = $facturaAux->factura_xml_fecha;
+                    $factura->factura_xml_hora = $facturaAux->factura_xml_hora;
+                }
+                $factura->update();
+            }
             if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
                 return redirect('/factura/new/'.$request->get('punto_id'))->with('success','Factura registrada y autorizada exitosamente')->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('factura_fecha'))->format('d-m-Y').'/'.$factura->factura_xml_nombre.'.pdf')->with('pdf2',$urlRecibo)->with('diario',$url);
             }elseif($factura->factura_emision != 'ELECTRONICA'){
@@ -943,6 +943,8 @@ class facturaVentaController extends Controller
                 /*********************************************************************/
             }
             /*******************************************************************/
+            $url = $general->pdfDiario($diario);
+            DB::commit();
             if($factura->factura_emision == 'ELECTRONICA'){
                 $facturaAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlFactura($factura),'FACTURA');
                 $factura->factura_xml_estado = $facturaAux->factura_xml_estado;
@@ -955,8 +957,6 @@ class facturaVentaController extends Controller
                 }
                 $factura->update();
             }
-            $url = $general->pdfDiario($diario);
-            DB::commit();
             if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
                 return redirect('/listaGuiasOrdenes')->with('success','Factura registrada y autorizada exitosamente')->with('diario',$url)->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('factura_fecha'))->format('d-m-Y').'/'.$factura->factura_xml_nombre.'.pdf');
             }elseif($factura->factura_emision != 'ELECTRONICA'){

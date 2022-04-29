@@ -55,6 +55,7 @@ class listaAnticipoEmpleadoController extends Controller
                 $empleados = Empleado::empleado($request->get('empleadoID'))->get();
             }
             foreach($empleados as $empleado){
+                $datos[$count]['cheque']=null;
                 $datos[$count]['ben'] = $empleado->empleado_nombre; 
                 $datos[$count]['mon'] = Anticipo_Empleado::AnticiposByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->sum('anticipo_valor'); 
                 $datos[$count]['pag'] = Descuento_Anticipo_Empleado::DescuentosAnticipoByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->sum('descuento_valor');
@@ -71,6 +72,7 @@ class listaAnticipoEmpleadoController extends Controller
                 $count ++;
                 $countEmpleado = $count - 1;
                 foreach(Anticipo_Empleado::AnticiposByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->get() as $anticipo){
+                    $datos[$count]['cheque']=null;
                     $datos[$count]['ben'] = ''; 
                     $datos[$count]['mon'] = $anticipo->anticipo_valor; 
                     $datos[$count]['pag'] = '';
@@ -81,6 +83,11 @@ class listaAnticipoEmpleadoController extends Controller
                     $datos[$count]['tip'] = $anticipo->anticipo_tipo.' - '.$anticipo->anticipo_documento; 
                     $datos[$count]['fac'] = ''; 
                     $datos[$count]['tot'] = '0'; 
+                    foreach($anticipo->diario->detalles as $detalle){
+                        if(isset($detalle->cheque->cheque_id)){
+                            $datos[$count]['cheque']=$detalle->cheque->cheque_id;
+                        }
+                    }
                     $count ++;
                     if($datos[$count-1]['sal'] == 0  && $saldo_cero == 0){
                         $datos[$countEmpleado]['mon'] = floatval($datos[$countEmpleado]['mon']) - floatval($datos[$count-1]['mon']);
@@ -89,6 +96,7 @@ class listaAnticipoEmpleadoController extends Controller
                         $count = $count - 1;
                     }else{
                         foreach(Descuento_Anticipo_Empleado::DescuentosAnticipo($anticipo->anticipo_id, $request->get('idCorte'))->select('descuento_valor','descuento_fecha','descuento_anticipo_empleado.diario_id','descuento_anticipo_empleado.cabecera_rol_id')->get() as $descuento){
+                            $datos[$count]['cheque']=null;
                             $datos[$count]['ben'] = ''; 
                             $datos[$count]['mon'] = ''; 
                             $datos[$count]['sal'] = ''; 

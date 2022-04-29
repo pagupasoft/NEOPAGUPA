@@ -200,12 +200,12 @@ var id_item = 1;
                     linea = linea.replace(/{idalimento}/g, data[i]["idalim"]);
                    
                     total=total+Number(data[i]["valor"]);
-                    if (data[i]["rol"]!=0) {
+                    if (data[i]["rol"]!=null) {
                         linea = linea.replace(/{editable}/g, 'readonly');
                         linea = linea.replace(/{rol}/g, '<span class="badge bg-danger"> Asignado </span>');
                     }
                     else{
-                        if(data[i]["rolcm"]!=0){
+                        if(data[i]["rolcm"]!=null){
                             linea = linea.replace(/{editable}/g, 'readonly');
                             linea = linea.replace(/{rol}/g, '<span class="badge bg-danger"> Asignado </span>');
                         }

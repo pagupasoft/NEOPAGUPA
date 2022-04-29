@@ -430,6 +430,10 @@ class facturasinOrdenController extends Controller
                 /*********************************************************************/
             }
             /*******************************************************************/
+            $urlRecibo = '';
+            $urlRecibo = $general->FacturaRecibo($factura,1);
+            $url = $general->pdfDiario($diario);
+            DB::commit();
             if($factura->factura_emision == 'ELECTRONICA'){
                 $facturaAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlFactura($factura),'FACTURA');
                 $factura->factura_xml_estado = $facturaAux->factura_xml_estado;
@@ -442,10 +446,6 @@ class facturasinOrdenController extends Controller
                 }
                 $factura->update();
             }
-            $urlRecibo = '';
-            $urlRecibo = $general->FacturaRecibo($factura,1);
-            $url = $general->pdfDiario($diario);
-            DB::commit();
             if($facturaAux->factura_xml_estado == 'AUTORIZADO'){
                 return redirect('/facturacionsinOrden/new/'.$request->get('punto_id'))->with('success','Factura registrada y autorizada exitosamente')->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('factura_fecha'))->format('d-m-Y').'/'.$factura->factura_xml_nombre.'.pdf')->with('pdf2',$urlRecibo)->with('diario',$url);
             }elseif($factura->factura_emision != 'ELECTRONICA'){

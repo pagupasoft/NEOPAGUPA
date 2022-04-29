@@ -482,6 +482,8 @@ class notaCreditoController extends Controller
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$nc->nc_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' en el haber por un valor de -> '.$request->get('idIva'));
             }
             /****************************************************************/
+            $url = $general->pdfDiario($diario);
+            DB::commit();
             if($nc->nc_emision == 'ELECTRONICA'){
                 $ncAux = $docElectronico->enviarDocumentoElectronico($docElectronico->xmlNotaCredito($nc),'NC');
                 $nc->nc_xml_estado = $ncAux->nc_xml_estado;
@@ -494,8 +496,6 @@ class notaCreditoController extends Controller
                 }
                 $nc->update();
             }
-            $url = $general->pdfDiario($diario);
-            DB::commit();
             if($ncAux->nc_xml_estado == 'AUTORIZADO'){
                 return redirect('/notaCredito/new/'.$request->get('punto_id'))->with('success','NOTA DE CRÉDITO registrada y autorizada exitosamente')->with('diario',$url)->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $request->get('nc_fecha'))->format('d-m-Y').'/'.$nc->nc_xml_nombre.'.pdf');
             }if($nc->nc_emision == 'ELECTRONICA'){

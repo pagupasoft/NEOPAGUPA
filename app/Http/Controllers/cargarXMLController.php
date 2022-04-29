@@ -296,7 +296,7 @@ class cargarXMLController extends Controller
                    
                 }
                
-                return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'poveedorXML'=>$poveedorXML,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                     
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');

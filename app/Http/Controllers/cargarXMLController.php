@@ -82,10 +82,10 @@ class cargarXMLController extends Controller
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
-                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
-                            if ($adicional->codigoPorcentaje>0) {
-                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
-                            }
+                    foreach ($xmlEnvio->detalles->detalle as $adicional) {
+                        if ($adicional->impuestos->impuesto->codigoPorcentaje>0) {
+                            $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                        }
                     }
                     $porcentaje=Tarifa_Iva::TarifaIvaCodigo($iva[1]['codigo'])->first();
 
@@ -249,10 +249,10 @@ class cargarXMLController extends Controller
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
-                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
-                            if ($adicional->codigoPorcentaje>0) {
-                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
-                            }
+                    foreach ($xmlEnvio->detalles->detalle as $adicional) {
+                        if ($adicional->impuestos->impuesto->codigoPorcentaje>0) {
+                            $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                        }
                     }
                    
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();

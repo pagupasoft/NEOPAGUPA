@@ -54,6 +54,7 @@
             <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
                     <tr class="text-center neo-fondo-tabla">
+                        <th></th>
                         <th>Beneficiario</th>
                         <th>Monto</th>
                         <th>Saldo</th>
@@ -69,6 +70,7 @@
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)   
                             <tr>
+                                <td>@if($datos[$i]['cheque'] != null) <a href="{{ url("/cheque/imprimir/{$datos[$i]["cheque"]}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Cheque"><i class="fas fa-money-check-alt" aria-hidden="true"></i></a>@endif</td>
                                 <td @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif>{{ $datos[$i]['ben'] }} <input type="hidden" name="idBen[]" value="{{ $datos[$i]['ben'] }}"/><input type="hidden" name="idTot[]" value="{{ $datos[$i]['tot'] }}"/></td>
                                 <td class="text-center" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif @if($datos[$i]['tot'] == '2') style="background:  #C0C4C5;" @endif>@if($datos[$i]['mon'] <> '') {{ number_format($datos[$i]['mon'],2) }} @endif <input type="hidden" name="idMon[]" value="{{ $datos[$i]['mon'] }}"/></td>
                                 <td class="text-center" @if($datos[$i]['tot'] == '1') style="background:  #70B1F7;" @endif @if($datos[$i]['tot'] == '2') style="background:  #C0C4C5;" @endif>@if($datos[$i]['sal'] <> '') {{ number_format($datos[$i]['sal'],2) }} @endif <input type="hidden" name="idSal[]" value="{{ $datos[$i]['sal'] }}"/></td>

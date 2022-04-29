@@ -495,10 +495,10 @@ class anticipoEmpleadoController extends Controller
                     $datos[$count]['dir'] = $descuento->diario->diario_codigo; 
                     $datos[$count]['tip'] = ''; 
                     $datos[$count]['fac'] = ''; 
-                    if($descuento->cabecera_rol_id=null){
+                    if($descuento->cabecera_rol_id!=null){
                         $datos[$count]['fac'] = $descuento->rol->cabecera_rol_fecha; 
                     }
-                    if($descuento->cabecera_rol_cm_id=null){
+                    if($descuento->cabecera_rol_cm_id!=null){
                         $datos[$count]['fac'] = $descuento->rolcm->cabecera_rol_fecha; 
                     }
                     

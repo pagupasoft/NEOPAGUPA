@@ -148,6 +148,14 @@ class kardexCostoController extends Controller
                     $datos[$count]['pre1'] = $datos[$count]['pre3'];
                     $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
                 }
+                if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                    $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                    $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
+                }
+                if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                    $datos[$count]['pre2'] = $datos[$count]['pre3'];
+                    $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                }
                 $totalE = $totalE + floatval($datos[$count]['tot1']);
                 $totalS = $totalS + floatval($datos[$count]['tot2']);
                 $datos[$count]['num'] = '';

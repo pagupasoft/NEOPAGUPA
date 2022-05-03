@@ -202,6 +202,18 @@ class actualizarCostosController extends Controller
                         $datos[$count]['pre2'] = $datos[$count]['pre3'];
                         $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*round(floatval($datos[$count]['pre2']),4);
                     }
+                    if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
+                        $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                        $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
+                    }
+                    if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                        $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                        $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
+                    }
+                    if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                        $datos[$count]['pre2'] = $datos[$count]['pre3'];
+                        $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+                    }
                     $datos[$count]['dia'] = '';
                     $datos[$count]['cos'] = '';
                     if($movimiento->detalle_fv){
@@ -238,11 +250,11 @@ class actualizarCostosController extends Controller
                                 }
                                 if(isset($movimiento->detalle_nc->detalle_id)){
                                     if($detalle->cuenta_id == $movimiento->detalle_nc->producto->producto_cuenta_inventario){
-                                        $detalle->detalle_debe = $datos[$count]['tot2'];
+                                        $detalle->detalle_debe = $datos[$count]['tot1'];
                                     }
                                     $parametrizacionContable  = Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'COSTOS DE MERCADERIA')->first();
                                     if($detalle->cuenta_id == $parametrizacionContable->cuenta_id){
-                                        $detalle->detalle_haber = $datos[$count]['tot2'];
+                                        $detalle->detalle_haber = $datos[$count]['tot1'];
                                     }
                                 }
                                 if(isset($movimiento->detalle_od->detalle_id)){

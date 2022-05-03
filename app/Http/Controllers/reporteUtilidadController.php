@@ -213,16 +213,17 @@ class reporteUtilidadController extends Controller
                 $datos[$count]['pre1'] = $datos[$count]['pre3'];
                 $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
             }
+            if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                $datos[$count]['pre1'] = $datos[$count]['pre3'];
+                $datos[$count]['tot1'] = floatval($datos[$count]['can1'])*floatval($datos[$count]['pre1']);
+            }
+            if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
+                $datos[$count]['pre2'] = $datos[$count]['pre3'];
+                $datos[$count]['tot2'] = floatval($datos[$count]['can2'])*floatval($datos[$count]['pre2']);
+            }
             if($movimiento->detalle_fv){
                 $datos[$count]['num'] = $movimiento->detalle_fv->facturaVenta->factura_numero;
             }
-            /*if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "ORDEN DE DESPACHO"){
-                if($movimiento->detalle_od->ordenDespacho->orden_reserva == '1' and isset($movimiento->detalle_od->ordenDespacho->Factura->factura_id)){
-                    $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
-                    $resultado [1] = $resultado[1] + round($datos[$count]['tot2'],2); 
-                    $resultado [2] = $resultado[2] + round($movimiento->movimiento_total,2); 
-                }                
-            }*/
             if($bandera2){
                 if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "FACTURA DE VENTA"){
                     $resultado [0] = $resultado[0] + round($datos[$count]['can2'],2); 
@@ -235,8 +236,8 @@ class reporteUtilidadController extends Controller
                     $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
                 }
                 if($movimiento->movimiento_tipo == "ENTRADA" and $movimiento->movimiento_motivo == "VENTA" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){
-                    $resultado [0] = $resultado[0] - round($datos[$count]['can2'],2); 
-                    $resultado [1] = $resultado[1] - round($datos[$count]['tot2'],2); 
+                    $resultado [0] = $resultado[0] - round($datos[$count]['can1'],2); 
+                    $resultado [1] = $resultado[1] - round($datos[$count]['tot1'],2); 
                     $resultado [2] = $resultado[2] - round($movimiento->movimiento_total,2); 
                 }
                 if($movimiento->movimiento_tipo == "SALIDA" and $movimiento->movimiento_motivo == "ANULACION" and $movimiento->movimiento_documento == "NOTA DE CRÉDITO"){

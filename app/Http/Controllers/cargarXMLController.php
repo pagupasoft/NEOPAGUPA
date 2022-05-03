@@ -77,15 +77,15 @@ class cargarXMLController extends Controller
                 if($secuencialAux){$secuencial=$secuencialAux+1;}
                 $electrocnico = new facturacionElectronicaController();
                 $consultaDoc = $electrocnico->consultarDOC($request->get('clave'));
-             
+              
                 if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
-                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
-                            if ($adicional->codigoPorcentaje>0) {
-                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
-                            }
+                    foreach ($xmlEnvio->detalles->detalle as $adicional) {
+                        if ($adicional->impuestos->impuesto->codigoPorcentaje>0) {
+                            $iva[1]['codigo']='0'.$adicional->impuestos->impuesto->codigoPorcentaje;
+                        }
                     }
                     $porcentaje=Tarifa_Iva::TarifaIvaCodigo($iva[1]['codigo'])->first();
 
@@ -249,10 +249,10 @@ class cargarXMLController extends Controller
                     
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
                    
-                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
-                            if ($adicional->codigoPorcentaje>0) {
-                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
-                            }
+                    foreach ($xmlEnvio->detalles->detalle as $adicional) {
+                        if ($adicional->impuestos->impuesto->codigoPorcentaje>0) {
+                            $iva[1]['codigo']='0'.$adicional->impuestos->impuesto->codigoPorcentaje;
+                        }
                     }
                    
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();
@@ -296,7 +296,7 @@ class cargarXMLController extends Controller
                    
                 }
                
-                return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'poveedorXML'=>$poveedorXML,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.compras.xml.productos',['clave'=>$clave,'punto'=>$punto,'productos'=>$productos,'datos'=>$datos,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
                     
             }else{
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
@@ -325,17 +325,17 @@ class cargarXMLController extends Controller
                 if($secuencialAux){$secuencial=$secuencialAux+1;}
                 $electrocnico = new facturacionElectronicaController();
                 $consultaDoc = $electrocnico->consultarDOC($clave);
-               
-                if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {
-                    
+                
+                if ($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'] == 'AUTORIZADO') {          
                     $xmlEnvio = simplexml_load_string($consultaDoc['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante']);
-                    foreach ($xmlEnvio->infoFactura->totalConImpuestos->totalImpuesto as $adicional) {
-                            if ($adicional->codigoPorcentaje>0) {
-                                $iva[1]['codigo']='0'.$adicional->codigoPorcentaje;
+                        foreach ($xmlEnvio->detalles->detalle as $adicional) {
+                            if ($adicional->impuestos->impuesto->codigoPorcentaje>0) {
+                                $iva[1]['codigo']='0'.$adicional->impuestos->impuesto->codigoPorcentaje;
                             }
-                    }
-               
+                        }
+                    
                     $porcentaje=Tarifa_Iva::TarifaIvaCodigo($iva[1]['codigo'])->first();
+                
                     $poveedorXML = Proveedor::ProveedoresByRuc($xmlEnvio->infoTributaria->ruc)->first();
                     if(!$poveedorXML){
                         return redirect('/transaccionCompra/new/'.$punto)->with('error','No tiene resgistrado el proveedor, configure y vuelva a intentar');

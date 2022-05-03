@@ -42,6 +42,7 @@ class Anticipo_Empleado extends Model
         ->where('anticipo_estado', '=', '1')
         ->where('sucursal.sucursal_id','=',$id);
     }
+    
     public function scopeAnticipo($query, $id){
         return $query->join('rango_documento','rango_documento.rango_id','=','anticipo_empleado.rango_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','rango_documento.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('anticipo_id','=',$id);
     }

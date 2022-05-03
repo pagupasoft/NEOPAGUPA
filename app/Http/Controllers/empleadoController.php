@@ -86,8 +86,8 @@ class empleadoController extends Controller
             $compra[$i]["cedula"]=$empleado->empleado_cedula;
             $compra[$i]["nombre"]=$empleado->empleado_nombre;
             $compra[$i]["valor"]=0.00;
-            $compra[$i]["rol"]=0;
-            $compra[$i]["rolcm"]=0;
+            $compra[$i]["rol"]=null;
+            $compra[$i]["rolcm"]=null;
             
            if (count($alimentaciones)>0) {
                foreach ($alimentaciones as $alimentacion) {

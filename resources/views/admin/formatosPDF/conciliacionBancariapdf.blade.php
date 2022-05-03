@@ -101,35 +101,35 @@
     <table class="conBorder" style="padding-left: 5px; padding-right: 560px;">
         <tr class="letra12">            
             <td > SALDO ANTERIOR</td>
-            <td>{{ number_format($datos[0],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[0],2)}}</td>
         </tr>
         <tr class="letra12">
             <td > DEPOSITOS</td>
-            <td>{{ number_format($datos[4],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[4],2)}}</td>
         </tr>
         <tr class="letra12">
             <td > NOTAS DE CREDITO</td>
-            <td>{{ number_format($datos[9],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[9],2)}}</td>
         </tr>
         <tr class="letra12">
             <td > NOTAS DE DEBITO</td>
-            <td>{{ number_format($datos[7],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[7],2)}}</td>
         </tr>
         <tr class="letra12">
             <td > CHEQUES EGRESOS</td>
-            <td>{{ number_format($datos[13],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[13],2)}}</td>
         </tr>    
         <tr class="letra12">
             <td > SALDO ACTUAL</td>
-            <td>{{ number_format($datos[1],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[1],2)}}</td>
         </tr>
         <tr class="letra12">
             <td> CHEQUES GIRADOS Y NO COBRADOS</td>
-            <td>{{ number_format($datos[3],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[3],2)}}</td>
         </tr>
         <tr class="letra12">
             <td > SALDO SEGUN ESTADO DE CUENTA</td>
-            <td>{{ number_format($datos[2],2,'.','')}}</td>
+            <td>$ {{ number_format($datos[2],2)}}</td>
         </tr>
 </table>
     <br>

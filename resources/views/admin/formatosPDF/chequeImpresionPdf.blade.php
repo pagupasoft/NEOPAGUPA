@@ -8,7 +8,7 @@
 </style>
 <body>
 
-    <div id="id1" style="overflow:hidden !important; font-weight:{{$chequeImpresion->chequei_beneficiariofont}}; font-size: 13px; position:absolute;left:{{$chequeImpresion->chequei_beneficiariox}}px;top: {{$chequeImpresion->chequei_beneficiarioy}}px;cursor:pointer;width:400px;height:18px;">@if(isset($cheque->cheque_beneficiario)){{$cheque->cheque_beneficiario}} @else JUAN PIWABE ORTIZ @endif</div>
+    <div id="id1" style="overflow:hidden !important; font-weight:{{$chequeImpresion->chequei_beneficiariofont}}; font-size: 13px; position:absolute;left:{{$chequeImpresion->chequei_beneficiariox}}px;top: {{$chequeImpresion->chequei_beneficiarioy}}px;cursor:pointer;width:350px;height:18px;">@if(isset($cheque->cheque_beneficiario)){{$cheque->cheque_beneficiario}} @else JUAN PIWABE ORTIZ @endif</div>
 
     <div id="id2" style="position:absolute; font-weight:{{$chequeImpresion->chequei_valorfont}};left:{{$chequeImpresion->chequei_valorx}}px;top: {{$chequeImpresion->chequei_valory}}px;cursor:pointer;width:100px;height:18px;">@if(isset($cheque->cheque_beneficiario)){{number_format($cheque->cheque_valor,2,'.',',')}} @else 15805.89 @endif</div>
 

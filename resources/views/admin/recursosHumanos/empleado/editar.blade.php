@@ -119,7 +119,7 @@
                     <div class="form-group row">
                         <label for="idCuentaAnti" class="col-sm-3 col-form-label">Cuenta Anticipo</label>
                         <div class="col-sm-9">
-                            <select id="idCuentaAnti" name="idCuentaAnti" class="form-control show-tick " data-live-search="true">
+                            <select id="idCuentaAnti" name="idCuentaAnti" class="form-control show-tick select2" data-live-search="true">
                                 <option value="" label>--Seleccione una opcion--</option>
                                 @foreach($cuentas as $cuenta)
                                 @if($cuenta->cuenta_id == $empleado->empleado_cuenta_anticipo)
@@ -134,7 +134,7 @@
                     <div class="form-group row">
                         <label for="idCuentaPres" class="col-sm-3 col-form-label">Cuenta Prestamo</label>
                         <div class="col-sm-9">
-                            <select id="idCuentaPres" name="idCuentaPres" class="form-control show-tick " data-live-search="true">
+                            <select id="idCuentaPres" name="idCuentaPres" class="form-control show-tick select2" data-live-search="true">
                                 <option value="" label>--Seleccione una opcion --</option>
                                 @foreach($cuentas as $cuenta)
                                 @if($cuenta->cuenta_id == $empleado->empleado_cuenta_prestamo)

@@ -287,7 +287,7 @@
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="margin-bottom : 0px;">
                             <div class="form-group">
                                 <div class="form-line">
-                                    <select id="activo_id" name="activo_id" class="form-control show-tick" data-live-search="true">
+                                    <select id="activo_id" name="activo_id" class="form-control show-tick select2" data-live-search="true">
                                     @foreach($activos as $activo)
                                         <option value="{{ $activo->grupo_id }}">{{ $activo->grupo_nombre }}</option>   
                                     @endforeach    

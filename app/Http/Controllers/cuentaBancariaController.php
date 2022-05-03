@@ -207,7 +207,11 @@ class cuentaBancariaController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $cuentaBancaria = Cuenta_Bancaria::cuentaBancaria($id)->first();
-            $chequeImpresion = Cheque_Impresion::chequeImpresion($id)->first();
+            $chequeImpresion = Cheque_Impresion::chequeImpresionByUser($id)->first();
+
+            if(!$chequeImpresion)
+                $chequeImpresion = Cheque_Impresion::chequeImpresion($id)->first();
+            
             if($cuentaBancaria){
                 return view('admin.bancos.cuentaBancaria.chequeimprimir',['chequeImpresion'=>$chequeImpresion,'cuentaBancaria'=>$cuentaBancaria, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
@@ -223,10 +227,10 @@ class cuentaBancariaController extends Controller
         try {
             DB::beginTransaction();
             $cuentaBancaria = Cuenta_Bancaria::cuentaBancaria($id)->first();
-            $chequeImpresion = Cheque_Impresion::chequeImpresion($id)->first();
-            if(isset($chequeImpresion->chequei_id)){                
+            $chequeImpresion = Cheque_Impresion::chequeImpresionByUser($id)->first();
+            if(isset($chequeImpresion->chequei_id))
                 $chequeImpresion->delete();
-            }
+            
             $chequeImpresion= new Cheque_Impresion();
             $chequeImpresion->chequei_valorx = $request->get('idValorx');
             $chequeImpresion->chequei_valory = $request->get('idValory');
@@ -245,6 +249,7 @@ class cuentaBancariaController extends Controller
             $chequeImpresion->chequei_fechafont = $request->get('idFechafont');
 
             $chequeImpresion->cuenta_bancaria_id = $id;
+            $chequeImpresion->user_id=Auth::user()->user_id;
             $chequeImpresion->chequei_estado=1;
             $chequeImpresion->save();  
             
@@ -262,7 +267,14 @@ class cuentaBancariaController extends Controller
     public function chequeImprima($id){       
         $empresa = Empresa::empresa()->first();
         $cuentaBancaria = Cuenta_Bancaria::cuentaBancaria($id)->first();
-        $chequeImpresion = Cheque_Impresion::chequeImpresion($id)->first();
+        $chequeImpresion = Cheque_Impresion::chequeImpresionByUser($id)->first();
+
+        if(!$chequeImpresion)
+            $chequeImpresion = Cheque_Impresion::chequeImpresion($id)->first();
+
+        if(!$chequeImpresion)
+            return ": ( <br><br><br>Usted no ha configurado la visualización, realice esta acción en configurar Cheque  <a href='".url('cuentaBancaria')."'>Regresar</a>";
+
         $ruta = public_path().'/chequesImpresosPDF/'.$empresa->empresa_ruc;
         echo "$ruta";
         if (!is_dir($ruta)) {

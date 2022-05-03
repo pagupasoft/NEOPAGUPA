@@ -166,7 +166,17 @@ class generalController extends Controller
         $cheque->update();
         $empresa = Empresa::empresa()->first();
         $cuentaBancaria = Cuenta_Bancaria::cuentaBancaria($idCuenta)->first();
-        $chequeImpresion = Cheque_Impresion::chequeImpresion($idCuenta)->first();        
+        $chequeImpresion = Cheque_Impresion::chequeImpresionByUser($idCuenta)->first();
+
+        if(!$chequeImpresion)
+            $chequeImpresion = Cheque_Impresion::chequeImpresion($idCuenta)->first();
+
+        if(!$chequeImpresion)
+            return ": ( <br><br><br>Usted no ha configurado la visualización, realice esta acción en configurar Cheque  <a href='".url('cuentaBancaria')."'>Ir a Configurar</a>, &nbsp &nbsp <a onclick='window.history.back'>Regresar</a>";
+
+        //return $chequeImpresion;
+
+
         $ruta = public_path().'/chequesImpresosPDF/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $cheque->cheque_fecha_emision)->format('d-m-Y');
         echo "$ruta";
         if (!is_dir($ruta)) {
@@ -185,7 +195,17 @@ class generalController extends Controller
         $cheque->update();
         $empresa = Empresa::empresa()->first();
         $cuentaBancaria = Cuenta_Bancaria::cuentaBancaria($idCuenta)->first();
-        $chequeImpresion = Cheque_Impresion::chequeImpresion($idCuenta)->first();        
+        $chequeImpresion = Cheque_Impresion::chequeImpresionByUser($idCuenta)->first();
+
+        if(!$chequeImpresion)
+            $chequeImpresion = Cheque_Impresion::chequeImpresion($idCuenta)->first();
+
+        if(!$chequeImpresion)
+            return ": ( <br><br><br>Usted no ha configurado la visualización, realice esta acción en configurar Cheque  <a href='".url('cuentaBancaria')."'>Regresar</a>";
+
+        //echo Auth::user()->user_id.'<br>';
+        //return $chequeImpresion;
+
         $ruta = public_path().'/chequesImpresosPDF/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $cheque->cheque_fecha_emision)->format('d-m-Y');
         echo "$ruta";
         if (!is_dir($ruta)) {

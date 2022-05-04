@@ -129,7 +129,7 @@ class actualizarCostosController extends Controller
                     return redirect('actualizarCostos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
                 }
                 $datos = null;
-                $count = 0;
+                $count = 1;
                 /***********************SALDO ANTERIOR***********************/
                 $datos[$count]['fec'] = '';
                 $datos[$count]['can1'] = 0;

@@ -163,6 +163,7 @@ use App\Http\Controllers\beneficiosSocialesConsolidadaController;
 use App\Http\Controllers\beneficiosSocialesController;
 use App\Http\Controllers\cabeceraRolAdministrativoController;
 use App\Http\Controllers\cabeceraRolController;
+use App\Http\Controllers\cargaractivofijoXMLController;
 use App\Http\Controllers\cargarBalancesController;
 use App\Http\Controllers\cargarRetencionXMLController;
 use App\Http\Controllers\cargarXMLController;
@@ -1262,6 +1263,11 @@ Route::get('/compras/xml/{punto}',  [cargarXMLController::class, 'nuevo'])->midd
 Route::post('/compras/xml',  [cargarXMLController::class, 'cargar'])->middleware('auth');
 Route::get('/compras/xmlProcesar/{clave}/{punto}',  [cargarXMLController::class, 'procesar'])->middleware('auth');
 
+//cargar Compras XML
+Route::get('/comprasactivofijo/xml/{punto}',  [cargaractivofijoXMLController::class, 'nuevo'])->middleware('auth');
+Route::post('/comprasactivofijo/xml',  [cargaractivofijoXMLController::class, 'cargar'])->middleware('auth');
+Route::get('/comprasactivofijo/xmlProcesar/{clave}/{punto}',  [cargaractivofijoXMLController::class, 'procesar'])->middleware('auth');
+
 //reporte tributario
 Route::get('/reporteTributario',  [formulariosController::class, 'nuevo'])->middleware('auth');
 Route::post('/reporteTributario',  [formulariosController::class, 'consultar'])->middleware('auth');
@@ -1275,5 +1281,8 @@ Route::get('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'nuev
 Route::post('/retencionRecibidaXML',  [cargarRetencionXMLController::class, 'consultar'])->middleware('auth');
 
 Route::get('/compras/xmlProducto/{clave}/{punto}',  [cargarXMLController::class, 'procesarproducto'])->middleware('auth');
+Route::get('/comprasactivofijo/xmlProducto/{clave}/{punto}',  [cargaractivofijoXMLController::class, 'procesarproducto'])->middleware('auth');
+
 Route::post('/producto/compra',  [cargarXMLController::class, 'cargarproducto'])->middleware('auth');
+Route::post('/productofijo/compra',  [cargaractivofijoXMLController::class, 'cargarproducto'])->middleware('auth');
 Route::get('/buscarProducto/searchN/{buscar}',  [productoController::class, 'buscarByProducto'])->middleware('auth');

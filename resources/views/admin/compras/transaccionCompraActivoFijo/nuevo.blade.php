@@ -11,14 +11,12 @@
                 <div class="col-sm-5">
                     <div class="float-right">
                         <button type="button" id="nuevoID" onclick="nuevo()" class="btn btn-primary btn-sm"><i
-                                class="fas fa-receipt"></i><span> Nuevo</span></button>
+                                    class="fas fa-receipt"></i><span> Nuevo</span></button>
                         <a id="xmlID" href="{{ url("comprasactivofijo/xml/{$rangoDocumento->puntoEmision->punto_id}") }}" class="btn btn-secondary btn-sm" disabled><i
                                 class="fas fa-file-code"></i><span> Archivo TXT</span></a>
                         <button id="guardarID" type="submit" class="btn btn-success btn-sm" @if(isset($poveedorXML) == false) disabled @endif><i
                                 class="fa fa-save"></i><span> Guardar</span></button>
-                        <button type="button" id="cancelarID" name="cancelarID" onclick="javascript:location.reload()"
-                            class="btn btn-danger btn-sm not-active-neo" disabled><i
-                                class="fas fa-times-circle"></i><span> Cancelar</span></button>
+                        <a href="javascript: history.go(-1)" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</a>  
                     </div>
                 </div>
             </div>
@@ -245,9 +243,9 @@
                             <div class="form-group">
                                 <select class="form-control custom-select" id="transaccion_porcentaje_iva"
                                     name="transaccion_porcentaje_iva" data-live-search="true"
-                                    onclick="seleccionarIva()">
+                                    onclick="seleccionarIva()" >
                                     @foreach($tarifasIva as $iva)
-                                    <option value="{{$iva->tarifa_iva_porcentaje}}">{{$iva->tarifa_iva_porcentaje}}%
+                                    <option value="{{$iva->tarifa_iva_porcentaje}}" @if($civa[1]["codigo"]==$iva->tarifa_iva_codigo) selected @endif>{{$iva->tarifa_iva_porcentaje}}%
                                     </option>
                                     @endforeach
                                 </select>
@@ -325,7 +323,7 @@
                                     <input id="codigoProducto" name="idProducto" type="hidden">
                                     <input id="idProductoID" name="idProductoID" type="hidden">
                                     <input id="tipoProductoID" name="tipoProductoID" type="hidden">
-                                    <input id="buscarProducto" name="buscarProducto" type="text" class="form-control" placeholder="Buscar producto" disabled>
+                                    <input id="buscarProducto" name="buscarProducto" type="text" class="form-control" placeholder="Buscar producto" >
                                 </div>
                             </div>
                         </div>
@@ -427,6 +425,7 @@
                         </div>
                     </div>
                     <br>
+                    <?php $count = 1; $iva = 0; $total = 0; $subtotal = 0; $descuento = 0; $t0 = 0; $t12 = 0; $ss = 0;$sb = 0;?>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 0px;">
                             <div class="table-responsive">
@@ -439,19 +438,69 @@
                                             <th width="40"></th>
                                             <th width="90">Cantidad</th>
                                             <th width="120">Codigo</th>
-                                            <th width="250">Producto</th>
-                                            <th width="75">Con Iva</th>
-                                            <th width="100">Iva</th>
+                                            <th width="200">Producto</th>
+                                            <th width="50">Con Iva</th>
+                                            <th width="75">Iva</th>
                                             <th width="100">P.U.</th>
                                             <th width="100">Descuento</th>
                                             <th width="100">Total</th>
-                                            <th>Bodega</th>
-                                            <th>C. Consumo</th>
-                                            <th>Descripcion</th>
-                                            <th>Bien/Serv.</th>
+                                            <th width="150">Bodega</th>
+                                            <th width="150">C. Consumo</th>
+                                            <th width="300">Descripcion</th>
+                                            <th width="90">Bien/Serv.</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                   
+                                    @if(isset($datos))
+                                       
+                                        @for ($i = 1; $i <= count($datos); ++$i)
+                                        
+                                        <tr id="row_{{$i}}">
+                                            <td><a onclick="eliminarItem({{$i}}, '{{ $datos[$i]['iva']}}', {{ $datos[$i]['subtotal2']}}, {{ $datos[$i]['descuento']}},'{{ $datos[$i]['bien']}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
+                                            <td>{{ $datos[$i]['cantidad']}}<input class="invisible" name="Dcantidad[]" value="{{ $datos[$i]['cantidad']}}" /></td>
+                                            <td>{{ $datos[$i]['codigo']}}<input class="invisible" name="DprodcutoID[]" value="{{ $datos[$i]['id']}}" /><input class="invisible" name="Dcodigo[]" value="{{ $datos[$i]['codigo']}}" /></td>
+                                            <td style="white-space: pre-wrap;">{{ $datos[$i]['descripcion']}}<input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['descripcion']}}" /></td>
+                                            <td>{{ $datos[$i]['iva']}}<input class="invisible" name="Diva[]" value="{{ $datos[$i]['iva']}}" /></td>
+                                            <td>{{ $datos[$i]['diva']}}<input class="invisible" name="DViva[]" value="{{ $datos[$i]['diva']}}" /></td>
+                                            <td>{{ $datos[$i]['valor']}}<input class="invisible" name="Dpu[]" value="{{ $datos[$i]['valor']}}" /></td>
+                                            <td>{{ $datos[$i]['descuento']}}<input class="invisible" name="Ddescuento[]" value="{{ $datos[$i]['descuento']}}" /></td>
+                                            <td>{{ $datos[$i]['subtotal']}}<input class="invisible" name="Dtotal[]" value="{{ $datos[$i]['subtotal']}}" /></td>
+                                            <td><select class="form-control select2" id="Dbodega" name="Dbodega[]"
+                                                    data-live-search="true" >
+                                                    @foreach($bodegas as $bodega)
+                                                        <option value="{{$bodega->bodega_id}}">{{$bodega->bodega_nombre}}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-control select2" id="cconsumos" name="Dcconsumo[]" onchange="cargarSustento2();"
+                                                    >
+                                                    <option value="" label>--Seleccione una opcion--</option>
+                                                    @foreach($centros as $centro)
+                                                    <option value="{{$centro->centro_consumo_id}}">{{$centro->centro_consumo_nombre}}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td><input type="text" class="form-control" name="Ddescripcion[]" value="{{ $datos[$i]['descripcion']}}" /></td>
+                                            <td>{{ $datos[$i]['bien']}}<input class="invisible" name="DbienServ[]" value="{{ $datos[$i]['bien']}}" /></td>
+                                            <?php $iva =$iva+$datos[$i]['diva']; 
+                                            $subtotal =$subtotal+$datos[$i]['subtotal2']; 
+                                            $descuento = $descuento+$datos[$i]['descuento']; 
+                                            $t0 = $t0+$datos[$i]['t0']; 
+                                            $t12 = $t12+$datos[$i]['t12']; 
+                                            $sb =$sb+$datos[$i]['sb'];
+                                            $ss = $ss+$datos[$i]['ss'];
+                                            $total = $total+$datos[$i]['total'];
+
+                                            ?>
+                                            <?php $count++; ?>
+                                        </tr>
+                                       
+                                        @endfor
+                                    @endif  
                                     </tbody>
                                 </table>
                             </div>
@@ -583,7 +632,7 @@
                                                     <div class="form-group">
                                                         <input id="baseFuente" name="baseFuente" type="text"
                                                             class="form-control" placeholder="0.00" value="0.00"
-                                                            disabled>
+                                                            >
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5"
@@ -620,7 +669,7 @@
                                                         <div class="form-line">
                                                             <input id="valorFuente" name="valorFuente" type="text"
                                                                 class="form-control" placeholder="0.00" value="0.00"
-                                                                disabled>
+                                                                >
                                                         </div>
                                                     </div>
                                                 </div>
@@ -679,7 +728,7 @@
                                                         <div class="form-line">
                                                             <input id="baseIva" name="baseIva" type="text"
                                                                 class="form-control" placeholder="Total" value="0.00"
-                                                                disabled>
+                                                                >
                                                         </div>
                                                     </div>
                                                 </div>
@@ -717,7 +766,7 @@
                                                         <div class="form-line">
                                                             <input id="valorIva" name="valorIva" type="text"
                                                                 class="form-control" placeholder="Total" value="0.00"
-                                                                disabled>
+                                                                >
                                                         </div>
                                                     </div>
                                                 </div>
@@ -910,7 +959,9 @@
 <script src="{{ asset('admin/js/ajax/autocompleteProductoCompra.js') }}"></script>
 @endsection
 <script type="text/javascript">
-var id_item = 1;
+    
+var id_item =1 ;
+
 var id_itemRF = 1;
 var id_itemRI = 1;
 document.getElementById("idTarifa0").value = 0;
@@ -919,8 +970,37 @@ var combo = document.getElementById("transaccion_porcentaje_iva");
 var porcentajeIva = combo.options[combo.selectedIndex].text;
 porcentajeIva = parseFloat(porcentajeIva) / 100;
 
+function cargarmetodo(){
+    $('#transaccion_porcentaje_iva').css('pointer-events', 'none');
+     id_item =<?php echo $count;?>;
+    document.getElementById("subtotal").innerHTML = (<?php echo $subtotal;?>).toFixed(2);
+    document.getElementById("idSubtotal").value = <?php echo $subtotal;?>;
+    document.getElementById("descuento").innerHTML = (<?php echo $descuento;?>).toFixed(2);
+    document.getElementById("idDescuento").value = <?php echo $descuento;?>;
+    document.getElementById("tarifa12").innerHTML = (<?php echo  $t12;?>).toFixed(2);
+    document.getElementById("idTarifa12").value = <?php echo  $t12;?>;
+    document.getElementById("tarifa0").innerHTML = (<?php echo $t0;?>).toFixed(2);
+    document.getElementById("idTarifa0").value = <?php echo $t0;?>;
+    document.getElementById("iva").innerHTML = (<?php echo $iva;?>).toFixed(2);
+    document.getElementById("idIva").value = <?php echo $iva;?>;
+    document.getElementById("total").innerHTML = (<?php echo $total;?>).toFixed(2);
+    document.getElementById("idTotal").value = <?php echo $total;?>;
+
+    document.getElementById("IvaServiciosID").value = (<?php echo $ss;?>).toFixed(2);
+    document.getElementById("IvaBienesID").value = (<?php echo $sb;?>).toFixed(2);
+
+    document.getElementById("baseFuente").value = (<?php echo $subtotal;?>).toFixed(2);
+    document.getElementById("baseIva").value = (<?php echo $iva;?>).toFixed(2);
+}
+
 function cargarSustento(){
     var centroConsumo = document.getElementById("ccProducto");
+    var centroConsumoSustento = document.getElementById("idCCSustento");
+    document.getElementById("sustento_id").value = centroConsumoSustento.options[centroConsumo.selectedIndex].value;
+    $("#sustento_id").val(centroConsumoSustento.options[centroConsumo.selectedIndex].value).trigger('change');
+}
+function cargarSustento2(){
+    var centroConsumo = document.getElementById("cconsumos");
     var centroConsumoSustento = document.getElementById("idCCSustento");
     document.getElementById("sustento_id").value = centroConsumoSustento.options[centroConsumo.selectedIndex].value;
     $("#sustento_id").val(centroConsumoSustento.options[centroConsumo.selectedIndex].value).trigger('change');
@@ -938,10 +1018,8 @@ function cambioPago(){
 }
 function nuevo() {
     $('#transaccion_porcentaje_iva').css('pointer-events', 'none');
-    document.getElementById("guardarID").disabled = false;
-    document.getElementById("cancelarID").disabled = false;
-    document.getElementById("xmlID").disabled = false;
     document.getElementById("nuevoID").disabled = true;
+    document.getElementById("guardarID").disabled = false;
     document.getElementById("buscarProducto").disabled = false;
     document.getElementById("buscarProveedor").disabled = false;
     document.getElementById("baseFuente").disabled = false;
@@ -963,7 +1041,7 @@ function showDiff(){
 }
 function agregarItem() {
     if(document.getElementById("ccProducto").value != ''){
-        if (document.getElementById("nuevoID").disabled && document.getElementById("id_total").value > 0 && document.getElementById("idProductoID").value != '') {
+        if (document.getElementById("id_total").value > 0 && document.getElementById("idProductoID").value != '') {
             total = Number(document.getElementById("id_total").value);
             descuento = Number(total * (document.getElementById("id_descuento").value / 100));
             var linea = $("#plantillaItemFactura").html();
@@ -1134,7 +1212,7 @@ function calcularRF() {
 }
 
 function agregarItemRF() {
-    if (document.getElementById("nuevoID").disabled && document.getElementById("baseFuente").value > 0) {
+    if (document.getElementById("baseFuente").value > 0) {
         baseRF = Number(document.getElementById("baseFuente").value);
         porcentajeRF = document.getElementById("conceptoFuenteIDAux");
         codRF = document.getElementById("conceptoFuenteID");
@@ -1183,7 +1261,7 @@ function calcularRI() {
 }
 
 function agregarItemRI() {
-    if (document.getElementById("nuevoID").disabled && document.getElementById("baseIva").value > 0) {
+    if (document.getElementById("baseIva").value > 0) {
         baseRI = Number(document.getElementById("baseIva").value);
         porcentajeRI = document.getElementById("conceptoIvaIDAux");
         codRI = document.getElementById("conceptoIvaID");

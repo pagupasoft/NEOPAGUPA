@@ -158,10 +158,10 @@ class reporteOrdenesDespachoController extends Controller
             $libras = $request->get('libras');
             $kilos = $request->get('kilos');
             $tm = $request->get('tm');
-            $factura = $request->get('factura');
-            
-          
+            $factura = $request->get('factura');  
             $orden_comentario = $request->get('orden_comentario');
+            $embarcacion = $request->get('embarcacion');
+
             if($orden_numero){
                 for ($i = 0; $i < count($orden_numero); ++$i){
 
@@ -180,7 +180,8 @@ class reporteOrdenesDespachoController extends Controller
                     $datos[$count]['kilos'] = $kilos[$i];
                     $datos[$count]['tm'] = $tm[$i];          
                     $datos[$count]['factura'] = $factura[$i];        
-                    $datos[$count]['orden_comentario'] = $orden_comentario[$i];   
+                    $datos[$count]['orden_comentario'] = $orden_comentario[$i];
+                    $datos[$count]['embarcacion'] = $embarcacion[$i];
                     $count ++;         
                 }
             }    

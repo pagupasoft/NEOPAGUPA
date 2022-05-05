@@ -92,7 +92,8 @@
                         <th>Peso TM</th>
                         <th>Factura</th>
                         <th>Comentario Orden</th>  
-                        <th>Comentario Factura</th>  
+                        <th>Comentario Factura</th>
+                        <th>Embarcacion</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -120,6 +121,7 @@
                             <td >@if(isset($x->Factura->factura_id)) {{$x->Factura->factura_numero}} @endif<input type="hidden" name="factura[]" value="@if(isset($x->Factura->factura_id)) {{$x->Factura->factura_numero}} @endif"/></td>
                             <td >{{$x->orden_comentario}}<input type="hidden" name="orden_comentario[]" value="{{ $x->orden_comentario }}"/></td> 
                             <td >@if(isset($x->Factura->factura_id)){{$x->Factura->factura_comentario}}@endif<input type="hidden" name="orden_comentario[]" value="@if(isset($x->Factura->factura_id)){{$x->Factura->factura_comentario}}@endif"/></td>       
+                            <td >@if(isset($x->gr_id)){{$x->guia->Transportista->transportista_embarcacion}}@endif<input type="hidden" name="embarcacion[]" value="@if(isset($x->gr_id)){{$x->guia->Transportista->transportista_embarcacion}}@endif"/></td>       
                         </tr>
                         @endforeach
                     @endif

@@ -34,8 +34,8 @@
                 <th>Peso Kilos</th>
                 <th>Peso TM</th>
                 <th>Factura</th>              
-                <th>Comentario</th>   
-
+                <th>Comentario</th>
+                <th>Embarcacion</th>
             </tr>
         </thead>
         <tbody>                   
@@ -57,6 +57,7 @@
                     <td align="right">{{ $datos[$i]['tm'] }}</td>
                     <td style="font-size: 7px ">{{ $datos[$i]['factura'] }}</td>
                     <td style="font-size: 7px ">{{ $datos[$i]['orden_comentario'] }}</td>
+                    <td style="font-size: 7px ">{{ $datos[$i]['embarcacion'] }}</td>
                     @endfor
             @endif
         </tbody>

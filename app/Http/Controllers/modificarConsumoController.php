@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Centro_Consumo;
 use App\Models\Detalle_TC;
+use App\Models\Movimiento_Producto;
 use App\Models\Punto_Emision;
 use App\Models\Transaccion_Compra;
 use Illuminate\Http\Request;
@@ -83,8 +84,11 @@ class modificarConsumoController extends Controller
                     $aux->centro_consumo_id=$request->get('idConsumo');
                     $aux->save();
                     $general->registrarAuditoria('Actualizacion de la transaccion compra '.$transaccion->transaccion_numero.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,0,'');
+                    $auxmov=Movimiento_Producto::findOrFail($aux->movimiento_id);
+                    $auxmov->centro_consumo_id=$request->get('idConsumo');
+                    $auxmov->save();
+                    $general->registrarAuditoria('Actualizacion de la transaccion compra de Movimiento Producto '.$transaccion->transaccion_numero.' Con movimientos de Productos de id '.$auxmov->movimiento_id.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,0,'');
                    
-
                 }
                 $transaccion->sustento_id=$centro->sustento->sustento_id;
                 $transaccion->save();

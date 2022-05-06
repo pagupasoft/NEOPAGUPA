@@ -223,7 +223,7 @@ class anticipoClienteController extends Controller
             $diario->diario_secuencial = substr($diario->diario_codigo, 8);
             $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('m');
             $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('Y');
-            $diario->diario_comentario = 'COMPROBANTE DE ANTICIPO A CLIENTE: '.$cliente->cliente_nombre;
+            $diario->diario_comentario = 'COMPROBANTE DE ANTICIPO A CLIENTE: '.$cliente->cliente_nombre.'  '.$request->get('idMensaje');;
             $diario->diario_cierre = '0';
             $diario->diario_estado = '1';
             $diario->empresa_id = Auth::user()->empresa_id;            

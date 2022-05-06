@@ -400,7 +400,11 @@ class notaCreditoController extends Controller
                     /******************registro de movimiento de producto******************/
                     $movimientoProducto = new Movimiento_Producto();
                     $movimientoProducto->movimiento_fecha=$request->get('nc_fecha');
-                    $movimientoProducto->movimiento_cantidad=$cantidad[$i];
+                    if($nc->nc_comentario == 'DESCUENTO'){
+                        $movimientoProducto->movimiento_cantidad=0;
+                    }else{
+                        $movimientoProducto->movimiento_cantidad=$cantidad[$i];
+                    }
                     $movimientoProducto->movimiento_precio=$pu[$i];
                     $movimientoProducto->movimiento_iva=$iva[$i];
                     $movimientoProducto->movimiento_total=$total[$i];

@@ -58,6 +58,7 @@ class cargarRetencionXMLController extends Controller
                         $serie = $numero[0].$numero[1];
                         $secuencial = floatval($numero[2]);
                         if($data[$i][0] == 'Comprobante de Retención'){
+                            $datos[$count]['orden'] = '0';
                             $datos[$count]['cliente'] = $data[$i][3];
                             $datos[$count]['fecha'] = $data[$i][4];
                             $datos[$count]['numero'] = $data[$i][1];
@@ -68,11 +69,13 @@ class cargarRetencionXMLController extends Controller
                             if(isset($retencion->retencion_id)){
                                 $datos[$count]['estado'] = 'cargada';
                                 $datos[$count]['mensaje'] = 'Retención registrada previamente';
+                                $datos[$count]['orden'] = '2';
                             } 
                             $retencion = Retencion_Venta::RetencionBySerieSecuancialND($serie, $secuencial,$data[$i][2])->first();
                             if(isset($retencion->retencion_id)){
                                 $datos[$count]['estado'] = 'cargada';
                                 $datos[$count]['mensaje'] = 'Retención registrada previamente';
+                                $datos[$count]['orden'] = '2';
                             }           
                             $count ++;
                         }
@@ -126,6 +129,7 @@ class cargarRetencionXMLController extends Controller
                                             if($this->guardar($xmlRet)){
                                                 $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
                                                 $datos[$i]['estado'] = 'si';
+                                                $datos[$i]['orden'] = '1';
                                             }else{
                                                 $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';
                                                 $datos[$i]['estado'] = 'no';
@@ -177,6 +181,7 @@ class cargarRetencionXMLController extends Controller
                 }
             }
         }
+        sort($datos);
         return $datos;
     }
 

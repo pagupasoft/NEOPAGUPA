@@ -35,18 +35,7 @@
                         @if($rubro->rubro_tipo == 4)<option value="4" selected>OTROS</option>@else <option value="4">OTROS</option>@endif
                     </select>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label for="rubro_tipo" class="col-sm-2 col-form-label">Categoria Cosumo</label>
-                <div class="col-sm-10">
-                    <select class="custom-select" id="categoria" name="categoria" value="{{$rubro->rubro_tipo}}" require>
-                    <option value=""  selected>--Seleccione una opcion--</option>
-                        @foreach($categorias as $categoria)
-                            <option value="{{$categoria->categoria_id}}" @if(isset($rubro->categoria_id))  @if($categoria->categoria_id==$rubro->categoria_id) selected  @endif @endif>{{$categoria->categoria_nombre}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>                                            
+            </div>                                           
             <div class="form-group row">
                 <label for="rubro_estado" class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">

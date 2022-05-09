@@ -109,10 +109,6 @@ class rubroController extends Controller
             $rubro->rubro_descripcion = $request->get('rubro_descripcion');
             $rubro->rubro_tipo = $request->get('rubro_tipo');
             $rubro->empresa_id = Auth::user()->empresa_id;
-            if($request->get('categoria')!=" "){
-                $rubro->categoria_id =$request->get('categoria'); 
-            }
-            $rubro->categoria_id = $request->get('categoria');
             $rubro->rubro_estado = 1;
             $rubro->save();
             /*Inicio de registro de auditoria */
@@ -194,10 +190,7 @@ class rubroController extends Controller
             }else{
                 $rubro->rubro_estado = 0;
             }
-            if($request->get('categoria')!=" "){
-                $rubro->categoria_id =$request->get('categoria'); 
-            }
-            $rubro->categoria_id = $request->get('categoria');  
+            
             $rubro->save();       
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

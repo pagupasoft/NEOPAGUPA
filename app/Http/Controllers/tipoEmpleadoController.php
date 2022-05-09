@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria_Rol;
 use App\Models\Cuenta;
 use App\Models\Punto_Emision;
 use App\Models\Rubro;
@@ -25,8 +26,8 @@ class tipoEmpleadoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();        
             $tiposEmpleado=Tipo_Empleado::Tipos()->get();
-           
-            return view('admin.recursosHumanos.tipoEmpleado.index',['sucursales'=>Sucursal::Sucursales()->get(),'rubros'=>Rubro::rubros()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'tiposEmpleado'=>$tiposEmpleado, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            $categorias = Categoria_Rol::Categorias()->get();   
+            return view('admin.recursosHumanos.tipoEmpleado.index',['categorias'=>$categorias,'sucursales'=>Sucursal::Sucursales()->get(),'rubros'=>Rubro::rubros()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'tiposEmpleado'=>$tiposEmpleado, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -56,6 +57,7 @@ class tipoEmpleadoController extends Controller
                 $detalle->cuenta_debe = $request->get($rubro->rubro_id.'-debe');
                 $detalle->cuenta_haber = $request->get($rubro->rubro_id.'-haber');
                 $detalle->rubro_id = $rubro->rubro_id;
+                $detalle->categoria_id = $request->get($rubro->rubro_id.'-categoria');
                 $tipoEmpleado->detalles()->save($detalle);
             }
             /*Inicio de registro de auditoria */
@@ -82,8 +84,9 @@ class tipoEmpleadoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $tipoEmpleado=Tipo_Empleado::tipoEmpleado($id)->first();
+            $categorias = Categoria_Rol::Categorias()->get();   
             if($tipoEmpleado){
-                return view('admin.recursosHumanos.tipoEmpleado.ver',['sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.recursosHumanos.tipoEmpleado.ver',['categorias'=>$categorias,'sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('/denegado');
             }
@@ -105,8 +108,9 @@ class tipoEmpleadoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $tipoEmpleado=Tipo_Empleado::tipoEmpleado($id)->first();
+            $categorias = Categoria_Rol::Categorias()->get();   
             if($tipoEmpleado){
-                return view('admin.recursosHumanos.tipoEmpleado.editar',['sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'rubros'=>Rubro::rubros()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.recursosHumanos.tipoEmpleado.editar',['categorias'=>$categorias,'sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'rubros'=>Rubro::rubros()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('/denegado');
             }
@@ -144,6 +148,7 @@ class tipoEmpleadoController extends Controller
                 $detalle->cuenta_debe = $request->get($rubro->rubro_id.'-debe');
                 $detalle->cuenta_haber = $request->get($rubro->rubro_id.'-haber');
                 $detalle->rubro_id = $rubro->rubro_id;
+                $detalle->categoria_id = $request->get($rubro->rubro_id.'-categoria');
                 $tipoEmpleado->detalles()->save($detalle);
             }
             /*Inicio de registro de auditoria */
@@ -189,8 +194,9 @@ class tipoEmpleadoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $tipoEmpleado=Tipo_Empleado::tipoEmpleado($id)->first();
+            $categorias = Categoria_Rol::Categorias()->get();   
             if($tipoEmpleado){
-                return view('admin.recursosHumanos.tipoEmpleado.eliminar',['sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.recursosHumanos.tipoEmpleado.eliminar',['categorias'=>$categorias,'sucursales'=>Sucursal::Sucursales()->get(),'tipoEmpleado'=>$tipoEmpleado ,'PE'=>Punto_Emision::puntos()->get(), 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('/denegado');
             }

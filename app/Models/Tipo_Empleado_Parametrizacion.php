@@ -18,6 +18,7 @@ class Tipo_Empleado_Parametrizacion extends Model
         'cuenta_haber',
         'tipo_id',  
         'rubro_id', 
+        'categoria_id', 
     ];
     protected $guarded =[
     ];   
@@ -36,5 +37,8 @@ class Tipo_Empleado_Parametrizacion extends Model
     }
     public function rubro(){
         return $this->belongsTo(Rubro::class, 'rubro_id', 'rubro_id');
+    }
+    public function categoria(){
+        return $this->belongsTo(Categoria_Rol::class, 'categoria_id', 'categoria_id');
     }
 }

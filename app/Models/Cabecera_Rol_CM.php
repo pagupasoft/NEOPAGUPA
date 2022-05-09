@@ -46,6 +46,21 @@ class Cabecera_Rol_CM extends Model
     public function scopeRol($query,$id){
         return $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('cabecera_rol_estado','=','1')->where('cabecera_rol_id','=',$id)->orderBy('empleado.empleado_nombre','asc');
     }
+    public function scopeMovimientoRolesByCC($query,$consumo,$fechadesde,$fechahasta){
+         $query->join('detalle_rol_cm','detalle_rol_cm.cabecera_rol_id','=','cabecera_rol_cm.cabecera_rol_id')
+        ->join('rubro','rubro.rubro_id','=','detalle_rol_cm.rubro_id')
+        ->join('tipo_empleado_parametrizacion','tipo_empleado_parametrizacion.rubro_id','=','rubro.rubro_id')
+        ->join('categoria_rol','categoria_rol.categoria_id','=','tipo_empleado_parametrizacion.categoria_id')
+        ->join('centro_consumo','centro_consumo.centro_consumo_id','=','categoria_rol.centro_consumo_id')
+        ->where('rubro.empresa_id','=',Auth::user()->empresa_id)
+        ->where('cabecera_rol_estado','=','1')
+        ->where('detalle_rol_fecha_inicio', '>=', $fechadesde)
+        ->where('detalle_rol_fecha_fin', '<=', $fechahasta);
+        if($consumo != '0'){
+            $query->where('categoria_rol.centro_consumo_id','=',$consumo);
+        }
+        return $query;
+    }
     public function scopeBuscar($query, $fechaI, $fechaF, $empleado, $sucursal){
         $query->join('empleado','empleado.empleado_id','=','cabecera_rol_cm.empleado_id')
         ->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')

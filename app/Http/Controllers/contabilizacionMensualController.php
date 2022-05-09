@@ -8,6 +8,7 @@ use App\Models\Centro_Consumo;
 use App\Models\Detalle_Diario;
 use App\Models\Diario;
 use App\Models\Empleado;
+use App\Models\Parametrizacion_Contable;
 use App\Models\Punto_Emision;
 use App\Models\Rango_Documento;
 use App\Models\Rol_Consolidado;
@@ -16,6 +17,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 class contabilizacionMensualController extends Controller
 {
@@ -75,7 +77,7 @@ class contabilizacionMensualController extends Controller
     }
     public function guardarId(Request $request){
        
-       
+        
         setlocale(LC_ALL, 'es_ES');
         $general = new generalController();
         $idempleado = $request->get('empleadoid');
@@ -88,6 +90,7 @@ class contabilizacionMensualController extends Controller
         $vextras = $request->get('vextras');
         $vleysal = $request->get('vleysal');
         $vvacaciones = $request->get('vvacaciones');
+        $vvacacionespag = $request->get('vvacacionespag');
         $vtransporte = $request->get('vtransporte');
         $vppqq = $request->get('vppqq');
        
@@ -117,18 +120,20 @@ class contabilizacionMensualController extends Controller
         $votrosegre = $request->get('votrosegre');
         $vegresos = $request->get('vegresos');
 
-       
+        $fechadesde=$request->get('fechames')."-01";
+        $anticipos = $request->get('anticipos');
+      
         $diariocontabilizado = new Diario();
-        $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($request->get('fecha_hasta'), 'CCMR');
-        $diariocontabilizado->diario_fecha = $request->get('fecha_hasta');
+        $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($fechadesde, 'CCMR');
+        $diariocontabilizado->diario_fecha = $fechadesde;
         $diariocontabilizado->diario_referencia = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES';
         $diariocontabilizado->diario_tipo_documento = 'CONTABILIZACION MENSUAL';
         $diariocontabilizado->diario_tipo = 'CCMR';
         $diariocontabilizado->diario_secuencial = substr($diariocontabilizado->diario_codigo, 8);
-        $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('m');
-        $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('Y');
-        $monthName = strftime('%B', $request->get('fecha_hasta')->getTimestamp());
-        $temp1 = new DateTime($request->get('fecha_hasta'));
+        $diariocontabilizado->diario_mes = DateTime::createFromFormat('Y-m-d', $fechadesde)->format('m');
+        $diariocontabilizado->diario_ano = DateTime::createFromFormat('Y-m-d', $fechadesde)->format('Y');
+        $temp1 = new DateTime($fechadesde);
+        $monthName = strftime('%B', $temp1->getTimestamp());
         $anio = $temp1->format('Y');
         $diariocontabilizado->diario_comentario = 'COMPROBANTE DE CONTABILIZACION MENSUAL DE ROLES DE EMPLEADOS DEL MES DE '.$monthName.' '.$anio;
         $diariocontabilizado->diario_numero_documento = 0;
@@ -137,13 +142,48 @@ class contabilizacionMensualController extends Controller
         $diariocontabilizado->diario_estado = '1';
         
         $diariocontabilizado->empresa_id = Auth::user()->empresa_id;
-        $diariocontabilizado->sucursal_id =  $tipo->sucursal_id;
+        $diariocontabilizado->sucursal_id =  $request->get('sucursal');
         $diariocontabilizado->save();
         $general->registrarAuditoria('Registro de diario Contabilizado de rol de Empleado', '0', '');
         $matriz=null;
         $activador=true;
         $count=1;
-        for ($i = 0; $i < count($tipo); ++$i) {
+        for ($j = 0; $j < count($anticipos); ++$j) {
+            if (floatval($anticipos[$j])>0) {
+                $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first(); 
+                $emplea=Empleado::findOrFail($idempleado[$j]); 
+                if($parametrizacionContable->parametrizacion_cuenta_general == '0'){
+                    $tipo=$emplea->empleado_cuenta_anticipo;
+                }
+                else{    
+                    $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($emplea->tipo->tipo_id, 'anticipos')->first();
+                }  
+                if($matriz==null){
+                    $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                    $matriz[$count]["debe"]= 0;
+                    $matriz[$count]["tipo"]= 'HABER';
+                    $matriz[$count]["haber"]=floatval($anticipos[$j]);
+                    $count++;
+                }
+                else{
+                    $activador=true;
+                    for ($k = 1; $k <= count($matriz); ++$k) {
+                        if($matriz[$k]["idcuenta"]==$tipo->cuenta_haber && $matriz[$k]["haber"]>0){
+                            $matriz[$k]["haber"]=  $matriz[$k]["haber"]+floatval($anticipos[$j]);
+                            $activador=false;
+                        }
+                    }
+                    if($activador==true){
+                        $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                        $matriz[$count]["debe"]= 0;
+                        $matriz[$count]["tipo"]= 'HABER';
+                        $matriz[$count]["haber"]=floatval($anticipos[$j]);
+                        $count++;
+                    }
+                }    
+            }
+        }
+        for ($i = 0; $i < count($vsueldo); ++$i) {
             if (floatval($vsueldo[$i])>0) {
                 $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'sueldos')->first();
                 if($matriz==null){
@@ -170,6 +210,32 @@ class contabilizacionMensualController extends Controller
                     }
                 }    
             }
+            if (floatval($vliquido_pagar[$i])>0) {
+                $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'sueldos')->first();
+                if($matriz==null){
+                    $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                    $matriz[$count]["haber"]= floatval($vliquido_pagar[$i]);
+                    $matriz[$count]["tipo"]= 'HABER';
+                    $matriz[$count]["haber"]=0;
+                    $count++;
+                }
+                else{
+                    $activador=true;
+                    for ($k = 1; $k <= count($matriz); ++$k) {
+                        if ($matriz[$k]["idcuenta"]==$tipo->cuenta_haber && $matriz[$k]["haber"]>0) {
+                            $matriz[$k]["haber"]=  $matriz[$k]["haber"]+floatval($vliquido_pagar[$i]);
+                            $activador=false;
+                        }
+                    }
+                    if ($activador==true) {
+                        $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                        $matriz[$count]["debe"]= 0;
+                        $matriz[$count]["tipo"]= 'HABER';
+                        $matriz[$count]["haber"]=floatval($vliquido_pagar[$i]);
+                        $count++;
+                    }
+                }
+            }
             if (floatval($votrosingresos[$i])>0) {
                 $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'otrosIngresos')->first();
                 if ($matriz==null) {
@@ -195,6 +261,7 @@ class contabilizacionMensualController extends Controller
                     }
                 }
             }
+            
             if (floatval($vtercero[$i])>0) {
                 $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'decimoTercero')->first();
                 if ($matriz==null) {
@@ -290,6 +357,32 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
                         $matriz[$count]["debe"]= floatval($vextras[$i]);
+                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["haber"]=0;
+                        $count++;
+                    }
+                }
+            }
+            if (floatval($vvacaciones[$i])>0) {
+                $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'vacacion')->first();
+                if($matriz==null){
+                    $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                    $matriz[$count]["debe"]= floatval($vvacaciones[$i]);
+                    $matriz[$count]["tipo"]= 'DEBE';
+                    $matriz[$count]["haber"]=0;
+                    $count++;
+                }
+                else{
+                    $activador=true;
+                    for ($k = 1; $k <= count($matriz); ++$k) {
+                        if ($matriz[$k]["idcuenta"]==$tipo->cuenta_debe && $matriz[$k]["debe"]>0) {
+                            $matriz[$k]["debe"]=  $matriz[$k]["debe"]+floatval($vvacaciones[$i]);
+                            $activador=false;
+                        }
+                    }
+                    if ($activador==true) {
+                        $matriz[$count]["idcuenta"]= $tipo->cuenta_debe;
+                        $matriz[$count]["debe"]= floatval($vvacaciones[$i]);
                         $matriz[$count]["tipo"]= 'DEBE';
                         $matriz[$count]["haber"]=0;
                         $count++;
@@ -394,7 +487,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vleysal[$i]);
                         $count++;
                     }
@@ -420,7 +513,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vppqq[$i]);
                         $count++;
                     }
@@ -446,7 +539,7 @@ class contabilizacionMensualController extends Controller
                 if($activador==true){
                     $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                     $matriz[$count]["debe"]= 0;
-                    $matriz[$count]["tipo"]= 'DEBE';
+                    $matriz[$count]["tipo"]= 'HABER';
                     $matriz[$count]["haber"]=floatval($vhipoteca[$i]);
                     $count++;
                 }
@@ -473,7 +566,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vcomisariato[$i]);
                         $count++;
                     }
@@ -501,7 +594,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vmultas[$i]);
                         $count++;
                     }
@@ -527,19 +620,14 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vasumido[$i]);
                         $count++;
                     }
                 }
                
             }
-            if (floatval($vanticipo[$i])>0) {
-                
-                
-               
-               
-            }
+            
             if (floatval($vimpu_renta[$i])>0) {
                 
                 $tipo=Tipo_Empleado::TipoEmpleadoBusquedaCuenta($idtipo[$i], 'impuestoRenta')->first();
@@ -561,7 +649,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($vimpu_renta[$i]);
                         $count++;
                     }
@@ -586,7 +674,7 @@ class contabilizacionMensualController extends Controller
                     if ($activador==true) {
                         $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                         $matriz[$count]["debe"]= 0;
-                        $matriz[$count]["tipo"]= 'DEBE';
+                        $matriz[$count]["tipo"]= 'HABER';
                         $matriz[$count]["haber"]=floatval($votrosegre[$i]);
                         $count++;
                     }
@@ -612,19 +700,19 @@ class contabilizacionMensualController extends Controller
                         if ($activador==true) {
                             $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                             $matriz[$count]["debe"]= 0;
-                            $matriz[$count]["tipo"]= 'DEBE';
+                            $matriz[$count]["tipo"]= 'HABER';
                             $matriz[$count]["haber"]=floatval($vpersonal[$i]);
                             $count++;
                         }
                     }
                 }
-            
+                
         
 
-                ///////////////////////////Egresos///////////////////////////////
-        
+               
 
 
+                /*
                 ///////////////////////////Provisiones///////////////////////////////
                 if (floatval($request->get('fecha_hasta'))>0) {
                     $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado[0], 'sueldos')->first();
@@ -843,8 +931,47 @@ class contabilizacionMensualController extends Controller
                     $diariocontabilizado->detalles()->save($detalleDiario);
                     $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diariocontabilizado->diario_codigo, '0', 'En la cuenta del Haber -> '.$tipo->cuenta_haber.' con el valor de: -> '.$request->get('fecha_hasta'));
                 }
+                */
+
             }
-             
+             ///////////////////////////Egresos///////////////////////////////
+             for ($k = 1; $k <= count($matriz); ++$k)  {
+                if($matriz[$k]["tipo"]=="DEBE"){
+                    $detalleDiario = new Detalle_Diario();
+                    $detalleDiario->detalle_debe =  $matriz[$k]["debe"];
+                    $detalleDiario->detalle_haber = 0.00;
+                    $detalleDiario->detalle_comentario =  'Pago del Rol del '.$request->get('fecha_desde').' al '.$request->get('fecha_hasta');
+                    $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                    $detalleDiario->detalle_numero_documento = $diariocontabilizado->diario_numero_documento;
+                    $detalleDiario->detalle_conciliacion = '0';
+                    $detalleDiario->detalle_estado = '1';          
+                    $detalleDiario->cuenta_id = $matriz[$k]["idcuenta"];
+                   
+                    $diariocontabilizado->detalles()->save($detalleDiario);
+                    $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diariocontabilizado->diario_codigo, '0', 'En la cuenta del Debe -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["debe"]);
+    
+                }
+                if($matriz[$k]["tipo"]=="HABER"){
+                    $detalleDiario = new Detalle_Diario();
+                    $detalleDiario->detalle_debe =  0.00;
+                    $detalleDiario->detalle_haber =  $matriz[$k]["haber"];
+                    $detalleDiario->detalle_comentario =  'Pago del Rol del '.$request->get('fecha_desde').' al '.$request->get('fecha_hasta');
+                    $detalleDiario->detalle_tipo_documento = 'CONTABILIZACION MENSUAL';
+                    $detalleDiario->detalle_numero_documento = $diariocontabilizado->diario_numero_documento;
+                    $detalleDiario->detalle_conciliacion = '0';
+                    $detalleDiario->detalle_estado = '1';          
+                    $detalleDiario->cuenta_id = $matriz[$k]["idcuenta"];
+                   
+                    $diariocontabilizado->detalles()->save($detalleDiario);
+                    $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diariocontabilizado->diario_codigo, '0', 'En la cuenta del Haber -> '.$matriz[$k]["idcuenta"].' con el valor de: -> '. $matriz[$k]["haber"]);
+    
+                }
+            }
+           
+            $url3 = $general->pdfDiario($diariocontabilizado);
+            
+            return redirect('contabilizacionMensual')->with('success','Datos guardados exitosamente')->with('pdf', $url3);
+      
 
     }
     public function extraerId(Request $request){
@@ -852,49 +979,56 @@ class contabilizacionMensualController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();   
             $datos=null;
-            $datos[1]["tipo"]="";
+            
             $existe=0;
-            $rol=Rol_Consolidado::buscarrolContabilisado($request->get('fecha_desde'),$request->get('fecha_hasta'))->groupBy('cabecera_rol_total_anticipos')->groupBy('empleado.empleado_id')->groupBy('cabecera_rol_iesspatronal')->groupBy('cabecera_rol_iesspersonal')->groupBy('cabecera_rol.cabecera_rol_fr_acumula')->selectRaw('sum(detalle_rol.detalle_rol_liquido_pagar) as liquido_pagar,sum(detalle_rol.detalle_rol_aporte_iecesecap) as iecesecap,sum(detalle_rol.detalle_rol_fondo_reserva) as fondo_reserva,sum(detalle_rol.detalle_rol_decimo_cuarto) as cuarto,sum(detalle_rol.detalle_rol_decimo_tercero) as tercero,sum(detalle_rol.detalle_rol_decimo_terceroacum) as terceroacum,sum(detalle_rol.detalle_rol_decimo_cuartoacum) as cuartoacum,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_aporte_patronal) as aporte,sum(detalle_rol.detalle_rol_total_anticipo) as anticipo,sum(detalle_rol.detalle_rol_impuesto_renta) as impu_renta,sum(detalle_rol.detalle_rol_total_dias) as sueldos,sum(detalle_rol.detalle_rol_otros_ingresos) as otrosingresos,sum(detalle_rol.detalle_rol_total_comisariato) as comisariato,sum(detalle_rol.detalle_rol_valor_he) as extras,sum(detalle_rol.detalle_rol_transporte) as transporte,sum(detalle_rol.detalle_rol_otra_bonificacion) as otrabonifi,sum(detalle_rol.detalle_rol_total_ingreso) as ingresos,sum(detalle_rol.detalle_rol_ext_salud) as extsalud,sum(detalle_rol.detalle_rol_ley_sol) as leysal,sum(detalle_rol.detalle_rol_vacaciones) as vacaciones,sum(detalle_rol.detalle_rol_prestamo_quirografario) as ppqq,sum(detalle_rol.detalle_rol_prestamo_hipotecario) as hipoteca,sum(detalle_rol.detalle_rol_prestamo) as prestamos,sum(detalle_rol.detalle_rol_multa) as multas,sum(detalle_rol.detalle_rol_otros_egresos) as otrosegre,sum(detalle_rol.detalle_rol_total_egreso) as egresos, empleado.empleado_id,empleado.empleado_nombre,cabecera_rol_iesspatronal as patronal,cabecera_rol_iesspersonal as personal,cabecera_rol_total_anticipos as anticipos_total,cabecera_rol.cabecera_rol_fr_acumula as fondoacumula')->get(); 
-            $tipo=Rol_Consolidado::buscarrolContabilisadotipo($request->get('fecha_desde'),$request->get('fecha_hasta'))->groupBy('cabecera_rol_total_anticipos')->groupBy('tipo_empleado.tipo_id')->groupBy('cabecera_rol_iesspatronal')->groupBy('cabecera_rol_iesspersonal')->groupBy('cabecera_rol.cabecera_rol_fr_acumula')->selectRaw('sum(detalle_rol.detalle_rol_liquido_pagar) as liquido_pagar,sum(detalle_rol.detalle_rol_aporte_iecesecap) as iecesecap,sum(detalle_rol.detalle_rol_fondo_reserva) as fondo_reserva,sum(detalle_rol.detalle_rol_decimo_cuarto) as cuarto,sum(detalle_rol.detalle_rol_decimo_tercero) as tercero,sum(detalle_rol.detalle_rol_decimo_terceroacum) as terceroacum,sum(detalle_rol.detalle_rol_decimo_cuartoacum) as cuartoacum,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_aporte_patronal) as aporte,sum(detalle_rol.detalle_rol_total_anticipo) as anticipo,sum(detalle_rol.detalle_rol_impuesto_renta) as impu_renta,sum(detalle_rol.detalle_rol_total_dias) as sueldos,sum(detalle_rol.detalle_rol_otros_ingresos) as otrosingresos,sum(detalle_rol.detalle_rol_total_comisariato) as comisariato,sum(detalle_rol.detalle_rol_valor_he) as extras,sum(detalle_rol.detalle_rol_transporte) as transporte,sum(detalle_rol.detalle_rol_otra_bonificacion) as otrabonifi,sum(detalle_rol.detalle_rol_total_ingreso) as ingresos,sum(detalle_rol.detalle_rol_ext_salud) as extsalud,sum(detalle_rol.detalle_rol_ley_sol) as leysal,sum(detalle_rol.detalle_rol_vacaciones) as vacaciones,sum(detalle_rol.detalle_rol_prestamo_quirografario) as ppqq,sum(detalle_rol.detalle_rol_prestamo_hipotecario) as hipoteca,sum(detalle_rol.detalle_rol_prestamo) as prestamos,sum(detalle_rol.detalle_rol_multa) as multas,sum(detalle_rol.detalle_rol_otros_egresos) as otrosegre,sum(detalle_rol.detalle_rol_total_egreso) as egresos,tipo_empleado.tipo_id,tipo_empleado.tipo_descripcion,cabecera_rol_iesspatronal as patronal,cabecera_rol_iesspersonal as personal,cabecera_rol_total_anticipos as anticipos_total,cabecera_rol.cabecera_rol_fr_acumula as fondoacumula')->get(); 
+            $rol=Rol_Consolidado::buscarrolContabilisado($request->get('fecha_desde'),$request->get('fecha_hasta'))->groupBy('cabecera_rol_total_anticipos')->groupBy('empleado.empleado_id')->groupBy('cabecera_rol_iesspatronal')->groupBy('cabecera_rol_iesspersonal')->groupBy('cabecera_rol.cabecera_rol_fr_acumula')->selectRaw('sum(detalle_rol.detalle_rol_liquido_pagar) as liquido_pagar,sum(detalle_rol.detalle_rol_aporte_iecesecap) as iecesecap,sum(detalle_rol.detalle_rol_fondo_reserva) as fondo_reserva,sum(detalle_rol.detalle_rol_decimo_cuarto) as cuarto,sum(detalle_rol.detalle_rol_decimo_tercero) as tercero,sum(detalle_rol.detalle_rol_decimo_terceroacum) as terceroacum,sum(detalle_rol.detalle_rol_decimo_cuartoacum) as cuartoacum,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_aporte_patronal) as aporte,sum(detalle_rol.detalle_rol_total_anticipo) as anticipo,sum(detalle_rol.detalle_rol_impuesto_renta) as impu_renta,sum(detalle_rol.detalle_rol_total_dias) as sueldos,sum(detalle_rol.detalle_rol_otros_ingresos) as otrosingresos,sum(detalle_rol.detalle_rol_total_comisariato) as comisariato,sum(detalle_rol.detalle_rol_valor_he) as extras,sum(detalle_rol.detalle_rol_transporte) as transporte,sum(detalle_rol.detalle_rol_otra_bonificacion) as otrabonifi,sum(detalle_rol.detalle_rol_total_ingreso) as ingresos,sum(detalle_rol.detalle_rol_ext_salud) as extsalud,sum(detalle_rol.detalle_rol_ley_sol) as leysal,sum(detalle_rol.detalle_rol_vacaciones) as vacaciones,sum(detalle_rol.detalle_rol_vacaciones_anticipadas) as vacacionespag,sum(detalle_rol.detalle_rol_prestamo_quirografario) as ppqq,sum(detalle_rol.detalle_rol_prestamo_hipotecario) as hipoteca,sum(detalle_rol.detalle_rol_prestamo) as prestamos,sum(detalle_rol.detalle_rol_multa) as multas,sum(detalle_rol.detalle_rol_otros_egresos) as otrosegre,sum(detalle_rol.detalle_rol_total_egreso) as egresos, empleado.empleado_id,empleado.empleado_nombre,cabecera_rol_iesspatronal as patronal,cabecera_rol_iesspersonal as personal,cabecera_rol_total_anticipos as anticipos_total,cabecera_rol.cabecera_rol_fr_acumula as fondoacumula')->get(); 
+            $tipo=Rol_Consolidado::buscarrolContabilisadotipo($request->get('fecha_desde'),$request->get('fecha_hasta'))->groupBy('cabecera_rol_total_anticipos')->groupBy('tipo_empleado.tipo_id')->groupBy('cabecera_rol_iesspatronal')->groupBy('cabecera_rol_iesspersonal')->groupBy('cabecera_rol.cabecera_rol_fr_acumula')->selectRaw('sum(detalle_rol.detalle_rol_liquido_pagar) as liquido_pagar,sum(detalle_rol.detalle_rol_aporte_iecesecap) as iecesecap,sum(detalle_rol.detalle_rol_fondo_reserva) as fondo_reserva,sum(detalle_rol.detalle_rol_decimo_cuarto) as cuarto,sum(detalle_rol.detalle_rol_decimo_tercero) as tercero,sum(detalle_rol.detalle_rol_decimo_terceroacum) as terceroacum,sum(detalle_rol.detalle_rol_decimo_cuartoacum) as cuartoacum,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_iess_asumido) as asumido,sum(detalle_rol.detalle_rol_aporte_patronal) as aporte,sum(detalle_rol.detalle_rol_total_anticipo) as anticipo,sum(detalle_rol.detalle_rol_impuesto_renta) as impu_renta,sum(detalle_rol.detalle_rol_total_dias) as sueldos,sum(detalle_rol.detalle_rol_otros_ingresos) as otrosingresos,sum(detalle_rol.detalle_rol_total_comisariato) as comisariato,sum(detalle_rol.detalle_rol_valor_he) as extras,sum(detalle_rol.detalle_rol_transporte) as transporte,sum(detalle_rol.detalle_rol_otra_bonificacion) as otrabonifi,sum(detalle_rol.detalle_rol_total_ingreso) as ingresos,sum(detalle_rol.detalle_rol_ext_salud) as extsalud,sum(detalle_rol.detalle_rol_ley_sol) as leysal,sum(detalle_rol.detalle_rol_vacaciones) as vacaciones,sum(detalle_rol.detalle_rol_vacaciones_anticipadas) as vacacionespag,sum(detalle_rol.detalle_rol_prestamo_quirografario) as ppqq,sum(detalle_rol.detalle_rol_prestamo_hipotecario) as hipoteca,sum(detalle_rol.detalle_rol_prestamo) as prestamos,sum(detalle_rol.detalle_rol_multa) as multas,sum(detalle_rol.detalle_rol_otros_egresos) as otrosegre,sum(detalle_rol.detalle_rol_total_egreso) as egresos,tipo_empleado.tipo_id,tipo_empleado.tipo_descripcion,cabecera_rol_iesspatronal as patronal,cabecera_rol_iesspersonal as personal,cabecera_rol_total_anticipos as anticipos_total,cabecera_rol.cabecera_rol_fr_acumula as fondoacumula')->get(); 
             $tipos=Tipo_Empleado::Tipos()->get();
             $count=1;
+            foreach($tipos as $tip){
+                $sucursal_id=$tip->sucursal_id;
+            }
+           
             
             foreach($tipo as $roles){
                 foreach ($tipos as $tiposroles) {    
-                    if($tiposroles->tipo_id==$roles->tipo_id){       
-                        for ($i = 1; $i <= count($datos); $i++)  {                           
-                            if($datos[$i]["tipo"]==$tiposroles->tipo_descripcion){
-                                $datos[$i]["sueldos"]=$datos[$i]["sueldos"]+ $roles->sueldos;
-                                $datos[$i]["otrosingresos"]=$datos[$i]["otrosingresos"]+ $roles->otrosingresos;
-                                $datos[$i]["transporte"]=$datos[$i]["transporte"]+ $roles->transporte;
-                                $datos[$i]["extras"]=$datos[$i]["extras"]+ $roles->extras;
-                                $datos[$i]["otrabonifi"]=$datos[$i]["otrabonifi"]+ $roles->otrabonifi;
-                                $datos[$i]["ingresos"]=$datos[$i]["ingresos"]+ $roles->ingresos;
-                                $datos[$i]["extsalud"]=$datos[$i]["extsalud"]+ $roles->extsalud;
-                                $datos[$i]["leysal"]=$datos[$i]["leysal"]+ $roles->leysal;
-                                $datos[$i]["vacaciones"]=$datos[$i]["vacaciones"]+ $roles->vacaciones;
-                                $datos[$i]["comisariato"]=$datos[$i]["comisariato"]+ $roles->comisariato;
-                                $datos[$i]["ppqq"]=$datos[$i]["ppqq"]+ $roles->ppqq;
-                                $datos[$i]["hipoteca"]=$datos[$i]["hipoteca"]+ $roles->hipoteca;
-                                $datos[$i]["multas"]=$datos[$i]["multas"]+ $roles->multas;
-                                $datos[$i]["asumido"]=$datos[$i]["asumido"]+ $roles->asumido;
-                                $datos[$i]["personal"]=$datos[$i]["personal"]+ $roles->personal;
-                                $datos[$i]["patronal"]=$datos[$i]["patronal"]+ $roles->patronal;
-                                $datos[$i]["anticipo"]=$datos[$i]["anticipo"]+ $roles->anticipo;
-                                $datos[$i]["impu_renta"]=$datos[$i]["impu_renta"]+ $roles->impu_renta;
-                                $datos[$i]["otrosegre"]=$datos[$i]["otrosegre"]+ $roles->otrosegre;
-                                $datos[$i]["egresos"]=$datos[$i]["egresos"]+ $roles->egresos;
-                                $datos[$i]["terceroACU"]=$datos[$i]["terceroACU"]+ $roles->terceroacum;
-                                $datos[$i]["tercero"]=$datos[$i]["tercero"]+ $roles->tercero;
-                                $datos[$i]["cuarto"]=$datos[$i]["cuarto"]+ $roles->cuarto;
-                                $datos[$i]["cuartoACU"]=$datos[$i]["cuartoACU"]+ $roles->cuartoacum;
-                                $datos[$i]["fondo_reservaACU"]=$datos[$i]["fondo_reservaACU"]+ $roles->fondoacumula;
-                                $datos[$i]["fondo_reserva"]=$datos[$i]["fondo_reserva"]+ $roles->fondo_reserva;
-                                $datos[$i]["iecesecap"]=$datos[$i]["iecesecap"]+ $roles->iecesecap;
-                                $datos[$i]["liquido_pagar"]=$datos[$i]["liquido_pagar"]+ $roles->liquido_pagar;
-                                $existe=1;
+                    if($tiposroles->tipo_id==$roles->tipo_id){
+                        $existe=0;  
+                        if ($datos!=null) {
+                            for ($i = 1; $i <= count($datos); $i++) {
+                                if ($datos[$i]["tipo"]==$tiposroles->tipo_descripcion) {
+                                    $datos[$i]["sueldos"]=$datos[$i]["sueldos"]+ $roles->sueldos;
+                                    $datos[$i]["vacacionesacu"]=$datos[$i]["vacacionesacu"]+$roles->vacacionespag;
+                                    $datos[$i]["otrosingresos"]=$datos[$i]["otrosingresos"]+ $roles->otrosingresos;
+                                    $datos[$i]["transporte"]=$datos[$i]["transporte"]+ $roles->transporte;
+                                    $datos[$i]["extras"]=$datos[$i]["extras"]+ $roles->extras;
+                                    $datos[$i]["otrabonifi"]=$datos[$i]["otrabonifi"]+ $roles->otrabonifi;
+                                    $datos[$i]["ingresos"]=$datos[$i]["ingresos"]+ $roles->ingresos;
+                                    $datos[$i]["extsalud"]=$datos[$i]["extsalud"]+ $roles->extsalud;
+                                    $datos[$i]["leysal"]=$datos[$i]["leysal"]+ $roles->leysal;
+                                    $datos[$i]["vacaciones"]=$datos[$i]["vacaciones"]+ $roles->vacaciones;
+                                    $datos[$i]["comisariato"]=$datos[$i]["comisariato"]+ $roles->comisariato;
+                                    $datos[$i]["ppqq"]=$datos[$i]["ppqq"]+ $roles->ppqq;
+                                    $datos[$i]["hipoteca"]=$datos[$i]["hipoteca"]+ $roles->hipoteca;
+                                    $datos[$i]["multas"]=$datos[$i]["multas"]+ $roles->multas;
+                                    $datos[$i]["asumido"]=$datos[$i]["asumido"]+ $roles->asumido;
+                                    $datos[$i]["personal"]=$datos[$i]["personal"]+ $roles->personal;
+                                    $datos[$i]["patronal"]=$datos[$i]["patronal"]+ $roles->patronal;
+                                    $datos[$i]["anticipo"]=$datos[$i]["anticipo"]+ $roles->anticipo;
+                                    $datos[$i]["impu_renta"]=$datos[$i]["impu_renta"]+ $roles->impu_renta;
+                                    $datos[$i]["otrosegre"]=$datos[$i]["otrosegre"]+ $roles->otrosegre;
+                                    $datos[$i]["egresos"]=$datos[$i]["egresos"]+ $roles->egresos;
+                                    $datos[$i]["terceroacu"]=$datos[$i]["terceroacu"]+ $roles->terceroacum;
+                                    $datos[$i]["tercero"]=$datos[$i]["tercero"]+ $roles->tercero;
+                                    $datos[$i]["cuarto"]=$datos[$i]["cuarto"]+ $roles->cuarto;
+                                    $datos[$i]["cuartoACU"]=$datos[$i]["cuartoacu"]+ $roles->cuartoacum;
+                                    $datos[$i]["fondo_reservaacu"]=$datos[$i]["fondo_reservaacu"]+ $roles->fondoacumula;
+                                    $datos[$i]["fondo_reserva"]=$datos[$i]["fondo_reserva"]+ $roles->fondo_reserva;
+                                    $datos[$i]["iecesecap"]=$datos[$i]["iecesecap"]+ $roles->iecesecap;
+                                    $datos[$i]["liquido_pagar"]=$datos[$i]["liquido_pagar"]+ $roles->liquido_pagar;
+                                    $existe=1;
+                                }
                             }
-
                         }
                         
                         if($existe==0){
@@ -902,7 +1036,7 @@ class contabilizacionMensualController extends Controller
                             $datos[$count]["tipo"]=$tiposroles->tipo_descripcion;
                             $datos[$count]["sueldos"]=$roles->sueldos;
                             $datos[$count]["otrosingresos"]=$roles->otrosingresos;
-                            
+                            $datos[$count]["vacacionesacu"]=$roles->vacacionespag;
                             $datos[$count]["transporte"]=$roles->transporte;
                             $datos[$count]["extras"]=$roles->extras;
                             $datos[$count]["otrabonifi"]= $roles->otrabonifi;
@@ -924,9 +1058,9 @@ class contabilizacionMensualController extends Controller
                             $datos[$count]["egresos"]=$roles->egresos;
                             $datos[$count]["tercero"]=$roles->tercero;
                             $datos[$count]["cuarto"]=$roles->cuarto;
-                            $datos[$count]["terceroACU"]=$roles->terceroacum;
-                            $datos[$count]["cuartoACU"]=$roles->cuartoacum;
-                            $datos[$count]["fondo_reservaACU"]=$roles->fondoacumula;
+                            $datos[$count]["terceroacu"]=$roles->terceroacum;
+                            $datos[$count]["cuartoacu"]=$roles->cuartoacum;
+                            $datos[$count]["fondo_reservaacu"]=$roles->fondoacumula;
                             $datos[$count]["fondo_reserva"]=$roles->fondo_reserva;
                             $datos[$count]["iecesecap"]=$roles->iecesecap;
                             $datos[$count]["liquido_pagar"]=$roles->liquido_pagar;
@@ -937,7 +1071,7 @@ class contabilizacionMensualController extends Controller
                 }    
             }
            
-            return view('admin.recursosHumanos.contabilizacionMensual.index',['datos'=>$datos,'rol'=>$rol,'consumo'=>Centro_Consumo::CentroConsumos()->get(),'categoria'=>Categoria_Producto::Categorias()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.recursosHumanos.contabilizacionMensual.index',['sucursal'=>$sucursal_id,'datos'=>$datos,'rol'=>$rol,'consumo'=>Centro_Consumo::CentroConsumos()->get(),'categoria'=>Categoria_Producto::Categorias()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
        
 
     }

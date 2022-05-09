@@ -21,9 +21,10 @@
                                         <div class="form-group">
                                             <div class="form-line">
                                                 <input type="month" name="fechames" id="fechames" class="form-control" value='<?php echo(date("Y")."-".date("m")); ?>' onclick="dias();" onchange="dias();" onkeyup="dias();">
-                                                <input type="hidden" id="fecha_desde" name="fecha_desde" >
-                                                <input type="hidden" id="fecha_hasta" name="fecha_hasta" >
-                                                
+                                                <input type="hidden" id="fecha_desde" name="fecha_desde" value="<?php echo(date("Y")."-".date("m")); ?>">
+                                                <input type="hidden" id="fecha_hasta" name="fecha_hasta" value="<?php echo(date("Y")."-".date("m")); ?>">
+                                                <input type="hidden" id="sucursal" name="sucursal" value="@if(isset($sucursal)) {{$sucursal}} @endif" >
+
                                             </div>
                                             
                                         </div> 
@@ -61,7 +62,7 @@
                                         <th  class="text-center-encabesado">Empleado </th>
                                         <th class="text-center-encabesado">Sueldo</th>                        
                                         <th class="text-center-encabesado">Horas Extras </th>
-                      
+                                        <th class="text-center-encabesado">Vacaciones </th> 
                                         <th class="text-center-encabesado">Viaticos </th>                       
                                         <th class="text-center-encabesado">otros Bonificaciones </th>
                                         <th class="text-center-encabesado">otros Ingresos </th>
@@ -82,7 +83,7 @@
                                         <th class="text-center-encabesado">Total Egresos</th>
 
                                         <th class="text-center-encabesado">Apr. Patro</th>
-                                        <th class="text-center-encabesado">Vacaciones</th>
+                                        <th class="text-center-encabesado">Vacaciones Pagadas</th>
                                         <th class="text-center-encabesado">Dec. Tercero</th>
                                         <th class="text-center-encabesado">Dec. Tercero ACU</th>
                                         <th class="text-center-encabesado">Dec. Cuarto</th>
@@ -90,6 +91,7 @@
                                         <th class="text-center-encabesado">F. Reser.</th>
                                         <th class="text-center-encabesado">F. Reser. Acu.</th>
                                         <th class="text-center-encabesado">IECE / SETEC</th>
+                                       
                                         <th class="text-center-encabesado">Liq. Pagar</th>
                                     </tr>
                                 </thead>
@@ -99,31 +101,32 @@
                                     @foreach($rol as $roles)
                                     <tr >
                                     <td width="150" class="text-center"><input type="hidden" class="form-controltext"   name="empleadoid[]" value="{{$roles->empleado_id}}" required readonly> {{$roles->empleado_nombre}}</td>
-                                    <td width="150" class="text-center">{{$roles->sueldos}}</td>
-                                    <td width="150" class="text-center">{{$roles->extras }}</td>
-             
-                                    <td width="150" class="text-center">{{$roles->transporte }}</td>
-                                    <td width="150" class="text-center">{{$roles->otrabonifi}} </td>
-                                    <td width="150" class="text-center">{{$roles->otrosingresos}} </td> 
+                                    <td width="150" class="text-center">{{number_format($roles->sueldos, 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->extras , 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->vacaciones , 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->transporte , 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->otrabonifi, 2)}} </td>
+                                    <td width="150" class="text-center">{{number_format($roles->otrosingresos, 2)}} </td> 
                                     <td  width="150" class="text-center">{{number_format($roles->ingresos, 2)}}</td>
-                                    <td width="150" class="text-center">{{$roles->extsalud}} </td>
-                                    <td width="150" class="text-center">{{$roles->leysal }}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->extsalud, 2)}} </td>
+                                    <td width="150" class="text-center">{{number_format($roles->leysal, 2) }}</td>
                                 
-                                    <td width="150" class="text-center">{{$roles->comisariato}}</td>
-                                    <td width="150" class="text-center">{{$roles->ppqq}} </td>
-                                    <td width="150" class="text-center">{{$roles->hipoteca}}</td> 
-                                    <td width="150" class="text-center">{{$roles->prestamos}} </td>
-                                    <td width="150" class="text-center">{{$roles->multas }}</td>
-                                    <td width="150" class="text-center">{{$roles->asumido }}</td>
-                                    <td width="150" class="text-center">{{$roles->personal }}</td>
-                                    <td width="150" class="text-center">{{$roles->anticipo }}</td>
-                                    <td width="150" class="text-center">{{$roles->impu_renta }}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->comisariato, 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->ppqq, 2)}} </td>
+                                    <td width="150" class="text-center">{{number_format($roles->hipoteca, 2)}}</td> 
+                                    <td width="150" class="text-center">{{number_format($roles->prestamos, 2)}} </td>
+                                    <td width="150" class="text-center">{{number_format($roles->multas , 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->asumido , 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->personal, 2) }}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->anticipo, 2) }}</td>
+                                    <input type="hidden" id="anticipos[]" name="anticipos[]" value="{{number_format($roles->anticipo, 2) }}">
+                                    <td width="150" class="text-center">{{number_format($roles->impu_renta, 2) }}</td>
 
-                                    <td width="150" class="text-center">{{$roles->otrosegre}} </td>
+                                    <td width="150" class="text-center">{{number_format($roles->otrosegre, 2)}} </td>
                                     <td width="150" class="text-center">{{number_format($roles->egresos, 2)}}</td>
 
-                                    <td width="150" class="text-center">{{$roles->patronal}}</td>
-                                    <td width="150" class="text-center">{{$roles->vacaciones}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->patronal, 2)}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->vacacionespag, 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->tercero, 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->terceroacum, 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->cuarto, 2)}}</td>
@@ -132,7 +135,8 @@
                                     <td width="150" class="text-center">{{number_format($roles->fondoacumula, 2)}}</td>
 
                                     
-                                    <td width="150" class="text-center">{{$roles->iecesecap}}</td>
+                                    <td width="150" class="text-center">{{number_format($roles->iecesecap, 2)}}</td>
+                                 
                                     <td width="150" class="text-center">{{number_format($roles->liquido_pagar, 2)}}</td>
 
                                     </tr>       
@@ -165,82 +169,83 @@
                                     </tr>
                                     <tr>
                                         <td class="encabesado-izquierda">sueldo </td>
-                                        <td>{{ $datos[$i]['sueldos'] }} </td>
+                                        <td>{{ number_format($datos[$i]['sueldos'], 2) }} </td>
                                         <input type="hidden" name="vsueldo[]" id="vsueldo[]" value="{{ $datos[$i]['sueldos'] }}">
                                         <td class="encabesado-izquierda">extsalud </td>
-                                        <td>{{ $datos[$i]['extsalud'] }} </td>
+                                        <td>{{ number_format($datos[$i]['extsalud'], 2) }} </td>
                                         <input type="hidden" name="vextsalud[]" id="vextsalud[]" value="{{ $datos[$i]['extsalud'] }}">
                                         <td class="encabesado-izquierda">Apor. Patro. </td>
-                                        <td>{{ $datos[$i]['patronal'] }} </td>
+                                        <td>{{ number_format($datos[$i]['patronal'], 2) }} </td>
                                         <input type="hidden" name="vpatronal[]" id="vpatronal[]" value="{{ $datos[$i]['patronal'] }}">
                                     </tr>
                                     <tr>
                                         <td class="encabesado-izquierda">Horas Extras </td>
-                                        <td>{{ $datos[$i]['extras'] }}</td>
+                                        <td>{{ number_format($datos[$i]['extras'], 2) }}</td>
                                         <input type="hidden" name="vextras[]" id="vextras[]" value="{{ $datos[$i]['extras'] }}">
                                         <td class="encabesado-izquierda">leysal </td>
-                                        <td>{{ $datos[$i]['leysal'] }} </td>
+                                        <td>{{ number_format($datos[$i]['leysal'] , 2)}} </td>
                                         <input type="hidden" name="vleysal[]" id="vleysal[]" value="{{ $datos[$i]['leysal'] }}">
-                                        <td class="encabesado-izquierda">Vacaciones </td>
-                                        <td> {{ $datos[$i]['vacaciones'] }}</td>
-                                        <input type="hidden" name="vvacaciones[]" id="vvacaciones[]" value="{{ $datos[$i]['vacaciones'] }}">
+                                        <td class="encabesado-izquierda">Vacaciones Pag </td>
+                                        <td> {{number_format( $datos[$i]['vacacionesacu'] , 2)}}</td>
+                                        <input type="hidden" name="vvacacionespag[]" id="vvacacionespag[]" value="{{ $datos[$i]['vacacionesacu'] }}">
                                     </tr>
                                     <tr>
                                         <td class="encabesado-izquierda">Transporte</td>
-                                        <td>{{ $datos[$i]['transporte'] }} </td>
+                                        <td>{{ number_format($datos[$i]['transporte'], 2) }} </td>
                                         <input type="hidden" name="vtransporte[]" id="vtransporte[]" value="{{ $datos[$i]['transporte'] }}">
                                         <td class="encabesado-izquierda"> Prestamos Quirografarios</td>
-                                        <td>{{ $datos[$i]['ppqq'] }} </td>
+                                        <td>{{ number_format($datos[$i]['ppqq'], 2) }} </td>
                                         <input type="hidden" name="vppqq[]" id="vppqq[]" value="{{ $datos[$i]['ppqq'] }}">
                                         <td class="encabesado-izquierda">Deci. Tercero </td>
-                                        <td>{{ $datos[$i]['tercero'] }}  </td>
+                                        <td>{{ number_format($datos[$i]['tercero'] , 2)}}  </td>
                                         <input type="hidden" name="vtercero[]" id="vtercero[]" value="{{ $datos[$i]['tercero'] }}">
                                     
                                     </tr>
                                     <tr>
                                         <td class="encabesado-izquierda">Otras Bonificaciones </td>
-                                        <td>{{ $datos[$i]['otrabonifi'] }} </td>
+                                        <td>{{ number_format($datos[$i]['otrabonifi'] , 2)}} </td>
                                         <input type="hidden" name="votrabonifi[]" id="votrabonifi[]" value="{{ $datos[$i]['otrabonifi'] }}">
                                         <td class="encabesado-izquierda"> Hipoteca</td>
-                                        <td>{{ $datos[$i]['hipoteca'] }} </td>
+                                        <td>{{ number_format($datos[$i]['hipoteca'] , 2)}} </td>
                                         <input type="hidden" name="vhipoteca[]" id="vhipoteca[]" value="{{ $datos[$i]['hipoteca'] }}">
                                         <td class="encabesado-izquierda">Deci. Cuarto</td>
-                                        <td>{{ $datos[$i]['cuarto'] }} </td>
+                                        <td>{{number_format( $datos[$i]['cuarto'], 2) }} </td>
                                         <input type="hidden" name="vcuarto[]" id="vcuarto[]" value="{{ $datos[$i]['cuarto'] }}">
                                         
                                     </tr>
                                     <tr>
                                         <td class="encabesado-izquierda">Otras Ingresos  </td>
-                                        <td>{{ $datos[$i]['otrosingresos'] }} </td>
+                                        <td>{{ number_format($datos[$i]['otrosingresos'], 2) }} </td>
                                         <input type="hidden" name="votrosingresos[]" id="votrosingresos[]" value="{{ $datos[$i]['otrosingresos'] }}">
                                         <td class="encabesado-izquierda">Comisariato</td>
-                                        <td>{{ $datos[$i]['comisariato'] }} </td>
+                                        <td>{{ number_format($datos[$i]['comisariato'] , 2)}} </td>
                                         <input type="hidden" name="vcomisariato[]" id="vcomisariato[]" value="{{ $datos[$i]['comisariato'] }}">
                                         <td class="encabesado-izquierda">F. Reserva</td>
-                                        <td>{{ $datos[$i]['fondo_reserva'] }} </td>
+                                        <td>{{ number_format($datos[$i]['fondo_reserva'] , 2)}} </td>
                                         <input type="hidden" name="vfondo_reserva[]" id="vfondo_reserva[]" value="{{ $datos[$i]['fondo_reserva'] }}">
                                         
                                     </tr>                    
                                     <tr>
-                                        <td class="encabesado-izquierda"> Total Ingresos</td>
-                                        <td>{{ $datos[$i]['ingresos'] }} </td>
+                                        <td class="encabesado-izquierda"> Vacaciones</td>
+                                        <td>{{ number_format($datos[$i]['vacaciones'], 2) }} </td>
+                                        <input type="hidden" name="vvacaciones[]" id="vvacaciones[]" value="{{ $datos[$i]['vacaciones'] }}">
                                         <td class="encabesado-izquierda">IESS Asum.</td>
-                                        <td>{{ $datos[$i]['asumido'] }} </td>
+                                        <td>{{ number_format($datos[$i]['asumido'], 2) }} </td>
                                        
                                         <input type="hidden" name="vasumido[]" id="vasumido[]" value="{{ $datos[$i]['asumido'] }}">
                                         <td class="encabesado-izquierda">F. Reserva(Acu)</td>
-                                        <td>{{ $datos[$i]['fondo_reservaACU'] }}</td>
-                                        <input type="hidden" name="vfondoacumula[]" id="vfondoacumula[]" value="{{ $datos[$i]['fondo_reservaACU'] }}">
+                                        <td>{{ number_format($datos[$i]['fondo_reservaacu'], 2) }}</td>
+                                        <input type="hidden" name="vfondoacumula[]" id="vfondoacumula[]" value="{{ $datos[$i]['fondo_reservaacu'] }}">
                                     </tr>
                                     <tr>
-                                        <td class="encabesado-izquierda"></td>
-                                        <td> </td>
+                                    <td class="encabesado-izquierda"> Total Ingresos</td>
+                                        <td>{{ number_format($datos[$i]['ingresos'], 2) }} </td>
                                         <input type="hidden" name="vingresos[]" id="vingresos[]" value="{{ $datos[$i]['ingresos'] }}">
                                         <td class="encabesado-izquierda">Apor. Perso.</td>
-                                        <td>{{ $datos[$i]['personal'] }} </td>
+                                        <td>{{ number_format($datos[$i]['personal'] , 2)}} </td>
                                         <input type="hidden" name="vpersonal[]" id="vpersonal[]" value="{{ $datos[$i]['personal'] }}">
                                         <td class="encabesado-izquierda"> IESCE/SECAP</td>
-                                        <td> {{ $datos[$i]['iecesecap'] }}</td>
+                                        <td> {{number_format( $datos[$i]['iecesecap'] , 2)}}</td>
                                         <input type="hidden" name="viecesecap[]" id="viecesecap[]" value="{{ $datos[$i]['iecesecap'] }}">
                                     
                                     </tr>
@@ -248,11 +253,11 @@
                                         <td> </td>
                                         <td></td>
                                         <td class="encabesado-izquierda">Anticipos</td>
-                                        <td>{{ $datos[$i]['anticipo'] }} </td>
-                                        <input type="hidden" name="vanticipo" id="vanticipo" value="{{ $datos[$i]['anticipo'] }}">
+                                        <td>{{ number_format($datos[$i]['anticipo'], 2) }} </td>
+                                        <input type="hidden" name="vanticipo[]" id="vanticipo[]" value="{{ $datos[$i]['anticipo'] }}">
                                         <td class="encabesado-izquierda">D. Tercero(Acu)</td>
-                                        <td>{{ $datos[$i]['terceroACU'] }} </td>
-                                        <input type="hidden" name="vterceroacu" id="vterceroacu" value="{{ $datos[$i]['terceroACU'] }}">
+                                        <td>{{ number_format($datos[$i]['terceroacu'], 2) }} </td>
+                                        <input type="hidden" name="vterceroacu[]" id="vterceroacu[]" value="{{ $datos[$i]['terceroacu'] }}">
                                     
                                     </tr>
                                     
@@ -260,29 +265,29 @@
                                         <td> </td>
                                         <td></td>
                                         <td class="encabesado-izquierda">Impu. Renta</td>
-                                        <td>{{ $datos[$i]['impu_renta'] }} </td>
+                                        <td>{{number_format( $datos[$i]['impu_renta'], 2) }} </td>
                                         <input type="hidden" name="vimpu_renta[]" id="vimpu_renta[]" value="{{ $datos[$i]['impu_renta'] }}">
                                         <td class="encabesado-izquierda">D. Cuarto(Acu)</td>
-                                        <td>{{ $datos[$i]['cuartoACU'] }} </td>
-                                        <input type="hidden" name="vcuartoacu" id="vcuartoacu" value="{{ $datos[$i]['cuartoACU'] }}">
+                                        <td>{{ number_format($datos[$i]['cuartoacu'], 2) }} </td>
+                                        <input type="hidden" name="vcuartoacu[]" id="vcuartoacu[]" value="{{ $datos[$i]['cuartoacu'] }}">
                                     
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td> </td>
                                         <td class="encabesado-izquierda">Multas</td>
-                                        <td> {{ $datos[$i]['multas'] }}</td>
+                                        <td> {{number_format( $datos[$i]['multas'], 2) }}</td>
                                         <input type="hidden" name="vmultas[]" id="vmultas[]" value="{{ $datos[$i]['multas'] }}">
-                                        <<td class="encabesado-izquierda">Liquido Pagar</td>
-                                        <td>{{ $datos[$i]['liquido_pagar'] }} </td>
-                                        <input type="hidden" name="vliquido_pagar" id="vliquido_pagar" value="{{ $datos[$i]['liquido_pagar'] }}">
+                                        <td class="encabesado-izquierda">Liquido Pagar</td>
+                                        <td>{{ number_format($datos[$i]['liquido_pagar'], 2) }} </td>
+                                        <input type="hidden" name="vliquido_pagar[]" id="vliquido_pagar[]" value="{{ $datos[$i]['liquido_pagar'] }}">
                                     
                                     </tr>
                                     <tr>
                                         <td> </td>
                                         <td></td>
                                         <td class="encabesado-izquierda">Otros Egresos</td>
-                                        <td>{{ $datos[$i]['otrosegre'] }} </td>
+                                        <td>{{ number_format($datos[$i]['otrosegre'], 2) }} </td>
                                         <input type="hidden" name="votrosegre[]" id="votrosegre[]" value="{{ $datos[$i]['otrosegre'] }}">
                                         <td></td>
                                         <td> </td>
@@ -291,7 +296,7 @@
                                         <td> </td>
                                         <td></td>
                                         <td class="encabesado-izquierda">Total Egresos</td>
-                                        <td>{{ $datos[$i]['egresos'] }} </td>
+                                        <td>{{ number_format($datos[$i]['egresos'] , 2)}} </td>
                                         <input type="hidden" name="vegresos[]" id="vegresos[]" value="{{ $datos[$i]['egresos'] }}">
                                         <td></td>
                                         <td> </td>
@@ -310,7 +315,25 @@
 
 <script type="text/javascript">
 function cargarmetodo() {
-    dias();
+    let fecha2 = new Date(document.getElementById("fechames").value);
+    fecha2.setMinutes(fecha2.getMinutes() + fecha2.getTimezoneOffset());
+    var anioactual = fecha2.getFullYear();
+    var _mesactual = fecha2.getMonth()+1;
+    var diasMes = new Date(anioactual, _mesactual, 0).getDate();
+    if (_mesactual < 10) //ahora le agregas un 0 para el formato date
+    {
+    var mesactual = "0" + _mesactual;
+    } else {
+    var mesactual = _mesactual;
+    }
+   
+    let fecha_minimo = anioactual + '-' + mesactual + '-01'; 
+    let fecha_maximo = anioactual + '-' + mesactual + '-' + diasMes; 
+
+    document.getElementById("fecha_desde").value = fecha_minimo;
+    
+    document.getElementById("fecha_hasta").value = fecha_maximo;
+    
 
 }
 function nuevo() {  

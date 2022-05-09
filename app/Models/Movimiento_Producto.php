@@ -46,6 +46,17 @@ class Movimiento_Producto extends Model
     public function scopeMovimientoByCC($query, $cc, $fechaInicio,$fechaFin){
         return $query->where('movimiento_producto.empresa_id','=',Auth::user()->empresa_id)->where('centro_consumo_id','=',$cc)->where('movimiento_fecha','>=',$fechaInicio)->where('movimiento_fecha','<=',$fechaFin);
     }
+    public function scopeMovimientoComprasByCC($query, $cc, $fechaInicio,$fechaFin){
+        $query->join('centro_consumo','centro_consumo.centro_consumo_id','=','movimiento_producto.centro_consumo_id')
+        ->join('producto','producto.producto_id','=','movimiento_producto.producto_id')
+        ->join('categoria_producto','categoria_producto.categoria_id','=','producto.categoria_id')
+        ->where('movimiento_producto.empresa_id','=',Auth::user()->empresa_id);
+       if($cc!='0'){
+           $query->where('centro_consumo_id','=',$cc);
+       }
+       $query->where('movimiento_fecha','>=',$fechaInicio)->where('movimiento_fecha','<=',$fechaFin);
+       return($query);
+   }
     public function bodega(){
         return $this->belongsTo(Bodega::class, 'bodega_id', 'bodega_id');
     }

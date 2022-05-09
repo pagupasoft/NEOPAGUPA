@@ -24,7 +24,10 @@ class CreateTipoEmpleadoParametrizacionTable extends Migration
             $table->foreign('tipo_id')->references('tipo_id')->on('tipo_empleado');
             $table->bigInteger('rubro_id');
             $table->foreign('rubro_id')->references('rubro_id')->on('rubro');
+            $table->bigInteger('categoria_id')->nullable();
+            $table->foreign('categoria_id')->references('categoria_id')->on('categoria_rol');
             $table->timestamps();
+            
         });
     }
 

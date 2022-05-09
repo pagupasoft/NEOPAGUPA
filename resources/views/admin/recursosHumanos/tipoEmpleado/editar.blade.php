@@ -56,17 +56,20 @@
             </div> 
             <div class="form-group row">
                 <div class="col-sm-2"> </div>
-                <label class="col-sm-5 col-form-label">
+                <label class="col-sm-4 col-form-label">
                     <CENTER>CUENTA DEBE</CENTER>
                 </label>
-                <label class="col-sm-5 col-form-label">
+                <label class="col-sm-4 col-form-label">
                     <CENTER>CUENTA HABER</CENTER>
+                </label>
+                <label class="col-sm-2 col-form-label">
+                    <CENTER>CATEGORIA</CENTER>
                 </label>
             </div>
             <div class="form-group row">
                 @foreach($rubros as $rubro)
                 <label class="col-sm-2 col-form-label">{{ $rubro->rubro_descripcion }}</label>
-                <div class="col-sm-5">
+                <div class="col-sm-4">
                     <select class="form-control select2" style="width: 100%;" id="{{ $rubro->rubro_id }}-debe"
                         name="{{ $rubro->rubro_id }}-debe">
                         <option value="" label>--Seleccione una opcion--</option>
@@ -77,16 +80,32 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-4">
                     <select class="form-control select2" style="width: 100%;" id="{{ $rubro->rubro_id }}-haber"
                         name="{{ $rubro->rubro_id }}-haber">
                         <option value="" label>--Seleccione una opcion--</option>
                         @foreach($cuentas as $cuenta)
                         <option value="{{$cuenta->cuenta_id}}"
-                        @foreach($tipoEmpleado->detalles as $aux) @if($aux->cuenta_haber == $cuenta->cuenta_id and $rubro->rubro_id == $aux->rubro_id) selected @endif @endforeach>
-                            {{$cuenta->cuenta_numero.'  - '.$cuenta->cuenta_nombre}}</option>
+                            @foreach($tipoEmpleado->detalles as $aux) 
+                                @if($aux->cuenta_haber == $cuenta->cuenta_id and $rubro->rubro_id == $aux->rubro_id) selected @endif 
+                            @endforeach>
+                            {{$cuenta->cuenta_numero.'  - '.$cuenta->cuenta_nombre}}
+                        </option>
                         @endforeach
                     </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="{{ $rubro->rubro_id }}-categoria" name="{{ $rubro->rubro_id }}-categoria" >
+                    <option value=""  selected>--Seleccione una opcion--</option>
+                    @foreach($categorias as $categoria)
+                        <option value="{{$categoria->categoria_id}}"
+                            @foreach($tipoEmpleado->detalles as $aux)
+                                @if($aux->categoria_id==$categoria->categoria_id and $rubro->rubro_id == $aux->rubro_id) selected @endif
+                            @endforeach >
+                            {{$categoria->categoria_nombre}}
+                        </option>
+                    @endforeach
+                </select>
                 </div>
                 @endforeach
             </div>

@@ -47,20 +47,54 @@
             @endif     
             </div>                                      
         </div>
-            @if($paciente->paciente_dependiente == "1")      
-                <div class="form-group row">
-                    <label for="idCiAfiliado" class="col-sm-3 col-form-label">CI de Afiliado</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" id="idCiAfiliado" name="idCiAfiliado" value="{{$paciente->paciente_cedula_afiliado}}" required>
-                    </div>
+
+        @if($paciente->paciente_dependiente == "1")      
+            <div class="form-group row">
+                <label for="idCiAfiliado" class="col-sm-3 col-form-label">CI de Afiliado</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="idCiAfiliado" name="idCiAfiliado" value="{{$paciente->paciente_cedula_afiliado}}" required>
                 </div>
-                <div class="form-group row">
-                    <label for="idNombreAfiliado" class="col-sm-3 col-form-label">Nombre de Afiliado</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" id="idNombreAfiliado" name="idNombreAfiliado" value="{{$paciente->paciente_nombre_afiliado}}" required>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <label for="idNombreAfiliado" class="col-sm-3 col-form-label">Nombre de Afiliado</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="idNombreAfiliado" name="idNombreAfiliado" value="{{$paciente->paciente_nombre_afiliado}}" required>
                 </div>
-            @endif
+            </div>
+        @endif
+
+        <div  class="form-group row">
+            <label class="col-sm-3 col-form-label">Cedula del Paciente</label>
+
+            <div class="col-sm-3">
+                @if( $paciente->documento_paciente!=null && $paciente->documento_paciente!="" )
+                    <img style="width: 200px;" src="{{ url('') }}/{{$paciente->documento_paciente}}" id="fotoPacienteP"><br>
+                @else
+                    <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoPacienteP"><br>
+                @endif
+
+
+                <!--label for="fotoPaciente" ><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                <input class="foto" style="display: none;" id="fotoPaciente" name="fotoPaciente" type="file"  accept=".png, .jpg, .jpeg, .gif"-->
+            </div>
+        </div>
+
+        
+        <div class="form-group row" id="marcoFotoAfiliado" style="@if($paciente->paciente_dependiente=='0') display: none  @endif">
+            <label class="col-sm-3 col-form-label">Cedula del Afiliado</label>
+
+            <div class="col-sm-3">
+                @if($paciente->documento_afiliado!=null && $paciente->documento_afiliado!="")
+                    <img style="width: 200px;" src="{{ url('') }}/{{$paciente->documento_afiliado}}" id="fotoAfiliadoP"><br>
+                @else
+                    <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoAfiliadoP"><br>
+                @endif
+
+                <!--label for="fotoAfiliado"><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                <input class="foto" style="display: none;" id="fotoAfiliado" name="fotoAfiliado" type="file"  accept=".png, .jpg, .jpeg, .gif"-->
+            </div>
+        </div>
+
         <div class="form-group row">
             <label for="idNombre" class="col-sm-3 col-form-label">Direccion</label>
             <div class="col-sm-9">

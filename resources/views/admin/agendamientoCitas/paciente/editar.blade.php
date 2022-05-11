@@ -1,6 +1,22 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ route('paciente.update', [$paciente->paciente_id]) }}">
+
+<style>
+    label[for="fotoAfiliado"], label[for="fotoPaciente"]{
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #106BA0;
+        display: inline-block;
+        transition: all .5s;
+        cursor: pointer;
+        padding: 5px 10px !important;
+        text-transform: uppercase;
+        width: fit-content;
+        text-align: center;
+    }
+</style>
+<form class="form-horizontal" method="POST" action="{{ route('paciente.update', [$paciente->paciente_id]) }}" enctype="multipart/form-data">
 @method('PUT')
 @csrf
     <div class="card card-secondary">
@@ -113,6 +129,40 @@
                     </div>
                 </div>
             @endif
+
+            <div  class="form-group row">
+                <label class="col-sm-3 col-form-label">Cedula del Paciente</label>
+
+                <div class="col-sm-3">
+                    @if( $paciente->documento_paciente!=null && $paciente->documento_paciente!="" )
+                        <img style="width: 200px;" src="{{ url('') }}/{{$paciente->documento_paciente}}" id="fotoPacienteP"><br>
+                    @else
+                        <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoPacienteP"><br>
+                    @endif
+
+
+                    <label for="fotoPaciente" ><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                    <input class="foto" style="display: none;" id="fotoPaciente" name="fotoPaciente" type="file"  accept=".png, .jpg, .jpeg, .gif">
+                </div>
+            </div>
+
+            
+            <div class="form-group row" id="marcoFotoAfiliado" style="@if($paciente->paciente_dependiente=='0') display: none  @endif">
+                <label class="col-sm-3 col-form-label">Cedula del Afiliado</label>
+
+                <div class="col-sm-3">
+                    @if($paciente->documento_afiliado!=null && $paciente->documento_afiliado!="")
+                        <img style="width: 200px;" src="{{ url('') }}/{{$paciente->documento_afiliado}}" id="fotoAfiliadoP"><br>
+                    @else
+                        <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoAfiliadoP"><br>
+                    @endif
+
+                    <label for="fotoAfiliado"><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                    <input class="foto" style="display: none;" id="fotoAfiliado" name="fotoAfiliado" type="file"  accept=".png, .jpg, .jpeg, .gif">
+                </div>
+            </div>
+            
+            
             <div class="form-group row">
                 <label for="idDireccion" class="col-sm-3 col-form-label">Direccion</label>
                 <div class="col-sm-9">
@@ -206,6 +256,41 @@
         </div>
     </div>
 </form>
+<script>
+    document.getElementById("fotoAfiliado").addEventListener("change", function () {
+        readImage(this)
+    });
+    document.getElementById("fotoPaciente").addEventListener("change", function () {
+        readImage(this)
+    });
+    
+
+    function readImage (input) {
+        console.log("input")
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                //console.log("dir " +e.target.result)
+                $('#'+input.name+'P').attr('src', e.target.result); // Renderizamos la imagen
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    document.getElementById("id_dependiente").addEventListener("click", function(){
+        if(document.getElementById("id_dependiente").checked){
+            document.getElementById("marcoFotoAfiliado").style.display=""
+            document.getElementById("fotoAfiliadoP").src="/img/up_document.png"
+        }
+        else{
+            document.getElementById("marcoFotoAfiliado").style.display="none"
+            document.getElementById("fotoAfiliadoP").src=""
+        }
+    })
+
+    
+</script>
+
 @endsection
 <script type="text/javascript">
     function check(){        
@@ -218,6 +303,7 @@
             document.getElementById("idNombreAfiliado").disabled = true;
         }
     }
+
     document.addEventListener("DOMContentLoaded", function() {
         cargarProvincias();
         cargarEntidades();

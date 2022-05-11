@@ -9,6 +9,7 @@ use App\Models\Pais;
 use App\Models\Paciente;
 use App\Models\Entidad_Aseguradora;
 use App\Models\Ciudad;
+use App\Models\Empresa;
 use App\Models\Punto_Emision;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\Orden_Atencion;
 use App\Models\Tipo_Dependencia;
+use DateTime;
 use Facade\FlareClient\Http\Client;
 use Illuminate\Http\Request;
+
 
 class pacienteController extends Controller
 {
@@ -34,7 +37,7 @@ class pacienteController extends Controller
             $clientesAseguradoras = Cliente::ClienteAseguradora()->get();
             $paises = Pais::Paises()->get();       
             $tiposIdentificacion = Tipo_Identificacion::TipoIdentificaciones()->get();
-            $pacientes = Paciente::Pacientes()->get();        
+            $pacientes = Paciente::Pacientes()->get();
             return view('admin.agendamientoCitas.paciente.index',['pacientes'=>$pacientes,'tiposDependencias'=>Tipo_Dependencia::TiposDependencias()->get(),'clientesAseguradoras'=>$clientesAseguradoras, 'paises'=>$paises,'tiposIdentificacion'=>$tiposIdentificacion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
@@ -86,10 +89,25 @@ class pacienteController extends Controller
             $paciente->tipod_id = $request->get('idTipoDependencia');
             $paciente->paciente_cedula_afiliado = $request->get('idCiAfiliado');
             $paciente->paciente_nombre_afiliado = $request->get('idNombreAfiliado');
+
+            //guardar foto cedula paciente
+            if($request->file('fotoPaciente')!=null){
+                $pacienteDir=$this->crearDocumento($paciente, $request->file('fotoPaciente'), 'paciente');
+                $paciente->documento_paciente=$pacienteDir;
+            }
+
+
             if($request->get('id_dependiente')== "on"){
                 $paciente->paciente_dependiente = 1;
+
+                //guardar cedula afiliado
+                if($request->file('fotoAfiliado')!=null){
+                    $afiliadoDir=$this->crearDocumento($paciente, $request->file('fotoAfiliado'), 'afiliado');
+                    $paciente->documento_afiliado=$afiliadoDir;
+                }
             }else{
                 $paciente->paciente_dependiente = 0;
+                $paciente->documento_afiliado="";
             }
             $paciente->paciente_estado = 1;            
             $paciente->ciudad_id = $request->get('idCiudad');
@@ -179,26 +197,44 @@ class pacienteController extends Controller
             $paciente->paciente_celular = $request->get('idCelular');
             $paciente->paciente_email = $request->get('idEmail');
             $paciente->paciente_sexo = $request->get('idSexo');
-            $paciente->tipod_id = $request->get('idTipoDependencia');           
+            $paciente->tipod_id = $request->get('idTipoDependencia');
+
+            //guardar foto cedula paciente
+            if($request->file('fotoPaciente')!=null){
+                $pacienteDir=$this->crearDocumento($paciente, $request->file('fotoPaciente'), 'paciente');
+                $paciente->documento_paciente=$pacienteDir;
+            }
+
             if($request->get('id_dependiente')== "on"){
                 $paciente->paciente_dependiente = 1;
                 $paciente->paciente_cedula_afiliado = $request->get('idCiAfiliado');
                 $paciente->paciente_nombre_afiliado = $request->get('idNombreAfiliado');
+
+                //guardar cedula afiliado
+                if($request->file('fotoAfiliado')!=null){
+                    $afiliadoDir=$this->crearDocumento($paciente, $request->file('fotoAfiliado'), 'afiliado');
+                    $paciente->documento_afiliado=$afiliadoDir;
+                }
             }else{
                 $paciente->paciente_cedula_afiliado = null;
                 $paciente->paciente_nombre_afiliado = null;
                 $paciente->paciente_dependiente = 0;
+                $paciente->documento_afiliado="";
             }
+
             if ($request->get('idEstado') == "on"){
                 $paciente->paciente_estado = 1;
             }else{
                 $paciente->paciente_estado = 0;
-            }            
+            }      
+
             $paciente->ciudad_id = $request->get('idCiudad');
             $paciente->cliente_id = $request->get('idAseguradora');
             $paciente->entidad_id = $request->get('idEntidad');
             $paciente->tipo_identificacion_id = $request->get('idTipoIdentificacion');
-            $paciente->save();          
+            $paciente->save();
+
+            //
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualizacion de paciente -> '.$request->get('idApellidos').' '.$request->get('idNombres').' con Cedula -> '.$request->get('idNumero'),'0','con el tipo de Identificacion ->'.$request->get('idTipoIdentificacion'));
@@ -209,6 +245,25 @@ class pacienteController extends Controller
             DB::rollBack();
             return redirect('paciente')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
+    }
+
+    private function crearDocumento($paciente, $imagen, $tipo){
+        $imagenes=[];
+        $empresa = Empresa::empresa()->first();
+
+        $ruta = 'DocumentosPacientes/'.$empresa->empresa_ruc.'/'.$paciente->paciente_id;
+        $extension = $imagen->extension();
+
+        if ($imagen) {
+            if (!is_dir(public_path().'/'.$ruta)) mkdir(public_path().'/'.$ruta, 0777, true);
+
+            $name = 'documento_'.$tipo.'.'.$extension;
+            $path = $imagen->move(public_path().'/'.$ruta, $name);
+        
+            return $ruta.'/'.$name;
+        }
+        else
+            return null;
     }
 
     /**

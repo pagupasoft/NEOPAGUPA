@@ -1,5 +1,23 @@
 @extends ('admin.layouts.admin')
 @section('principal')
+
+<style>
+    label[for="fotoAfiliado"], label[for="fotoPaciente"]{
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #106BA0;
+        display: inline-block;
+        transition: all .5s;
+        cursor: pointer;
+        padding: 5px 10px !important;
+        text-transform: uppercase;
+        width: fit-content;
+        text-align: center;
+    }
+</style>
+
+
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title">Paciente</h3>
@@ -65,7 +83,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="form-horizontal" method="POST" action="{{ url("paciente") }}">
+            <form class="form-horizontal" method="POST" action="{{ url("paciente") }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="card-body">
@@ -142,6 +160,31 @@
                                 <input type="text" class="form-control" id="idNombreAfiliado" name="idNombreAfiliado" disabled required>
                             </div>
                         </div>
+
+                        <div  class="form-group row">
+                            <label class="col-sm-3 col-form-label">Cedula del Paciente</label>
+
+                            <div class="col-sm-9">
+                                <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoPacienteP"><br>
+
+                                <label for="fotoPaciente" ><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                                <input class="foto" style="display: none;" id="fotoPaciente" name="fotoPaciente" type="file"  accept=".png, .jpg, .jpeg, .gif">
+                            </div>
+                        </div>
+
+                        
+                        <div class="form-group row" id="marcoFotoAfiliado" style="display: none">
+                            <label class="col-sm-3 col-form-label">Cedula del Afiliado</label>
+
+                            <div class="col-sm-9">
+                                <img style="width: 200px;" src="{{ url('img') }}/up_document.png" id="fotoAfiliadoP"><br>
+
+                                <label for="fotoAfiliado"><i class='fa fa-upload' aria-hidden='true'></i> Cargar</label>
+                                <input class="foto" style="display: none;" id="fotoAfiliado" name="fotoAfiliado" type="file"  accept=".png, .jpg, .jpeg, .gif">
+                            </div>
+                        </div>
+
+                        
                         <div class="form-group row">
                             <label for="idDireccion" class="col-sm-3 col-form-label">Direccion</label>
                             <div class="col-sm-9">
@@ -221,7 +264,40 @@
 </div>
 <!-- /.modal -->
 <!-- /.script -->
+<script>
+    document.getElementById("fotoAfiliado").addEventListener("change", function () {
+        readImage(this)
+    });
+    document.getElementById("fotoPaciente").addEventListener("change", function () {
+        readImage(this)
+    });
+    
+
+    function readImage (input) {
+        console.log("input")
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                //console.log("dir " +e.target.result)
+                $('#'+input.name+'P').attr('src', e.target.result); // Renderizamos la imagen
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    document.getElementById("id_dependiente").addEventListener("click", function(){
+        if(document.getElementById("id_dependiente").checked){
+            document.getElementById("marcoFotoAfiliado").style.display=""
+            document.getElementById("fotoAfiliadoP").src="/img/up_document.png"
+        }
+        else{
+            document.getElementById("marcoFotoAfiliado").style.display="none"
+            document.getElementById("fotoAfiliadoP").src=""
+        }
+    })
+</script>
 @endsection
+
 <script type="text/javascript">
     function check(){        
         if(document.getElementById("id_dependiente").checked){

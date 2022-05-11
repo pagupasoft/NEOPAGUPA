@@ -27,7 +27,7 @@ class CreateNotaDebitoBancoTable extends Migration
             $table->foreign('rango_id')->references('rango_id')->on('rango_documento'); 
             $table->bigInteger('cuenta_bancaria_id');
             $table->foreign('cuenta_bancaria_id')->references('cuenta_bancaria_id')->on('cuenta_bancaria'); 
-            $table->bigInteger('diario_id');
+            $table->bigInteger('diario_id')->nullable();
             $table->foreign('diario_id')->references('diario_id')->on('diario');          
             $table->timestamps();
         });

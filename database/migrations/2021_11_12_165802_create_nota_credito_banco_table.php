@@ -25,7 +25,7 @@ class CreateNotaCreditoBancoTable extends Migration
             $table->string('nota_estado');     
             $table->bigInteger('rango_id');
             $table->foreign('rango_id')->references('rango_id')->on('rango_documento'); 
-            $table->bigInteger('diario_id');
+            $table->bigInteger('diario_id')->nullable();
             $table->foreign('diario_id')->references('diario_id')->on('diario'); 
             $table->bigInteger('cuenta_bancaria_id');
             $table->foreign('cuenta_bancaria_id')->references('cuenta_bancaria_id')->on('cuenta_bancaria');          

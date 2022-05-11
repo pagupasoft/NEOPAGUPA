@@ -108,7 +108,7 @@ class ingresoBancoController extends Controller
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe = 0.00;
             $detalleDiario->detalle_haber = $request->get('idValor');
-            $detalleDiario->detalle_comentario = 'P/R CUENTA DE INGRESO BANCO';
+            $detalleDiario->detalle_comentario = 'P/R '.$request->get('idMensaje');
             $detalleDiario->detalle_tipo_documento = 'INGRESO DE BANCO';
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';

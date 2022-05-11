@@ -110,6 +110,8 @@ class egresoBancoController extends Controller
                
             }
             /**********************asiento diario****************************/
+           
+
             $general = new generalController();
             $diario = new Diario();
             $diario->diario_codigo = $general->generarCodigoDiario($request->get('idFecha'),'CEBA');
@@ -151,7 +153,7 @@ class egresoBancoController extends Controller
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe = 0.00;
             $detalleDiario->detalle_haber = $request->get('idValor');
-            $detalleDiario->detalle_comentario = 'CUENTA DE EGRESO DE BANCO '.$egresoBanco->egreso_motivo;
+            $detalleDiario->detalle_comentario = 'P/R CUENTA DE EGRESO DE BANCO '.$egresoBanco->egreso_motivo;
             $detalleDiario->detalle_tipo_documento = 'EGRESO DE BANCO';
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';

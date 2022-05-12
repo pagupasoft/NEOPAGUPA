@@ -244,6 +244,11 @@ class asientoDiarioController extends Controller
                 throw new Exception($comentario);
             }
             $diario =  Diario::findOrFail($request->get('IdDiario'));
+            $diario->sucursal_id = $request->get('sucursal_id');
+            $diario->diario_numero_documento=$request->get('IdNumero');
+            $diario->diario_comentario=$request->get('IdComentario');
+            $diario->diario_beneficiario=$request->get('IdBeneficiario');
+            $diario->save();
             $url = $general->pdfDiario($diario);
             DB::commit();
             return redirect('/asientoDiario')->with('success','Datos guardados exitosamente')->with('diario',$url);

@@ -54,7 +54,7 @@ class estadoResultadosController extends Controller
             foreach($sucursales as $sucursal){
                 $totIng = $totIng + Detalle_Diario::SaldoActualByFecha('4',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
                 $totEgr = $totEgr + Detalle_Diario::SaldoActualByFecha('5',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo+Detalle_Diario::SaldoActualByFecha('6',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
-                $resultado[$count]= Detalle_Diario::SaldoActualByFecha('4',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo 
+                $resultado[$count]= abs(Detalle_Diario::SaldoActualByFecha('4',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo) 
                 - abs(Detalle_Diario::SaldoActualByFecha('5',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo) 
                 -  abs(Detalle_Diario::SaldoActualByFecha('6',$request->get('fecha_desde'),$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
                 $count ++;
@@ -85,7 +85,7 @@ class estadoResultadosController extends Controller
             for($i=1;$i <=count($resultado);$i++){
                 $datos[$count][$i] = $resultado[$i];
             }
-            $datos[$count]['total'] = $totIng - abs($totEgr);
+            $datos[$count]['total'] = abs($totIng) - abs($totEgr);
             return view('admin.contabilidad.balances.resultados',['asientoCierreC'=>$request->get('asiento_cierre'),'ini'=>$request->get('cuenta_inicio'),'fin'=>$request->get('cuenta_fin'),'totIng'=>$totIng,'totEgr'=>$totEgr,'nivelC'=>$request->get('nivel'),'sucursalC'=>$request->get('sucursal_id'),'niveles'=>Cuenta::CuentasNivel()->distinct('cuenta_nivel')->get(),'sucursales'=>Sucursal::sucursales()->get(),'sucuralesC'=>$sucursales,'cantSucursal'=>$cantSucursal,'fDesde'=>$request->get('fecha_desde'),'fHasta'=>$request->get('fecha_hasta'),'datos'=>$datos,'cuentas'=>Cuenta::CuentasResultado()->orderBy('cuenta_numero','asc')->get(),'cuentaFinal'=>Cuenta::CuentasResultado()->orderBy('cuenta_numero','desc')->first()->cuenta_id,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);      
         }catch(\Exception $ex){
             return redirect('estadoResultados')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

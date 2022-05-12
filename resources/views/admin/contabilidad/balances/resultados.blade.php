@@ -99,7 +99,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <center><label for="totIng">Total Ingresos:</label></center>
-                        <input type="text" class="form-control centrar-texto letra15" name="totIng" value='$ {{ number_format($totIng,2) }}' readonly>
+                        <input type="text" class="form-control centrar-texto letra15" name="totIng" value='$ {{ number_format(abs($totIng),2) }}' readonly>
                     </div>
                 </div>
                 <div class="col-sm-1">
@@ -123,7 +123,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <center><label for="tot">Total Resultado:</label></center>
-                        <input type="text" class="form-control centrar-texto letra15" name="tot"  value='$ {{ number_format($totIng - abs($totEgr) ,2) }}' readonly>
+                        <input type="text" class="form-control centrar-texto letra15" name="tot"  value='$ {{ number_format(abs($totIng) - abs($totEgr) ,2) }}' readonly>
                     </div>
                 </div>      
             </div>

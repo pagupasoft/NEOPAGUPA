@@ -16,7 +16,8 @@ class Prescripcion extends Model
         'prescripcion_recomendacion',        
         'prescripcion_observacion',
         'prescripcion_estado',
-        'expediente_id',        
+        'expediente_id',
+        'prescripcion_documento',
     ];
     protected $guarded =[
     ];    
@@ -74,6 +75,11 @@ class Prescripcion extends Model
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
                     )->where('prescripcion.prescripcion_id','=',$id);
     }
+
+    public function expediente(){
+        return $this->belongsTo(Expediente::class, 'expediente_id', 'expediente_id');
+    }
+
     public function presMedicamento()
     {
         return $this->hasMany(Prescripcion_Medicamento::class, 'prescripcion_id', 'prescripcion_id');

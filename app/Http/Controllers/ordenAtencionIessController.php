@@ -92,7 +92,7 @@ class ordenAtencionIessController extends Controller
             $ordenAtencion->orden_secuencial = $request->get('Secuencial');
             $ordenAtencion->orden_reclamo =$request->get('idReclamoNum');
             $ordenAtencion->orden_secuencial_reclamo =$request->get('idReclamoSec');
-            $ordenAtencion->orden_fecha =$request->get('fechaCitaID');
+            $ordenAtencion->orden_fecha = (new DateTime($request->get('fechaCitaID')))->format('Y-m-d');                 //new DateTime($request->get('fechaCitaID')))->format('d-m-Y')
             $ordenAtencion->orden_hora = $request->get('horaCitaID');
             $ordenAtencion->orden_observacion = $request->get('Observacion');
             $ordenAtencion->orden_iess = '1';

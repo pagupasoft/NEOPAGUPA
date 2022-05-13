@@ -26,6 +26,7 @@
             @endif
         </tr>
         <tr>
+            <th style="font-weight: bold;">Codigo</th>
             <th style="font-weight: bold;">Producto</th>
             @if(isset($datos['tipo'][count($datos)]))
                 @if($datos['tipo'][count($datos)] <> 1)
@@ -78,6 +79,7 @@
                 </tr>
                 @elseif($datos[$i]['col'] == "3")
                 <tr>
+                    <td>{{ $datos[$i]['cod'] }}</td>
                     <td>{{ $datos[$i]['nom'] }}</td>
                     <td>{{ $datos[$i]['can1'] }}</td>
                     <td>{{ round($datos[$i]['pre1'],2) }}</td>
@@ -91,6 +93,7 @@
                 </tr>
                 @else
                 <tr>
+                    <td>{{ $datos[$i]['cod'] }}</td>
                     <td>{{ $datos[$i]['nom'] }}</td>
                     <td>{{ $datos[$i]['fec'] }}</td>
                     <td>@if($datos[$i]['can1'] <> 0) {{ $datos[$i]['can1'] }} @endif</td>

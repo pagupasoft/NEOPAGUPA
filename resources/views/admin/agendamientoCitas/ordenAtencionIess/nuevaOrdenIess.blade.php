@@ -639,7 +639,7 @@
                                                   moment(fecha_rango2).format('YYYY-MM-DD HH:mm:ss'))
 
                     for(var tur = 0; tur < turnos*horasTurno; tur++){
-                        fechaPost.setMinutes(fechaPost.getMinutes() + data[i].especialidad_duracion);
+                        fechaPost.setMinutes(fechaPost.getMinutes() + parseInt(data[i].especialidad_duracion));
                         fechaCita = new Date(y, m, d + valor, fechaAux.getHours(),fechaAux.getMinutes());
 
 
@@ -684,7 +684,7 @@
                             backgroundColor: color, //Success (green)
                             borderColor    : color //Success (green)
                         });
-                        fechaAux.setMinutes(fechaAux.getMinutes() + data[i].especialidad_duracion);
+                        fechaAux.setMinutes(fechaAux.getMinutes() + parseInt(data[i].especialidad_duracion));
                     }
                 }
                 

@@ -105,8 +105,8 @@ class Orden_Atencion extends Model
                     )->where('orden_fecha','<=',$fechaF
                     )->where('orden_atencion.sucursal_id','=',$sucursal
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
-                    )->orderBy('orden_atencion.orden_fecha','asc'
-                    )->orderBy('orden_atencion.orden_hora','asc');
+                    )->orderBy('orden_atencion.orden_fecha','desc'
+                    )->orderBy('orden_atencion.orden_hora','desc');
     }
 
     public function scopeOrdenesByFechaSucNoIess($query,$fechaI,$fechaF,$sucursal){

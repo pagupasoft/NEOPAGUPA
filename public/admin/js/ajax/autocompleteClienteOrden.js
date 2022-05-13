@@ -9,7 +9,7 @@
 				contextPath='';
 			}
 			$.ajax({
-				url: contextPath+"/cliente/searchN/"+request.term,
+				url: contextPath+"/cliente/searchNCedula/"+request.term,
 				dataType: "json",
 				type: "GET",
 				data: {

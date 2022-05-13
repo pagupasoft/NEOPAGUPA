@@ -142,10 +142,64 @@ class signosVitalesController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();     
             $orden = Orden_Atencion::findOrFail($id); 
             $signosvitales = Signos_Vitales_Especialidad::SignoVital($orden->especialidad_id)->get();
+
+            //return $signosvitales;
             return view('admin.citasMedicas.signosVitales.editar',['signosvitales'=>$signosvitales,'orden'=>$orden, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function editarSignosVitales($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();     
+            $orden = Orden_Atencion::findOrFail($id);
+            //$signosvitales = Signos_Vitales_Especialidad::SignoVital($orden->especialidad_id)->get();
+            return view('admin.citasMedicas.signosVitales.editar',['orden'=>$orden, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function actualizarSignosOrdenAtencion(Request $request)
+    {
+        
+        try{
+            DB::beginTransaction();
+
+            for($i=0; $i<count($request->signo_id); $i++){
+                $signoVital = Signos_Vitales::findOrFail($request->signo_id[$i]);
+
+                if($signoVital){
+                    $signoVital->signo_valor=$request->signo_valor[$i];
+                    $signoVital->save();
+                }
+                else{
+                    $signoVital=new Signos_Vitales();
+                    $signoVital->signo_estado=1;
+                    $signoVital->expediente_id=$request->expediente[$i];
+                    $signoVital->signo_tipo=$request->tipo[$i];
+                    $signoVital->signo_medida=$request->signo_medida[$i];
+                    $signoVital->signo_nombre=$request->signo_nombre[$i];
+                    $signoVital->signo_valor=$request->signo_valor[$i];
+                    $signoVital->save();
+                }
+            }
+
+
+            /*Inicio de registro de auditoria */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Actualizacion de signos vitales con expediente de la orden de atencion -> '.$request->orden_id,'0','');
+            /*Fin de registro de auditoria */
+            DB::commit();
+            return redirect('signosVitales')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('signosVitales')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 

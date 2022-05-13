@@ -7,8 +7,23 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="{{ url("ordenAtencion/b") }}">
+        <form class="form-horizontal" method="GET" action="{{ url("buscarOrdenAtencion") }}">
         @csrf
+            @if($rol->rol_nombre=="Administrador")
+                <div class="form-group row">
+                    <label for="fecha_desde" class="col-sm-1 col-form-label">Medicos:</label>
+
+                    <div class="col-sm-4">
+                        <select name="medico_id" class="form-control">
+                            <option value=0 @if($seleccionado==0) selected @endif >Todos</option>
+
+                            @foreach($medicos as $medico)
+                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>{{ $medico->empleado->empleado_nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
             <div class="form-group row">
                 <div class="col-sm-6">
                     <div class="form-group row">
@@ -55,88 +70,95 @@
             <tbody>
             @if(isset($ordenesAtencion))
                 @foreach($ordenesAtencion as $ordenAtencion)
-                    <tr class="text-center">
-                        <td>
-                            @if($ordenAtencion->orden_estado == 1)
-                            <a href="{{ url("facturarOrden/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
-                            @endif 
-                            @if($ordenAtencion->orden_estado == 2)
-                            <a href="{{ url("nuevoSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Signos vitales"><i class="fas fa-heartbeat"></i></a>                         
-                            @endif                        
-                            <a href="{{ url("ordenAtencion/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fas fa-eye"></i></a>
-                            @if($ordenAtencion->orden_estado != 0)
-                            <a class="btn btn-xs btn-danger" style="padding: 2px 8px;"  data-toggle="tooltip" title="Cancelar cita"><i class="fas fa-times"></i></a>
-                            @endif     
-                        </td>
-                        <td>
-                            {{ $ordenAtencion->orden_fecha }} <br>
-                            {{ $ordenAtencion->orden_hora }}
-                        </td>
-                        <td>{{ $ordenAtencion->orden_numero }}</td>
-                        <td>
-                            {{ $ordenAtencion->paciente->paciente_apellidos}} <br>
-                            {{ $ordenAtencion->paciente->paciente_nombres }}                   
-                        </td>
-                        <td>
-                            {{ $ordenAtencion->sucursal_nombre }}  
-                        </td>
-                        <td>@if(isset($ordenAtencion->especialidad->especialidad_nombre )) {{$ordenAtencion->especialidad->especialidad_nombre}} @endif</td>
-                        <td>
-                            @if(isset($ordenAtencion->medico->proveedor))
-                                {{$ordenAtencion->medico->proveedor->proveedor_nombre}}
-                            @endif
-                            @if(isset($ordenAtencion->medico->empleado))
-                                {{$ordenAtencion->medico->empleado->empleado_nombre}}
-                            @endif
-                        </td>
-                        <td>
-                            @if($ordenAtencion->orden_estado == 0 )
-                            CANCELADA
-                            @else
-                                @if($ordenAtencion->orden_estado == 1 )
-                                    AGENDADA
+                    @if($ordenAtencion->medico->user_id==Auth::user()->user_id || ($rol->rol_nombre=="Administrador" && ($seleccionado==0 || $seleccionado==$ordenAtencion->medico->medico_id)))
+                        <tr class="text-center">
+                            <td>
+                                {{ $ordenAtencion->orden_estado }}
+                                @if($ordenAtencion->orden_estado == 1)
+                                <a href="{{ url("facturarOrden/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
+                                @endif 
+                                @if($ordenAtencion->orden_estado == 2)
+                                <a href="{{ url("nuevoSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Signos vitales"><i class="fas fa-heartbeat"></i></a>                         
+                                @endif
+                                @if($ordenAtencion->orden_estado == 3)
+                                    <a href="{{ url("editarSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Editar Signos V."><i class="fas fa-heartbeat"></i><i class="fa fa-pencil-alt"></i></a>                         
+                                @endif 
+                                <a href="{{ url("ordenAtencion/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fas fa-eye"></i></a>
+                                @if($ordenAtencion->orden_estado != 0)
+                                <a class="btn btn-xs btn-danger" style="padding: 2px 8px;"  data-toggle="tooltip" title="Cancelar cita"><i class="fas fa-times"></i></a>
+                                @endif     
+                            </td>
+                            <td>
+                                {{ $ordenAtencion->orden_fecha }} <br>
+                                {{ $ordenAtencion->orden_hora }}
+                            </td>
+                            <td>{{ $ordenAtencion->orden_numero }}</td>
+                            <td>
+                                {{ $ordenAtencion->paciente->paciente_apellidos}} <br>
+                                {{ $ordenAtencion->paciente->paciente_nombres }}                   
+                            </td>
+                            <td>
+                                {{ $ordenAtencion->sucursal_nombre }}  
+                            </td>
+                            <td>@if(isset($ordenAtencion->especialidad->especialidad_nombre )) {{$ordenAtencion->especialidad->especialidad_nombre}} @endif</td>
+                            <td>
+                                @if(isset($ordenAtencion->medico->proveedor))
+                                    {{$ordenAtencion->medico->proveedor->proveedor_nombre}}
+                                @endif
+                                @if(isset($ordenAtencion->medico->empleado))
+                                    {{$ordenAtencion->medico->empleado->empleado_nombre}}
+                                @endif
+                            </td>
+                            <td>
+                                @if($ordenAtencion->orden_estado == 0 )
+                                CANCELADA
                                 @else
-                                    @if($ordenAtencion->orden_estado == 2 )
-                                        PAGADA
+                                    @if($ordenAtencion->orden_estado == 1 )
+                                        AGENDADA
                                     @else
-                                        @if($ordenAtencion->orden_estado == 3 )
-                                            PREATENDIDA
+                                        @if($ordenAtencion->orden_estado == 2 )
+                                            PAGADA
                                         @else
-                                            @if($ordenAtencion->orden_estado == 4 )
-                                                ATENTIDA
+                                            @if($ordenAtencion->orden_estado == 3 )
+                                                PREATENDIDA
+                                            @else
+                                                @if($ordenAtencion->orden_estado == 4 )
+                                                    ATENTIDA
+                                                @endif
                                             @endif
                                         @endif
                                     @endif
                                 @endif
-                            @endif
-                        </td>
-                        <td>                        
-                            <center>
-                                <img src="{{ asset('admin/imagenes/calendario.png') }}" data-toggle="tooltip" title="Agendada" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
-                            </center>
-                        </td>
-                        <td>
-                            @if($ordenAtencion->orden_estado == 2 || $ordenAtencion->orden_estado == 3 || $ordenAtencion->orden_estado == 4)
+                            </td>
+                            <td>                        
                                 <center>
-                                    <img src="{{ asset('admin/imagenes/pagar.png') }}" data-toggle="tooltip" title="Pagada" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
+                                    <img src="{{ asset('admin/imagenes/calendario.png') }}" data-toggle="tooltip" title="Agendada" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
                                 </center>
-                            @endif
-                        </td>
-                        <td>
-                            @if($ordenAtencion->orden_estado == 3)
-                                <center>
-                                    <img src="{{ asset('admin/imagenes/nurse.png') }}" data-toggle="tooltip" title="Preatendida" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
-                                </center>
-                            @endif
-                        </td>
-                        <td>
-                            @if($ordenAtencion->orden_estado == 4 )     
-                                <center>
-                                    <img src="{{ asset('admin/imagenes/vacuna.png') }}"  data-toggle="tooltip" title="Atendida" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
-                                </center>
-                            @endif
-                        </td>
-                    </tr>                               
+                            </td>
+                            <td>
+                                @if($ordenAtencion->orden_estado == 2 || $ordenAtencion->orden_estado == 3 || $ordenAtencion->orden_estado == 4)
+                                    <center>
+                                        <img src="{{ asset('admin/imagenes/pagar.png') }}" data-toggle="tooltip" title="Pagada" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
+                                    </center>
+                                @endif
+                            </td>
+                            <td>
+                                @if($ordenAtencion->orden_estado == 3)
+                                    <center>
+                                        <img src="{{ asset('admin/imagenes/nurse.png') }}" data-toggle="tooltip" title="Preatendida" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
+                                    </center>
+                                @endif
+                            </td>
+                            <td>
+                                @if($ordenAtencion->orden_estado == 4 )     
+                                    <center>
+                                        <img src="{{ asset('admin/imagenes/vacuna.png') }}"  data-toggle="tooltip" title="Atendida" class="brand-image" alt="NEOPAGUPA" style="width: 30px;">
+                                    </center>
+                                @endif
+                            </td>
+                        </tr> 
+                    @else
+                    @endif                              
                 @endforeach
             @endif
             </tbody>

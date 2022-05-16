@@ -92,6 +92,69 @@ class ordenImagenController extends Controller
         }
     }
 
+    public function editarImagenes($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            
+            
+            $orden = Orden_Imagen::findOrFail($id);
+
+            $detalle=$orden->detalleImagen;
+
+            if($detalle){
+                foreach($detalle as $det){
+                    $d=$det->imagen->producto;
+                }
+            }
+
+            $expediente=$orden->expediente;
+
+            if($expediente){
+                $ordenAtencion=$expediente->ordenAtencion;
+            }
+
+            $empresa=Empresa::findOrFail(Auth::user()->empresa_id);
+
+            return view('admin.laboratorio.ordenesImagen.editarImagen',['empresa'=>$empresa, 'orden'=>$orden, 'ordenAtencion'=>$ordenAtencion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function actualizarImagenes(Request $request){
+        $detalleImagenes=Detalle_Imagen::detalleImagenesOrden($request->orden_id)->get();
+        
+        try{
+            DB::beginTransaction();
+
+            foreach($detalleImagenes as $det){
+                $det->delete();
+            }
+
+            for($i=1; $i<count($request->ImagenId); $i++){
+                $detalleImagen=new Detalle_Imagen();
+                $detalleImagen->detalle_indicacion=$request->Iobservacion[$i];
+                $detalleImagen->detalle_estado=1;
+                $detalleImagen->orden_id=$request->orden_id;
+                $detalleImagen->imagen_id=$request->ImagenId[$i];
+                $detalleImagen->save();
+            }
+
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Actualizacion de orden de Imagen #'.$request->orden_id, $request->orden_id, "");
+
+            DB::commit();
+            return redirect('ordenImagen')->with('success', 'Datos guardados exitosamente');
+        }
+        catch(\Exception $e){
+            DB::rollBack();
+            return redirect('ordenImagen')->with('error', 'Se produjo un error al guardar: '.$e->getMessage());
+        }
+    }
+
+
     public function verResultadosImagenes($id)
     {
         try{

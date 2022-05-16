@@ -83,6 +83,7 @@ use App\Http\Controllers\asignacionRolController;
 use App\Http\Controllers\AtsController;
 use App\Http\Controllers\balanceComprobacionController;
 use App\Http\Controllers\cajaController;
+use App\Http\Controllers\envioCorreosController;
 use App\Http\Controllers\cierreCajaController;
 use App\Http\Controllers\cobrosClientesController;
 use App\Http\Controllers\conciliacionBancariaController;
@@ -628,6 +629,10 @@ Route::post('/excelProvincia', [provinciaController::class, 'CargarExcelProvinci
 Route::get('/excelCiudad', [ciudadController::class, 'CargarExcel'])->middleware('auth');
 Route::post('/excelCiudad', [ciudadController::class, 'CargarExcelCiudad'])->middleware('auth');
 
+Route::get('/envioCorreos', [envioCorreosController::class, 'index'])->middleware('auth');
+Route::post('/envioCorreos', [envioCorreosController::class, 'buscar'])->middleware('auth');
+Route::post('/enviarCorreoMasivo', [envioCorreosController::class, 'enviarCorreo'])->middleware('auth');
+
 Route::get('/excelProducto', [productoController::class, 'excelProducto'])->middleware('auth');
 Route::post('/excelProducto', [productoController::class, 'CargarExcelProducto'])->middleware('auth');
 Route::get('/excelEnfermedad', [enfermedadController::class, 'excelEnfermedad'])->middleware('auth');
@@ -746,6 +751,8 @@ Route::post('/reporteDocsAnulados', [reporteDocsAnuladosController::class, 'cons
 Route::get('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'nuevo'])->middleware('auth');
 Route::post('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'consultar'])->middleware('auth');
 Route::get('/nuevoSignosV/{id}', [signosVitalesController::class, 'nuevoSigno'])->middleware('auth');
+Route::get('/editarSignosV/{id}', [signosVitalesController::class, 'edit'])->middleware('auth');
+Route::post('/actualizarSignosOrdenAtencion', [signosVitalesController::class, 'actualizarSignosOrdenAtencion'])->middleware('auth');
 
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/informehistoricoplano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
@@ -761,13 +768,17 @@ Route::post('/receta', [atencionRecetasController::class, 'buscarPrescripcion'])
 Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
+Route::post('subirDocumento', [atencionRecetasController::class, 'subirDocumentoEscaneado'])->middleware('auth')->middleware('acceso');
 
 Route::get('/tareasProgramadas/{id}/edit', [tareasProgramadasController::class, 'editar'])->middleware('auth');
 Route::post('/tareasProgramadas/actualizar', [tareasProgramadasController::class, 'actualizar'])->middleware('auth');
 
 Route::get('/ordenImagen/{id}/subirImagenes', [ordenImagenController::class, 'subirImagenes'])->middleware('auth')->middleware('acceso');
+Route::get('/ordenImagen/{id}/editar', [ordenImagenController::class, 'editarImagenes'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenImagen/{id}/verResultadosImagen', [ordenImagenController::class, 'verResultadosImagenes'])->middleware('auth')->middleware('acceso');
 Route::post('/ordenImagen/{id}/guardarImagenes', [ordenImagenController::class, 'guardarImagenes'])->middleware('auth')->middleware('acceso');
+Route::post('actualizarOrdenImagen', [ordenImagenController::class, 'actualizarImagenes'])->middleware('auth')->middleware('acceso');
+
 Route::get('/ordenImagen/{id}/facturarOrden', [ordenImagenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
 Route::post('/facturarOrdenImagen', [ordenImagenController::class, 'facturarOrdenGuardar'])->middleware('auth')->middleware('acceso');
 
@@ -1066,6 +1077,8 @@ Route::get('/individualdecimoCuarto/new/{id}', [decimoCuartoController::class, '
 
 Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'presentarEmpleadosRubro'])->middleware('auth');
 
+//buscar orden
+Route::get('/buscarOrdenAtencion', [ordenAtencionController::class, 'ordenAtencionBuscar'])->middleware('auth');
 
 //BuscarHorarios
 Route::get('/horarios/getCitaDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');

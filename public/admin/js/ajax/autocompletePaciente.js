@@ -30,6 +30,8 @@
 							tipoDependencia: paciente.tipod_id,
 							cedulaAsegurado: paciente.paciente_cedula_afiliado,
 							nombreAsegurado: paciente.paciente_nombre_afiliado,
+							documentoPaciente: paciente.documento_paciente,
+							documentoAfiliado: paciente.documento_afiliado,
 							/*
 							cli_id: paciente.cli_id,
 							cli_nombre: paciente.cli_nombre,
@@ -62,11 +64,35 @@
 			$("#idCedulaF").val("");
 			var localObj = window.location;
 			var contextPath = localObj.pathname.split("/")[1];
+
 			if(contextPath=='public'){
 				contextPath="/"+contextPath;
 			}else{
 				contextPath='';
 			}
+
+			console.log("paciente doc "+ui.item.documentoPaciente)
+
+			if(ui.item.documentoPaciente!=""){
+				$("#a-documento-paciente").attr("href", ui.item.documentoPaciente)
+				$("#a-documento-paciente").css("display", "revert")
+			}
+
+			if(ui.item.dependiente==1){
+				$("#marcoAfiliado").css("display", "revert")
+
+				if(ui.item.documentoAfiliado!=""){
+					$("#a-documento-afiliado").attr("href", ui.item.documentoAfiliado)
+					$("#a-documento-afiliado").css("display", "revert")
+				}
+				else{
+					$("#a-documento-afiliado").attr("href", "")
+					$("#a-documento-afiliado").css("display", "none")
+				}
+			}
+			else
+				$("#marcoAfiliado").css("display", "none")
+
 			$.ajax({
 				url: contextPath+"/cliente/searchNCedula/"+ui.item.cedula,
 				dataType: "json",

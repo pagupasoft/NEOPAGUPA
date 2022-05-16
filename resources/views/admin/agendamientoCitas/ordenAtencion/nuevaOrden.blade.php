@@ -1,5 +1,8 @@
 @extends ('admin.layouts.admin')
 @section('principal')
+
+
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <form class="form-horizontal" method="POST" action="{{ url("ordenAtencion") }}" enctype="multipart/form-data" onsubmit="return validarInformacion()">
 @csrf
@@ -240,8 +243,6 @@
                         </div>
                     </div>
                 </div>
-                
-               
                       
                 <div class="form-group row">
                     <div class="col-sm-12">
@@ -291,11 +292,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($documentos as $doc)
                                 <tr>
-                                    <td class="centrar-texto neo-fondo-tabla boder-sar">{{$doc->documento_nombre}}</td>
-                                    <td><input id="file-es{{$doc->documento_id}}" name="file-es{{$doc->documento_id}}" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
+                                    <td class="centrar-texto neo-fondo-tabla boder-sar">Cédula del Paciente:</td>
+                                    <td><a class="btn btn-outline-primary mr-2" id="a-documento-paciente" style="display:none" target="_blank" >VER CEDULA PACIENTE</a><input id="file-documento-paciente" name="file-documento-paciente" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
                                 </tr>
+                                <tr id="marcoAfiliado" style="display: none">
+                                    <td class="centrar-texto neo-fondo-tabla boder-sar">Cédula del Afiliado:</td>
+                                    <td><a class="btn btn-outline-primary mr-2" id="a-documento-afiliado" style="display:none" target="_blank" >VER CEDULA AFILIADO</a><input id="file-documento-afiliado" name="file-documento-afiliado" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
+                                </tr>
+
+                                @foreach($documentos as $doc)
+                                    <tr>
+                                        <td class="centrar-texto neo-fondo-tabla boder-sar">{{$doc->documento_nombre}}</td>
+                                        <td><input id="file-es{{$doc->documento_id}}" name="file-es{{$doc->documento_id}}" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -470,7 +480,7 @@
                 resetCargarMedicos();
             },
         });
-    }  
+    }
     function resetCargarMedicos(){
         document.getElementById("idMespecialidad").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
         document.getElementById("calendar").classList.add('invisible');

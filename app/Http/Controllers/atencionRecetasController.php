@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Punto_Emision;
 use PDF;
+use DateTime;
 
 class atencionRecetasController extends Controller
 {
@@ -35,8 +36,6 @@ class atencionRecetasController extends Controller
             $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
             $prescripciones = Prescripcion::prescripcionesPaciente()->get();
             $pacientes = Paciente::pacientes()->get();
-
-            //return $prescripciones;
 
             return view('admin.citasMedicas.farmacia.index',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'prescripciones'=>$prescripciones, 'pacientes'=>$pacientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
@@ -88,6 +87,55 @@ class atencionRecetasController extends Controller
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
+    }
+
+    public function subirDocumentoEscaneado(Request $request){
+        try{
+            DB::beginTransaction();
+            $prescripcion = Prescripcion::findOrFail($request->prescripcion_id);
+            //echo $request->prescripcion_id.'<br>';
+
+            //return json_encode($prescripcion).'<y>';
+
+            $expediente=$prescripcion->expediente;
+
+            
+            $orden = $expediente->ordenatencion;
+            
+            
+            $prescripcion->prescripcion_documento= $this->crearDocumento($request->documento, $orden);
+            $prescripcion->save();
+            
+            //return $prescripcion;
+            DB::commit();
+
+            return json_encode(array("result"=>"OK", "prescripcion_documento"=>$prescripcion->prescripcion_documento));
+        }
+        catch(\Exception $e){
+            DB::rollBack();
+            return json_encode(array("result"=>"FAIL"));
+        }
+    }
+
+    private function crearDocumento($imagen, $atencion){
+        $empresa = Empresa::empresa()->first();
+        $fecha = (new DateTime("$atencion->orden_fecha"))->format('d-m-Y');
+
+        
+        $ruta = 'DocumentosOrdenAtencion/'.$empresa->empresa_ruc.'/'.$fecha.'/'.$atencion->orden_numero.'/Documentos/Prescripcion';
+
+        $extension = $imagen->extension();
+
+        if ($imagen) {
+            if (!is_dir(public_path().'/'.$ruta)) mkdir(public_path().'/'.$ruta, 0777, true);
+
+            $name = 'documento.'.$extension;
+            $path = $imagen->move(public_path().'/'.$ruta, $name);
+        
+            return $ruta.'/'.$name;
+        }
+        else
+            return null;
     }
 
     public function imprimirPrescripcion($orden){

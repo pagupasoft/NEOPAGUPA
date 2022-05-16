@@ -73,6 +73,7 @@ class Paciente extends Model
                     )->where('entidad.empresa_id','=',Auth::user()->empresa_id
                     )->where(DB::raw('lower(paciente_nombres)'), 'like', '%'.strtolower($buscar).'%'
                     )->orwhere(DB::raw('lower(paciente_apellidos)'), 'like', '%'.strtolower($buscar).'%'
+                    )->orwhere(DB::raw('lower(paciente_cedula)'), 'like', '%'.strtolower($buscar).'%'
                     )->orderBy('paciente_apellidos','asc');
     }
     public function scopeEspecialidadesPaciente($query, $id){

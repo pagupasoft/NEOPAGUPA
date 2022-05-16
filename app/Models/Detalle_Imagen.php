@@ -26,6 +26,16 @@ class Detalle_Imagen extends Model
                     )->where('tipo_imagen.empresa_id','=',Auth::user()->empresa_id
                     )->where('detalle_imagen.detalle_estado','=','1');       
     }
+
+    public function scopeDetalleImagenesOrden($query, $id){
+        return $query->join('imagen','imagen.imagen_id','=','detalle_imagen.imagen_id'
+                    )->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'
+                    )->where('tipo_imagen.empresa_id','=',Auth::user()->empresa_id
+                    )->where('detalle_imagen.detalle_estado','=','1'
+                    )->where('detalle_imagen.orden_id',"=", $id);       
+    }
+
+
     public function scopeDetalleImagen($query, $id){
         return $query->join('imagen','imagen.imagen_id','=','detalle_imagen.imagen_id'
                     )->join('tipo_imagen','tipo_imagen.tipo_id','=','imagen.tipo_id'

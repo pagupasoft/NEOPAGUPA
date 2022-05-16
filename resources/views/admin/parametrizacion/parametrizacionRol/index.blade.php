@@ -56,7 +56,7 @@
                     <input type="number" class="form-control" id="idSecap" name="idSecap" value="@if(isset($parametrizar->parametrizar_iece_secap)){{$parametrizar->parametrizar_iece_secap}}@endif" min="0" max="100" step="any" placeholder="Iece Secap" required>
                 </div>
             </div>
-            
+            <input type="hidden" class="form-control" id="idiessgeren" name="idiessgeren"  min="0" max="100" step="any" value="17.60" required>
         </div>              
     </div>
 </form>

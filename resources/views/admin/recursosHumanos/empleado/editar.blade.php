@@ -337,6 +337,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label for="idGerente" class="col-sm-4 col-form-label">Gerente Iess</label>
+                        <div class="col-sm-2 col-form-label">
+                            <div class="form-check">
+                                @if($empleado->empleado_iess_gerente=="1")
+                                <input style="width:20px; height:20px;" class="form-check-input" type="checkbox" id="idGerente" name="idGerente" checked>
+                                @else
+                                <input style="width:20px; height:20px;" class="form-check-input" type="checkbox" id="idGerente" name="idGerente">
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card text-center">
                         <div class="card-header">
                             <h6>Cuenta Bancaria</h6>

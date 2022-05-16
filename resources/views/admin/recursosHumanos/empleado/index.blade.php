@@ -482,6 +482,16 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="form-group row">
+                                    <label for="idImpuestoR" class="col-sm-4 col-form-label">Gerente Iess</label>
+                                    <div class="col-sm-2 col-form-label">
+                                        <div class="form-check">
+                                            <input style="width:20px; height:20px;" class="form-check-input" type="checkbox" id="idGerente" name="idGerente">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="card text-center">
                                     <div class="card-header">
                                         <h6>Cuenta Bancaria</h6>

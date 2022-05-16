@@ -51,6 +51,7 @@ class Empleado extends Model
         'empleado_estado',
         'empleado_cuenta_tipo',
         'empleado_cuenta_numero',
+        'empleado_iess_gerente',
         'cargo_id',
         'departamento_id',
         'empleado_cuenta_anticipo',

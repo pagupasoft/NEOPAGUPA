@@ -50,6 +50,7 @@ class CreateEmpleadoTable extends Migration
             $table->string('empleado_impuesto_renta');
             $table->string('empleado_decimo_tercero');
             $table->string('empleado_decimo_cuarto');
+            $table->string('empleado_iess_gerente');
             $table->string('empleado_estado');
             $table->string('empleado_cuenta_tipo')->nullable();
             $table->string('empleado_cuenta_numero')->nullable();

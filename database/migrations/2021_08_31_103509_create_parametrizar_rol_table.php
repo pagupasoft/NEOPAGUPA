@@ -22,7 +22,8 @@ class CreateParametrizarRolTable extends Migration
             $table->double('parametrizar_fondos_reserva',19,2);
             $table->double('parametrizar_horas_extras',19,2);
             $table->double('parametrizar_iece_secap',19,2); 
-            $table->double('parametrizar_porcentaje_he',19,2);            
+            $table->double('parametrizar_porcentaje_he',19,2);  
+            $table->double('parametrizar_iess_gerencial',19,2);       
             $table->string('parametrizar_estado');
             $table->bigInteger('empresa_id');
             $table->foreign('empresa_id')->references('empresa_id')->on('empresa');    

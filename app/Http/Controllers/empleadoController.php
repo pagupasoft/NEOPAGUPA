@@ -186,6 +186,11 @@ class empleadoController extends Controller
             }else{
                 $empleado->empleado_decimo_cuarto ="0";
             }
+            if ($request->get('idGerente') == "on"){
+                $empleado->empleado_iess_gerente ="1";
+            }else{
+                $empleado->empleado_iess_gerente ="0";
+            }
             if($request->get('idObservacion')){
                 $empleado->empleado_observacion = $request->get('idObservacion');
             }else{
@@ -344,6 +349,11 @@ class empleadoController extends Controller
                 $empleado->empleado_decimo_cuarto ="1";
             }else{
                 $empleado->empleado_decimo_cuarto ="0";
+            }
+            if ($request->get('idGerente') == "on"){
+                $empleado->empleado_iess_gerente ="1";
+            }else{
+                $empleado->empleado_iess_gerente ="0";
             }
             if($request->get('idObservacion')){
                 $empleado->empleado_observacion = $request->get('idObservacion');

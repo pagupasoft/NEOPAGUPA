@@ -21,6 +21,7 @@ class Parametrizar_Rol extends Model
         'parametrizar_horas_extras',
         'parametrizar_iece_secap',
         'parametrizar_porcentaje_he',
+        'parametrizar_iess_gerencial',   
         'parametrizar_estado',
         'empresa_id',
        

@@ -64,6 +64,8 @@ class parametrizarRolController extends Controller
             $parametrizar->parametrizar_horas_extras = $request->get('idExtras');
             $parametrizar->parametrizar_iece_secap = $request->get('idSecap');
             $parametrizar->parametrizar_porcentaje_he = $request->get('idExtrasPor');
+            $parametrizar->parametrizar_iess_gerencial = $request->get('idiessgeren');
+            
             $parametrizar->parametrizar_estado = 1;
             $parametrizar->empresa_id = Auth::user()->empresa_id;
             $parametrizar->save();
@@ -146,7 +148,7 @@ class parametrizarRolController extends Controller
             $parametrizacion->parametrizar_horas_extras = $request->get('idExtras');
             $parametrizacion->parametrizar_iece_secap = $request->get('idSecap');
             $parametrizacion->parametrizar_porcentaje_he = $request->get('idExtrasPor');  
-           
+            $parametrizacion->parametrizar_iess_gerencial = $request->get('idiessgeren');
             if ($request->get('idEstado') == "on"){
                 $parametrizacion->parametrizar_estado = 1;
             }else{

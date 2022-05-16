@@ -34,8 +34,10 @@ class listaFacturaController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $facturas=null;  
-            $sucursal = Factura_Venta::SurcusalDistinsc()->select('sucursal_nombre')->distinct()->get();    
-            return view('admin.ventas.listaFactura.index',['sucursal'=>$sucursal,'facturas'=>$facturas, 'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
+            $sucursal = Factura_Venta::SurcusalDistinsc()->select('sucursal.sucursal_id','sucursal_nombre')->distinct()->get(); 
+            $estados = Factura_Venta::EstadoDistinsc()->select('factura_estado')->distinct()->get(); 
+              
+            return view('admin.ventas.listaFactura.index',['estados'=>$estados,'sucursal'=>$sucursal,'facturas'=>$facturas, 'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -63,23 +65,11 @@ class listaFacturaController extends Controller
         try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            $sucursal = Factura_Venta::SurcusalDistinsc()->select('sucursal_nombre')->distinct()->get();    
-            if($request->get('fecha_todo') == 'on'){
-                if ($request->get('sucursal') == "--TODOS--" ) {
-                    $facturas=Factura_Venta::FacturasFiltrarSinFecha($request->get('descripcion'))->orderBy('factura_numero')->get();           
-                }
-                if ($request->get('sucursal') != "--TODOS--" ) {
-                    $facturas=Factura_Venta::FacturasFiltrarsucursalSinFecha($request->get('descripcion'),$request->get('sucursal'))->orderBy('factura_numero')->get();           
-                } 
-            }else{
-                if ($request->get('sucursal') == "--TODOS--" ) {
-                    $facturas=Factura_Venta::FacturasFiltrar($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('descripcion'))->orderBy('factura_numero')->get();           
-                }
-                if ($request->get('sucursal') != "--TODOS--" ) {
-                    $facturas=Factura_Venta::FacturasFiltrarsucursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('descripcion'),$request->get('sucursal'))->orderBy('factura_numero')->get();           
-                } 
-            }            
-            return view('admin.ventas.listaFactura.index',['todo'=>$request->get('fecha_todo'),'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'idsucursal'=>$request->get('sucursal'),'descripcion'=>$request->get('descripcion'),'sucursal'=>$sucursal,'facturas'=>$facturas, 'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
+            $sucursal = Factura_Venta::SurcusalDistinsc()->select('sucursal.sucursal_id','sucursal_nombre')->distinct()->get(); 
+            
+            $estados = Factura_Venta::EstadoDistinsc()->select('factura_estado')->distinct()->get();   
+            $facturas=Factura_Venta::Filtrar($request->get('fecha_todo'),$request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('descripcion'),$request->get('sucursal'),$request->get('estado_id'))->orderBy('factura_numero')->get();           
+            return view('admin.ventas.listaFactura.index',['estados'=>$estados,'idestado'=>$request->get('estado_id'),'todo'=>$request->get('fecha_todo'),'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'idsucursal'=>$request->get('sucursal'),'descripcion'=>$request->get('descripcion'),'sucursal'=>$sucursal,'facturas'=>$facturas, 'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

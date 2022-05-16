@@ -79,6 +79,24 @@ class Factura_Venta extends Model
         }   
         return $query;
     }
+    public function scopeFiltrar($query,$fechatodo, $desde, $hasta, $numeroDoc,$sucursal,$estado){
+         $query->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')
+        ->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')
+        ->join('cliente','cliente.cliente_id','=','factura_venta.cliente_id')
+        ->join('tipo_cliente', 'tipo_cliente.tipo_cliente_id','=','cliente.tipo_cliente_id')
+        ->where('tipo_cliente.empresa_id','=',Auth::user()->empresa_id)
+        ->where('factura_numero','like','%'.$numeroDoc.'%');
+        if($fechatodo != 'on'){
+            $query ->where('factura_fecha', '>=', $desde)->where('factura_fecha', '<=', $hasta);
+        }  
+        if($sucursal != '0'){
+            $query ->where('sucursal.sucursal_id', '=', $sucursal);
+        }
+        if($estado != '0'){
+            $query->where('factura_venta.factura_estado', '=', $estado);
+        } 
+        return $query; 
+    }
     public function scopeBusquedadetalle($query, $fechatodo, $desde, $hasta, $cliente, $bodega, $sucursal){
         $query->join('detalle_fv', 'detalle_fv.factura_id', '=', 'factura_venta.factura_id')
         ->join('producto', 'producto.producto_id', '=', 'detalle_fv.producto_id')
@@ -109,6 +127,9 @@ class Factura_Venta extends Model
     }
     public function scopeSurcusalDistinsc($query){
         return $query->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('empresa_id','=',Auth::user()->empresa_id)->orderBy('sucursal_nombre','asc');
+    }
+    public function scopeEstadoDistinsc($query){
+        return $query->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('empresa_id','=',Auth::user()->empresa_id)->orderBy('factura_estado','asc');
     }
     public function scopeBodegaDistinsc($query){
         return $query->join('bodega','bodega.bodega_id','=','factura_venta.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('empresa_id','=',Auth::user()->empresa_id)->orderBy('bodega_nombre','asc');

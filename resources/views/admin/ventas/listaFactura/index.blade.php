@@ -34,9 +34,19 @@
                 <label for="nombre_sucursal" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
                 <div class="col-sm-4">
                     <select class="custom-select select2" id="sucursal" name="sucursal" >
-                        <option value="--TODOS--" label>--TODOS--</option>                       
+                        <option value="0" label>--TODOS--</option>                       
                         @foreach($sucursal as $sucursales)
-                            <option id="{{$sucursales->sucursal_nombre}}" name="{{$sucursales->sucursal_nombre}}" value="{{$sucursales->sucursal_nombre}}">{{$sucursales->sucursal_nombre}}</option>
+                            <option value="{{$sucursales->sucursal_id}}">{{$sucursales->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div>
+                <label for="estado" class="col-sm-1 col-form-label"><center>Estados:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="estado_id" name="estado_id" >
+                        <option value="0" label>--TODOS--</option>                       
+                        @foreach($estados as $estado)
+                            <option  value="{{$estado->factura_estado}}">
+                            @if($estado->factura_estado == '1') ACTIVA @else ANULADA @endif </option>
                         @endforeach
                     </select>                                     
                 </div>
@@ -111,6 +121,11 @@
      if(isset($idsucursal)){ 
       ?>
      document.getElementById("sucursal").value='<?php echo($idsucursal); ?>';
+         <?php
+     }
+     if(isset($idestado)){  
+      ?>
+      document.getElementById("estado_id").value='<?php echo($idestado); ?>';
          <?php
      }
     

@@ -398,7 +398,8 @@
                                             <input type="hidden"   name="TIngresos"  id="TIngresos" value="0" required readonly>
                                             <input type="hidden"   name="sueldot" id="sueldot" value="0" >
                                             <input type="hidden"   name="sueldod" id="sueldod" value="0" >                          
-                                            <input type="hidden"   name="afiliadot"  id="afiliadot" value="0" required readonly>                        
+                                            <input type="hidden"   name="afiliadot"  id="afiliadot" value="0" required readonly>     
+                                            <input type="hidden"   name="IessGerencial"  id="IessGerencial" value="0" required readonly>                    
                                             <input type="hidden"   name="asumidot"  id="asumidot" value="0" required readonly>
                                             <input type="hidden"   name="IESCAP"  id="IESCAP" value="0" required readonly>                            
                                             <input type="hidden"   name="impu_rentat"  id="impu_rentat" value="" required readonly>
@@ -410,6 +411,8 @@
                                             <input type="hidden"   name="VReservat"  id="VReservat" value="0" required readonly>
                                             <input type="hidden"   name="Personalt"  id="Personalt" value="0" required readonly>
                                             <input type="hidden"   name="Patronalt"  id="Patronalt" value="0" required readonly>
+                                            <input type="hidden"   name="Gerencialt"  id="Gerencialt" value="0" required readonly>
+                                            
                                             <input type="hidden"   name="Basicot"  id="Basicot" value="0" required readonly>
                                             <input type="hidden"   name="DiasTrabajot"  id="DiasTrabajot" value="0" required readonly>  
                                             <input type="hidden"   name="vquincena"  id="vquincena" value="0" required readonly>  
@@ -667,16 +670,17 @@ function cargardatosempleados(id){
                 document.getElementById("afiliadot").value= data[i].empleado_afiliado;
                 document.getElementById("asumidot").value= data[i].empleado_iess_asumido;
                 document.getElementById("impu_rentat").value= data[i].empleado_impuesto_renta;
+                document.getElementById("IessGerencial").value= data[i].empleado_iess_gerente;
                 document.getElementById("tercerot").value= data[i].empleado_decimo_tercero;
                 document.getElementById("cuartot").value= data[i].empleado_decimo_cuarto;
                 document.getElementById("Personalt").value= data[i].parametrizar_iess_personal;
                 document.getElementById("Patronalt").value= data[i].parametrizar_iess_patronal;
+                document.getElementById("Gerencialt").value= data[i].parametrizar_iess_gerencial;
                 document.getElementById("IESCAP").value= data[i].parametrizar_iece_secap;
                 document.getElementById("VReservat").value= data[i].parametrizar_fondos_reserva;
                 document.getElementById("Basicot").value= data[i].parametrizar_sueldo_basico;
                 document.getElementById("DiasTrabajot").value= data[i].parametrizar_dias_trabajo;          
                 document.getElementById("sueldo").value= (data[i].empleado_sueldo/30).toFixed(2);
-                
                 document.getElementById("dias").value= 1;
                 document.getElementById("sueldod").value= (data[i].empleado_sueldo/30);
                 document.getElementById("acureservat").value= data[i].empleado_fondos_reserva;  
@@ -1035,15 +1039,24 @@ function calculototales(){
         }
         
         if(document.getElementById("afiliadot").value=="1"){
-           document.getElementById("Totalpersonal").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
-           document.getElementById("Totalpatronal").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Patronalt").value))/100).toFixed(2);
-            document.getElementById("TotalIESCAP").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("IESCAP").value))/100).toFixed(2);
-            if(document.getElementById("asumidot").value=="1"){
-                document.getElementById("TotalAsumido").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+            if (document.getElementById("IessGerencial").value=="1") {
+                
+                document.getElementById("TotalIess").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Gerencialt").value))/100).toFixed(2);
+                document.getElementById("Totalpersonal").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Gerencialt").value))/100).toFixed(2);
             }
             else{
-                document.getElementById("TotalIess").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+                if(document.getElementById("asumidot").value=="1"){
+                    document.getElementById("TotalAsumido").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+                }
+                else{
+                    document.getElementById("TotalIess").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+                }
+                
+                document.getElementById("Totalpersonal").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Personalt").value))/100).toFixed(2);
+                document.getElementById("Totalpatronal").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("Patronalt").value))/100).toFixed(2);
             }
+            document.getElementById("TotalIESCAP").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("IESCAP").value))/100).toFixed(2);
+            
             document.getElementById("LVac_pagadas").innerHTML=(totalvacaciones).toFixed(2);
             if(document.getElementById("tercerot").value=="1"){
                 document.getElementById("TotalTerceroV").innerHTML=(((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)/12).toFixed(2);

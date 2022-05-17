@@ -91,7 +91,10 @@ class reporteUtilidadController extends Controller
                 $totalVC = $totalVC + floatval($datos[$count]['vec']);
                 $totalV = $totalV + floatval($datos[$count]['ven']);
                 $totalU = $totalU + floatval($datos[$count]['uti']);
-                $datos[$count]['venta'] = $producto->cuentaVenta->cuenta_numero;
+                $datos[$count]['venta'] = '';
+                if(isset($producto->cuentaVenta->cuenta_numero)){
+                    $datos[$count]['venta'] = $producto->cuentaVenta->cuenta_numero;
+                }
                 $datos[$count]['costo'] = '';
                 if(isset($producto->cuentaGasto->cuenta_numero)){
                     $datos[$count]['costo'] = $producto->cuentaGasto->cuenta_numero;

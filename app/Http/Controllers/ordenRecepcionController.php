@@ -697,7 +697,7 @@ class ordenRecepcionController extends Controller
                 $transaccion->arqueo_id = $arqueoCaja->arqueo_id;
             }
             $transaccion->save();
-            $general->registrarAuditoria('Registro de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero,$transaccion->transaccion_numero,'Registro de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero.' con proveedor -> '.$request->get('buscarProveedor').' con un total de -> '.$request->get('idTotal').' y con codigo de diario -> '.$diario->diario_codigo);
+            $general->registrarAuditoria('Registro por medio de orden de recepcion de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero,$transaccion->transaccion_numero,'Registro de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero.' con proveedor -> '.$request->get('buscarProveedor').' con un total de -> '.$request->get('idTotal').' y con codigo de diario -> '.$diario->diario_codigo);
             /****************************************************************/
             /********************detalle de transaccion de compra********************/
             for ($i = 1; $i < count($cantidad); ++$i){
@@ -971,7 +971,7 @@ class ordenRecepcionController extends Controller
                     $precioTotal = $precioTotal+$mov->movimiento_total;
 
                     $detalleDiario = new Detalle_Diario();
-                    $detalleDiario->detalle_debe = $mov->movimiento_total;
+                    $detalleDiario->detalle_debe = round($mov->movimiento_total,2);
                     $detalleDiario->detalle_haber = 0.00;
                     $detalleDiario->detalle_comentario = 'P/R ORDEN DE RECEPCION DE COMPRA DE PRODUCTO '.$producto->producto_codigo;
                     $detalleDiario->detalle_tipo_documento = 'ORDEN DE RECEPCION';
@@ -991,7 +991,7 @@ class ordenRecepcionController extends Controller
                 /********************detalle de diario de compra********************/
                 $detalleDiario = new Detalle_Diario();
                 $detalleDiario->detalle_debe = 0.00;
-                $detalleDiario->detalle_haber =$precioTotal;
+                $detalleDiario->detalle_haber =round($precioTotal,2);
                 $detalleDiario->detalle_comentario = 'P/R MERCADERIA POR RECEPTAR';
                 $detalleDiario->detalle_tipo_documento = 'ORDEN DE RECEPCION';
                 $detalleDiario->detalle_numero_documento = $diarioOR->diario_numero_documento;

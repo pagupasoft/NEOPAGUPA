@@ -76,7 +76,9 @@ class estadoFinancieroController extends Controller
                 foreach($sucursales as $sucursal){
                     $datos[$count][$count2] = Detalle_Diario::SaldoActualByFecha($cuenta->cuenta_numero,$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
                     if(strpos($request->get('cResultado') , $cuenta->cuenta_numero) === 0){
-                        $datos[$count][$count2] = $datos[$count][$count2] + Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo - abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo + Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
+                        $aux = abs(Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo) - abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo + Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
+                        $aux = $aux * (-1);
+                        $datos[$count][$count2] = $datos[$count][$count2] + $aux;
                     }
                     $tot = $tot + $datos[$count][$count2];
                     $count2 ++;

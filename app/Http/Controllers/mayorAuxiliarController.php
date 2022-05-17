@@ -68,7 +68,7 @@ class mayorAuxiliarController extends Controller
                     $datos[$count]['nom'] = $cuenta->cuenta_nombre;
                     $datos[$count]['fec'] = $detalle->diario->diario_fecha;
                     $datos[$count]['doc'] = $detalle->detalle_tipo_documento;
-                    $datos[$count]['num'] = '';
+                    $datos[$count]['num'] = $detalle->detalle_numero_documento;;
                     $datos[$count]['ant'] = '';
                     $datos[$count]['deb'] = $detalle->detalle_debe;
                     $datos[$count]['hab'] = $detalle->detalle_haber;

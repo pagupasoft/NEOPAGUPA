@@ -101,6 +101,7 @@ class Rol_Consolidado extends Model
         ->where('cabecera_rol_estado','=','1')
         ->where('detalle_rol_fecha_inicio', '>=', $fechadesde)
         ->where('detalle_rol_fecha_fin', '<=', $fechahasta)
+        ->where('empleado_afiliado', '=', '1')
         ->orderBy('empleado.empleado_nombre','asc');
     }
 
@@ -109,6 +110,7 @@ class Rol_Consolidado extends Model
         ->where('cabecera_rol_estado','=','1')
         ->where('detalle_rol_fecha_inicio', '>=', $fechadesde)
         ->where('detalle_rol_fecha_fin', '<=', $fechahasta)
+        ->where('empleado_afiliado', '=', '1')
         ->orderBy('tipo_empleado.tipo_descripcion','asc');
     }
 

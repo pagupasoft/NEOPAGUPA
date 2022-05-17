@@ -47,16 +47,23 @@
                   
                
                 <div class="col-sm-12">
-                        <div class="tabladetallerol card-body table-responsive p-0" style="height: 350px;">        
+                        <div class="d-flex flex-row justify-content-end">
+                            <span class="mr-2">
+                            <i class="fas fa-square text-pagado"></i> Pagado
+                            </span>
+                            <span>
+                            <i class="fas fa-square text-acumulado"></i> Acumulado
+                            </span>
+                        </div>     
+                        <div class="tabladetallerol card-body table-responsive p-0" style="height: 350px;">  
+                         
                             <table  class="tabladetallerol table table-bordered table-head-fixed text-nowrap">
                                 <thead>
-                                    <tr >
-                                        
+                                    <tr>   
                                         <th  class=" text-center-encabesado"> </th>
-                                        <th class="ingresos text-center-encabesado" colspan="6">Ingresos</th>                        
+                                        <th class="ingresos text-center-encabesado" colspan="7">Ingresos</th>                        
                                         <th class=" egresos text-center-encabesado" colspan="13">Egresos </th>
-                                        <th class="provisiones text-center-encabesado" colspan="8">Provisiones </th>
-                                                        
+                                        <th class="provisiones text-center-encabesado" colspan="9">Provisiones </th>                       
                                     </tr>  
                                     <tr >
                                         <th  class="text-center-encabesado">Empleado </th>
@@ -85,11 +92,8 @@
                                         <th class="text-center-encabesado">Apr. Patro</th>
                                         <th class="text-center-encabesado">Vacaciones Pagadas</th>
                                         <th class="text-center-encabesado">Dec. Tercero</th>
-                                        <th class="text-center-encabesado">Dec. Tercero ACU</th>
                                         <th class="text-center-encabesado">Dec. Cuarto</th>
-                                        <th class="text-center-encabesado">Dec. Cuarto ACU</th>
                                         <th class="text-center-encabesado">F. Reser.</th>
-                                        <th class="text-center-encabesado">F. Reser. Acu.</th>
                                         <th class="text-center-encabesado">IECE / SETEC</th>
                                        
                                         <th class="text-center-encabesado">Liq. Pagar</th>
@@ -124,17 +128,11 @@
 
                                     <td width="150" class="text-center">{{number_format($roles->otrosegre, 2)}} </td>
                                     <td width="150" class="text-center">{{number_format($roles->egresos, 2)}}</td>
-
                                     <td width="150" class="text-center">{{number_format($roles->patronal, 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->vacacionespag, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->tercero, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->terceroacum, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->cuarto, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->cuartoacum, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->fondo_reserva, 2)}}</td>
-                                    <td width="150" class="text-center">{{number_format($roles->fondoacumula, 2)}}</td>
-
-                                    
+                                    <td width="150" class="text-center" @if(number_format($roles->tercero, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->tercero, 2)>0) {{number_format($roles->tercero, 2)}} @else {{number_format($roles->terceroacum, 2)}}  @endif</td>                   
+                                    <td width="150" class="text-center" @if(number_format($roles->cuarto, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->cuarto, 2)>0) {{number_format($roles->cuarto, 2)}} @else {{number_format($roles->cuartoacum, 2)}}  @endif</td>                   
+                                    <td width="150" class="text-center" @if(number_format($roles->fondo_reserva, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->fondo_reserva, 2)>0) {{number_format($roles->fondo_reserva, 2)}} @else {{number_format($roles->fondoacumula, 2)}}  @endif</td>
                                     <td width="150" class="text-center">{{number_format($roles->iecesecap, 2)}}</td>
                                  
                                     <td width="150" class="text-center">{{number_format($roles->liquido_pagar, 2)}}</td>

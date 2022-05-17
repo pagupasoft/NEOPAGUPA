@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-sm-2 centrar-texto">
                     <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                   <!-- <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button> -->
                 </div>
             </div>
             <hr>

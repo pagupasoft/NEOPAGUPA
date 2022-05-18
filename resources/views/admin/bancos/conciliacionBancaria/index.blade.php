@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}">
+<form class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}" onsubmit="return verificarFecha();">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
@@ -350,6 +350,18 @@
     </div>
 </form>
 <script type="text/javascript">
+    function verificarFecha() {
+        let fechaHasta = new Date(document.getElementById("idHasta").value+"T00:00:00");
+        let lastDay = new Date(fechaHasta.getFullYear(), fechaHasta.getMonth() + 1, 0).getDate();
+        if(fechaHasta.getDate() != lastDay){
+            bootbox.alert({
+                message: "La fecha hasta debe ser el ultimo dia del mes.",
+                size: 'small'
+            });
+            return false;
+        }
+        return true;
+    }
 function cargarCuenta(){
     $.ajax({
         url: '{{ url("cuentaBancaria/searchN") }}'+ '/' +document.getElementById("banco_id").value,

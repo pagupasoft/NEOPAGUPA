@@ -65,7 +65,7 @@
             <div class="card-header">
                 <div class="float-right">
                     @if(isset($diarioS))
-                    <!--<a href="{{ url("asientoDiario/editar/{$diarioS->diario_id}") }}" id="btnImprimir"><button type="button" class="btn btn-primary btn-sm not-active-neo"><i class="fas fa-edit"></i><span> Editar</span></button></a>-->
+                    <a href="{{ url("asientoDiario/editar/{$diarioS->diario_id}") }}" id="btnImprimir"><button type="button" class="btn btn-primary btn-sm not-active-neo"><i class="fas fa-edit"></i><span> Editar</span></button></a>
                     <a href="{{ url("asientoDiario/eiminar/{$diarioS->diario_id}") }}" id="btnImprimir"><button type="button" class="btn btn-danger btn-sm not-active-neo"><i class="fas fa-trash"></i><span> Eliminar</span></button></a>
                     <a href="{{ url("asientoDiario/imprimir/{$diarioS->diario_id}") }}" target="_blank" id="btnImprimir"><button type="button" class="btn btn-default btn-sm not-active-neo"><i class="fas fa-print"></i><span> Imprimir</span></button></a>
                     @endif

@@ -51,11 +51,30 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="idcedulaRepresentante" class="col-sm-2 col-form-label">Cedula del Representante</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="idcedulaRepresentante" name="idcedulaRepresentante" placeholder="Cedula del Representante" value="{{$empresa->empresa_cedula_representante}}" >
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="idRepresentante" class="col-sm-2 col-form-label">Representante Legal</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="idRepresentante" name="idRepresentante" placeholder="Representante Legal" value="{{$empresa->empresa_representante}}" required>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="idcedulacontador" class="col-sm-2 col-form-label">Cedula del Contador</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="idcedulacontador" name="idcedulacontador" placeholder="Cedula del Contador" value="{{$empresa->empresa_cedula_contador}}" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="idcontador" class="col-sm-2 col-form-label">Nombre del Contador</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="idcontador" name="idcontador" placeholder="Nombre del Contador" value="{{$empresa->empresa_contador}}" >
+                </div>
+            </div>
+
             <div class="form-group row">
                 <label for="idFecha" class="col-sm-2 col-form-label">Fecha de Ingreso</label>
                 <div class="col-sm-10">

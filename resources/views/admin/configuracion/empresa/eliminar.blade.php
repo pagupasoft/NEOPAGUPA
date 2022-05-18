@@ -58,9 +58,27 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Cedula del Representante</label>
+                <div class="col-sm-10">
+                    <label class="form-control">{{$empresa->empresa_cedula_representante}}</label>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Representante Legal</label>
                 <div class="col-sm-10">
                     <label class="form-control">{{$empresa->empresa_representante}}</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Cedula del Contador</label>
+                <div class="col-sm-10">
+                    <label class="form-control">{{$empresa->empresa_cedula_contador}}</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Nombre del Contador</label>
+                <div class="col-sm-10">
+                    <label class="form-control">{{$empresa->empresa_contador}}</label>
                 </div>
             </div>
             <div class="form-group row">

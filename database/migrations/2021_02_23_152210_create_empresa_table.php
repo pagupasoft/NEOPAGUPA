@@ -23,6 +23,9 @@ class CreateEmpresaTable extends Migration
             $table->string('empresa_celular');
             $table->string('empresa_ciudad');
             $table->string('empresa_logo')->nullable();
+            $table->string('empresa_contador')->nullable();
+            $table->string('empresa_cedula_contador')->nullable();
+            $table->string('empresa_cedula_representante')->nullable();
             $table->string('empresa_representante');
             $table->date('empresa_fecha_ingreso');
             $table->string('empresa_email');

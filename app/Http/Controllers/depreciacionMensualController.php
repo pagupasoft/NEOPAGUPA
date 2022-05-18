@@ -504,7 +504,8 @@ class depreciacionMensualController extends Controller
                 }else{                    
                     $ventaActivo  = $rsventaActivo->venta_monto;
                 }
-                $ventaActivoAux = floatval($activoFijo->activo_valor) - floatval($ventaActivo);                
+                //$ventaActivoAux = floatval($activoFijo->activo_valor) - floatval($ventaActivo); 
+                $ventaActivoAux = floatval($activoFijo->activo_base_depreciar) - floatval($ventaActivo);
                
             $valoresActivo = floatval($ventaActivoAux) - floatval($activoFijo->activo_depreciacion_acumulada) - floatval($depreAcum);
             if($depreciacio_mensual <= $valoresActivo){ 

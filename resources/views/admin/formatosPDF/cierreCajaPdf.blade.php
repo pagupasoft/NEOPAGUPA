@@ -125,9 +125,10 @@
                     </tr>
                 </thead>            
                 <tbody>
+                <?php $canti=0;?>       
+                     
                     @if(isset($MatrizVentasEfectivo))
-                        <?php $canti=0;?>       
-                        @for ($i = 1; $i <= count($MatrizVentasEfectivo); ++$i)               
+                       @for ($i = 1; $i <= count($MatrizVentasEfectivo); ++$i)               
                         <tr class="letra12">
                             <td  width="20"><center>{{ $MatrizVentasEfectivo[$i]['fecha'] }}</center></td>
                             <td class="left" width="20">{{ $MatrizVentasEfectivo[$i]['numero']}}</td>

@@ -6,7 +6,7 @@
         <div class="card-header">
             <h3 class="card-title">Editar Asiento Diario xx</h3>
             <div class="float-right">
-                <button id="guardarID" type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i><span>&nbsp;&nbsp;Guardar</span></button>
+             <!--   <button id="guardarID" type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i><span>&nbsp;&nbsp;Guardar</span></button>-->
                 <button type="button" onclick='window.location = "{{ url("asientoDiario") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </div>
         </div>

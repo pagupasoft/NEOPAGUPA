@@ -82,41 +82,41 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                        <label> FORMA  DE  PAGO :</label>
-                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="margin-bottom : 1px;">
-                            <div class="form-group">
-                                <select class="form-control" id="forma_pago_id" name="forma_pago_id"
-                                    data-live-search="true">
-                                    @foreach($formasPago as $formaPago)
-                                    <option value="{{ $formaPago->forma_pago_id }}" @if($formaPago->forma_pago_nombre ==
-                                        'OTROS CON UTILIZACION DEL SISTEMA FINANCIERO') selected
-                                        @endif>{{ $formaPago->forma_pago_nombre }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <label> FORMA  DE  PAGO :</label>
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="margin-bottom : 1px;">
+                        <div class="form-group">
+                            <select class="form-control" id="forma_pago_id" name="forma_pago_id"
+                                data-live-search="true">
+                                @foreach($formasPago as $formaPago)
+                                <option value="{{ $formaPago->forma_pago_id }}" @if($formaPago->forma_pago_nombre ==
+                                    'OTROS CON UTILIZACION DEL SISTEMA FINANCIERO') selected
+                                    @endif>{{ $formaPago->forma_pago_nombre }}
+                                </option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "
-                            style="margin-bottom : 0px;">
-                            <label>Caja :</label>
-                        </div>   
-                    
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                            style="margin-bottom : 0px;">
-                                <select id="caja_id" name="caja_id" class="form-control show-tick" data-live-search="true" required>
-                                    @if($cajaAbierta)
-                                    <option value="{{ $cajaAbierta->caja->caja_id }}">{{ $cajaAbierta->caja->caja_nombre }}</option>
-                                    @endif
-                                </select>
-                        </div>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "
+                        style="margin-bottom : 0px;">
+                        <label>Caja :</label>
+                    </div>   
                 
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
-                            <div class="demo-checkbox">
-                                <input type="radio" value="FISICA" id="check2" class="with-gap radio-col-deep-orange"
-                                    name="tipoDoc" required />
-                                <label for="check2">Documento Fisico</label>
-                            </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
+                        style="margin-bottom : 0px;">
+                            <select id="caja_id" name="caja_id" class="form-control show-tick" data-live-search="true" required>
+                                @if($cajaAbierta)
+                                <option value="{{ $cajaAbierta->caja->caja_id }}">{{ $cajaAbierta->caja->caja_nombre }}</option>
+                                @endif
+                            </select>
+                    </div>
+            
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
+                        <div class="demo-checkbox">
+                            <input type="radio" value="FISICA" id="check2" class="with-gap radio-col-deep-orange"
+                                name="tipoDoc" required />
+                            <label for="check2">Documento Fisico</label>
                         </div>
+                    </div>
                 </div>
                 <h5 class="form-control" style="color:#fff; background:#17a2b8;">Datos de Orden de Atención</h5><br>
                 <div class="form-group row">
@@ -250,11 +250,13 @@
                             <thead>
                                 <tr>
                                     <th class="centrar-texto neo-fondo-tabla">Código</th>
-                                    <th class="centrar-texto neo-fondo-tabla">Cantidad</th>
+                                    <th class="centrar-texto neo-fondo-tabla">Cant</th>
                                     <th class="centrar-texto neo-fondo-tabla">Procedimiento</th>
                                     <th class="centrar-texto neo-fondo-tabla">Precio</th>
                                     <th class="centrar-texto neo-fondo-tabla">% Cobertura</th>
                                     <th class="centrar-texto neo-fondo-tabla">Cobertura</th>
+                                    <th class="centrar-texto neo-fondo-tabla">% Dscto</th>
+                                    <th class="centrar-texto neo-fondo-tabla">Dscto.</th>
                                     <th class="centrar-texto neo-fondo-tabla">Copago</th>
                                 </tr>
                             </thead>
@@ -267,7 +269,6 @@
                                         <select id="idServicio" name="idServicio" class="form-control select2" data-live-search="true" onchange="cargarDatosProcedimiento();" disabled required>
                                             <option value="" label>--Seleccione una opcion--</option>
                                         </select>
-                                        
                                     </td>
                                     <input  type="hidden" id="nombreP" name="nombreP" value="">
                                     <td class="centrar-texto" id="IdPrecioP" name="IdPrecioP"></td>
@@ -276,6 +277,14 @@
                                     <input  type="hidden" id="IdCoberturaPorcen" name="IdCoberturaPorcen" value="">
                                     <td class="centrar-texto" id="IdCoberturaP"  name="IdCoberturaP"></td>
                                     <input  type="hidden" id="IdCobertura" name="IdCobertura" value="">
+                                    
+                                    <td class="centrar-texto">
+                                        <input  type="hidden" id="IdDescuentoPorcentaje" name="IdDescuentoPorcentaje" value="0" step="1" min="0" max="100">
+                                    </td>
+
+                                    <td class="centrar-texto" id="IdDescuentoP"></td>
+                                    <input  type="hidden" id="IdDescuento" name="IdDescuento" value="0.00">
+
                                     <td class="centrar-texto" id="IdCopagoP"  name="IdCopagoP"></td>
                                     <input  type="hidden" id="IdCopago" name="IdCopago" value="">
                                 </tr>
@@ -999,10 +1008,17 @@
 
                 valorCobertura = (Number(data[0].procedimientoA_valor)*Number(data[1].ep_valor))/100;
                 document.getElementById("IdCoberturaP").innerHTML = Number(valorCobertura).toFixed(2);  
-                document.getElementById("IdCobertura").value = Number(valorCobertura).toFixed(2);  
+                document.getElementById("IdCobertura").value = Number(valorCobertura).toFixed(2);
+
+                document.getElementById("IdDescuentoPorcentaje").type="number";
+                document.getElementById("IdDescuentoPorcentaje").value="0";
+
+                document.getElementById("IdDescuentoP").innerHTML="0,00";
+                document.getElementById("IdDescuento").value="0,00";
+
                 if(Number(valorCobertura)<0){
-                document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
-                document.getElementById("IdCopago").value = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
+                    document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
+                    document.getElementById("IdCopago").value = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
                 }
                 if(Number(valorCobertura)>0){
                     document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
@@ -1014,8 +1030,24 @@
             },
         });
     }
+
+    document.getElementById("IdDescuentoPorcentaje").addEventListener("keyup", function(){
+        valor= parseFloat(document.getElementById("IdPrecio").value);
+        cobertura=parseFloat(document.getElementById("IdCobertura").value);
+        porcentaje=parseInt(document.getElementById("IdDescuentoPorcentaje").value);
+
+        descuento= valor*porcentaje/100;
+
+        document.getElementById("IdDescuentoP").innerHTML=(descuento).toFixed(2);
+        document.getElementById("IdDescuento").value=(descuento).toFixed(2);
+
+        //total=document.getElementById("IdCopagoP").innerHTML;
+
+        document.getElementById("IdCopagoP").innerHTML=(valor-descuento+cobertura).toFixed(2)
+        document.getElementById("IdCopago").value=(valor-descuento+cobertura).toFixed(2)
+    })
+
     function cargarReclamo(aseguradora){
-        
         $.ajax({
             async: false,
             url: '{{ url("ordenAtencionReclamo/searchN") }}'+ '/' +aseguradora,

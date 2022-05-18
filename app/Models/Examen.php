@@ -36,6 +36,20 @@ class Examen extends Model
                     )->where('tipo_examen.empresa_id', '=', Auth::user()->empresa_id
                     )->where('examen.producto_id','=',$id);
     }
+    
+    public function scopeBuscarProductosProcedimiento($query, $paciente, $especialidad){
+        return $query->join('producto','examen.producto_id','=','producto.producto_id'
+                    )->join('procedimiento_especialidad','procedimiento_especialidad.producto_id','=','producto.producto_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','procedimiento_especialidad.especialidad_id'
+                    )->join('aseguradora_procedimiento','aseguradora_procedimiento.procedimiento_id','=','procedimiento_especialidad.procedimiento_id'
+                    )->join('cliente','cliente.cliente_id','=','aseguradora_procedimiento.cliente_id'
+                    )->join('paciente','paciente.cliente_id','=','cliente.cliente_id'
+                    //)->join('paciente','paciente.cliente_id','=','cliente.cliente_id'
+                    )->where('producto.empresa_id','=',Auth::user()->empresa_id
+                    )->where('paciente.paciente_id','=',$paciente
+                    )->where('especialidad.especialidad_id','=',$especialidad);
+    }  
+    
     public function detalleslaboratorio()
     {
         return $this->hasMany(Detalle_Laboratorio::class, 'examen_id', 'examen_id');

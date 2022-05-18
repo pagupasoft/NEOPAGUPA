@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use App\Libraries\verifyEmail;
 
 class usuarioController extends Controller
 {
@@ -52,7 +53,6 @@ class usuarioController extends Controller
             $usuario->user_tipo  = 1;
             $usuario->user_estado  = 1;
             $password=$this->generarPass();
-            $password='$2y$10$FbPQydeRetzhjKVq4tFlx.3CqEcq9r2fzzH3SONPQWU00/iho99RO';
             $usuario->password  = bcrypt($password);
             $usuario->empresa_id = Auth::user()->empresa_id;
             $usuario->save();
@@ -110,7 +110,7 @@ class usuarioController extends Controller
             $mail->SMTPAutoTLS = false;
             $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
             $mail->Username = trim('neopagupa@pagupasoft.com');
-            $mail->Password = trim('PagupaServer2022');
+            $mail->Password = trim('PagupaServer202205');
             $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
             $mail->Subject = 'NEOPAGUPA-Sistema Contable';
             $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);
@@ -129,6 +129,67 @@ class usuarioController extends Controller
             return($ex);
         }
     }
+
+    public function verificarEmail(){
+        /*
+        $email = "rick658658@gmail.com";
+        $key = "your_api_key";
+        $url = "https://app.verificaremails.com/api/verifyEmail?secret=".$key."&email=".$email;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true );
+
+        $response = curl_exec($ch);
+        echo $response;
+        curl_close($ch);
+        */
+
+        return $this->is_valid_email("rick65865@hotmail.es");
+    }
+
+    function is_valid_email($str)
+    {
+    $result = (false !== filter_var($str, FILTER_VALIDATE_EMAIL));
+    
+    if ($result)
+    {
+        list($user, $domain) = explode('@', $str);
+        
+        $result = checkdnsrr($domain, 'MX');
+    }
+    
+    return $result;
+    }
+
+    /*
+    public function verificarEmail(){
+        $mail = new VerifyEmail();
+
+        $mail->setStreamTimeoutWait(20);
+
+        $mail->Debug= TRUE; 
+        $mail->Debugoutput= 'html'; 
+
+        // Set email address for SMTP request
+        //$mail->setEmailFrom('ricky658_5@yahoo.es');
+
+        // Email to check
+        $email = 'rick658658@gmail.com'; 
+
+        // Check if email is valid and exist
+        if($mail->check($email)){ 
+            echo 'Email <'.$email.'> is exist! 1'; 
+        }elseif(verifyEmail::validate($email)){ 
+            echo 'Email <'.$email.'> is valid, but not exist! 2'; 
+        }else{ 
+            echo 'Email <'.$email.'> is not valid and not exist! 3'; 
+        }
+
+        return "---";
+    }
+    */
 
     public function generarPass(){
         $caracteres='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

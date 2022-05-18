@@ -370,7 +370,7 @@ class atencionCitasController extends Controller
     }
 
     public function informeHistoricoPlano(Request $request){
-        try{   
+        //try{   
             $sucursal=Sucursal::findOrFail($request->sucursal);
             $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
             
@@ -422,9 +422,9 @@ class atencionCitasController extends Controller
 
             $datos['ordenes']= $ordenes;
             return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
-        }catch(\Exception $ex){
-            return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+        //}catch(\Exception $ex){
+        //    return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        //}
     }
 
 
@@ -720,11 +720,11 @@ class atencionCitasController extends Controller
      
             $signoVital=Signos_Vitales::SignoVitalOrdenId($ordenAtencion->orden_id)->get();
              
-            if($medico){
+            //if($medico){
                 return view('admin.citasMedicas.atencionCitas.atender',['cespecialidad'=>$cespecialidad,'medico'=>$medico,'examenes'=>$examenes,'tipoExamenes'=>$tipoExamenes,'especialidades'=>$especialidades,'productos'=>$productos,'imagenes'=>$imagenes,'sucursales'=>$sucursales,'enfermedades'=>$enfermedades,'medicamentos'=>$medicamentos,'diagnosticos'=>$diagnosticos,'signoVital'=>$signoVital,'ordenAtencion'=>$ordenAtencion,'mespecialidadM'=>$mespecialidadM,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-            }else{
-                return redirect('/denegado');
-            }
+            //}else{
+            //    return redirect('/denegado');
+            //}
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
@@ -738,8 +738,84 @@ class atencionCitasController extends Controller
      */
     public function edit($id)
     {
-        //
+        
     }
+
+    public function editarDiagnostico($id)
+    {
+        $ordenAtencion=Orden_Atencion::findOrFail($id);
+        $enfermedades = Enfermedad::Enfermedades()->get();
+
+        $expediente=$ordenAtencion->expediente;
+        $diagnostico=$expediente->diagnostico;
+
+        if($diagnostico->detalle){
+            foreach($diagnostico->detallediagnostico as $detalle){
+                $det = $detalle->enfermedad;
+            }
+        }
+
+        $data=[
+            "diagnostico" => $diagnostico->detallediagnostico,
+            "ordenAtencion"=>$ordenAtencion,
+            "enfermedades"=>$enfermedades
+        ];
+
+        //return $data;
+
+        return view('admin.citasMedicas.atencionCitas.editarDiagnostico', $data);
+    }
+
+    public function actualizarDiagnosticoOrdenAtencion(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $auditoria = new generalController();
+
+            $ordenAtencion = Orden_Atencion::findOrFail($id);
+            $expediente=$ordenAtencion->expediente;
+            $diagnostico=$expediente->diagnostico;
+
+            $diagnosticoDetalle=$diagnostico->detalleDiagnostico;
+            
+
+            $borrados="";
+
+            if($diagnosticoDetalle){
+                foreach($diagnosticoDetalle as $diag){
+                    $borrados.=$diag->enfermedad_id.',';
+                    $diag->delete();
+                }
+            }
+            $auditoria->registrarAuditoria('Eliminación de Diagnostico por modificación con expediente -> ' .   $expediente->expediente_id, $id, 'Con diagnostico eliminados Ids: '.$borrados);
+
+
+            $enfermedades = $request->get('DenfermedadId');
+
+            for ($i = 0; $i < count($enfermedades); ++$i) {
+                $detDiagnostico = new Detalle_Diagnostico();
+                $detDiagnostico->detalled_estado="1";
+                $detDiagnostico->enfermedad_id=$enfermedades[$i];
+                $detDiagnostico->diagnostico_id=$diagnostico->diagnostico_id;
+                $detDiagnostico->save();
+            }
+            
+            $diagnostico->diagnostico_observacion=$request->diagnostico_observacion;
+            $diagnostico->save();
+
+            $auditoria->registrarAuditoria('Modificación de Examenes con expediente -> ' .   $expediente->expediente_id, $id, 'Con examenes Ids '.json_encode($enfermedades));
+
+            DB::commit();
+            return $redirect = redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente');
+        }
+        catch(\Exception $e){
+            DB::rollBack();
+            return $redirect = redirect('ordenAtencion')->with('error', 'Ocurrió un error al actualizar: '.$e->getMessage());
+        }
+    }
+    
+    
+    
 
     /**
      * Update the specified resource in storage.

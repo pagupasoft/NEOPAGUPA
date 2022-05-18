@@ -737,6 +737,8 @@ Route::get('/listaChequesAnulados', [listaChequeAnuladoController::class, 'lista
 Route::post('/listaChequesAnulados', [listaChequeAnuladoController::class, 'listarChequesAnulados'])->middleware('auth');
 Route::post('/eliminarChequeAnulado', [listaChequeAnuladoController::class, 'eliminarChequeAnulado'])->middleware('auth');
 
+
+Route::get('/verificarDocumentos', [ordenAtencionController::class, 'verificarDocumentosOrden'])->middleware('auth');
 Route::get('/facturarOrden/{id}', [ordenAtencionController::class, 'facturarOrden'])->middleware('auth');
 Route::post('/facturarOrden', [ordenAtencionController::class, 'facturarOrdenGuardar'])->middleware('auth');
 Route::post('/facturarOrdenexamen', [examenController::class, 'facturarOrdenGuardar'])->middleware('auth');
@@ -752,7 +754,9 @@ Route::get('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 
 Route::post('/listaRetencionRecibida', [listaRetencionRecibidaController::class, 'consultar'])->middleware('auth');
 Route::get('/nuevoSignosV/{id}', [signosVitalesController::class, 'nuevoSigno'])->middleware('auth');
 Route::get('/editarSignosV/{id}', [signosVitalesController::class, 'edit'])->middleware('auth');
+Route::get('/editarDiagnostico/{id}', [atencionCitasController::class, 'editarDiagnostico'])->middleware('auth');
 Route::post('/actualizarSignosOrdenAtencion', [signosVitalesController::class, 'actualizarSignosOrdenAtencion'])->middleware('auth');
+Route::post('/actualizarDiagnosticoOrdenAtencion/{id}', [atencionCitasController::class, 'actualizarDiagnosticoOrdenAtencion'])->middleware('auth');
 
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/informehistoricoplano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
@@ -784,6 +788,9 @@ Route::post('/facturarOrdenImagen', [ordenImagenController::class, 'facturarOrde
 
 Route::get('/ordenExamen/{id}/atender', [ordenExamenController::class, 'atender'])->middleware('auth')->middleware('acceso');
 Route::get('/ordenExamen/{id}/facturarOrden', [ordenExamenController::class, 'facturarOrden'])->middleware('auth')->middleware('acceso');
+Route::get('/ordenExamen/{id}/editarOrden', [ordenExamenController::class, 'edit'])->middleware('auth')->middleware('acceso');
+Route::post('ordenExamen/{id}/editar', [ordenExamenController::class, 'update'])->middleware('auth')->middleware('acceso');
+
 Route::get('/historialClinico/{id}/historial', [historialClinicoController::class, 'historial'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/ver', [historialClinicoController::class, 'ver'])->middleware('auth')->middleware('acceso');
 Route::get('/historialClinico/{id}/informacion', [historialClinicoController::class, 'informacion'])->middleware('auth')->middleware('acceso');

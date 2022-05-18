@@ -84,6 +84,10 @@ class Orden_Atencion extends Model
     {
         return $this->belongsTo(Especialidad::class, 'especialidad_id', 'especialidad_id');
     }
+    public function documentos()
+    {
+        return $this->hasMany(Documento_Cita_Medica::class, 'orden_id', 'orden_id');
+    }
     
     public function scopeOrdenCitaDisponible($query, $medico_id, $especialidad_id, $fecha1, $fecha2){
         return $query->where('medico_id','=',$medico_id

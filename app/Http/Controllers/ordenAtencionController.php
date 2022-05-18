@@ -96,7 +96,6 @@ class ordenAtencionController extends Controller
             $pacientes = Paciente::Pacientes()->get();
 
             $medicos = Medico::medicos()->get();
-
             $rol=User::findOrFail(Auth::user()->user_id)->roles->first();
 
             //return Auth::user()->user_id;
@@ -127,6 +126,67 @@ class ordenAtencionController extends Controller
             ];
 
             return view('admin.agendamientoCitas.ordenAtencion.index',$data);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+    }
+
+    public function verificarDocumentosOrden(Request $request){
+        $fecha_desde=date('Y-m-01');
+        $fecha_actual=date('Y-m-d');
+
+        if($request->get('fecha_desde')!=null && $request->get('fecha_hasta')!=null){
+            $fecha_desde=$request->get('fecha_desde');
+            $fecha_actual=$request->get('fecha_hasta');
+        }
+
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $ordenesAtencion = Orden_Atencion::OrdenesByFechaSuc($fecha_desde, $fecha_actual, $request->get('sucursal_id'))->get();
+            $empresa = Empresa::findOrFail(Auth::user()->empresa_id);
+
+
+            //return $ordenesAtencion;
+            $medicos = Medico::medicos()->get();
+            
+            foreach($ordenesAtencion as $orden){
+                $orden->documentos;
+            }
+
+            $empresa->documentosOrdenAtencion;
+
+            //return $empresa;
+            
+            $pacientes = Paciente::Pacientes()->get();
+
+            
+
+            foreach($ordenesAtencion as $orden){
+                $expediente = $orden->expediente;
+
+                if($expediente){
+                    $signosVitales=$expediente->signosVitales;
+                }
+            }
+
+            $data = [
+                'fecI'=>$fecha_desde,
+                'fecF'=>$fecha_actual,
+                'medicos'=>$medicos,
+                'documentos'=>$empresa->documentosOrdenAtencion,
+                "seleccionado"=>$request->medico_id,
+                'sucurslaC'=>$request->get('sucursal_id'),
+                'sucursales'=>Sucursal::Sucursales()->get(),
+                'ordenesAtencion'=>$ordenesAtencion,
+                //'pacientes'=>$pacientes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin
+            ];
+
+            return view('admin.agendamientoCitas.ordenAtencion.verificarOrdenDocumentos',$data);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -516,6 +576,7 @@ class ordenAtencionController extends Controller
             $ordenAtencion->orden_precio = $request->get('IdPrecio');
             $ordenAtencion->orden_cobertura_porcentaje = $request->get('IdCoberturaPorcen');
             $ordenAtencion->orden_cobertura = $request->get('IdCobertura');
+            $ordenAtencion->orden_descuento = $request->get('IdDescuentoPorcentaje');
             $ordenAtencion->orden_copago = $request->get('IdCopago');
 
             //$ordenAtencion->factura_id = $factura->factura_id;

@@ -75,7 +75,8 @@ class Orden_Examen extends Model
                     )->where('orden_fecha','>=',$fechaI
                     )->where('orden_fecha','<=',$fechaF
                     )->where('orden_atencion.sucursal_id','=',$sucursal
-                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('orden_atencion.orden_fecha','asc');
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->orderBy('orden_atencion.orden_fecha','desc');
     }
     public function expediente()
     {

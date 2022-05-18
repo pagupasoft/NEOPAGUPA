@@ -56,7 +56,7 @@
                                 Activo
                             @endif
                             @if ($estado->orden_estado ==2)
-                                Despechado
+                                Despachado
                             @endif
                             @if ($estado->orden_estado ==3)
                                 Facturado

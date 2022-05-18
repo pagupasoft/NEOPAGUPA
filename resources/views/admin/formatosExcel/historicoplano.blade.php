@@ -87,7 +87,7 @@
                     <td>{{ $orden->orden_fecha }}</td>
                     <td>{{ $orden->tipoSeguro->tipo_codigo }}</td>
 
-                    <td>{{ $orden->paciente->paciente_cedula }}</td>
+                    <td>&nbsp;{{ $orden->paciente->paciente_cedula }}'</td>
                     <td>{{ $orden->paciente->paciente_nombres }}</td>
                     <td>{{ $orden->paciente->paciente_sexo }}</td>
                     <td>{{ $orden->paciente->paciente_fecha_nacimiento }}</td>
@@ -128,7 +128,7 @@
                     <td>{{--$tiempo--}}</td>
 
                     <td>{{ $orden->paciente->tipoDependencia->tipod_codigo }}</td>
-                    <td>{{ $orden->orden_cedula_afiliado }}</td>
+                    <td>&nbsp;{{ $orden->orden_cedula_afiliado }}</td>
                     <td>{{ $orden->orden_nombre_afiliado }}</td>
 
                     <td>CVENC</td>
@@ -161,7 +161,7 @@
                                         <td>{{ $orden->orden_fecha }}</td>
                                         <td>{{ $orden->tipoSeguro->tipo_codigo }}</td>
 
-                                        <td>{{ $orden->paciente->paciente_cedula }}</td>
+                                        <td>&nbsp;{{ $orden->paciente->paciente_cedula }}</td>
                                         <td>{{ $orden->paciente->paciente_nombres }}</td>
                                         <td>{{ $orden->paciente->paciente_sexo }}</td>
                                         <td>{{ $orden->paciente->paciente_fecha_nacimiento }}</td>
@@ -206,7 +206,7 @@
                                         <td>{{--$tiempo--}}</td>
 
                                         <td>{{ $orden->paciente->tipoDependencia->tipod_codigo }}</td>
-                                        <td>{{ $orden->orden_cedula_afiliado }}</td>
+                                        <td>&nbsp;{{ $orden->orden_cedula_afiliado }}</td>
                                         <td>{{ $orden->orden_nombre_afiliado }}</td>
 
                                         <td>CVENC</td>

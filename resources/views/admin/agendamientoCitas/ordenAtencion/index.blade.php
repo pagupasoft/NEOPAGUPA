@@ -73,19 +73,25 @@
                     @if($ordenAtencion->medico->user_id==Auth::user()->user_id || ($rol->rol_nombre=="Administrador" && ($seleccionado==0 || $seleccionado==$ordenAtencion->medico->medico_id)))
                         <tr class="text-center">
                             <td>
-                                {{ $ordenAtencion->orden_estado }}
                                 @if($ordenAtencion->orden_estado == 1)
-                                <a href="{{ url("facturarOrden/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
+                                    <a href="{{ url("facturarOrden/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
                                 @endif 
                                 @if($ordenAtencion->orden_estado == 2)
-                                <a href="{{ url("nuevoSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Signos vitales"><i class="fas fa-heartbeat"></i></a>                         
+                                    <a href="{{ url("nuevoSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Signos vitales"><i class="fas fa-heartbeat"></i></a>                         
                                 @endif
-                                @if($ordenAtencion->orden_estado == 3)
+
+                                @if($rol->rol_nombre=="Administrador" && ($ordenAtencion->orden_estado == 3 || $ordenAtencion->orden_estado == 4))
                                     <a href="{{ url("editarSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Editar Signos V."><i class="fas fa-heartbeat"></i><i class="fa fa-pencil-alt"></i></a>                         
-                                @endif 
+                                @endif
+
+                                @if($ordenAtencion->orden_estado == 4)
+                                    <a href="{{ url("editarDiagnostico/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-info text-dark" data-toggle="tooltip" data-placement="top" title="Editar Diagnóstico"><i class="fas fa-book"></i><i class="fa fa-pencil-alt"></i></a>                         
+                                @endif
+                                
                                 <a href="{{ url("ordenAtencion/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fas fa-eye"></i></a>
-                                @if($ordenAtencion->orden_estado != 0)
-                                <a class="btn btn-xs btn-danger" style="padding: 2px 8px;"  data-toggle="tooltip" title="Cancelar cita"><i class="fas fa-times"></i></a>
+                                
+                                @if($ordenAtencion->orden_estado != 0 && $rol->rol_nombre=="Administrador")
+                                    <a class="btn btn-xs btn-danger" style="padding: 2px 8px;"  data-toggle="tooltip" title="Cancelar cita"><i class="fas fa-times"></i></a>
                                 @endif     
                             </td>
                             <td>

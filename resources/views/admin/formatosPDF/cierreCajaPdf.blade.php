@@ -126,12 +126,14 @@
                 </thead>            
                 <tbody>
                     @if(isset($MatrizVentasEfectivo))
+                        <?php $canti=0;?>       
                         @for ($i = 1; $i <= count($MatrizVentasEfectivo); ++$i)               
                         <tr class="letra12">
                             <td  width="20"><center>{{ $MatrizVentasEfectivo[$i]['fecha'] }}</center></td>
                             <td class="left" width="20">{{ $MatrizVentasEfectivo[$i]['numero']}}</td>
                             <td class="left" width="30%" style="white-space: pre-wrap;">{{ $MatrizVentasEfectivo[$i]['nombre']}}</td> 
-                            <td class="center" width="5%">{{ $MatrizVentasEfectivo[$i]['cantidad']}}</td>                           
+                            <td class="center" width="5%">{{ $MatrizVentasEfectivo[$i]['cantidad']}}</td>    
+                            <?php $canti=$canti+$MatrizVentasEfectivo[$i]['cantidad'];?>                       
                             <td><center>{{ $MatrizVentasEfectivo[$i]['valor']}}</center></td>
                         </tr>
                         @endfor
@@ -139,8 +141,8 @@
                     <tr class="letra12">  
                         <th style="border-bottom: 1px solid black; "></th>
                         <th class="left" style="border-bottom: 1px solid black; "></th>
-                        <th class="left" style="border-bottom: 1px solid black; "></th>
-                        <th class="left" style="border-bottom: 1px solid black; ">Total</th> 
+                        <th class="left" style="border-bottom: 1px solid black; ">Total</th>
+                        <th class="left" style="border-bottom: 1px solid black; ">{{$canti}}</th> 
                         <th style="border-bottom: 1px solid black; ">${{number_format($sumarEfectivo, 2)}}</th>                           
                     </tr>
                 </tbody>

@@ -52,4 +52,8 @@ class Empresa extends Model
     public function emailEmpresa(){
         return $this->hasOne(Email_Empresa::class,'empresa_id','empresa_id');
     }
+
+    public function documentosOrdenAtencion(){
+        return $this->hasMany(Documento_Orden_Atencion::class,'empresa_id','empresa_id');
+    }
 }

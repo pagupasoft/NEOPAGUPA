@@ -345,9 +345,8 @@ class cobrosClientesController extends Controller
                 $movimientoCaja->save();
                 /*********************************************************************/
             }
-            $url = $general->pdfVariosDiario($diarios, $request->get('fechaPago'));
             if(Auth::user()->empresa->empresa_contabilidad == '1'){
-                $url = $general->pdfDiario($diario);
+                $url = $general->pdfVariosDiario($diarios, $request->get('fechaPago'));
             }
             DB::commit();
             return redirect('pagosCXC')->with('success','Pago realizado exitosamente')->with('diario',$url);

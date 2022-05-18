@@ -149,11 +149,30 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            <label for="idcedulaRepresentante" class="col-sm-3 col-form-label">Cedula del Representante</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="idcedulaRepresentante" name="idcedulaRepresentante" placeholder="Cedula del Representante" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="idRepresentante" class="col-sm-3 col-form-label">Representante Legal</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="idRepresentante" name="idRepresentante" placeholder="Representante Legal" required>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="idcedulacontador" class="col-sm-3 col-form-label">Cedula del Contador</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="idcedulacontador" name="idcedulacontador" placeholder="Cedula del Contador" >
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="idcontador" class="col-sm-3 col-form-label">Nombre del Contador</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="idcontador" name="idcontador" placeholder="Nombre del Contador" >
+                            </div>
+                        </div>
+
                         <div class="form-group row">
                             <label for="idFecha" class="col-sm-3 col-form-label">Fecha de Ingreso</label>
                             <div class="col-sm-9">

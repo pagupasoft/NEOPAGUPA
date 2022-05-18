@@ -29,7 +29,7 @@
                                             
                                         </div> 
                                     </div>
-                                    <div class="col-lg-1"
+                                    <div class="col-lg-3"
                                        >
                                         <button type="submit" id="extraerID" name="extraerID" class="btn btn-default btn-sm float-left"><i class="fas fa-plus"></i>Cargar</button > 
                                         <button type="submit" id="guardarID" name="guardarID" class="btn btn-default btn-sm float-left"><i class="fas fa-save"></i>Guardar</button > 
@@ -39,7 +39,12 @@
                                   
 
                                    
-                                </div>  
+                                </div> 
+                                
+                                <div class="float-right">
+                                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                                    <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>               
+                                </div>   
                                                                   
                             </div>      
                     </div>
@@ -313,6 +318,9 @@
 
 <script type="text/javascript">
 function cargarmetodo() {
+    if('<?php echo($fechames); ?>'){  
+        document.getElementById("fechames").value='<?php echo($fechames); ?>';
+    }
     let fecha2 = new Date(document.getElementById("fechames").value);
     fecha2.setMinutes(fecha2.getMinutes() + fecha2.getTimezoneOffset());
     var anioactual = fecha2.getFullYear();

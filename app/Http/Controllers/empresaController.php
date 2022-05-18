@@ -65,7 +65,10 @@ class empresaController extends Controller
             $empresa->empresa_celular =$request->get('idCelular');
             $empresa->empresa_ciudad =$request->get('idCiudad');
             $empresa->empresa_logo="0";
-            $empresa->empresa_representante =$request->get('idRepresentante');
+            $empresa->empresa_cedula_representante=$request->get('idcedulaRepresentante');
+            $empresa->empresa_representante =$request->get('idRepresentante');     
+            $empresa->empresa_cedula_contador =$request->get('idcedulacontador');
+            $empresa->empresa_contador =$request->get('idcontador');
             $empresa->empresa_fecha_ingreso =$request->get('idFecha');
             $empresa->empresa_email =$request->get('idEmail');
             if ($request->get('idContabilidad') == "on"){
@@ -192,7 +195,10 @@ class empresaController extends Controller
             $empresa->empresa_ciudad =$request->get('idCiudad');
             $empresa->empresa_logo="";
             $empresa->empresa_representante =$request->get('idRepresentante');
+            $empresa->empresa_cedula_representante=$request->get('idcedulaRepresentante');
             $empresa->empresa_fecha_ingreso =$request->get('idFecha');
+            $empresa->empresa_cedula_contador =$request->get('idcedulacontador');
+            $empresa->empresa_contador =$request->get('idcontador');
             $empresa->empresa_email =$request->get('idEmail');
             if ($request->get('idContabilidad') == "on"){
                 $empresa->empresa_llevaContabilidad ="1";
@@ -257,7 +263,10 @@ class empresaController extends Controller
             $empresa->empresa_celular =$request->get('idCelular');
             $empresa->empresa_ciudad =$request->get('idCiudad');
             $empresa->empresa_representante =$request->get('idRepresentante');
+            $empresa->empresa_cedula_representante=$request->get('idcedulaRepresentante');
             $empresa->empresa_fecha_ingreso =$request->get('idFecha');
+            $empresa->empresa_cedula_contador =$request->get('idcedulacontador');
+            $empresa->empresa_contador =$request->get('idcontador');
             $empresa->empresa_email =$request->get('idEmail');
             if ($request->get('idContabilidad') == "on"){
                 $empresa->empresa_llevaContabilidad ="1";

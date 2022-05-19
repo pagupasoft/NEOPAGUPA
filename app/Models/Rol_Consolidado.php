@@ -28,6 +28,7 @@ class Rol_Consolidado extends Model
         'empleado_id',
         'diario_contabilizacion_id',
         'diario_pago_id',
+        'diario_contabilizacion_beneficios_id'
     ];
     protected $guarded =[
     ];

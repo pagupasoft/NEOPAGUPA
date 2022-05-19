@@ -31,8 +31,10 @@ class CreateCabeceraRolTable extends Migration
             $table->foreign('empleado_id')->references('empleado_id')->on('empleado');
             $table->bigInteger('diario_contabilizacion_id')->nullable();
             $table->foreign('diario_contabilizacion_id')->references('diario_id')->on('diario');
+            $table->bigInteger('diario_contabilizacion_beneficios_id')->nullable();
+            $table->foreign('diario_contabilizacion_beneficios_id')->references('diario_id')->on('diario');
             $table->bigInteger('diario_pago_id')->nullable();
-            $table->foreign('diario_pago_id')->references('diario_id')->on('diario');   
+            $table->foreign('diario_pago_id')->references('diario_id')->on('diario');      
             $table->timestamps();
         });
     }

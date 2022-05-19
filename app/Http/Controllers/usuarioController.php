@@ -102,7 +102,6 @@ class usuarioController extends Controller
         $empresa=Empresa::Empresa()->first();
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);
-       
             $mail->isSMTP(); // tell to use smtp
             $mail->CharSet = 'utf-8'; // set charset to utf8
             $mail->Host = trim('neopagupa-com.correoseguro.dinaserver.com');

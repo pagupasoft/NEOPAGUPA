@@ -98,20 +98,21 @@ class usuarioController extends Controller
     }
 
     public function enviarCorreoUsuario($correo, $nombre, $username, $password){
+        try {
         $empresa=Empresa::Empresa()->first();
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);
-        try {
+       
             $mail->isSMTP(); // tell to use smtp
             $mail->CharSet = 'utf-8'; // set charset to utf8
-            $mail->Host = trim('pagupasoft-com.correoseguro.dinaserver.com');
+            $mail->Host = trim('neopagupa-com.correoseguro.dinaserver.com');
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';//$mail->SMTPSecure = false;
             $mail->SMTPAutoTLS = false;
             $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
-            $mail->Username = trim('neopagupa@pagupasoft.com');
+            $mail->Username = trim('neopagupa@neopagupa.com');
             $mail->Password = trim('PagupaServer202205');
-            $mail->setFrom(trim('neopagupa@pagupasoft.com'), 'NEOPAGUPA SISTEMA CONTABLE');
+            $mail->setFrom(trim('neopagupa@neopagupa.com'), 'NEOPAGUPA SISTEMA CONTABLE');
             $mail->Subject = 'NEOPAGUPA-Sistema Contable';
             $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);
             $mail->addAddress(trim($correo), $nombre);

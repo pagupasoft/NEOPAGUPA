@@ -684,10 +684,10 @@ function cargardatosempleados(id){
                 document.getElementById("dias").value= 1;
                 document.getElementById("sueldod").value= (data[i].empleado_sueldo/30);
                 document.getElementById("acureservat").value= data[i].empleado_fondos_reserva;  
-              if( data[i].empleado_fondos_reserva=="0"){    
+              if( data[i].empleado_afiliado=="1"){    
                     if ( data[i].empleado_fecha_inicioFR <= fechaactual()) {       
                         document.getElementById("reservat").value ="1";
-                    }       
+                    }   
               }
                 document.getElementById("Sbingresos").value=(data[i].empleado_sueldo/30).toFixed(2);
                 document.getElementById("Sbegresos").value=0.00;
@@ -1080,7 +1080,7 @@ function calculototales(){
                 if(document.getElementById("acureservat").value=="0"){
                     document.getElementById("TotalFondosV").innerHTML=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("VReservat").value))/100).toFixed(2);
                 }
-                else{
+                if(document.getElementById("acureservat").value=="1"){
                     document.getElementById("TFondoacu").value=((((diast*(Number(document.getElementById("sueldod").value)))+Beneficios)*Number(document.getElementById("VReservat").value))/100).toFixed(2); 
                 }
                 

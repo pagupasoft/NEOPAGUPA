@@ -130,6 +130,7 @@ class rolIndividualController extends Controller
 
             $Dterceroacu = $request->get('TTerceroacu');
             $Dcuartoacu = $request->get('TCuartoacu');
+            $fondoacu = $request->get('TFondoacu');
 
             $Dingreso = $request->get('TTingresos');
             $Degreso = $request->get('totalegre');
@@ -166,7 +167,7 @@ class rolIndividualController extends Controller
             $cabecera_rol->cabecera_rol_total_egresos =floatval($request->get('TEgresos'))+floatval($Dalimentacion)+floatval($Iess)+floatval($Iessasu)+floatval($anticipos)+floatval($Dinpuesto);
             $cabecera_rol->cabecera_rol_sueldo = $request->get('Totalsueldo');
             $cabecera_rol->cabecera_rol_pago = $request->get('Liquidacion');
-            $cabecera_rol->cabecera_rol_fr_acumula = $request->get('TFondo');
+            $cabecera_rol->cabecera_rol_fr_acumula = $fondoacu;
             $cabecera_rol->cabecera_rol_iesspersonal = $request->get('Totalpersonal');
             $cabecera_rol->cabecera_rol_iesspatronal = $request->get('Totalpatronal');
             $cabecera_rol->cabecera_rol_tipo = 'INDIVIDUAL';

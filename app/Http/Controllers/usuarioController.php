@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\Libraries\verifyEmail;
+use PHPMailer\PHPMailer\SMTP;
 
 class usuarioController extends Controller
 {
@@ -100,29 +101,30 @@ class usuarioController extends Controller
     public function enviarCorreoUsuario($correo, $nombre, $username, $password){
         try {
         $empresa=Empresa::Empresa()->first();
-        require base_path("vendor/autoload.php");
-        $mail = new PHPMailer(true);
-            $mail->isSMTP(); // tell to use smtp
-            $mail->CharSet = 'utf-8'; // set charset to utf8
-            $mail->Host = trim('neopagupa-com.correoseguro.dinaserver.com');
-            $mail->SMTPAuth = true;
-            $mail->SMTPSecure = 'tls';//$mail->SMTPSecure = false;
-            $mail->SMTPAutoTLS = false;
-            $mail->Port = trim('587'); // most likely something different for you. This is the mailtrap.io port i use for testing. 
-            $mail->Username = trim('neopagupa@neopagupa.com');
-            $mail->Password = trim('PagupaServer202205');
-            $mail->setFrom(trim('neopagupa@neopagupa.com'), 'NEOPAGUPA SISTEMA CONTABLE');
-            $mail->Subject = 'NEOPAGUPA-Sistema Contable';
-            $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);
-            $mail->addAddress(trim($correo), $nombre);
-            $mail->SMTPOptions= array(
-                'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-                )
-            );
-            $mail->send();
+        date_default_timezone_set('Etc/UTC');
+        require '../vendor/autoload.php';
+        $mail = new PHPMailer();
+        $mail->isSMTP();
+        //$mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $mail->Host = 'neopagupa-com.correoseguro.dinaserver.com';
+        $mail->Port = 587;
+        $mail->SMTPAuth = true;
+        $mail->Username = 'neopagupa@neopagupa.com';
+        $mail->Password = 'PagupaServer202205';
+        $mail->setFrom('neopagupa@neopagupa.com', 'NEOPAGUPA SISTEMA CONTABLE');
+        $mail->MsgHTML('Este es un correo automatico a continuacion se detalle la Empresa: .'.$empresa->empresa_nombreComercial.', su usuario -> '.$username. ' y su contraseña es: '.$password);
+        $mail->addAddress(trim($correo), $nombre);
+        $mail->Subject = 'NEOPAGUPA-Sistema Contable';
+        $mail->SMTPOptions= array(
+            'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+            )
+        );
+        if (!$mail->send()) {
+             $mail->ErrorInfo;
+        }  
         } catch (Exception $ex) {
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Error al restablecer contraseña de usuario ','0',$ex);

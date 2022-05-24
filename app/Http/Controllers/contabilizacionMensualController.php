@@ -300,7 +300,7 @@ class contabilizacionMensualController extends Controller
     }
     public function guardarId(Request $request){
        
-        
+    try{ 
         setlocale(LC_ALL, 'es_ES');
         $general = new generalController();
 
@@ -1312,11 +1312,13 @@ class contabilizacionMensualController extends Controller
 
             
             return redirect('contabilizacionMensual')->with('success','Datos guardados exitosamente')->with('pdf2', $url2)->with('pdf', $url3);
-      
+        }catch(\Exception $ex){
+            return redirect('contabilizacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
 
     }
     public function extraerId(Request $request){
-      
+      try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();   
             $datos=null;
@@ -1413,7 +1415,9 @@ class contabilizacionMensualController extends Controller
             }
            
             return view('admin.recursosHumanos.contabilizacionMensual.index',['fechames'=>$request->get('fechames'),'sucursal'=>$sucursal_id,'datos'=>$datos,'rol'=>$rol,'consumo'=>Centro_Consumo::CentroConsumos()->get(),'categoria'=>Categoria_Producto::Categorias()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
-       
+        }catch(\Exception $ex){
+            return redirect('contabilizacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
 
     }
     public function store(Request $request)

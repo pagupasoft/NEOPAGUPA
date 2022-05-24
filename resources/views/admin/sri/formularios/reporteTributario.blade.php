@@ -250,7 +250,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             @if(count($datos[17])>0)
-                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{ '$ '.number_format($datos[17][1]['valor'],2) }}" onkeyup="calculos();" required/></td>
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($datos[17][1]['valor'],2) }}" onkeyup="calculos();" required/></td>
                             @else
                                 <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
                             @endif

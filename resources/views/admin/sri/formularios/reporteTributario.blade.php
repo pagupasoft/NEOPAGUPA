@@ -222,7 +222,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input type="hidden" id="valor0" name="valor0" value="{{$datos[23]}}" required/>{{'$ '.number_format($datos[23],2)}}</td>
+                            <td class="centrar-texto"><input type="hidden" id="valor0" name="valor0" value="{{number_format($datos[23],2, '.', '')}}" required/>{{'$ '.number_format($datos[23],2)}}</td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Saldo crédito tributario del mes anterior Por adquisiciones e importaciones (trasládese el campo 615 de la declaración del período anterior)</td>
@@ -231,7 +231,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="{{number_format($ant615,2)}}" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="{{number_format($ant615,2, '.', '')}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Saldo crédito tributario del mes anterior Por retenciones en la fuente de IVA que le han sido efectuadas (trasládese el campo 617 de la declaración del período anterior)</td>
@@ -240,7 +240,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="{{number_format($ant617,2)}}" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="{{number_format($ant617,2, '.', '')}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Retenciones en la fuente de IVA que le han sido efectuadas en este período</td>
@@ -249,7 +249,11 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
+                            @if(count($datos[17])>0)
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($datos[17][1]['valor'],2, '.', '') }}" onkeyup="calculos();" required/></td>
+                            @else
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
+                            @endif
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(+) Ajuste por IVA devuelto e IVA rechazado (por concepto de devoluciones de IVA), ajuste de IVA por procesos de control y otros (adquisiciones en importaciones), imputables al crédito tributario</td>
@@ -276,7 +280,12 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="0.00" required readonly/></td>
+
+                            @if(count($datos[17])>0)
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="{{number_format($datos[17][1]['valor'],2, '.', '') }}" required readonly/></td>
+                            @else
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="0.00" required readonly/></td>
+                            @endif
                         </tr>
                     @if(count($datos[12]) > 0)
                         <tr><td colspan="7" class="centrar-texto" style="background: #FF8747; font-size: 20px;"><b>AGENTE DE RETENCIÓN DEL IMPUESTO AL VALOR AGREGADO</b></td></tr>

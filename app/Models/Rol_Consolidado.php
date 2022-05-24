@@ -99,6 +99,8 @@ class Rol_Consolidado extends Model
     }
     public function scopebuscarrolContabilisado($query,$fechadesde,$fechahasta){
         return $query->join('detalle_rol','detalle_rol.cabecera_rol_id','=','cabecera_rol.cabecera_rol_id')->join('empleado','empleado.empleado_id','=','cabecera_rol.empleado_id') ->join('tipo_empleado','tipo_empleado.tipo_id','=','empleado.tipo_id')->join('empleado_cargo','empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)
+        ->where('diario_contabilizacion_id','=',null)
+        ->where('diario_contabilizacion_beneficios_id','=',null)
         ->where('cabecera_rol_estado','=','1')
         ->where('detalle_rol_fecha_inicio', '>=', $fechadesde)
         ->where('detalle_rol_fecha_fin', '<=', $fechahasta)
@@ -139,6 +141,9 @@ class Rol_Consolidado extends Model
     }
     public function diariocontabilizacion(){
         return $this->belongsTo(Diario::class, 'diario_contabilizacion_id', 'diario_id');
+    }
+    public function diariocontabilizacionbeneficios(){
+        return $this->belongsTo(Diario::class, 'diario_contabilizacion_beneficios_id', 'diario_id');
     }
     public function control(){
         return $this->belongsTo(Control_Dia::class, 'cabecera_rol_id', 'cabecera_rol_id');

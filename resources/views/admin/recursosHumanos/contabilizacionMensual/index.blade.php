@@ -109,7 +109,8 @@
                                 @if(count($rol)>0)
                                     @foreach($rol as $roles)
                                     <tr >
-                                    <td width="150" class="text-center"><input type="hidden" class="form-controltext"   name="empleadoid[]" value="{{$roles->empleado_id}}" required readonly> {{$roles->empleado_nombre}}</td>
+                                    <td width="150" class="text-center"><input type="hidden" class="form-controltext"   name="rol[]" value="{{$roles->cabecera_id}}" required readonly>
+                                        <input type="hidden" class="form-controltext"   name="empleadoid[]" value="{{$roles->empleado_id}}" required readonly> {{$roles->empleado_nombre}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->sueldos, 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->extras , 2)}}</td>
                                     <td width="150" class="text-center">{{number_format($roles->vacaciones , 2)}}</td>

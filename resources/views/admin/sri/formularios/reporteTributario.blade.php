@@ -280,7 +280,12 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="0.00" required readonly/></td>
+
+                            @if(count($datos[17])>0)
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="{{number_format($datos[17][1]['valor'],2) }}" required readonly/></td>
+                            @else
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="0.00" required readonly/></td>
+                            @endif
                         </tr>
                     @if(count($datos[12]) > 0)
                         <tr><td colspan="7" class="centrar-texto" style="background: #FF8747; font-size: 20px;"><b>AGENTE DE RETENCIÓN DEL IMPUESTO AL VALOR AGREGADO</b></td></tr>

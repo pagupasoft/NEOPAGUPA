@@ -249,7 +249,11 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
+                            @if(count($datos[17])>0)
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{ '$ '.number_format($datos[17][1]['valor'],2) }}" onkeyup="calculos();" required/></td>
+                            @else
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
+                            @endif
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(+) Ajuste por IVA devuelto e IVA rechazado (por concepto de devoluciones de IVA), ajuste de IVA por procesos de control y otros (adquisiciones en importaciones), imputables al crédito tributario</td>

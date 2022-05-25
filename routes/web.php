@@ -505,6 +505,8 @@ Route::get('/permiso/{id}/eliminar', [permisoController::class, 'delete'])->midd
 Route::get('/pais/{id}/eliminar', [paisController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/rol/{id}/eliminar', [rolController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/usuario/{id}/eliminar', [usuarioController::class, 'delete'])->middleware('auth')->middleware('acceso');
+Route::get('/cambiarClave', [usuarioController::class, 'cambiarClave'])->middleware('auth')->middleware('acceso');
+Route::post('/cambiarClave', [usuarioController::class, 'updatePassword'])->middleware('auth')->middleware('acceso');
 Route::get('/provincia/{id}/eliminar', [provinciaController::class, 'delete'])->middleware('auth');
 Route::get('/ciudad/{id}/eliminar', [ciudadController::class, 'delete'])->middleware('auth');
 Route::get('/puntoEmision/{id}/eliminar', [puntoEmisionController::class, 'delete'])->middleware('auth');
@@ -633,6 +635,10 @@ Route::get('/envioCorreos', [envioCorreosController::class, 'index'])->middlewar
 Route::post('/envioCorreos', [envioCorreosController::class, 'buscar'])->middleware('auth');
 Route::post('/enviarCorreoMasivo', [envioCorreosController::class, 'enviarCorreo'])->middleware('auth');
 
+Route::get('/excelPrescripcion', [atencionRecetasController::class, 'excelPrescripcion'])->middleware('auth');
+Route::post('/excelPrescripcion', [atencionRecetasController::class, 'cargarGuardar'])->middleware('auth');
+
+
 Route::get('/excelProducto', [productoController::class, 'excelProducto'])->middleware('auth');
 Route::post('/excelProducto', [productoController::class, 'CargarExcelProducto'])->middleware('auth');
 Route::get('/excelEnfermedad', [enfermedadController::class, 'excelEnfermedad'])->middleware('auth');
@@ -759,8 +765,12 @@ Route::post('/actualizarSignosOrdenAtencion', [signosVitalesController::class, '
 Route::post('/actualizarDiagnosticoOrdenAtencion/{id}', [atencionCitasController::class, 'actualizarDiagnosticoOrdenAtencion'])->middleware('auth');
 
 Route::get('/atencionCitas/{id}/atender', [atencionCitasController::class, 'atender'])->middleware('auth')->middleware('acceso');
+
 Route::get('/informehistoricoplano', [atencionCitasController::class, 'informeHistoricoIndex'])->middleware('auth')->middleware('acceso');
 Route::post('/generarreportehistoricoplano', [atencionCitasController::class, 'informeHistoricoPlano'])->middleware('auth')->middleware('acceso');
+
+Route::get('/informeindividualplano', [atencionCitasController::class, 'informeIndividualIndex'])->middleware('auth')->middleware('acceso');
+Route::get('/generarindividualplano', [atencionCitasController::class, 'informeIndividualPlano'])->middleware('auth')->middleware('acceso');
 
 Route::get('/informecargamasiva', [atencionCitasController::class, 'informeCargaMasivaIndex'])->middleware('auth')->middleware('acceso');
 Route::post('/generarreportecargamasiva', [atencionCitasController::class, 'informeCargaMasiva'])->middleware('auth')->middleware('acceso');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuenta;
 use App\Models\Cuenta_Bancaria;
+use App\Models\Detalle_Diario;
+use App\Models\Diario;
 use App\Models\Empresa;
 use App\Models\Punto_Emision;
 use Illuminate\Http\Request;
@@ -392,5 +394,46 @@ class cuentaController extends Controller
     public function cuentaPadre($id){
         $cuenta = Cuenta::findOrFail($id);
         return $cuenta->cuentaPadre;
+    }
+    public function CargarExcel()
+    {
+        try{ 
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $cuentas=Cuenta::Cuentas()->get();
+            return view('admin.contabilidad.cambiocuenta.cargarExcel',['PE'=>Punto_Emision::puntos()->get(),'cuentas'=>$cuentas,  'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+    
+            return redirect('inicio')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
+        }
+    }
+    public function cambiarCuentas(Request $request){
+       
+            if($request->file('excelCuenta')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelCuenta')->getClientOriginalExtension();
+                $path = $request->file('excelCuenta')->move(public_path().'\temp\CambioCuenta', $name); 
+                $array = Excel::toArray(new Cuenta(), $path); 
+                for ($i=1;$i < count($array[0]);$i++) {
+                    $validar=trim($array[0][$i][9]);
+                    $validacion=Diario::DiarioCodigo($validar)->first();
+                   
+                    if ($validacion) {
+                        $diario = Diario::findOrFail($validacion->diario_id);
+                        foreach($diario->detalles as $detalle){
+                            if($request->get('cuenta')==$detalle->cuenta_id){
+                                $detalles=Detalle_Diario::findOrFail($detalle->detalle_id);
+                                $detalles->cuenta_id=$request->get('cuentanew');
+                                $detalles->save();
+                                $auditoria = new generalController();
+                                $auditoria->registrarAuditoria('Cabmio de cuenta en Diario -> '.$diario->diario_codigo.' con cuenta numero '.$detalle->cuenta->cuenta_numero.'-'.$detalle->cuenta->cuenta_nombre.' a cuenta nueva '.$detalles->cuenta->cuenta_numero.'-'.$detalles->cuenta->cuenta_nombre, '0', '');
+                            }
+                        }  
+                    }
+                }
+            }
+         
+            return redirect('excelCambioCuentas')->with('success','Datos guardados exitosamente');
+       
     }
 }

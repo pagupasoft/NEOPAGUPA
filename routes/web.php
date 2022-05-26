@@ -666,6 +666,8 @@ Route::post('/excelCheque', [listaChequeController::class, 'CargarExcelCheque'])
 
 Route::get('/excelProveedor', [proveedorController::class, 'excelProveedor'])->middleware('auth');
 Route::post('/excelProveedor', [proveedorController::class, 'CargarExcelProveedor'])->middleware('auth');
+Route::get('/excelCambioCuentas', [cuentaController::class, 'CargarExcel'])->middleware('auth');
+Route::post('/excelCambioCuentas', [cuentaController::class, 'cambiarCuentas'])->middleware('auth');
 
 Route::get('/excelEmpleado', [empleadoController::class, 'excelEmpleado'])->middleware('auth');
 Route::post('/excelEmpleado', [empleadoController::class, 'CargarExcelEmpleado'])->middleware('auth');

@@ -53,13 +53,18 @@ class usuarioController extends Controller
             $usuario->user_correo = $request->get('idCorreo');            
             $usuario->user_tipo  = 1;
             $usuario->user_estado  = 1;
-            $password=$this->generarPass();
+            //$password=$this->generarPass();
+            $password="12345678";
             $usuario->password  = bcrypt($password);
             $usuario->empresa_id = Auth::user()->empresa_id;
             $usuario->save();
+
+            /*
             DB::afterCommit(function () use($request,$password){
                 $this->enviarCorreoUsuario($request->get('idCorreo'),$request->get('idNombre'),$request->get('idUsername'),$password);
             });
+            */
+            
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Registro de usuario -> '.$request->get('idUsername'),'0','');
@@ -80,12 +85,16 @@ class usuarioController extends Controller
             }
             DB::beginTransaction();
             $usuario= User::findOrFail($id);
-            $password=$this->generarPass();
+            //$password=$this->generarPass();
+            $password="12345678";
             $usuario->password  = bcrypt($password);
             $usuario->save();
-            DB::afterCommit(function () use($usuario,$password){
+            /*
+            DB::afterCommit(function () use($usuario, $password){
                 $this->enviarCorreoUsuario($usuario->user_correo,$usuario->user_nombre,$usuario->user_username,$password);
             });
+            */
+            
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Restablecer contraseña de usuario -> '.$usuario->user_username,'0','');
@@ -153,16 +162,16 @@ class usuarioController extends Controller
 
     function is_valid_email($str)
     {
-    $result = (false !== filter_var($str, FILTER_VALIDATE_EMAIL));
-    
-    if ($result)
-    {
-        list($user, $domain) = explode('@', $str);
+        $result = (false !== filter_var($str, FILTER_VALIDATE_EMAIL));
         
-        $result = checkdnsrr($domain, 'MX');
-    }
-    
-    return $result;
+        if ($result)
+        {
+            list($user, $domain) = explode('@', $str);
+            
+            $result = checkdnsrr($domain, 'MX');
+        }
+        
+        return $result;
     }
 
     /*
@@ -247,6 +256,58 @@ class usuarioController extends Controller
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function cambiarClave()
+    {
+        try {
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $usuario=User::findOrFail(Auth::user()->user_id);
+
+            if($usuario){
+                return view('admin.seguridad.usuario.cambiarClave',['user_id'=> $usuario->user_id,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            }else{
+                return redirect('/denegado');
+            }
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+            $usuario=User::findOrFail($request->get("user_id"));
+
+            if($request->get("user_id")==Auth::user()->user_id){
+                $clave=$request->get("idClaveActual");
+                if(\Hash::check($clave, $usuario->password)){
+                    $password=$request->get("idClaveNueva");
+                    $usuario->password  = bcrypt($password);
+                    $usuario->save();
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Actualizacion de clave -> '.$usuario->user_username,'0','Usuario con id -> '.$request->get("user_id"));
+                    /*Fin de registro de auditoria */
+                    DB::commit();
+                    return redirect('cambiarClave')->with('success','Datos actualizados exitosamente');
+                }
+                else{
+                    DB::rollBack();
+                    return redirect('cambiarClave')->with('error2','Ocurrio un error al tratar de actualizar la Clave, las claves no coinciden.');
+                }
+            }
+            else{
+                DB::rollBack();
+                return redirect('cambiarClave')->with('error2','Ocurrio un error al tratar de actualizar su Clave.');
+            }
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('usuario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 

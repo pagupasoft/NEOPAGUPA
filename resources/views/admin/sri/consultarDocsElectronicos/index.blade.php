@@ -5,7 +5,7 @@
         <h3 class="card-title">Consultar Documentos Electronico en el SRI</h3>
     </div>
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="action="{{ url("sriDocElec") }}">
+        <form class="form-horizontal" method="POST" action="{{ url("sriDocElec") }}">
             @csrf
             <div class="form-group row">
                 <label for="idDesde" class="col-sm-2 col-form-label">

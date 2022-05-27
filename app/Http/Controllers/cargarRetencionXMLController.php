@@ -195,6 +195,7 @@ class cargarRetencionXMLController extends Controller
             $general = new generalController();
             $cierre = $general->cierre($xml->infoCompRetencion->fechaEmision);          
             if($cierre){
+                DB::commit();
                 return false;
             }
             $valorRetencion = 0;
@@ -205,12 +206,14 @@ class cargarRetencionXMLController extends Controller
                 if($impuesto->codDocSustento == '01'){
                     $factura = Factura_Venta::FacturasbyNumero($impuesto->numDocSustento)->first();
                     if(isset($factura->retencion->retencion_id)){
+                        DB::commit();
                         return false;
                     }
                     $cxcAux = $factura->cuentaCobrar;
                 }else{
                     $nd = Nota_Debito::NDbyNumero($impuesto->numDocSustento)->first();
                     if(isset($nd->retencion->retencion_id)){
+                        DB::commit();
                         return false;
                     }
                     $cxcAux = $nd->cuentaCobrar;

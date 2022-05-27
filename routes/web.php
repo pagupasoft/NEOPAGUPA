@@ -182,6 +182,7 @@ use App\Http\Controllers\depreciacionMensualController;
 use App\Http\Controllers\descuentoManualAnticipoClienteController;
 use App\Http\Controllers\descuentoManualAnticipoProveedorController;
 use App\Http\Controllers\detalleLaboratorioController;
+use App\Http\Controllers\detallePrestamoController;
 use App\Http\Controllers\diasPlazoController;
 use App\Http\Controllers\egresoBancoController;
 use App\Http\Controllers\elimiacionComprobantesCompraController;
@@ -233,6 +234,7 @@ use App\Http\Controllers\modificarConsumoController;
 use App\Http\Controllers\modificarRolController;
 use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
+use App\Http\Controllers\prestamoBancoController;
 use App\Http\Controllers\ReporteConsumoController;
 use App\Http\Controllers\reporteUtilidadController;
 use App\Http\Controllers\reporteVentasProductoController;
@@ -489,6 +491,8 @@ Route::resource('individualdecimoCuarto', decimoCuartoController::class)->middle
 Route::resource('reporteVentaProductoC', reporteVentasProductoController::class)->middleware('auth');
 Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorController::class)->middleware('auth');
 Route::resource('descuentoManualClientes', descuentoManualAnticipoClienteController::class)->middleware('auth');
+Route::resource('prestamos', prestamoBancoController::class)->middleware('auth');
+Route::resource('detalleprestamos', detallePrestamoController::class)->middleware('auth');
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
@@ -502,6 +506,7 @@ Route::get('/empresa/{id}/eliminar', [empresaController::class, 'delete'])->midd
 Route::get('/grupo/{id}/eliminar', [grupoPerController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/sucursal/{id}/eliminar', [sucursalController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/permiso/{id}/eliminar', [permisoController::class, 'delete'])->middleware('auth')->middleware('acceso');
+Route::get('/prestamos/{id}/eliminar', [prestamoBancoController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/pais/{id}/eliminar', [paisController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/rol/{id}/eliminar', [rolController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/usuario/{id}/eliminar', [usuarioController::class, 'delete'])->middleware('auth')->middleware('acceso');
@@ -607,6 +612,10 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 
 
 /*RUTAS ADICIONALES*/
+Route::get('/detalleprestamos/{id}/agregar', [detallePrestamoController::class, 'agregar'])->middleware('auth')->middleware('acceso');
+Route::get('/detalleprestamos/{id}/ver', [detallePrestamoController::class, 'ver'])->middleware('auth');
+Route::get('/detalleprestamos/{id}/eliminar', [detallePrestamoController::class, 'delete'])->middleware('auth');
+
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
 Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
 Route::get('/beneficiosSociales/new/{id}', [beneficiosSocialesConsolidadaController::class, 'nuevo'])->middleware('auth');
@@ -785,6 +794,8 @@ Route::get('/receta/{id}', [atencionRecetasController::class, 'showPrescripcion'
 Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregarPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::post('subirDocumento', [atencionRecetasController::class, 'subirDocumentoEscaneado'])->middleware('auth')->middleware('acceso');
+
+Route::get('/prestamos/{id}/edit', [prestamoBancoController::class, 'editar'])->middleware('auth');
 
 Route::get('/tareasProgramadas/{id}/edit', [tareasProgramadasController::class, 'editar'])->middleware('auth');
 Route::post('/tareasProgramadas/actualizar', [tareasProgramadasController::class, 'actualizar'])->middleware('auth');

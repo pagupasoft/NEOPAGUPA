@@ -7,44 +7,76 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
-            <thead>
-                <tr class="text-center neo-fondo-tabla">
-                    <th></th>
-                    <th>Banco</th>
-                    <th>Monto</th>
-                    <th>Interes</th>      
-                    <th>Plazo</th>     
-                    <th>Pago Interes</th> 
-                    <th>Pago Total</th>     
-                    <th>Cuenta Debe</th>     
-                    <th>Cuenta Haber</th>                                  
-                </tr>
-            </thead>            
-            <tbody>
-                @if(isset($prestamos))
-                    @foreach($prestamos as $prestamo)
-                    <tr class="text-center">
-                        <td>
-                            <a href="{{ url("prestamos/{$prestamo->prestamo_id}") }}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                            <a href="{{ url("prestamos/{$prestamo->prestamo_id}/eliminar") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                            <a href="{{ url("detalleprestamos/{$prestamo->prestamo_id}/agregar") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Agregar Interes"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            <a href="{{ url("detalleprestamos/{$prestamo->prestamo_id}") }}" class="btn btn-xs btn-secondary"  data-toggle="tooltip" data-placement="top" title="Lista de Interes"><i class="fa fa-list" aria-hidden="true"></i></a>
-                        </td>
-                        <td>{{ $prestamo->banco->bancoLista->banco_lista_nombre }}</td>  
-                        <td>{{ $prestamo->prestamo_monto }}</td>       
-                        
-                        <td>{{ $prestamo->prestamo_interes }}</td>  
-                        <td>{{ $prestamo->prestamo_plazo }}</td>  
-                        <td>{{ $prestamo->prestamo_total_interes }}</td>  
-                        <td>{{ $prestamo->prestamo_pago_total }}</td>  
-                        <td>{{ $prestamo->cuentadebe->cuenta_numero.' -  '.$prestamo->cuentadebe->cuenta_nombre}}</td>
-                        <td>{{ $prestamo->cuentahaber->cuenta_numero.' -  '.$prestamo->cuentahaber->cuenta_nombre}}</td>             
+        <form class="form-horizontal" method="POST" action="{{ url("prestamos/buscar") }}">
+            @csrf
+            <div class="form-group row">
+                
+                <label for="nombre_sucursal" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="nombre_sucursal" name="nombre_sucursal" >
+                        <option value="0" label>--TODOS--</option>                         
+                        @foreach($sucursalesP as $sucursal)
+                            <option   value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div>
+                <label for="nombre_banco" class="col-sm-1 col-form-label"><center>Bancos:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="nombre_banco" name="nombre_banco" >
+                        <option value="0" label>--TODOS--</option>                         
+                        @foreach($bancosP as $banco)
+                            <option  value="{{$banco->banco_id}}">{{$banco->banco_lista_nombre}}</option>
+                        @endforeach
+                    </select>                                     
+                </div>
+                <div class="col-sm-1">            
+                    <button type="submit"  class="btn btn-primary btn-sm" data-toggle="modal"><i class="fa fa-search"></i></button>                         
+                </div>    
+            </div>
+   
+            <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
+                <thead>
+                    <tr class="text-center neo-fondo-tabla">
+                        <th></th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Banco</th>
+                        <th>Monto</th>
+                        <th>Interes</th>      
+                        <th>Plazo</th>     
+                        <th>Pago Interes</th> 
+                        <th>Pago Total</th>     
+                        <th>Cuenta Debe</th>     
+                        <th>Cuenta Haber</th>                                  
                     </tr>
-                    @endforeach
-                @endif    
-            </tbody>
-        </table>
+                </thead>            
+                <tbody>
+                    @if(isset($prestamos))
+                        @foreach($prestamos as $prestamo)
+                        <tr class="text-center">
+                            <td>
+                                <a href="{{ url("prestamos/{$prestamo->prestamo_id}") }}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                <a href="{{ url("prestamos/{$prestamo->prestamo_id}/eliminar") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <a href="{{ url("detalleprestamos/{$prestamo->prestamo_id}/agregar") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Agregar Interes"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a href="{{ url("detalleprestamos/{$prestamo->prestamo_id}") }}" class="btn btn-xs btn-secondary"  data-toggle="tooltip" data-placement="top" title="Lista de Interes"><i class="fa fa-list" aria-hidden="true"></i></a>
+                            </td>
+                            <td>{{ $prestamo->prestamo_inicio }}</td>       
+                            <td>{{ $prestamo->prestamo_fin }}</td>       
+                            <td>{{ $prestamo->banco->bancoLista->banco_lista_nombre }}</td>  
+                            <td>{{ $prestamo->prestamo_monto }}</td>       
+                            
+                            <td>{{ $prestamo->prestamo_interes }}</td>  
+                            <td>{{ $prestamo->prestamo_plazo }}</td>  
+                            <td>{{ $prestamo->prestamo_total_interes }}</td>  
+                            <td>{{ $prestamo->prestamo_pago_total }}</td>  
+                            <td>{{ $prestamo->cuentadebe->cuenta_numero.' -  '.$prestamo->cuentadebe->cuenta_nombre}}</td>
+                            <td>{{ $prestamo->cuentahaber->cuenta_numero.' -  '.$prestamo->cuentahaber->cuenta_nombre}}</td>             
+                        </tr>
+                        @endforeach
+                    @endif    
+                </tbody>
+            </table>
+        </form>
     </div>
     <!-- /.card-body -->
 </div>

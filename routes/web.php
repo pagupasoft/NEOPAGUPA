@@ -610,7 +610,7 @@ Route::post('eliminarquincenaconsolidada', [quincenaConsolidadaController::class
 Route::post('cargarIngreso', [rubroController::class, 'cargaringreso'])->middleware('auth');
 Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middleware('auth');
 
-
+Route::post('prestamos/buscar', [prestamoBancoController::class, 'buscar'])->middleware('auth');
 /*RUTAS ADICIONALES*/
 Route::get('/detalleprestamos/{id}/agregar', [detallePrestamoController::class, 'agregar'])->middleware('auth')->middleware('acceso');
 Route::get('/detalleprestamos/{id}/ver', [detallePrestamoController::class, 'ver'])->middleware('auth');

@@ -26,16 +26,35 @@ class prestamoBancoController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $bancos=Banco::Bancos()->get();
             $cuentas=Cuenta::Cuentas()->get();
-            $prestamos=Prestamo_Banco::Prestamos()->get();
             $sucursales=sucursal::Sucursales()->get();
-            return view('admin.bancos.prestamos.index',['sucursales'=>$sucursales,'prestamos'=>$prestamos,'cuentas'=>$cuentas,'bancos'=>$bancos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            $sucursalesP=Prestamo_Banco::BancosDistinsc()->orderBy('sucursal.sucursal_nombre','asc')->select('sucursal.sucursal_nombre','sucursal.sucursal_id')->distinct()->get();   
+            $bancosP=Prestamo_Banco::BancosDistinsc()->orderBy('banco_lista.banco_lista_nombre','asc')->select('banco_lista.banco_lista_nombre','banco.banco_id')->distinct()->get();   
+            return view('admin.bancos.prestamos.index',['sucursalesP'=>$sucursalesP,'bancosP'=>$bancosP,'sucursales'=>$sucursales,'cuentas'=>$cuentas,'bancos'=>$bancos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
  
+    public function buscar(Request $request)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $bancos=Banco::Bancos()->get();
+            $cuentas=Cuenta::Cuentas()->get();
 
+            $sucursales=sucursal::Sucursales()->get();
+         
+            $sucursalesP=Prestamo_Banco::BancosDistinsc()->orderBy('sucursal.sucursal_nombre','asc')->select('sucursal.sucursal_nombre','sucursal.sucursal_id')->distinct()->get();   
+            $bancosP=Prestamo_Banco::BancosDistinsc()->orderBy('banco_lista.banco_lista_nombre','asc')->select('banco_lista.banco_lista_nombre','banco.banco_id')->distinct()->get(); 
+            $prestamos=Prestamo_Banco::PrestamoBuscar($request->get('nombre_sucursal'),$request->get('nombre_banco'))->get();
+            return view('admin.bancos.prestamos.index',['sucursalesP'=>$sucursalesP,'bancosP'=>$bancosP,'sucursales'=>$sucursales,'prestamos'=>$prestamos,'cuentas'=>$cuentas,'bancos'=>$bancos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *

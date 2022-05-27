@@ -255,15 +255,18 @@ class anticipoClienteController extends Controller
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe = $request->get('idValor');
             $detalleDiario->detalle_haber = 0.00 ;
-            $detalleDiario->detalle_comentario = 'CUENTA DE ANTICIPO CAJA';
+            
+           
             $detalleDiario->detalle_tipo_documento = 'ANTICIPO DE CLIENTE';
             $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
             $detalleDiario->detalle_conciliacion = '0';
             $detalleDiario->detalle_estado = '1';
             if($request->get('idTipo') == "Efectivo"){
                 $detalleDiario->cuenta_id = $cuentacaja->cuenta_id;
+                $detalleDiario->detalle_comentario = 'CUENTA DE ANTICIPO CAJA';
             }
             if($request->get('idTipo') == "Deposito"){
+                $detalleDiario->detalle_comentario = 'CUENTA DE ANTICIPO DE BANCO';
                 $detalleDiario->cuenta_id = $cuentaBanco->cuenta_id;
                 $detalleDiario->deposito()->associate($deposito);
             }

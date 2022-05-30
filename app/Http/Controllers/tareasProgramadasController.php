@@ -37,6 +37,7 @@ class tareasProgramadasController extends Controller
             $tarea->tarea_nombre_proceso=$request->tarea_nombre_proceso;
             $tarea->tarea_tipo_tiempo=$request->tarea_tipo_tiempo;
             $tarea->tarea_hora_ejecucion=$request->tarea_hora_ejecucion;
+            $tarea->tarea_procedimiento=$request->tarea_procedimiento;
             $tarea->empresa_id=Auth::user()->empresa_id;
             //$tarea->tarea_estado=0;
 
@@ -65,6 +66,7 @@ class tareasProgramadasController extends Controller
             $tareaNueva->tarea_nombre_proceso=$request->tarea_nombre_proceso;
             $tareaNueva->tarea_tipo_tiempo=$request->tarea_tipo_tiempo;
             $tareaNueva->tarea_hora_ejecucion=$request->tarea_hora_ejecucion;
+            $tarea->tarea_procedimiento=$request->tarea_procedimiento;
             $tareaNueva->empresa_id=Auth::user()->empresa_id;
             $tareaNueva->tarea_estado=0;
         $tareaNueva->save();

@@ -16,7 +16,13 @@
                     <div class="form-group row">
                         <label for="cuenta_nivel" class="col-sm-3 col-form-label">Nombre del Proceso</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="tarea_nombre_proceso" value="<?php if(isset($tarea)) echo $tarea->tarea_nombre_proceso ?>" name="tarea_nombre_proceso" placeholder="Ejm.: enviarCorreosAutomaticos" required>
+                            <input type="text" class="form-control" id="tarea_nombre_proceso" value="<?php if(isset($tarea)) echo $tarea->tarea_nombre_proceso ?>" name="tarea_nombre_proceso" placeholder="Nombre del Proceso" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="cuenta_nivel" class="col-sm-3 col-form-label">Metodo del Proceso</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="tarea_procedimiento" value="<?php if(isset($tarea)) echo $tarea->tarea_procedimiento ?>" name="tarea_procedimiento" placeholder="Ejm.: enviarCorreosAutomaticos" required>
                         </div>
                     </div>
                     <div class="form-group row">

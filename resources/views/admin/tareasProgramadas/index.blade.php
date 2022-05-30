@@ -13,6 +13,7 @@
                 <thead>
                     <tr>
                         <th>Nombre de la Tarea</th>
+                        <th>Metodo de la Tarea</th>
                         <th>Rango de tiempo</th>
                         <th>Hora personalizada</th>
                         <th>Estado</th>
@@ -23,6 +24,7 @@
                     @for ($i = 0; $i < count($tareas); ++$i)               
                         <tr class="text-center">
                             <td>{{ $tareas[$i]['tarea_nombre_proceso'] }}</td>
+                            <td>{{ $tareas[$i]['tarea_procedimiento'] }}</td>
                             <td>
                                 @if($tareas[$i]['tarea_tipo_tiempo']==1) Cada 1 minuto @endif
                                 @if($tareas[$i]['tarea_tipo_tiempo']==2) Cada 5 minutos @endif
@@ -73,7 +75,13 @@
                         <div class="form-group row">
                             <label for="cuenta_nivel" class="col-sm-3 col-form-label">Nombre del Proceso</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="tarea_nombre_proceso" name="tarea_nombre_proceso" placeholder="Ejm.: enviarCorreosAutomaticos" required>
+                                <input type="text" class="form-control" id="tarea_nombre_proceso" name="tarea_nombre_proceso" placeholder="Nombre del Proceso" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cuenta_nivel" class="col-sm-3 col-form-label">Metodo del Proceso</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="tarea_procedimiento" name="tarea_procedimiento" placeholder="Ejm.: enviarCorreosAutomaticos" required>
                             </div>
                         </div>
                         <div class="form-group row">

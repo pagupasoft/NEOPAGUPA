@@ -16,6 +16,7 @@ class Tareas_Programadas extends Model
     protected $fillable = [        
         'tarea_nombre',
         'tarea_tipo_tiempo',
+        'tarea_procedimiento',
         'tarea_hora_ejecucion',      
         'tarea_estado'
     ];

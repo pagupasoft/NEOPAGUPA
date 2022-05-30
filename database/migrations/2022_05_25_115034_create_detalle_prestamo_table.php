@@ -23,7 +23,7 @@ class CreateDetallePrestamoTable extends Migration
             $table->string('detalle_estado');
             $table->bigInteger('prestamo_id');
             $table->foreign('prestamo_id')->references('prestamo_id')->on('prestamo_banco');
-            $table->bigInteger('diario_id');
+            $table->bigInteger('diario_id')->nullable();
             $table->foreign('diario_id')->references('diario_id')->on('diario');
             $table->timestamps();
         });

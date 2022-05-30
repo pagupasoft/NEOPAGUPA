@@ -26,7 +26,7 @@
                         </td>
                         <td>{{ $detalle->detalle_fecha }}</td>  
                         <td>{{ $detalle->detalle_total}}</td>       
-                        <td ><a href="{{ url("asientoDiario/ver/{$detalle->diario->diario_id}") }}" target="_blank">{{ $detalle->diario->diario_codigo }}</a></td>  
+                        <td >@if(isset($detalle->diario->diario_id))<a href="{{ url("asientoDiario/ver/{$detalle->diario->diario_id}") }}" target="_blank">{{ $detalle->diario->diario_codigo }}</a>@endif</td>  
                     </tr>
                     @endforeach
           

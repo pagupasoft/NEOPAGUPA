@@ -45,13 +45,14 @@
                     <th>Codigo</th>
                     <th>Concepto Retencion</th>
                     <th>Porcentaje</th>
+                    <th>Procesadas</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody>           
                 @if(isset($retencionVentas))
                     @foreach($retencionVentas as $retencion)
                         @foreach($retencion->detalles as $detalle)                           
-                            <tr>
+                            <tr @if(date("Y-m-d", strtotime($retencion->created_at)) == $fechaActual) style="background:  #c7f0e4;" @endif>
                                 <td class="text-center">{{ $retencion->retencion_fecha}}</td>
                                 <td>
                                     @if($retencion->factura) Factura @endif
@@ -71,8 +72,12 @@
                                 <td>${{ number_format($detalle->detalle_valor,2)}}</td>
                                 <td>{{ $detalle->conceptoRetencion->concepto_codigo}}</td>       
                                 <td>{{ $detalle->conceptoRetencion->concepto_nombre}}</td> 
-                                <td>{{ $detalle->detalle_porcentaje}}%</td>                                                               
-
+                                <td>{{ $detalle->detalle_porcentaje}}%</td>
+                                @if(date("Y-m-d", strtotime($retencion->created_at)) == $fechaActual)
+                                    <td>HOY</td>
+                                @else
+                                    <td></td>
+                                @endif
                             </tr>                            
                         @endforeach
                     @endforeach
@@ -84,7 +89,7 @@
 </div>
 <!-- /.card -->
 <script>
-      <?php
+      <?php     
    if(isset($fecha_hasta)){  
         ?>
          document.getElementById("idHasta").value='<?php echo($fecha_hasta); ?>';
@@ -96,6 +101,7 @@
     
     <?php
     }
+        $fechaActual = date("Y-m-d")        
         ?>
    
 </script>

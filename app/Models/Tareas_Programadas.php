@@ -14,7 +14,7 @@ class Tareas_Programadas extends Model
     protected $primaryKey = 'tarea_id';
     public $timestamps = true;
     protected $fillable = [        
-        'tarea_nombre',                    
+        'tarea_nombre',
         'tarea_tipo_tiempo',
         'tarea_hora_ejecucion',      
         'tarea_estado'
@@ -24,6 +24,6 @@ class Tareas_Programadas extends Model
     ];
 
     public function scopeTareas($query){
-        return $query->where('empresa_id','=',Auth::user()->empresa_id);
+        return $query->where('empresa_id','=', "1");
     }
 }

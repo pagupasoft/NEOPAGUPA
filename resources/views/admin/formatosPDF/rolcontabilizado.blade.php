@@ -81,9 +81,9 @@
                     <td style="border: 1px solid black;">{{number_format($roles->egresos, 2)}}</td>
                     <td style="border: 1px solid black;">{{number_format($roles->patronal, 2)}}</td>
                     <td style="border: 1px solid black;">{{number_format($roles->vacacionespag, 2)}}</td>
-                    <td  @if(number_format($roles->tercero, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->tercero, 2)>0) {{number_format($roles->tercero, 2)}} @else {{number_format($roles->terceroacum, 2)}}  @endif</td>                   
-                    <td  @if(number_format($roles->cuarto, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->cuarto, 2)>0) {{number_format($roles->cuarto, 2)}} @else {{number_format($roles->cuartoacum, 2)}}  @endif</td>                   
-                    <td  @if(number_format($roles->fondo_reserva, 2)>0) style="background:  #70B1F7;"  @else style="background:  #B1E2DD;"  @endif  >@if(number_format($roles->fondo_reserva, 2)>0) {{number_format($roles->fondo_reserva, 2)}} @else {{number_format($roles->fondoacumula, 2)}}  @endif</td>
+                    <td  @if(number_format($roles->tercero, 2)>0) style="background:  #70B1F7; border: 1px solid black;"  @else style="background:  #B1E2DD; border: 1px solid black;"  @endif  >@if(number_format($roles->tercero, 2)>0) {{number_format($roles->tercero, 2)}} @else {{number_format($roles->terceroacum, 2)}}  @endif</td>                   
+                    <td  @if(number_format($roles->cuarto, 2)>0) style="background:  #70B1F7; border: 1px solid black;"  @else style="background:  #B1E2DD; border: 1px solid black;"  @endif  >@if(number_format($roles->cuarto, 2)>0) {{number_format($roles->cuarto, 2)}} @else {{number_format($roles->cuartoacum, 2)}}  @endif</td>                   
+                    <td  @if(number_format($roles->fondo_reserva, 2)>0) style="background:  #70B1F7; border: 1px solid black;"  @else style="background:  #B1E2DD; border: 1px solid black;"  @endif  >@if(number_format($roles->fondo_reserva, 2)>0) {{number_format($roles->fondo_reserva, 2)}} @else {{number_format($roles->fondoacumula, 2)}}  @endif</td>
                     <td style="border: 1px solid black;">{{number_format($roles->iecesecap, 2)}}</td>
                     
                     <td style="border: 1px solid black;">{{number_format($roles->liquido_pagar, 2)}}</td>
@@ -94,7 +94,168 @@
             @endif 
         </tbody>
     </table>
-   
+    
+    
+
+    <table style="white-space: normal!important;" id="tabladetalle">
+        <thead>
+            <tr style="border: 1px solid black;" class="centrar letra12">
+             
+                <th  colspan="2"> Ingresos</th>
+                <th colspan="2">Egresos</th>                        
+                <th  colspan="2">Provisiones </th>               
+                                  
+            </tr>
+           
+            
+           
+        </thead>
+        <tbody>
+            @if(isset($rol))
+            @if(count($rol)>0)
+                @for ($i = 1; $i <= count($datos); ++$i)  
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                        <td colspan="6"> {{ $datos[$i]['tipo'] }}</td>
+                      
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;">sueldo </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['sueldos'], 2) }} </td>
+                   
+                    <td style="border: 1px solid black;" >extsalud </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['extsalud'], 2) }} </td>
+                    
+                    <td  style="border: 1px solid black;">Apor. Patro. </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['patronal'], 2) }} </td>
+                   
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;">Horas Extras </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['extras'], 2) }}</td>
+                   
+                    <td style="border: 1px solid black;">leysal </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['leysal'] , 2)}} </td>
+                   
+                    <td style="border: 1px solid black;">Vacaciones Pag </td>
+                    <td style="border: 1px solid black;"> {{number_format( $datos[$i]['vacacionesacu'] , 2)}}</td>
+                   
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;">Transporte</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['transporte'], 2) }} </td>
+                   
+                    <td style="border: 1px solid black;"> Prestamos Quirografarios</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['ppqq'], 2) }} </td>
+                   
+                    <td style="border: 1px solid black;">Deci. Tercero </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['tercero'] , 2)}}  </td>
+                    
+                
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;">Otras Bonificaciones </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['otrabonifi'] , 2)}} </td>
+                 
+                    <td style="border: 1px solid black;"> Hipoteca</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['hipoteca'] , 2)}} </td>
+                   
+                    <td style="border: 1px solid black;">Deci. Cuarto</td>
+                    <td style="border: 1px solid black;">{{number_format( $datos[$i]['cuarto'], 2) }} </td>
+                  
+                    
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;">Otras Ingresos  </td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['otrosingresos'], 2) }} </td>
+              
+                    <td style="border: 1px solid black;">Comisariato</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['comisariato'] , 2)}} </td>
+                  
+                    <td style="border: 1px solid black;">F. Reserva</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['fondo_reserva'] , 2)}} </td>
+                
+                    
+                </tr>                    
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"> Vacaciones</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['vacaciones'], 2) }} </td>
+                  
+                    <td style="border: 1px solid black;">IESS Asum.</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['asumido'], 2) }} </td>
+                    
+                   
+                    <td style="border: 1px solid black;">F. Reserva(Acu)</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['fondo_reservaacu'], 2) }}</td>
+                 
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                <td style="border: 1px solid black;"> Total Ingresos</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['ingresos'], 2) }} </td>
+                   
+                    <td style="border: 1px solid black;">Apor. Perso.</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['personal'] , 2)}} </td>
+                  
+                    <td style="border: 1px solid black;"> IESCE/SECAP</td>
+                    <td style="border: 1px solid black;"> {{number_format( $datos[$i]['iecesecap'] , 2)}}</td>
+                  
+                
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"> </td>
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;">Anticipos</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['anticipo'], 2) }} </td>
+               
+                    <td style="border: 1px solid black;">D. Tercero(Acu)</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['terceroacu'], 2) }} </td>
+                  
+                </tr>
+                
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"> </td>
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;">Impu. Renta</td>
+                    <td style="border: 1px solid black;">{{number_format( $datos[$i]['impu_renta'], 2) }} </td>
+                
+                    <td style="border: 1px solid black;">D. Cuarto(Acu)</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['cuartoacu'], 2) }} </td>
+                   
+                
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;"> </td>
+                    <td style="border: 1px solid black;">Multas</td>
+                    <td style="border: 1px solid black;"> {{number_format( $datos[$i]['multas'], 2) }}</td>
+                  
+                    <td style="border: 1px solid black;">Liquido Pagar</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['liquido_pagar'], 2) }} </td>
+                 
+                
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"> </td>
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;">Otros Egresos</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['otrosegre'], 2) }} </td>
+                    
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;"> </td>
+                </tr>
+                <tr style="border: 1px solid black;" class="centrar letra12">
+                    <td style="border: 1px solid black;"> </td>
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;">Total Egresos</td>
+                    <td style="border: 1px solid black;">{{ number_format($datos[$i]['egresos'] , 2)}} </td>
+                 
+                    <td style="border: 1px solid black;"></td>
+                    <td style="border: 1px solid black;"> </td>
+                </tr>
+                @endfor
+            @endif 
+            @endif 
+        </tbody>
+    </table>
 <style>
     tbody {
    border-top: 1px solid #000;

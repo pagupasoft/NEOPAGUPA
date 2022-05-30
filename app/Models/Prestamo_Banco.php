@@ -35,7 +35,7 @@ class Prestamo_Banco extends Model
     public function scopePrestamo($query, $id){
         return $query->where('prestamo_banco.empresa_id','=',Auth::user()->empresa_id)->where('prestamo_estado','=','1')->where('prestamo_id','=',$id);
     } 
-    public function scopePrestamoBuscar($query, $todo, $fechaI, $fechaF, $sucursal, $banco){
+    public function scopePrestamoBuscar($query, $sucursal, $banco){
          $query->where('prestamo_banco.empresa_id','=',Auth::user()->empresa_id)
         ->where('prestamo_estado','=','1');
         

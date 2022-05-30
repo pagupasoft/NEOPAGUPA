@@ -140,7 +140,7 @@ class cuentaController extends Controller
             if($request->file('excelProv')->isValid()){
                 $empresa = Empresa::empresa()->first();
                 $name = $empresa->empresa_ruc. '.' .$request->file('excelProv')->getClientOriginalExtension();
-                $path = $request->file('excelProv')->move(public_path().'\temp', $name); 
+                $path = $request->file('excelProv')->move(public_path().'\temp\plancuentas', $name); 
                 $array = Excel::toArray(new Cuenta(), $path); 
                 for ($i=1;$i < count($array[0]);$i++) {
                     $validar=trim($array[0][$i][0]);

@@ -27,6 +27,7 @@
                     <th>Fecha</th>
                     <th>Numero</th>
                     <th>Clave de Acceso</th>
+                    <th>Estado</th>
                 </tr>
             </thead>
             <tbody> 
@@ -48,6 +49,11 @@
                         <td>{{ $datos[$i]['fecha'] }}</td>
                         <td>{{ $datos[$i]['numero'] }}</td>
                         <td>{{ $datos[$i]['clave'] }}</td>
+                        @if($datos[$i]['estado'] == 'no')
+                            <td>PENDIENTES</td>
+                        @else
+                            <td>PROCESADAS</td>
+                        @endif
                     </tr>   
                     @endfor
                 @endif

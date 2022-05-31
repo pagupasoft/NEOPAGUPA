@@ -400,7 +400,7 @@
                                                     <div class="form-group row">
                                                         <label for="idNewcheque" class="col-sm-3 col-form-label">Nuevo # de Cheque</label>
                                                         <div class="col-sm-9">
-                                                            <input type="number" class="form-control" id="idNewcheque" name="idNewcheque" >
+                                                            <input type="number" class="form-control" id="idNewcheque" name="idNewcheque" min="1">
                                                         </div>
                                                     </div>   
                                                 </div>

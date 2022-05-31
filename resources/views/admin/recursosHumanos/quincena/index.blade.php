@@ -58,7 +58,7 @@
                         <div class="form-group row">
                             <label for="idValor" class="col-sm-2 col-form-label">Valor</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" value="0.00"  step="any" id="idValor" name="idValor" placeholder = "0.00" required>
+                                <input type="number" class="form-control" value="0.00" min="0.01" step="any" id="idValor" name="idValor" placeholder = "0.00" required>
                             </div>
                         </div>  
                         <div class="form-group row">
@@ -131,7 +131,7 @@
                 <div class="form-group row">
                     <label for="idNcheque" class="col-sm-2 col-form-label"># de Cheque</label>
                     <div class="col-sm-10">
-                        <input type="number" class="form-control" id="idNcheque" name="idNcheque" required>
+                        <input type="number" class="form-control" id="idNcheque" name="idNcheque" min="1" required>
                     </div>
                 </div>
                 <div class="form-group row">

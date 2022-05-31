@@ -94,7 +94,7 @@
                 <div class="form-group row">
                     <label for="idValor" class="col-sm-2 col-form-label">Valor</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="idValor" name="idValor" placeholder="0.00" required>
+                        <input type="number" class="form-control" id="idValor" name="idValor" min="0.01" step="any" placeholder="0.00" required>
                     </div>
                 </div>
                 <div class="form-group row">

@@ -797,7 +797,7 @@
                                                     <div class="form-group row">
                                                         <label for="idNcheque" class="col-sm-3 col-form-label">Inicio # de Cheque</label>
                                                         <div class="col-sm-9">
-                                                            <input type="number" class="form-control" id="idNcheque" name="idNcheque" >
+                                                            <input type="number" class="form-control" id="idNcheque" name="idNcheque" min="1">
                                                         </div>
                                                     </div>  
                                                 </div>

@@ -5,7 +5,7 @@
         <h3 class="card-title">Valor de Venta</h3>
         <!-- <button onclick='window.location = "{{ url("ventaActivo") }}";' class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
          --> 
-         <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>     
+         <button  type="button" onclick="history.back()" class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>     
     </div>
     <!-- /.card-header -->
     <div class="card-body">

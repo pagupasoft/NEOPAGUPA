@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
 use App\Models\Expediente;
+use App\Models\Producto;
 use App\Models\Medico;
 use App\Models\Medico_Especialidad;
 use App\Models\Orden_Atencion;
 use App\Models\Paciente;
 use App\Models\Prescripcion;
+use App\Models\Prescripcion_Medicamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Punto_Emision;
 use PDF;
 use DateTime;
+
+use Maatwebsite\Excel\Facades\Excel;
 
 class atencionRecetasController extends Controller
 {
@@ -114,6 +118,149 @@ class atencionRecetasController extends Controller
         catch(\Exception $e){
             DB::rollBack();
             return json_encode(array("result"=>"FAIL"));
+        }
+    }
+
+    public function excelPrescripcion(Request $request){
+        //return $request;
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+
+        
+            return view('admin.inventario.producto.cargarExcelPrescripcion',['datos'=>null, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function cargarguardar(Request $request){
+        $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+        $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+
+
+        try{
+            $mensaje='';            
+
+            if($request->file('excelProd')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelProd')->getClientOriginalExtension();
+                $path = $request->file('excelProd')->move(public_path().'\temp', $name); 
+                $array = Excel::toArray(new Producto, $path);   
+                
+                
+                for ($i=1; $i<count($array[0]); $i++){
+                    //echo $array[0][$i][2].' - '.$array[0][$i][3];
+                    $Excel_date = $array[0][$i][0]; 
+                    $unix_date = ($Excel_date - 25569) * 86400;
+                    $Excel_date = 25569 + ($unix_date / 86400);
+                    $unix_date = ($Excel_date - 25569) * 86400;
+                    $fecha_despacho = gmdate("Y-m-d", $unix_date);
+
+
+                    $productoOrden=Producto::productosByNombre($array[0][$i][3]
+                    )->join("medicamento", "medicamento.producto_id", "producto.producto_id"
+                    )->join("prescripcion_medicamento", "prescripcion_medicamento.medicamento_id", "medicamento.medicamento_id"
+                    )->join("prescripcion", "prescripcion.prescripcion_id", "prescripcion_medicamento.prescripcion_id"
+                    )->join("expediente","expediente.expediente_id","prescripcion.expediente_id"
+                    )->join("orden_atencion", "orden_atencion.orden_id", "expediente.orden_id"
+                    )->where(DB::raw("upper(concat(paciente.paciente_apellidos,' ', paciente.paciente_nombres))"),'like', "%".strtoupper($array[0][$i][2])."%"
+                    )->where('orden_atencion.orden_fecha','=',$fecha_despacho
+                    )->join("paciente", "paciente.paciente_id", "orden_atencion.paciente_id")->get();
+
+                    //DB::enableQueryLog();
+                    //dd(DB::getQueryLog());
+
+                    //return $productoOrden;
+                    
+                    $det=null;
+
+                    if($productoOrden){
+                        foreach($productoOrden as $ordenP)
+                            $det[]=array($ordenP->orden_id, $ordenP->orden_numero);
+                    }
+                    $array[0][$i][count($array[0][$i])]=$det;
+                }
+
+                //return $productoOrden;
+
+
+
+                $data = [
+                    "datos"=>$array,
+                    'gruposPermiso'=>$gruposPermiso,
+                    'permisosAdmin'=>$permisosAdmin
+                ];
+                
+                return view('admin.inventario.producto.cargarExcelPrescripcion', $data);
+            }
+            DB::commit();
+            
+            return redirect('excelPrescripcion')->with('success','Datos guardados exitosamente')->with('error2','Algunos Datos no se registraron codigo repetido: '.' '.$mensaje);
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('excelPrescripcion')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function exelPrescripcionGuardar(Request $request){
+        //return $request;
+
+        try{
+            DB::beginTransaction();
+            if(count($request->med)>0){
+                $no_registrados="";
+                for($i=0; $i<count($request->med); $i++){
+                    $productoOrden=Producto::productosByNombre($request->med[$i]
+                        )->join("medicamento", "medicamento.producto_id", "producto.producto_id"
+                        )->join("prescripcion_medicamento", "prescripcion_medicamento.medicamento_id", "medicamento.medicamento_id"
+                        )->join("prescripcion", "prescripcion.prescripcion_id", "prescripcion_medicamento.prescripcion_id"
+                        )->join("expediente","expediente.expediente_id","prescripcion.expediente_id"
+                        )->join("orden_atencion", "orden_atencion.orden_id", "expediente.orden_id"
+                        )->where(DB::raw("upper(concat(paciente.paciente_apellidos,' ', paciente.paciente_nombres))"),'like', "%".strtoupper($request->cli[$i])."%"
+                        )->where('orden_atencion.orden_fecha','=',$request->fec[$i]
+                        )->join("paciente", "paciente.paciente_id", "orden_atencion.paciente_id")->first();
+
+                    if($productoOrden){
+                        $prescripcion=Prescripcion::findOrFail($productoOrden->prescripcion_id);
+                        $detalles=$prescripcion->presMedicamento;
+
+                        if($detalles){
+                            foreach($detalles as $det){
+                                $medicamento=$det->medicamento;
+
+                                if($medicamento->producto->producto_nombre==$request->med[$i]){
+                                    echo 'entre en el if';
+                                    $det->porcentaje_utilidad=$request->p_u[$i];
+                                    $det->save();
+
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                            $no_registrados.=$request->med[$i].',';
+                    }
+                    else
+                        $no_registrados.=$request->med[$i].',';
+                }
+            }
+            else
+                return redirect('excelPrescripcion')->with('success','No se realizó ninguna acción');
+
+            if(strlen($no_registrados)>0){
+                DB::rollBack();
+                return redirect('excelPrescripcion')->with('success','Datos almacenados con éxito'.(strlen($no_registrados))>0 ? ', no se guardaron los siguientes registros '.$no_registrados:'');
+            }
+            else{
+                DB::commit();
+                return redirect('excelPrescripcion')->with('success','Datos almacenados con éxito');
+            }
+        }
+        catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('excelPrescripcion')->with("error2", "Ocurrió un problema al actualizar. Error: ".$ex->getMessage());
         }
     }
 

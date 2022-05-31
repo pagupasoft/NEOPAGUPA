@@ -52,22 +52,29 @@
         <table id="example1" class="table table-bordered table-hover">
             <thead>
                 <tr class="text-center  neo-fondo-tabla">
-                    <th></th>   
+                    <th>Orden</th>   
                     <th>Fecha/Hora</th>
                     <th>Paciente</th>
                     <th>Especialidad</th>
                     <th>Medico</th>
+                    <th>Personales</th>
 
-                    @foreach($documentos as $doc)
-                        <th>{{ $doc->documento_nombre }}</th>
-                    @endforeach
+                    @if($documentos!=null)
+                        @foreach($documentos as $doc)
+                            <th>{{ $doc->documento_nombre }}</th>
+                        @endforeach
+                    @endif
                 </tr>
             </thead>
             <tbody>
             @if(isset($ordenesAtencion))
                 @foreach($ordenesAtencion as $ordenAtencion)
                     <tr class="text-center">
-                        <td></td>
+                        <td>{{ $ordenAtencion->orden_numero }}&nbsp;
+                            @if($ordenAtencion->orden_iess==1)
+                                <img src="{{ asset('img/iess.png')  }}" width="50px">
+                            @endif
+                        </td>
                         <td>
                             {{ $ordenAtencion->orden_fecha }} <br>
                             {{ $ordenAtencion->orden_hora }}
@@ -89,17 +96,38 @@
                                 {{$ordenAtencion->medico->empleado->empleado_nombre}}
                             @endif
                         </td>
-                        
-                        @foreach($documentos as $docEmp)
-                            <td>
-                                @foreach($ordenAtencion->documentos as $docOrden)
-                                    @if($docEmp->documento_id==$docOrden->documento_id)
-                                        <a class="btn btn-warning" href="{{ $docOrden->doccita_url }}" target="_blank"><i class="fas fa-eye"></i> Ver</a>
-                                        @break
+                        <td>
+                            @if($ordenAtencion->paciente->documento_paciente!=null)
+                                <a class="btn btn-sm btn-primary" href="{{ $ordenAtencion->paciente->documento_paciente }}" target="_blank" data-toggle="tooltip" data-original-title="Ver Documento">Paciente &nbsp;&nbsp;<i class="fas fa-eye"></i></a>
+                            @else
+                                <a class="btn btn-sm btn-danger" href="#">Paciente &nbsp;&nbsp;<i class="fas fa-exclamation-triangle"></i></a>
+                            @endif
+                            @if($ordenAtencion->paciente->paciente_dependiente==1)
+                                @if($ordenAtencion->paciente->documento_afiliado!=null)
+                                    <a class="btn btn-sm btn-primary" href="{{ $ordenAtencion->paciente->documento_afiliado }}" target="_blank" data-original-title="Ver Documento">Afiliado &nbsp;&nbsp;<i class="fas fa-eye"></i></a>
+                                @else
+                                    <a class="btn btn-sm btn-danger" href="#">Afiliado &nbsp;&nbsp;<i class="fas fa-exclamation-triangle"></i></a>
+                                @endif
+                            @endif
+                        </td>
+                        @if($documentos!=null)
+                            @foreach($documentos as $docEmp)
+                                <td>
+                                    <?php $encontrado=false; ?>
+                                    @foreach($ordenAtencion->documentos as $docOrden)
+                                        @if($docEmp->documento_id==$docOrden->documento_id)
+                                            <a class="btn btn-sm btn-success" href="{{ $docOrden->doccita_url }}" target="_blank">&nbsp;&nbsp;<i class="fas fa-eye"></i>&nbsp;&nbsp;</a>
+                                            <?php $encontrado=true; ?>
+                                            @break
+                                        @endif
+                                    @endforeach
+
+                                    @if(!$encontrado)
+                                        <a class="btn btn-sm btn-danger">&nbsp;&nbsp;<i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;</a>
                                     @endif
-                                @endforeach
-                            </td>
-                        @endforeach
+                                </td>
+                            @endforeach
+                        @endif
                     </tr> 
                 @endforeach
             @endif

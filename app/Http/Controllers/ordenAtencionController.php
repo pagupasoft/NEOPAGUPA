@@ -90,7 +90,7 @@ class ordenAtencionController extends Controller
         try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
-            $ordenesAtencion = Orden_Atencion::OrdenesByFechaSuc($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal_id'))->get();
+            $ordenesAtencion = Orden_Atencion::ordenesByFechaSucParticulares($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal_id'))->get();
             $empleados = Empleado::Empleados()->get();
             $proveedores = Proveedor::Proveedores()->get();        
             $pacientes = Paciente::Pacientes()->get();
@@ -159,7 +159,7 @@ class ordenAtencionController extends Controller
 
             //return $empresa;
             
-            $pacientes = Paciente::Pacientes()->get();
+            //$pacientes = Paciente::Pacientes()->get();
 
             
 
@@ -186,6 +186,8 @@ class ordenAtencionController extends Controller
                 'permisosAdmin'=>$permisosAdmin
             ];
 
+            //return $data;
+
             return view('admin.agendamientoCitas.ordenAtencion.verificarOrdenDocumentos',$data);
         }
         catch(\Exception $ex){      
@@ -200,7 +202,7 @@ class ordenAtencionController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $sucursales=Sucursal::Sucursales()->get();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first(); 
-            $pacientes = Paciente::Pacientes()->get();    
+            $pacientes = Paciente::Pacientes()->get();
             $especialidades = Especialidad::Especialidades()->get();
             $ordenesAtencion = Orden_Atencion::Ordenes()->get();
             $secuencial=1;
@@ -208,6 +210,7 @@ class ordenAtencionController extends Controller
             if($secuencialAux){
                 $secuencial=$secuencialAux+1;
             }
+
             return view('admin.agendamientoCitas.ordenAtencion.nuevaOrden',['cajaAbierta'=>$cajaAbierta,'bodegas'=>Bodega::Bodegas()->get(),'formasPago'=>Forma_Pago::formaPagos()->get(),'seguros'=>Tipo_Seguro::tipos()->get(),'documentos'=>Documento_Orden_Atencion::DocumentosOrdenesAtencion()->get(),'tiposDependencias'=>Tipo_Dependencia::TiposDependencias()->get(),'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),'sucursales'=>$sucursales,'pacientes'=>$pacientes,'especialidades'=>$especialidades,'ordenesAtencion'=>$ordenesAtencion,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      

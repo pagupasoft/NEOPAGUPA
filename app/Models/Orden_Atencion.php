@@ -113,6 +113,39 @@ class Orden_Atencion extends Model
                     )->orderBy('orden_atencion.orden_hora','desc');
     }
 
+    public function scopeOrdenesByFechaSucPac($query,$fechaI,$fechaF,$sucursal, $paciente_id){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('orden_fecha','>=',$fechaI
+                    )->where('orden_fecha','<=',$fechaF
+                    //)->where('orden_atencion.sucursal_id','=',$sucursal
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->where('orden_atencion.paciente_id','=', $paciente_id
+                    )->orderBy('orden_atencion.orden_secuencial','asc');
+                    //)->orderBy('orden_atencion.orden_hora','desc');
+    }
+
+    public function scopeOrdenesByFechaSucParticulares($query,$fechaI,$fechaF,$sucursal){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('orden_fecha','>=',$fechaI
+                    )->where('orden_fecha','<=',$fechaF
+                    )->where('orden_atencion.sucursal_id','=',$sucursal
+                    )->where('orden_iess', '=', 0,
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->orderBy('orden_atencion.orden_fecha','desc'
+                    )->orderBy('orden_atencion.orden_hora','desc');
+    }
+
+    public function scopeOrdenesByFechaSucIess($query,$fechaI,$fechaF,$sucursal){
+        return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
+                    )->where('orden_fecha','>=',$fechaI
+                    )->where('orden_fecha','<=',$fechaF
+                    )->where('orden_atencion.sucursal_id','=',$sucursal
+                    )->where('orden_iess', '=', 1,
+                    )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
+                    )->orderBy('orden_atencion.orden_fecha','desc'
+                    )->orderBy('orden_atencion.orden_hora','desc');
+    }
+
     public function scopeOrdenesByFechaSucNoIess($query,$fechaI,$fechaF,$sucursal){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'
                     )->where('orden_fecha','>=',$fechaI
@@ -136,9 +169,9 @@ class Orden_Atencion extends Model
     public function scopeOrdenesHoy($query){
         return $query->join('sucursal', 'sucursal.sucursal_id','=','orden_atencion.sucursal_id'     
                     )->join('paciente','paciente.paciente_id','=','orden_atencion.paciente_id'
-                    )->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
-                    )->join('especialidad','especialidad.especialidad_id','=','medico_especialidad.especialidad_id'
-                    )->join('medico','medico.medico_id','=','medico_especialidad.medico_id')
+                    //)->join('medico_especialidad','medico_especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('especialidad','especialidad.especialidad_id','=','orden_atencion.especialidad_id'
+                    )->join('medico','medico.medico_id','=','orden_atencion.medico_id')
                     ->where('orden_fecha','=',date("Y-m-d"))
                     ->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
                     ->orderBy('orden_atencion.orden_fecha','asc')->orderBy('orden_atencion.orden_hora','asc');

@@ -25,9 +25,14 @@
                     @if($orden->orden_estado=='2')
                         <tr class="text-center">
                             <td>
-                                <a href="{{ url("nuevoSignosV/{$orden->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Atender"><i class="fa fa-calendar-check"></i></a> 
+                                <a href="{{ url("nuevoSignosV/{$orden->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Atender">&nbsp;&nbsp;<i class="fa fa-calendar-check"></i>&nbsp;&nbsp;</a> 
                             </td>
-                            <td>{{$orden->orden_numero }}</td> 
+                            <td>
+                                {{$orden->orden_numero }} &nbsp;
+                                @if($orden->orden_iess==1)
+                                    <img src="{{ asset('img/iess.png')  }}" width="50px">
+                                @endif
+                            </td> 
                             <td>{{$orden->orden_fecha }}</td>  
                             <td>{{$orden->orden_hora }}</td>                    
                             <td>{{$orden->paciente->paciente_cedula }} </td>  

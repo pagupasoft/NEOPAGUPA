@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<form class="form-horizontal" method="POST" action="{{url("ordenAtencionIess")}}" enctype="multipart/form-data">
+<form class="form-horizontal" method="POST" action="{{url("ordenAtencionIess")}}" enctype="multipart/form-data" onsubmit="return validarInformacion()">
 @csrf
     <div class="card card-secondary">
         <div class="card-header">
@@ -99,15 +99,22 @@
                 </div>
                 <div class="form-group row">
                     <label for="Observacion" class="col-sm-1 col-form-label">Observación:</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <input id="Observacion" name="Observacion" type="text" class="form-control" value="Cita Medica" required>
                     </div>
-                    <label for="idServicio" class="col-sm-2 col-form-label">Fecha y Hora de la Cita :</label>
+                    <label for="idServicio" class="col-sm-1 col-form-label">Fec y Hora de Cita:</label>
                     <div class="col-sm-2">
                         <input id="idFechaHora" type="text" class="form-control"  autocomplete="off" required>
                         <input type="hidden" id="fechaCitaID" name="fechaCitaID" value="" required/>
                         <input type="hidden" id="horaCitaID" name="horaCitaID" value="" required/>
                     </div>
+
+                    <div style="margin-top: 12px">
+                        <input onchange="cambiarModoAmpliacion()" id="idAmpliaciones" type="checkbox" name="idAmpliaciones" class="form-check" readonly required>
+                    </div>
+                    <label for="idAmpliaciones" class="col-sm-1 col-form-label">Ampliación</label>
+
+
                     <label for="tipo_atencion" class="col-sm-1 col-form-label"><center>Tipo de Atención :</center></label>
                     <div class="col-sm-2">
                         <select name="tipo_atencion" class="form-control select2" required>
@@ -162,6 +169,15 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td class="centrar-texto neo-fondo-tabla boder-sar">Cédula del Paciente:</td>
+                                    <td><a class="btn btn-outline-primary mr-2" id="a-documento-paciente" style="display:none" target="_blank" >VER CEDULA PACIENTE</a><input id="file-documento-paciente" name="file-documento-paciente" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
+                                </tr>
+                                <tr id="marcoAfiliado" style="display: none">
+                                    <td class="centrar-texto neo-fondo-tabla boder-sar">Cédula del Afiliado:</td>
+                                    <td><a class="btn btn-outline-primary mr-2" id="a-documento-afiliado" style="display:none" target="_blank" >VER CEDULA AFILIADO</a><input id="file-documento-afiliado" name="file-documento-afiliado" type="file" data-theme="fas" accept="application/pdf,image/*" onClick = "validararchivos();"></td>
+                                </tr>
+
                                 @foreach($documentos as $doc)
                                 <tr>
                                     <td class="centrar-texto neo-fondo-tabla boder-sar">{{$doc->documento_nombre}}</td>
@@ -198,6 +214,41 @@
 @section('scriptAjax')
 <script src="{{ asset('admin/js/ajax/autocompletePacienteIess.js') }}"></script>
 @endsection
+
+<script>
+    function cambiarModoAmpliacion(){
+        console.log(document.getElementById("idAmpliaciones").checked)
+
+        fechaAmpliacion= new Date();
+
+        //fechaCita = new Date(y, m, d, fechaAux.getHours(), fechaAux.getMinutes());
+        fechaAmpliacion.setHours(0);
+        fechaAmpliacion.setMinutes(0);
+        console.log(fechaAmpliacion)
+     
+        const formatDate = (fechaHora)=>{
+            let formatted_date = fechaHora.getFullYear() + "-" + (fechaHora.getMonth() + 1) + "-" + fechaHora.getDate()
+            return formatted_date;
+        }
+        
+        if(document.getElementById("idAmpliaciones").checked){
+            document.getElementById("fechaCitaID").value= formatDate(fechaAmpliacion);
+            document.getElementById("horaCitaID").value= "00:00";
+            document.getElementById("idFechaHora").value= formatDate(fechaAmpliacion)+'   00:00 hs.';
+
+            fecha_seleccionada=moment(fechaAmpliacion).format('YYYY-MM-DD HH:mm:ss');
+        }
+        else{
+            document.getElementById("fechaCitaID").value= "";
+            document.getElementById("horaCitaID").value= "";
+            document.getElementById("idFechaHora").value= "";
+            fecha_seleccionada='';
+        }
+
+    }
+</script>
+
+
 <script>
     semana_actual = 0;
     var Calendar
@@ -239,7 +290,27 @@
             }
         });
     }
+    function validarInformacion(){
+        if($("#clienteID").val()==""){
+            alert('Seleccione un Cliente para continuar con el proceso')
+            return false;
+        }
+        else if(!document.getElementById("idAmpliaciones").checked){
+            if(fecha_seleccionada==""){
+                alert("Selecciona un fecha en el Horario establecido")
+                return false
+            }
+            else if(getCitaDisponible()){
+                alert('¡Este Horario ya esta registrado para el Medico seleccionado, actualice la página e intente nuevamente!')
+                return false;
+            }
+        }
+        else
+            console.log('todo ha salido bien')
 
+        //alert('¡Evité guardar!')
+        return true;
+    }
     function cargarOA(){  
         $.ajax({
             url: '{{ url("sucursales/searchN") }}'+ '/' +document.getElementById("idSucursal").value,
@@ -646,7 +717,7 @@
                         fecha_inicio = new Date(y, m, d + valor, fechaAux.getHours(),fechaAux.getMinutes())
                         fecha_fin = new Date(y, m, d + valor, fechaPost.getHours(),fechaPost.getMinutes()-1)
                         titulo = 'DISPONIBLE'
-                        color = '#00a65a'
+                        color = '#28a745'
                         funcion =  "javascript:seleccionarHora('"+fechaCita+"');"
 
                         //console.log("compracion "+hoy.getTime()+"   "+fecha_inicio.getTime())
@@ -748,6 +819,32 @@
         });
 
         return f
+    }
+    function getCitaDisponible(){
+        response=false;
+        especialidad_id=document.getElementById("especialidad_id").value;
+        medico_id=document.getElementById("idMespecialidad").value;
+
+        $.ajax({
+            async: false,
+            url: '{{ url("horarios/getCitaDisponible") }}',
+            dataType: "json",
+            type: "GET",
+            data: {
+                medico_id,
+                especialidad_id,
+                fecha: fecha_seleccionada
+            },                      
+            success: function(data){    
+                if(data.ocupada=='1')
+                    response=true;
+            },
+            error: function(data) { 
+                console.log(data);       
+            },
+        });
+        
+        return response;
     }
 
     function seleccionarHora(fechaHora){

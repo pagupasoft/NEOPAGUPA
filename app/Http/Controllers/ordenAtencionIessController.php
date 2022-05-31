@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Arqueo_Caja;
 use App\Models\Bodega;
+use App\Models\Proveedor;
+use App\Models\Empleado;
+use App\Models\Medico;
+use App\Models\User;
 use App\Models\Documento_Anulado;
 use App\Models\Documento_Orden_Atencion;
 use App\Models\Documento_Orden_Paciente;
@@ -33,8 +37,83 @@ class ordenAtencionIessController extends Controller
      */
     public function index()
     {
-        //
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $empleados = Empleado::Empleados()->get();
+            $proveedores = Proveedor::Proveedores()->get();        
+            $pacientes = Paciente::Pacientes()->get();
+            $medicos = Medico::medicos()->get();
+
+            $rol=User::findOrFail(Auth::user()->user_id)->roles->first();
+
+            $data = [
+                "seleccionado"=>0,
+                "medicos"=>$medicos,
+                "rol"=>$rol,
+                'sucursales'=>Sucursal::Sucursales()->get(),
+                'empleados'=>$empleados,
+                'proveedores'=>$proveedores,
+                'pacientes'=>$pacientes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin
+            ];
+
+            return view('admin.agendamientoCitas.ordenAtencionIess.index', $data);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
     }
+
+    public function ordenAtencionIessBuscar(Request $request){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $ordenesAtencion = Orden_Atencion::OrdenesByFechaSucIess($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal_id'))->get();
+            $empleados = Empleado::Empleados()->get();
+            $proveedores = Proveedor::Proveedores()->get();        
+            $pacientes = Paciente::Pacientes()->get();
+
+            $medicos = Medico::medicos()->get();
+            $rol=User::findOrFail(Auth::user()->user_id)->roles->first();
+
+            //return Auth::user()->user_id;
+
+            foreach($ordenesAtencion as $orden){
+                $expediente = $orden->expediente;
+
+                if($expediente){
+                    $signosVitales=$expediente->signosVitales;
+                }
+            }
+
+            $data = [
+                "seleccionado"=>$request->medico_id,
+                "medicos"=>$medicos,
+                "rol"=>$rol,
+                'fecI'=>$request->get('fecha_desde'),
+                'fecF'=>$request->get('fecha_hasta'),
+                'sucurslaC'=>$request->get('sucursal_id'),
+                'sucursales'=>Sucursal::Sucursales()->get(),
+                'ordenesAtencion'=>$ordenesAtencion,
+                'empleados'=>$empleados,
+                'proveedores'=>$proveedores,
+                'pacientes'=>$pacientes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin
+            ];
+
+            return view('admin.agendamientoCitas.ordenAtencionIess.index',$data);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+    }
+
+
     public function nuevaOrdenIess()
     {
         try{ 

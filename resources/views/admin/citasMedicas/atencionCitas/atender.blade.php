@@ -64,7 +64,16 @@
                 <div class="col-sm-2">
                 <label class="form-control">{{$ordenAtencion->tipoSeguro->tipo_codigo}} - {{$ordenAtencion->tipoSeguro->tipo_nombre}}</label>
                 </div>
-            </div> 
+            </div>
+            <div class="form-group row">
+                <label for="tipo_atencion" class="col-sm-1 col-form-label"><center>Tipo de Atención :</center></label>
+                <div class="col-sm-2">
+                    <select name="tipo_atencion" class="form-control select2" required>
+                            <option value="0" @if($ordenAtencion->orden_frecuencia==0) selected  @endif>Por Primera Vez</option>
+                            <option value="1" @if($ordenAtencion->orden_frecuencia==1) selected  @endif>Subsecuente</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <div class="col-sm-12">

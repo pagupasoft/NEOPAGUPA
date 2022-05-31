@@ -20,11 +20,14 @@
             </thead>
             <tbody>
             @foreach($ordenesAtencion as $ordenAtencion)
-                @foreach($mespecialidadM as $mespe)
-                    @if($mespe->mespecialidad_id == $ordenAtencion->mespecialidad_id && $ordenAtencion->orden_estado == 3)
+                
                     <tr class="text-center">
                         <td>
                             <a href="{{ url("atencionCitas/{$ordenAtencion->orden_id}/atender")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Atender"><i class="fa fa-calendar-check"></i></a> 
+                            &nbsp;
+                            @if($ordenAtencion->orden_iess==1)
+                                <img src="{{ asset('img/iess.png')  }}" width="50px">
+                            @endif
                         </td>    
                             <td>{{ $ordenAtencion->orden_codigo }}</td>
                             <td>{{ $ordenAtencion->orden_numero }}</td>
@@ -34,8 +37,7 @@
                             <td>{{ $ordenAtencion->orden_hora }}</td>
                             <td>{{ $ordenAtencion->orden_observacion }}</td>                                         
                     </tr>
-                    @endif
-                @endforeach 
+                   
             @endforeach
             </tbody>
         </table>

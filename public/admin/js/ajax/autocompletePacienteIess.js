@@ -30,7 +30,8 @@
 							tipoDependencia: paciente.tipod_id,
 							cedulaAsegurado: paciente.paciente_cedula_afiliado,
 							nombreAsegurado: paciente.paciente_nombre_afiliado,
-							
+							documentoPaciente: paciente.documento_paciente,
+							documentoAfiliado: paciente.documento_afiliado,
 							id: paciente.paciente_id,
 																	
 						};
@@ -54,6 +55,27 @@
 			$("#es_dependiente > option[value="+ ui.item.dependiente +"]").attr("selected",true);
 			$("#IdTipoDependencia > option[value="+ ui.item.tipoDependencia +"]").attr("selected",true);
 			$("#ClienteId").val(ui.item.aseguradoraID);	
+
+			if(ui.item.documentoPaciente!=""){
+				$("#a-documento-paciente").attr("href", ui.item.documentoPaciente)
+				$("#a-documento-paciente").css("display", "revert")
+			}
+
+			if(ui.item.dependiente==1){
+				$("#marcoAfiliado").css("display", "revert")
+
+				if(ui.item.documentoAfiliado!=""){
+					$("#a-documento-afiliado").attr("href", ui.item.documentoAfiliado)
+					$("#a-documento-afiliado").css("display", "revert")
+				}
+				else{
+					$("#a-documento-afiliado").attr("href", "")
+					$("#a-documento-afiliado").css("display", "none")
+				}
+			}
+			else
+				$("#marcoAfiliado").css("display", "none")
+				
 			cargarDatosDependencia();
 			cargarEspecialidadesPaciente();
 			return false;

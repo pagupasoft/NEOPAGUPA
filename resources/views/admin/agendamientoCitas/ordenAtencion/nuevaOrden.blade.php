@@ -195,15 +195,22 @@
                 </div>
                 <div class="form-group row">
                     <label for="Observacion" class="col-sm-1 col-form-label">Observación:</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <input id="Observacion" name="Observacion" type="text" class="form-control" value="Cita Medica" required>
                     </div>
-                    <label for="idServicio" class="col-sm-2 col-form-label">Fecha y Hora de la Cita :</label>
+
+                    <label for="idServicio" class="col-form-label">Fec y Hora de Cita:</label>
                     <div class="col-sm-2">
                         <input id="idFechaHora" type="text" class="form-control" readonly required>
                         <input type="hidden" id="fechaCitaID" name="fechaCitaID" value="" required/>
                         <input type="hidden" id="horaCitaID" name="horaCitaID" value="" required/>
                     </div>
+
+                    <div style="margin-top: 12px">
+                        <input onchange="cambiarModoAmpliacion()" id="idAmpliaciones" type="checkbox" name="idAmpliaciones" class="form-check" readonly required>
+                    </div>
+                    <label for="idAmpliaciones" class="col-sm-1 col-form-label">Ampliación</label>
+
                     <label for="idReclamo" class="col-sm-1 col-form-label">Reclamo:</label>
                     <div class="col-sm-2">
                         <input type="hidden" id="idReclamoSec" name="idReclamoSec" value="" required/>
@@ -279,7 +286,7 @@
                                     <input  type="hidden" id="IdCobertura" name="IdCobertura" value="">
                                     
                                     <td class="centrar-texto">
-                                        <input  type="hidden" id="IdDescuentoPorcentaje" name="IdDescuentoPorcentaje" value="0" step="1" min="0" max="100">
+                                        <input  type="hidden" id="IdDescuentoPorcentaje" name="IdDescuentoPorcentaje" value="0" step="1" min="0" max="100" class="text-right">
                                     </td>
 
                                     <td class="centrar-texto" id="IdDescuentoP"></td>
@@ -347,6 +354,40 @@
 <script src="{{ asset('admin/js/ajax/autocompleteClienteOrden.js') }}"></script>
 <script src="{{ asset('admin/js/ajax/autocompletePaciente.js') }}"></script>
 @endsection
+
+<script>
+    function cambiarModoAmpliacion(){
+        console.log(document.getElementById("idAmpliaciones").checked)
+
+        fechaAmpliacion= new Date();
+
+        //fechaCita = new Date(y, m, d, fechaAux.getHours(), fechaAux.getMinutes());
+        fechaAmpliacion.setHours(0);
+        fechaAmpliacion.setMinutes(0);
+        console.log(fechaAmpliacion)
+     
+        const formatDate = (fechaHora)=>{
+            let formatted_date = fechaHora.getFullYear() + "-" + (fechaHora.getMonth() + 1) + "-" + fechaHora.getDate()
+            return formatted_date;
+        }
+        
+        if(document.getElementById("idAmpliaciones").checked){
+            document.getElementById("fechaCitaID").value= formatDate(fechaAmpliacion);
+            document.getElementById("horaCitaID").value= "00:00";
+            document.getElementById("idFechaHora").value= formatDate(fechaAmpliacion)+'   00:00 hs.';
+
+            fecha_seleccionada=moment(fechaAmpliacion).format('YYYY-MM-DD HH:mm:ss');
+        }
+        else{
+            document.getElementById("fechaCitaID").value= "";
+            document.getElementById("horaCitaID").value= "";
+            document.getElementById("idFechaHora").value= "";
+            fecha_seleccionada='';
+        }
+
+    }
+</script>
+
 <script>
     semana_actual = 0;
     var Calendar
@@ -390,13 +431,20 @@
             alert('Seleccione un Cliente para continuar con el proceso')
             return false;
         }
-        else if(getCitaDisponible()){
-            alert('¡Este Horario ya esta registrado para el Medico seleccionado, actualice la página e intente nuevamente!')
-            return false;
+        else if(!document.getElementById("idAmpliaciones").checked){
+            if(fecha_seleccionada==""){
+                alert("Selecciona un fecha en el Horario establecido")
+                return false
+            }
+            else if(getCitaDisponible()){
+                alert('¡Este Horario ya esta registrado para el Medico seleccionado, actualice la página e intente nuevamente!')
+                return false;
+            }
         }
         else
-            console.log('sadsadasdas')
+            console.log('todo ha salido bien')
 
+        //alert('¡Evité guardar!')
         return true;
     }
     function cargarOA(){  
@@ -877,7 +925,6 @@
         especialidad_id=document.getElementById("especialidad_id").value;
         medico_id=document.getElementById("idMespecialidad").value;
 
-        
         $.ajax({
             async: false,
             url: '{{ url("horarios/getCitaDisponible") }}',
@@ -1016,13 +1063,14 @@
                 document.getElementById("IdDescuentoP").innerHTML="0,00";
                 document.getElementById("IdDescuento").value="0,00";
 
+
                 if(Number(valorCobertura)<0){
-                    document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
-                    document.getElementById("IdCopago").value = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
+                    document.getElementById("IdCopagoP").innerHTML = Number(data[0].procedimientoA_valor).toFixed(2);
+                    document.getElementById("IdCopago").value = Number(data[0].procedimientoA_valor).toFixed(2);
                 }
                 if(Number(valorCobertura)>0){
-                    document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
-                    document.getElementById("IdCopago").value = Number(Number(data[0].procedimientoA_valor)+(Number(valorCobertura))).toFixed(2);
+                    document.getElementById("IdCopagoP").innerHTML = Number(Number(data[0].procedimientoA_valor)-(Number(valorCobertura))).toFixed(2);
+                    document.getElementById("IdCopago").value = Number(Number(data[0].procedimientoA_valor)-(Number(valorCobertura))).toFixed(2);
                 }
             },
             error: function(data) { 

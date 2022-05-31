@@ -3,7 +3,11 @@
 <div class="card card-secondary col-sm-7">
     <div class="card-header">
         <h3 class="card-title">Egreso de Banco</h3>
+ <!--
         <button onclick='window.location = "{{ url("listaEgresoBanco") }}";' class="btn btn-default btn-sm float-right"><i
+                class="fa fa-undo"></i>&nbsp;Atras</button>
+-->
+        <button onclick="history.back()" class="btn btn-default btn-sm float-right"><i
                 class="fa fa-undo"></i>&nbsp;Atras</button>
     </div>
     <!-- /.card-header -->

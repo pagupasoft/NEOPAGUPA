@@ -115,10 +115,13 @@
                         <th>Descuento</th>
                         <th>IVA</th> 
                         <th>Total</th> 
-                        <th>Retencion</th> 
+                        <th>Retencion</th>                       
+                        <th>Cod Ret Fuente</th>     
+                        <th>Cod Ret Iva</th>
+                        <th>Valor Ret</th>    
                     </tr>
                 </thead>
-                <?php $cont = $sub_total = $tarifa0 = $tarifa12 = $desc = $iva = $total = 0.00;?> 
+                <?php $cont = $sub_total = $tarifa0 = $tarifa12 = $desc = $iva = $total = 0.00;?>                
                 @if(isset($reporteVentas))
                     @foreach($reporteVentas as $y)
                         <?php $cont = $cont + 1; $sub_total = $sub_total + $y->factura_subtotal; $tarifa0 = $tarifa0 + $y->factura_tarifa0; $tarifa12 = $tarifa12 + $y->factura_tarifa12; 
@@ -139,31 +142,56 @@
                             <td> <?php echo '$' . number_format($desc, 2) ?> </td>
                             <td> <?php echo '$' . number_format($iva, 2) ?> </td>
                             <td> <?php echo '$' . number_format($total, 2) ?> </td>
-                            <th></th>
+                            <td></td> 
+                            <td></td>                                                    
+                            <td></td>
+                            <td></td>
                         </tr>
-                        @foreach($reporteVentas as $x)
-                            <tr class="text-center">
-                                <td>
-                                    <a href="{{ url("factura/{$x->factura_id}/ver") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Visualizar"><i class="fa fa-eye"></i></a> 
-                                    <a href="{{ url("factura/{$x->factura_id}/imprimir") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir"><i class="fa fa-print"></i></a>
-                                </td>
-                                <td>{{ $x->factura_tipo_pago}}</td>                        
-                                <td>{{ $x->cliente_nombre}}</td>
-                                <td>{{ $x->factura_numero}}</td>
-                                <td>{{ $x->factura_fecha}}</td>
-                                <td> <?php echo '$' . number_format($x->factura_subtotal, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_tarifa0, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_tarifa12, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_descuento, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_iva, 2)?> </td>
-                                <td> <?php echo '$' . number_format($x->factura_total, 2)?> </td>
-                                @if(isset($x->retencion->factura_id)) 
-                                    <td>{{ $x->retencion->retencion_numero}}</td>
-                                @else 
-                                    <td>                                        
+                        @foreach($reporteVentas as $x)                            
+                                <tr class="text-center">
+                                    <td>
+                                        <a href="{{ url("factura/{$x->factura_id}/ver") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Visualizar"><i class="fa fa-eye"></i></a> 
+                                        <a href="{{ url("factura/{$x->factura_id}/imprimir") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir"><i class="fa fa-print"></i></a>
                                     </td>
-                                @endif                           
-                            </tr>
+                                    <td>{{ $x->factura_tipo_pago}}</td>                        
+                                    <td>{{ $x->cliente_nombre}}</td>
+                                    <td>{{ $x->factura_numero}}</td>
+                                    <td>{{ $x->factura_fecha}}</td>
+                                    <td> <?php echo '$' . number_format($x->factura_subtotal, 2)?> </td>
+                                    <td> <?php echo '$' . number_format($x->factura_tarifa0, 2)?> </td>
+                                    <td> <?php echo '$' . number_format($x->factura_tarifa12, 2)?> </td>
+                                    <td> <?php echo '$' . number_format($x->factura_descuento, 2)?> </td>
+                                    <td> <?php echo '$' . number_format($x->factura_iva, 2)?> </td>
+                                    <td> <?php echo '$' . number_format($x->factura_total, 2)?> </td>
+                                    @if(isset($x->retencion->factura_id))
+                                        <td>{{ $x->retencion->retencion_numero}}</td>
+                                        <?php $valoRet = 0;$cont=true; $cont2=true;?>
+                                            @foreach($x->retencion->detalles as $detalle)
+                                                <?php $valoRet = $valoRet + $detalle->detalle_valor;
+                                                ?> 
+                                                @if($detalle->detalle_tipo == 'FUENTE')
+                                                    <td>{{$detalle->conceptoRetencion->concepto_codigo}}</td>   
+                                                @else
+                                                    @if(count($x->retencion->detalles)==1)
+                                                        <td></td>
+                                                    @endif                                            
+                                                @endif 
+                                                @if($detalle->detalle_tipo == 'IVA')    
+                                                    <td>{{$detalle->conceptoRetencion->concepto_codigo}}</td> 
+                                                @else
+                                                    @if(count($x->retencion->detalles)==1)
+                                                        <td></td>
+                                                    @endif                                                
+                                                @endif 
+                                            @endforeach
+                                        <td><?php echo '$' . number_format($valoRet, 2) ?> </td>                                          
+                                    @else 
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>                                                                                                                  
+                                    @endif                                    
+                                </tr>                           
                         @endforeach
                     @endif
                 </tbody>

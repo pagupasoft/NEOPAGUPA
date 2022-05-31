@@ -10,10 +10,12 @@
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
-                      
+                             <!--   
                    
                         <a href="{{ url("ingresoBodega") }}" class="btn btn-danger btn-sm not-active-neo"><i
                                 class="fas fa-times-circle"></i><span> Regresar</span></a>  
+                                --> 
+                        <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                     </div>
                 </div>
             </div>

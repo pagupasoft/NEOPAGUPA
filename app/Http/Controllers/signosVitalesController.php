@@ -171,6 +171,8 @@ class signosVitalesController extends Controller
         try{
             DB::beginTransaction();
 
+            $ordenIess=0;
+
             for($i=0; $i<count($request->signo_id); $i++){
                 $signoVital = Signos_Vitales::findOrFail($request->signo_id[$i]);
 
@@ -188,6 +190,13 @@ class signosVitalesController extends Controller
                     $signoVital->signo_valor=$request->signo_valor[$i];
                     $signoVital->save();
                 }
+
+                $signoVital->detalleExpediente;
+            }
+
+            if($signoVital->detalleExpediente){
+                if($signoVital->detalleExpediente->ordenAtencion)
+                    $ordenIess=$signoVital->detalleExpediente->ordenAtencion->orden_iess;
             }
 
 
@@ -196,10 +205,19 @@ class signosVitalesController extends Controller
             $auditoria->registrarAuditoria('Actualizacion de signos vitales con expediente de la orden de atencion -> '.$request->orden_id,'0','');
             /*Fin de registro de auditoria */
             DB::commit();
-            return redirect('signosVitales')->with('success','Datos guardados exitosamente');
+
+            if($ordenIess)
+                return redirect('ordenAtencionIess')->with('success','Datos guardados exitosamente');
+            else
+                return redirect('ordenAtencion')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('signosVitales')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+
+            if($ordenIess)
+                return redirect('ordenAtencionIess')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            else
+                return redirect('ordenAtencion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+
         }
     }
 

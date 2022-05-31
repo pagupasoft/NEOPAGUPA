@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Atencion de Analisis de Laboratario</h3>
+        <h3 class="card-title">Ordenes de Examenes</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -38,7 +38,6 @@
             <thead>
                 <tr class="text-center neo-fondo-tabla">
                     <th></th>
-                    <th>Codigo</th>
                     <th>Número</th> 
                     <th>Paciente</th> 
                     <th>Fecha</th> 
@@ -46,28 +45,32 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach($ordenesAtencion as $ordenAtencion)
+            @foreach($ordenesExamenes as $ordenExamen)
                 <tr class="text-center">
                     <td>
-                        @if($ordenAtencion->orden_estado == 1)
-                            <a href="{{ url("ordenExamen/{$ordenAtencion->orden_examen_id}/editarOrden") }}" class="btn btn-xs btn-warning " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Editar Orden"><i class="fas fa-edit"></i></a>
+                        @if($ordenExamen->orden_estado == 1)
+                            <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/editarOrden") }}" class="btn btn-xs btn-warning " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Editar Orden">&nbsp;&nbsp;<i class="fas fa-edit"></i></a>
                             
                             @if($rol->rol_nombre!="Medico")
-                                <a href="{{ url("ordenExamen/{$ordenAtencion->orden_examen_id}/facturarOrden") }}" class="btn btn-xs btn-success " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i><i class="fa fa-pencil"></i></a>
+                                <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar">&nbsp;&nbsp;<i class="fas fa-dollar-sign"></i>&nbsp;&nbsp;</a>
                             @endif
-                        @elseif($ordenAtencion->orden_estado == 2)
+                        @elseif($ordenExamen->orden_estado == 2)
                             <a class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="En espera Resultados"><i class="fas fa-clock"></i></a>
-                        @elseif($ordenAtencion->orden_estado == 3)
+                        @elseif($ordenExamen->orden_estado == 3)
                             <a href="#" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Listo"><i class="fas fa-check"></i></a>
                         @endif 
-                        
+
                     </td>    
-                    <td>{{ $ordenAtencion->orden_codigo }}</td>
-                    <td>{{ $ordenAtencion->orden_numero }}</td>
-                    <td>{{ $ordenAtencion->paciente_apellidos}} <br>
-                        {{ $ordenAtencion->paciente_nombres }} </td>
-                    <td>{{ $ordenAtencion->orden_fecha }}</td>
-                    <td>{{ $ordenAtencion->orden_otros }}</td>                                         
+                    <!--td>{{ $ordenExamen->orden_codigo }}</td-->
+                    <td>{{ $ordenExamen->orden_numero }} &nbsp;
+                        @if($ordenExamen->expediente->ordenatencion->orden_iess==1)
+                            <img src="{{ asset('img/iess.png')  }}" width="50px">
+                        @endif 
+                    </td>
+                    <td>{{ $ordenExamen->paciente_apellidos}} <br>
+                        {{ $ordenExamen->paciente_nombres }} </td>
+                    <td>{{ $ordenExamen->orden_fecha }}</td>
+                    <td>{{ $ordenExamen->orden_otros }}</td>                                         
                 </tr>
                  
             @endforeach

@@ -31,7 +31,7 @@
                 <div class="col-sm-1"><center><a href="cliente/create" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-user"></i>&nbsp;Nuevo</a></center></div>
             </div>
             <div class="form-group row">
-                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label"
                     style="margin-bottom : 0px;">
                     <label>PAGO :</label>
                 </div>
@@ -79,41 +79,43 @@
                 </div>
             </div>
             <div class="form-group row">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label">
                     <label> FORMA  DE  PAGO :</label>
-                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="margin-bottom : 1px;">
-                        <div class="form-group">
-                            <select class="form-control" id="forma_pago_id" name="forma_pago_id"
-                                data-live-search="true">
-                                @foreach($formasPago as $formaPago)
-                                <option value="{{ $formaPago->forma_pago_id }}" @if($formaPago->forma_pago_nombre ==
-                                    'OTROS CON UTILIZACION DEL SISTEMA FINANCIERO') selected
-                                    @endif>{{ $formaPago->forma_pago_nombre }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="margin-bottom : 1px;">
+                    <div class="form-group">
+                        <select class="form-control" id="forma_pago_id" name="forma_pago_id"
+                            data-live-search="true">
+                            @foreach($formasPago as $formaPago)
+                            <option value="{{ $formaPago->forma_pago_id }}" @if($formaPago->forma_pago_nombre ==
+                                'OTROS CON UTILIZACION DEL SISTEMA FINANCIERO') selected
+                                @endif>{{ $formaPago->forma_pago_nombre }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "
-                        style="margin-bottom : 0px;">
-                        <label>Caja :</label>
-                    </div>   
-                
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
-                        style="margin-bottom : 0px;">
-                            <select id="caja_id" name="caja_id" class="form-control show-tick" data-live-search="true" required>
-                                @if($cajaAbierta)
-                                <option value="{{ $cajaAbierta->caja->caja_id }}">{{ $cajaAbierta->caja->caja_nombre }}</option>
-                                @endif
-                            </select>
-                    </div>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "
+                    style="margin-bottom : 0px;">
+                    <label>Caja :</label>
+                </div>   
             
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
-                        <div class="demo-checkbox">
-                            <input type="radio" value="FISICA" id="check2" class="with-gap radio-col-deep-orange"
-                                name="tipoDoc" required />
-                            <label for="check2">Documento Fisico</label>
-                        </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label  "
+                    style="margin-bottom : 0px;">
+                        <select id="caja_id" name="caja_id" class="form-control show-tick" data-live-search="true" required>
+                            @if($cajaAbierta)
+                            <option value="{{ $cajaAbierta->caja->caja_id }}">{{ $cajaAbierta->caja->caja_nombre }}</option>
+                            @endif
+                        </select>
+                </div>
+        
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-bottom : 0px;">
+                    <div class="demo-checkbox">
+                        <input type="radio" value="FISICA" id="check2" class="with-gap radio-col-deep-orange"
+                            name="tipoDoc" required />
+                        <label for="check2">Documento Fisico</label>
                     </div>
+                </div>
             </div>
             <hr>
             <h5 class="form-control" style="color:#fff; background:#17a2b8;">Datos de Orden de Examen</h5><br>

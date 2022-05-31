@@ -40,14 +40,14 @@
                     <td style="border-bottom: 1px solid black; ">{{ $datos[22][$i]['fecha'] }}</td>                                
                     <td style="border-bottom: 1px solid black; " width="7%">{{ $datos[22][$i]['tipo'] }}</td>
                     <td style="border-bottom: 1px solid black; " width="7%">{{ $datos[22][$i]['numero']}}</td>
-                    <td style="border-bottom: 1px solid black; ">{{ number_format($datos[22][$i]['credito'],2,'.','')}}</td>
-                    <td style="border-bottom: 1px solid black; ">{{ number_format($datos[22][$i]['debito'],2,'.','')}}</td>
+                    <td style="text-align: right; border-bottom: 1px solid black; ">{{ number_format($datos[22][$i]['credito'],2,'.','')}}</td>
+                    <td style="text-align: right; border-bottom: 1px solid black; ">{{ number_format($datos[22][$i]['debito'],2,'.','')}}</td>
                     <td style="text-align: center; border-bottom: 1px solid black;" width="3%">
                         @if($datos[22][$i]['conciliacion'] == true)
                             X
                         @endif
                     </td> 
-                    <td style="border-bottom: 1px solid black; ">{{ $saldo}}</td>           
+                    <td style="text-align: right; border-bottom: 1px solid black; ">$ {{number_format($saldo,2)}}</td>  
                     <td style="border-bottom: 1px solid black; " width="45%">{{ $datos[22][$i]['referencia']}}</td>                            
                 </tr>
                 @endfor
@@ -82,14 +82,14 @@
                     <td style="border-bottom: 1px solid black; ">{{ $datos[23][$i]['fecha'] }}</td>                                
                     <td style="border-bottom: 1px solid black; " width="7%">{{ $datos[23][$i]['tipo'] }}</td>
                     <td style="border-bottom: 1px solid black; " width="7%">{{ $datos[23][$i]['numero']}}</td>
-                    <td style="border-bottom: 1px solid black; ">{{ number_format($datos[23][$i]['credito'],2,'.','')}}</td>
-                    <td style="border-bottom: 1px solid black; ">{{ number_format($datos[23][$i]['debito'],2,'.','')}}</td>
+                    <td style="text-align: right; border-bottom: 1px solid black; ">{{ number_format($datos[23][$i]['credito'],2,'.','')}}</td>
+                    <td style="text-align: right; border-bottom: 1px solid black; ">{{ number_format($datos[23][$i]['debito'],2,'.','')}}</td>
                     <td style="text-align: center; border-bottom: 1px solid black;" width="3%">
                         @if($datos[23][$i]['conciliacion'] == true)
                             X
                         @endif
                     </td> 
-                    <td style="border-bottom: 1px solid black; ">{{ $saldo}}</td>           
+                    <td style="text-align: right; border-bottom: 1px solid black; ">$ {{number_format($saldo,2)}}</td>  
                     <td style="border-bottom: 1px solid black; " width="45%">{{ $datos[23][$i]['referencia']}}</td>                            
                 </tr>
                 @endfor

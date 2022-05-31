@@ -253,7 +253,7 @@
                         <tr> 
                             @if(isset($saldoAnteriorContable))
                                 <td colspan="7" class="text-center">SALDO ANTERIOR</td>                           
-                                <td class="text-center">{{ number_format($saldoAnteriorContable,2) }}</td>                            
+                                <td class="text-right">{{ number_format($saldoAnteriorContable,2) }}</td>                            
                                 <td colspan="2"></td>
                             @endif
                         </tr>
@@ -264,8 +264,8 @@
                                 <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>                                
                                 <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
                                 <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
-                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
-                                <td>{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>
+                                <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
+                                <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>
                                 <td>
                                     <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
                                     @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
@@ -276,7 +276,7 @@
                                     @endif
                                 </td> 
                                 <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
-                                <td>{{ $saldo}}</td>                           
+                                <td class="text-right">$ {{ number_format($saldo,2)}}</td>                           
                                 <td>
                                     @if(is_array($conciliacionBancariaMatriz[$i]['diario']))
                                         @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
@@ -319,8 +319,8 @@
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>
-                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['credito'],2)}}</td>
-                            <td>{{ number_format($otrasconciliacionesBancariaMatriz[$c]['debito'],2)}}</td>
+                            <td class="text-right">{{ number_format($otrasconciliacionesBancariaMatriz[$c]['credito'],2)}}</td>
+                            <td class="text-right">{{ number_format($otrasconciliacionesBancariaMatriz[$c]['debito'],2)}}</td>
                             <td>
                                 <input type="hidden" name="idonciliacionOtros[]" value="{{$otrasconciliacionesBancariaMatriz[$c]['id'].'-'.$otrasconciliacionesBancariaMatriz[$c]['tabla']}}"/>
                                 <div class="custom-control custom-checkbox">
@@ -329,7 +329,7 @@
                                 </div>
                             </td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fechaConsiliacion']}}</td>    
-                            <td>{{ $saldo}}</td>                              
+                            <td class="text-right">$ {{ number_format($saldo,2)}}</td>                                  
                             <td>
                                 @if(is_array($otrasconciliacionesBancariaMatriz[$c]['diario']))
                                     @for($cd = 0; $cd < count($otrasconciliacionesBancariaMatriz[$c]['diario']); $cd++)

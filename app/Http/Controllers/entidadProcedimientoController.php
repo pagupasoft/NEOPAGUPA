@@ -98,7 +98,7 @@ class entidadProcedimientoController extends Controller
                 if ($check[$i] > 0) {
                     $entidad_procedimiento = new Entidad_Procedimiento();
                     $entidad_procedimiento->ep_tipo = $tipo[$i];
-                    $entidad_procedimiento->ep_valor = $Pcobertura[$i];
+                    $entidad_procedimiento->ep_valor = abs($Pcobertura[$i]);
                     $entidad_procedimiento->ep_estado = 1;
                     $entidad_procedimiento->procedimiento_id = $procedimiento[$i];
                     $entidad_procedimiento->entidad_id =  $idEntidad;

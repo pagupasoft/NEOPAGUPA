@@ -505,10 +505,14 @@ class depreciacionMensualController extends Controller
                     $ventaActivo  = $rsventaActivo->venta_monto;
                 }
                 //$ventaActivoAux = floatval($activoFijo->activo_valor) - floatval($ventaActivo); 
+                $fechaFin = $last_day;
+                $fechaIni = $activoFijo->activo_fecha_inicio;
+                $DiasR = date("t", strtotime($fechaFin)) - date("t", strtotime($fechaIni));  
+                $depreciacio_mensual = floatval(floatval($activoFijo->activo_depreciacion_mensual) / intval(30)) * intval($DiasR);
                 $ventaActivoAux = floatval($activoFijo->activo_base_depreciar) - floatval($ventaActivo);
-               
-            $valoresActivo = floatval($ventaActivoAux) - floatval($activoFijo->activo_depreciacion_acumulada) - floatval($depreAcum);
-            if($depreciacio_mensual <= $valoresActivo){ 
+                $valoresActivo = floatval($ventaActivoAux) - floatval($activoFijo->activo_depreciacion_acumulada) - floatval($depreAcum);
+            if(floatval(floatval($activoFijo->activo_depreciacion_mensual)) <= floatval($valoresActivo)){
+            //if($valoresActivo >= $depreciacio_mensual ){ 
                 //Tabla de movimientos de caja
                 $activosFijosMatriz[$count]['activo_id'] = $activoFijo->activo_id;        
                 $activosFijosMatriz[$count]['Fecha'] = $activoFijo->activo_fecha_inicio;
@@ -531,7 +535,7 @@ class depreciacionMensualController extends Controller
                 $activosFijosMatriz[$count]['DeprecicacionAnual'] = number_format($activoFijo->activo_depreciacion_anual,2);
                 $activosFijosMatriz[$count]['DeprecicacionAcumulada'] = floatval($activoFijo->activo_depreciacion_acumulada) + $depreAcum;
                 $activosFijosMatriz[$count]['DeprecicacionHistorica'] = floatval($depreAcumaux);
-                $activosFijosMatriz[$count]['ValoresLibro'] = $valoresActivo;                        
+                $activosFijosMatriz[$count]['ValoresLibro'] = number_format($valoresActivo,2);                        
                 $count = $count + 1;
                 
             }else{            

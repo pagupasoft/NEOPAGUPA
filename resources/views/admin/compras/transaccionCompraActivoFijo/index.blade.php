@@ -302,7 +302,7 @@
                         <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-bottom : 0px;">
                             <div class="form-group">
                                 <input type="number" id="idVidaUtil" name="idVidaUtil"
-                                    class="form-control" value="0" required>
+                                    class="form-control" value="0" min="0.01" required>
                             </div>
                         </div>
                         <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 form-control-label  "

@@ -9,7 +9,10 @@
             
                 <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i>&nbsp;Anular</button>
                 <input type="hidden" id="idegreso" name="idegreso" value="{{$egresoBanco->egreso_id}}"/>
+                 <!--
                 <button type="button" onclick='window.location = "{{ url("listaEgresoBanco") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                -->   
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm "><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </div>
         </div>
         <div class="card-body">

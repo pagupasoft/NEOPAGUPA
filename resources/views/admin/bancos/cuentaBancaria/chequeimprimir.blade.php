@@ -8,8 +8,10 @@
             <div class="float-right">
                 <button type="button" onclick='negrita();' class="btn btn-default btn-sm"><i class="fa fa-bold"></i>&nbsp;Negrita</button>
                 <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                <!--
                 <button type="button" onclick='window.location = "{{ url("cuentaBancaria") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
-               
+               -->
+               <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>     
             </div>
         </div>
     </div>

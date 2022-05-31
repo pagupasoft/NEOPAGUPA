@@ -10,7 +10,11 @@
                     @method('DELETE')
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>&nbsp;Eliminar</button>
+                   <!-- 
                     <button type="button" onclick='window.location = "{{ url("listanotaCreditoBancario") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                    --> 
+                    
+                    <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                 </form>
             </div>
         </div>

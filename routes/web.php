@@ -478,7 +478,6 @@ Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middle
 Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middleware('auth');
 Route::resource('reporteBancario', repoteBancarioController::class)->middleware('auth');
 Route::resource('ordenAtencionIess', ordenAtencionIessController::class)->middleware('auth');
-Route::resource('ordenAtencionIess', ordenAtencionIessController::class)->middleware('auth');
 
 Route::resource('listanotaCreditoBancario', listaNotaCreditoBancoController::class)->middleware('auth');
 Route::resource('listanotaDebitoBancario', listaNotaDebitoBancoController::class)->middleware('auth');
@@ -646,6 +645,7 @@ Route::post('/enviarCorreoMasivo', [envioCorreosController::class, 'enviarCorreo
 
 Route::get('/excelPrescripcion', [atencionRecetasController::class, 'excelPrescripcion'])->middleware('auth');
 Route::post('/excelPrescripcion', [atencionRecetasController::class, 'cargarGuardar'])->middleware('auth');
+Route::post('/excelPrescripcionGuardar', [atencionRecetasController::class, 'exelPrescripcionGuardar'])->middleware('auth');
 
 
 Route::get('/excelProducto', [productoController::class, 'excelProducto'])->middleware('auth');
@@ -741,7 +741,7 @@ Route::get('/autorizarGR/{id}', [documentosElectronicosController::class, 'reenv
 Route::get('/emailGR/{id}', [documentosElectronicosController::class, 'emailGR'])->middleware('auth');
 Route::get('/consultarDocElec/{id}', [documentosElectronicosController::class, 'consultarDoc'])->middleware('auth');
 Route::get('/nuevaOrden', [ordenAtencionController::class, 'nuevaOrden'])->middleware('auth');
-Route::get('/ordenAtencionIess', [ordenAtencionIessController::class, 'nuevaOrdenIess'])->middleware('auth');
+Route::get('/nuevaOrdenAtencionIess', [ordenAtencionIessController::class, 'nuevaOrdenIess'])->middleware('auth');
 Route::post('/listaEmpleadoSucursal', [empleadoController::class, 'consultar'])->middleware('auth');
 Route::get('/respuesSRIFac/{id}', [documentosElectronicosController::class, 'respuesSRIFac'])->middleware('auth');
 Route::get('/respuesSRIGR/{id}', [documentosElectronicosController::class, 'respuesSRIGR'])->middleware('auth');
@@ -1109,6 +1109,7 @@ Route::post('/empleadosrubro/searchN', [asignacionRolController::class, 'present
 
 //buscar orden
 Route::get('/buscarOrdenAtencion', [ordenAtencionController::class, 'ordenAtencionBuscar'])->middleware('auth');
+Route::get('/buscarOrdenAtencionIess', [ordenAtencionIessController::class, 'ordenAtencionIessBuscar'])->middleware('auth');
 
 //BuscarHorarios
 Route::get('/horarios/getCitaDisponible', [ordenAtencionIessController::class, 'getCitaMedicaDisponible'])->middleware('auth');

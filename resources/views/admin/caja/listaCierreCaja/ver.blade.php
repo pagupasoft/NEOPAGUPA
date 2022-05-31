@@ -3,8 +3,11 @@
     <div class="card card-secondary">
         <div class="card-header">
             <h3 class="card-title">Ver Cierre de Caja</h3>
+             <!--  
             <button onclick='window.location = "{{ url("listaCierreCaja") }}";' class="btn btn-default btn-sm float-right"><i
                     class="fa fa-undo"></i>&nbsp;Atras</button>
+                    --> 
+            <button  type="button" onclick="history.back()" class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
         </div>
         <div class="card-body">
             <h5 class="form-control" style="color:#fff; background:#17a2b8;">Datos de Movimientos de Caja</h5>

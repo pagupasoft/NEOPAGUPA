@@ -10,8 +10,11 @@
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
-                    <button onclick='window.location = "{{ url("listanotaDebitoBancario") }}";' class="btn btn-default btn-sm float-right"><i
-                class="fa fa-undo"></i>&nbsp;Atras</button>
+                        <!-- 
+                        <button onclick='window.location = "{{ url("listanotaDebitoBancario") }}";' class="btn btn-default btn-sm float-right"><i
+                        class="fa fa-undo"></i>&nbsp;Atras</button>
+                        -->
+                        <button  type="button" onclick="history.back()" class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button> 
                     </div>
                 </div>
             </div>

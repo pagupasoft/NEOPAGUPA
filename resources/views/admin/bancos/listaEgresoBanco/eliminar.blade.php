@@ -9,8 +9,10 @@
             <div class="float-right">
                 <button type="button" onclick="anularCheque();" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>&nbsp;Eliminar</button>
                 <button type="submit"  id="IDeliminar" name="eliminar" class="invisible"><i class="fa fa-trash"></i></button>
-
+                <!--
                 <button type="button" onclick='window.location = "{{ url("listaEgresoBanco") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                -->   
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm "><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </div>
         </div>
         <div class="card-body">

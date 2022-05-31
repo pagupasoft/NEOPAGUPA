@@ -3,7 +3,10 @@
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title">Zona</h3>
+         <!--    
         <button onclick='window.location = "{{ url("zona") }}";' class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+        --> 
+            <button  type="button" onclick="history.back()" class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
     </div>
     <div class="card-body">
         <div class="card-body">

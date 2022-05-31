@@ -9,7 +9,10 @@
                 @if(isset($datos))
                 <button type="submit" id="guardar" name="guardar" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
                 @endif
+                <!--
                 <button type="button" onclick='window.location = "{{ url("listaAnticipoCliente") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                --> 
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </div>
         </div>
         <div class="card-body">

@@ -7,7 +7,10 @@
             <h3 class="card-title">Inicializar Cuentas por Cobrar</h3>
             <div class="float-right">
                 <button type="submit" id="guardar" name="guardar" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Guardar"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                <!--
                 <button type="button" onclick='window.location = "{{ url("inicializarCXC") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                --> 
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </div>
         </div>
         <!-- /.card-header -->

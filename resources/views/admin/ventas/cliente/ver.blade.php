@@ -109,14 +109,6 @@
                 <div class="col-sm-10">                        
                     <label class="form-control">{{$cliente->ciudad->ciudad_nombre}}</label>                          
                 </div>
-            </div>
-            
-           
-            <div class="form-group row">
-                <label for="" class="col-sm-2 col-form-label">Credito</label>
-                <div class="col-sm-10">                        
-                    <label class="form-control">{{$cliente->credito->credito_nombre}}</label>                          
-                </div>
             </div> 
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label">Categoria de Cliente</label>

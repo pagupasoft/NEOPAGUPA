@@ -597,7 +597,7 @@ Route::get('/tarjetaCredito/{id}/eliminar', [tarjetaCreditoController::class, 'd
 Route::get('/listaPrecio/{id}/eliminar', [listaPrecioController::class, 'delete'])->middleware('auth');
 Route::get('/anularRetencion/{id}/eliminar', [anularRetencionesController::class, 'delete'])->middleware('auth');
 Route::get('/compra/claveAcceso/{id}', [transaccionCompraController::class, 'compraByClaveAcceso'])->middleware('auth');
-
+Route::get('/anularRetencion/{id}/ver', [anularRetencionesController::class, 'ver'])->middleware('auth');
 
 Route::get('/listaEgresoBanco/{id}/anular', [listaEgresoBancoController::class, 'anular'])->middleware('auth');
 Route::post('listaEgresoBancoanular', [listaEgresoBancoController::class, 'anulacion'])->middleware('auth');
@@ -1056,6 +1056,7 @@ Route::get('/cuentaParametrizadaCaja/searchN/{buscar}', [parametrizacionContable
 Route::get('/cliente/searchN/{buscar}', [clienteController::class, 'buscarByNombre'])->middleware('auth');
 Route::get('/cliente/searchNCedula/{buscar}', [clienteController::class, 'buscarByNombreCedula'])->middleware('auth');
 Route::get('/producto/searchN/{buscar}', [productoController::class, 'buscarByNombre'])->middleware('auth');
+Route::get('/productocompra/searchN/{buscar}', [productoController::class, 'buscarByNombreCompra'])->middleware('auth');
 Route::get('/productoVenta/searchN/{buscar}', [productoController::class, 'buscarByNombreVenta'])->middleware('auth');
 Route::post('/productoVenta/precio/searchN', [productoController::class, 'buscarPrecio'])->middleware('auth');
 Route::get('/proveedor/searchN/{buscar}', [proveedorController::class, 'buscarByNombre'])->middleware('auth');
@@ -1312,6 +1313,7 @@ Route::get('/comprasactivofijo/xml/{punto}',  [cargaractivofijoXMLController::cl
 Route::post('/comprasactivofijo/xml',  [cargaractivofijoXMLController::class, 'cargar'])->middleware('auth');
 Route::get('/comprasactivofijo/xmlProcesar/{clave}/{punto}',  [cargaractivofijoXMLController::class, 'procesar'])->middleware('auth');
 
+Route::get('/documentosanulados/ver/{clave}/{id}',  [generalController::class, 'anulados'])->middleware('auth');
 //reporte tributario
 Route::get('/reporteTributario',  [formulariosController::class, 'nuevo'])->middleware('auth');
 Route::post('/reporteTributario',  [formulariosController::class, 'consultar'])->middleware('auth');

@@ -9,7 +9,7 @@
                 contextPath='';
             }
             $.ajax({
-                url: contextPath+"/producto/searchN/"+request.term,
+                url: contextPath+"/productocompra/searchN/"+request.term,
                 dataType: "json",
                 type: "GET",
                 data: {

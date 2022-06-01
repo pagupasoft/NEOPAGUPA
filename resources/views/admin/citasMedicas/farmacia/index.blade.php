@@ -20,7 +20,6 @@
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title">Despacho de Prescripciones</h3>
-        
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -99,21 +98,20 @@
                 @if($prescripcion->orden_estado>0)
                     <tr class="text-center">
                         <td>
-                            {{$prescripcion->prescripcion_id}}
-                            <a href="{{ url("receta/{$prescripcion->orden_id}")}}" style="width:30px" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ver Prescripción"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                            <a href="{{ url("receta/{$prescripcion->orden_id}")}}" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ver Prescripción"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             
                             @if($prescripcion->prescripcion_estado==2)
                                 <a target="_blank" href="{{ url("receta/imprimir/{$prescripcion->orden_id}")}}" style="width:35px" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="top" title="Imprimir Prescripción"><i class="fa fa-print" aria-hidden="true"></i></a>
 
                                 <!--input type="file" accept="image/jpg, image/png" style="width:30px" class="btn btn-xs btn-primary" title="Subir Escaneado"><i class="fas fa-upload"></i></a-->
                                 <label for="fotoDocumento{{ $prescripcion->prescripcion_id }}"><i class='fa fa-upload' aria-hidden='true'></i></label>
-                                <input onchange="subirDocumento({{ $prescripcion->prescripcion_id }});" class="foto" style="display: none;" id="fotoDocumento{{ $prescripcion->prescripcion_id }}" name="fotoDocumento" type="file"  accept=".png, .jpg, .jpeg">
+                                <input onchange="subirDocumento({{ $prescripcion->prescripcion_id }});" class="foto" style="display: none;" id="fotoDocumento{{ $prescripcion->prescripcion_id }}" data-toggle="tooltip" data-placement="top" title="Subir escaneado" name="fotoDocumento" type="file"  accept=".png, .jpg, .jpeg">
                             @endif
 
                             @if($prescripcion->prescripcion_documento!=null)
-                                <a  class="btn btn-success" id="ver{{ $prescripcion->prescripcion_id }}" href="{{ $prescripcion->prescripcion_documento }}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                <a  class="btn btn-sm btn-success" id="ver{{ $prescripcion->prescripcion_id }}" href="{{ $prescripcion->prescripcion_documento }}" data-toggle="tooltip" data-placement="top" title="Mostrar Escaneado" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             @else
-                                <a class="btn btn-success" id="ver{{ $prescripcion->prescripcion_id }}" href="#" style="display: none" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                <a class="btn btn-sm btn-success" id="ver{{ $prescripcion->prescripcion_id }}" href="#" style="display: none" target="_blank" data-toggle="tooltip" data-placement="top" title="Mostrar Escaneado"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             @endif
                         </td>
                         <td>{{ $prescripcion->orden_numero }}</td>

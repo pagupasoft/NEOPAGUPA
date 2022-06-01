@@ -44,6 +44,6 @@ class Prescripcion_Medicamento extends Model
     }
     public function medicamento()
     {
-        return $this->belongsTo(Medicamento::class, 'medicamento_id', 'medicamento_id');
+        return $this->hasOne(Medicamento::class, 'medicamento_id', 'medicamento_id');
     }
 }

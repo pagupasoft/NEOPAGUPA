@@ -54,7 +54,7 @@ class Expediente extends Model
 
     public function prescripcion()
     {
-        return $this->belongsTo(Prescripcion::class, 'expediente_id', 'expediente_id');
+        return $this->hasOne(Prescripcion::class, 'expediente_id', 'expediente_id');
     }
 
     public function ordenExamen()

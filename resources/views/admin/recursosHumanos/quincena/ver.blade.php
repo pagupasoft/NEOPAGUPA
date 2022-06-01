@@ -4,7 +4,10 @@
     <div class="card-header">
         <h3 class="card-title"><b>Quincena</b></h3>
         <div class="float-right">
+            <!-- 
             <a href="{{ url("lquincena") }}" class="btn btn-danger btn-sm">Regresar</a>
+            --> 
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
         </div>
     </div>
     <!-- /.card-header -->

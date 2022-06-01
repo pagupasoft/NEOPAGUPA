@@ -108,8 +108,10 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             
                             <div class="float-right">
-                           
+                            <!-- 
                             <button type="button" onclick='window.location = "{{ url("listaRolCM") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                            --> 
+                            <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                                 
                             <br>
 

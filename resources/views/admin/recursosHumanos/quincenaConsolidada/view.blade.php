@@ -7,7 +7,10 @@
             <h3 class="card-title">Quincena Consolidada</h3>
             <div class="float-right">
                 <button type="submit" id="generar" name="generar" class="btn btn-success btn-sm ">Generar Quincena</button>
+                <!-- 
                 <a href="{{ url("quincenaConsolidada") }}" class="btn btn-danger btn-sm">Cancelar</a>
+                --> 
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                 
             </div>
         </div>

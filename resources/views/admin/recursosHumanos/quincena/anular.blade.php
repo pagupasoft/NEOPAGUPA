@@ -8,7 +8,10 @@
                 @csrf
                 <input type="hidden" id="idquincena" name="idquincena" value="{{$quincena->quincena_id}}"/>
                 <button type="submit" class="btn btn-success btn-sm ">Eliminar</button>
+                <!-- 
                 <a href="{{ url("lquincena") }}" class="btn btn-danger btn-sm">Cancelar</a>
+                --> 
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
             </form>
         </div>
     </div>

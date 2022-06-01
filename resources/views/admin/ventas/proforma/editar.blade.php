@@ -15,9 +15,12 @@
                         
                         <button id="guardarID" type="submit" class="btn btn-success btn-sm" ><i
                                 class="fa fa-save"></i><span> Guardar</span></button>
+                        <!--
                         <button type="button" id="cancelarID" onclick='window.location = "{{ url("listaProforma") }}";' name="cancelarID" 
                             class="btn btn-danger btn-sm not-active-neo" ><i
                                 class="fas fa-times-circle"></i><span> Cancelar</span></button>
+                        -->      
+                        <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button> 
                     </div>
                 </div>
             </div>

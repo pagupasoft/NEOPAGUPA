@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Lista de Ordenes de Imagenes</h3>
+        <h3 class="card-title">Edición de Ordenes de Imagenes</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -52,12 +52,8 @@
                 <tr class="text-center">
                     <td>
                         @if($ordenImagen->orden_estado == 1)
-                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="NO FACTURADO">
-                                <i class="fas fa-edit"></i> Facturar
-                            </a>
-                        @elseif($ordenImagen->orden_estado==2)
-                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/subirImagenes") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="Subir Resultados">
-                                <i class="fas fa-upload"></i> &nbsp;&nbsp;&nbsp; Subir
+                            <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/editar") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="Editar Orden">
+                                <i class="fas fa-edit"></i>
                             </a>
                         @else
                             <a href="{{ url("ordenImagen/{$ordenImagen->orden_id}/verResultadosImagen") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px; border-radius: 6px" data-toggle="tooltip" data-placement="top" title="ver Resultados">

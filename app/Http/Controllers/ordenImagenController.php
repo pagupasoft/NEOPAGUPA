@@ -69,6 +69,36 @@ class ordenImagenController extends Controller
         }
     }
 
+    public function indexEditar()
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();         
+            //$ordenesAtencion=Orden_Examen::OrdenExamenesHOY()->select('orden_examen.orden_id as orden_examen_id', 'orden_atencion.orden_id', 'orden_fecha','orden_codigo','orden_numero', 'paciente_apellidos','paciente_nombres','orden_otros','orden_examen.orden_estado')->get();
+            $ordenesImagen=Orden_Imagen::ordenImagenes()->get();
+            
+
+            foreach($ordenesImagen as $ordenImagen){
+                if($ordenImagen->expediente){
+                    $expediente=$ordenImagen->expediente;
+
+                    if($expediente){
+                        $ordenesAtencion=$expediente->ordenAtencion;
+
+                        if($ordenesAtencion){
+                            $paciente = $ordenesAtencion->paciente;
+                        }
+                    }
+                }
+            }
+
+            return view('admin.laboratorio.ordenesImagen.indexEditar',['sucursales'=>Sucursal::Sucursales()->get(),'ordenesImagen'=>$ordenesImagen,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
     public function subirImagenes($id)
     {
         try{

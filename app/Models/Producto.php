@@ -169,4 +169,14 @@ class Producto extends Model
             ->orwhere(DB::raw('lower(producto_codigo)'), 'like', '%'.strtolower($buscar).'%');
         })->orderBy('producto_nombre','asc');        
     }
+    public function scopeProductosByCompraCodigo($query, $buscar){
+        return $query->join('empresa','empresa.empresa_id','=','producto.empresa_id')
+        ->orwhere('producto.producto_compra_venta','=','1')
+        ->orwhere('producto.producto_compra_venta','=','3')
+        ->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')
+        ->where(function ($query) use ($buscar) { 
+            $query->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%')
+            ->orwhere(DB::raw('lower(producto_codigo)'), 'like', '%'.strtolower($buscar).'%');
+        })->orderBy('producto_nombre','asc');        
+    }
 }

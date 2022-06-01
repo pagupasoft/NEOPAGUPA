@@ -14,8 +14,11 @@
                     <div class="float-right">
                             <button id="guardarID" type="submit" class="btn btn-success btn-sm" ><i
                                     class="fa fa-save"></i><span> Eliminar</span></button>
+                            <!--
                             <a href="{{ url("listaGuias") }}" class="btn btn-danger btn-sm not-active-neo"><i
-                                class="fas fa-times-circle"></i><span> Cancelar</span></a>  
+                                class="fas fa-times-circle"></i><span> Cancelar</span></a> 
+                            -->      
+                            <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                     </div>
                 </div>
             </div>

@@ -12,7 +12,10 @@
                     <div class="float-right">
                         <button id="guardarID" type="submit"  method="POST" class="btn btn-success btn-sm" ><i
                         class="fa fa-save"></i><span> Anular</span></button>
+                        <!--
                         <a href="{{ url("listaOrdenes") }}" class="btn btn-danger btn-sm">Cancelar</a>
+                        -->      
+                        <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>  
                                
                                 
                     </div>

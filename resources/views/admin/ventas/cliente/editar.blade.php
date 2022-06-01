@@ -8,7 +8,10 @@
             <h3 class="card-title">Editar cliente</h3>
             <div class="float-right">
                 <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                <!--
                 <button type="button" onclick='window.location = "{{ url("cliente") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+                -->      
+                <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>  
             </div>
         </div>
         <div class="card-body">

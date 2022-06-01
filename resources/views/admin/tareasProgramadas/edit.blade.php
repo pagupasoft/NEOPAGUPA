@@ -4,7 +4,10 @@
     <div class="card-header">
         <h3 class="card-title">Tareas Automatizadas - Editar</h3>
         <div class="float-right">
+            <!--
             <button onclick="window.history.back()" class="btn btn-default btn-sm float-right" data-toggle="modal" data-target="#modal-nuevo"><i class="fa fa-undo"></i>&nbsp;Atrás</button>
+            -->      
+            <button  type="button" onclick="history.back()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button> 
         </div>
     </div>
     <div class="card-body">

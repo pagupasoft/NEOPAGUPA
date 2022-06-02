@@ -285,7 +285,7 @@
                                             </div>
                                             <label for="numero_cheque" class="col-sm-2 col-form-label">Número cheque : </label>
                                             <div class="col-sm-2">
-                                                <input type="text" class="form-control" id="numero_cheque" name="numero_cheque" value="0">
+                                                <input type="number" class="form-control" id="numero_cheque" name="numero_cheque" min=1; value="0">
                                             </div>
                                             <label for="idValorCheque" class="col-sm-2 col-form-label">Valor cheque : </label>
                                             <div class="col-sm-2">
@@ -335,12 +335,15 @@
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-caj" role="tabpanel" aria-labelledby="custom-tabs-caj-tab">
                                         <div class="form-group row">
-                                            <label for="movimiento_id" class="col-sm-2 col-form-label">Movimiento : </label>
+                                            <label for="movimiento_id" class="col-sm-2 col-form-label">Movimiento Caja Y Bancos: </label>
                                             <div class="col-sm-6">
                                                 <select class="custom-select select2" id="movimiento_id" name="movimiento_id">
                                                     <option value="" label>--Seleccione una opcion--</option>
                                                     @foreach($movimientos as $movimiento)
-                                                        <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option>
+                                                        <option value="{{$movimiento->tipo_id}}C">CAJA - {{$movimiento->tipo_nombre}}</option>
+                                                    @endforeach
+                                                    @foreach($movimientosBanco as $movimientobanco)
+                                                        <option value="{{$movimientobanco->tipo_id}}B">BANCO - {{$movimientobanco->tipo_nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

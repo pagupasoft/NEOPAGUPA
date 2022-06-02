@@ -88,8 +88,16 @@ class pagosProveedoresController extends Controller
             }
             if($request->get('radioPago') == 'OTROS'){
                 $docPago = 0;
-                $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($request->get('movimiento_id'))->first(); 
-                $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                $tipo=substr($request->get('movimiento_id'), -1);
+                $Idmovimiento=substr($request->get('movimiento_id'), 0, -1);
+                if ($tipo=='C') {
+                    $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($Idmovimiento)->first();
+                    $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                }
+                if ($tipo=='B') {
+                    $TipoMovimientoCaja=Tipo_Movimiento_Banco::TipoMovimiento($Idmovimiento)->first();
+                    $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                }
                 $tipoDoc = 'OTROS';                
             }
             if($request->get('radioPago') == 'NDB'){

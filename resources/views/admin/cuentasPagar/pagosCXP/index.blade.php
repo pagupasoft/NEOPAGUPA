@@ -273,7 +273,7 @@
                                                 <div class="form-group row">
                                                     <label for="numCheque" class="col-sm-5 col-form-label">No. Cheque : </label>
                                                     <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="numCheque" name="numCheque" value="0">
+                                                        <input type="number" class="form-control" min=1  id="numCheque" name="numCheque" value="0" >
                                                     </div>
                                                 </div>
                                             </div>
@@ -312,12 +312,15 @@
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-caj" role="tabpanel" aria-labelledby="custom-tabs-caj-tab">                                 
                                         <div id="DivCaja" class="form-group row">
-                                            <label for="movimiento_id" class="col-sm-3 col-form-label">Movimiento de Caja : </label>
+                                            <label for="movimiento_id" class="col-sm-3 col-form-label">Movimiento de Caja y Bancos : </label>
                                             <div class="col-sm-6">
                                                 <select class="custom-select select2" id="movimiento_id" name="movimiento_id">
                                                     <option value="" label>--Seleccione una opcion--</option>
                                                     @foreach($movimientos as $movimiento)
-                                                        <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option>
+                                                        <option value="{{$movimiento->tipo_id}}C">CAJA - {{$movimiento->tipo_nombre}}</option>
+                                                    @endforeach
+                                                    @foreach($movimientosBanco as $movimientobanco)
+                                                        <option value="{{$movimientobanco->tipo_id}}B">BANCO - {{$movimientobanco->tipo_nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -504,6 +507,7 @@
         document.getElementById("custom-tabs-efe-tab").classList.remove('disabled');
         $('[href="#custom-tabs-efe"]').tab('show');
         $('#caja_id').prop("required", true);
+
     }
     function tabChe(){        
         seleccionarTab();
@@ -512,6 +516,7 @@
         $('#banco_id').prop("required", true);
         $('#cuenta_id').prop("required", true);
         $('#idValorCheque').prop("required", true);
+        $('#numCheque').prop("required", true);
         $('#idBeneficiario').prop("required", true);
         
     }
@@ -543,6 +548,7 @@
         $('#cuenta_id').removeAttr("required");
         $('#idValorCheque').removeAttr("required");
         $('#idBeneficiario').removeAttr("required");
+        $('#numCheque').removeAttr("required");
         
         $('#banco_trans').removeAttr("required");
         $('#cuenta_trans').removeAttr("required");

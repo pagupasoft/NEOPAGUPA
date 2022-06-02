@@ -23,6 +23,7 @@ use App\Models\Parametrizacion_Contable;
 use App\Models\Punto_Emision;
 use App\Models\Sucursal;
 use App\Models\Tarjeta_Credito;
+use App\Models\Tipo_Movimiento_Banco;
 use App\Models\Tipo_Movimiento_Caja;
 use App\Models\Voucher;
 use DateTime;
@@ -38,7 +39,7 @@ class cobrosClientesController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-            return view('admin.cuentasCobrar.pagosCXC.index',['movimientos'=>[],'cajaAbierta'=>$cajaAbierta,'tarjetas'=>Tarjeta_Credito::TarjetasCredito()->get(),'sucursales'=>Sucursal::sucursales()->get(),'cajas'=>Caja_Usuario::CajaXusuario(Auth::user()->user_id)->get(),'bancos'=>Banco::bancos()->get(),'bancosLista'=>Banco_Lista::BancoListas()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.cuentasCobrar.pagosCXC.index',['movimientos'=>[],'movimientosBanco'=>[],'cajaAbierta'=>$cajaAbierta,'tarjetas'=>Tarjeta_Credito::TarjetasCredito()->get(),'sucursales'=>Sucursal::sucursales()->get(),'cajas'=>Caja_Usuario::CajaXusuario(Auth::user()->user_id)->get(),'bancos'=>Banco::bancos()->get(),'bancosLista'=>Banco_Lista::BancoListas()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
          
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -49,7 +50,7 @@ class cobrosClientesController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-            return view('admin.cuentasCobrar.pagosCXC.index',['movimientos'=>Tipo_Movimiento_Caja::tipoMovimientos()->where('sucursal_id','=',$request->get('sucursal_id'))->get(),'bancosLista'=>Banco_Lista::BancoListas()->get(),'cajaAbierta'=>$cajaAbierta,'tarjetas'=>Tarjeta_Credito::TarjetasCredito()->get(),'sucurslaC'=>$request->get('sucursal_id'),'clientes'=>Cuenta_Cobrar::ClientesCXCSucursal($request->get('sucursal_id'))->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get(),'sucursales'=>Sucursal::sucursales()->get(),'cajas'=>Caja_Usuario::CajaXusuario(Auth::user()->user_id)->get(),'bancos'=>Banco::bancos()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.cuentasCobrar.pagosCXC.index',['movimientos'=>Tipo_Movimiento_Caja::tipoMovimientos()->where('sucursal_id','=',$request->get('sucursal_id'))->get(),'movimientosBanco'=>Tipo_Movimiento_Banco::TipoMovimientos()->where('sucursal_id','=',$request->get('sucursal_id'))->get(),'bancosLista'=>Banco_Lista::BancoListas()->get(),'cajaAbierta'=>$cajaAbierta,'tarjetas'=>Tarjeta_Credito::TarjetasCredito()->get(),'sucurslaC'=>$request->get('sucursal_id'),'clientes'=>Cuenta_Cobrar::ClientesCXCSucursal($request->get('sucursal_id'))->select('cliente.cliente_id','cliente.cliente_nombre')->distinct()->get(),'sucursales'=>Sucursal::sucursales()->get(),'cajas'=>Caja_Usuario::CajaXusuario(Auth::user()->user_id)->get(),'bancos'=>Banco::bancos()->get(),'cuentas'=>Cuenta::CuentasMovimiento()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('pagosCXC')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
@@ -92,10 +93,19 @@ class cobrosClientesController extends Controller
             }
             if($request->get('radioPago') == 'OTROS'){
                 $docPago = 0;
-                $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($request->get('movimiento_id'))->first(); 
-                $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                $tipo=substr($request->get('movimiento_id'), -1);
+                $Idmovimiento=substr($request->get('movimiento_id'), 0, -1);
+                if ($tipo=='C') {
+                    $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($Idmovimiento)->first();
+                    $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                }
+                if ($tipo=='B') {
+                    $TipoMovimientoCaja=Tipo_Movimiento_Banco::TipoMovimiento($Idmovimiento)->first();
+                    $cuentaPago = $TipoMovimientoCaja->cuenta_id;
+                }
                 $tipoDoc = 'OTROS';
             }
+            
             
             if($request->get('radioPago') == 'DEPOSITO DE CHEQUE' or $request->get('radioPago') == 'TRANSFERENCIA'){
                 $deposito =  new Deposito();

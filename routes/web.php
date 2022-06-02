@@ -1313,7 +1313,7 @@ Route::get('/comprasactivofijo/xml/{punto}',  [cargaractivofijoXMLController::cl
 Route::post('/comprasactivofijo/xml',  [cargaractivofijoXMLController::class, 'cargar'])->middleware('auth');
 Route::get('/comprasactivofijo/xmlProcesar/{clave}/{punto}',  [cargaractivofijoXMLController::class, 'procesar'])->middleware('auth');
 
-Route::get('/documentosanulados/ver/{clave}/{id}',  [generalController::class, 'anulados'])->middleware('auth');
+Route::get('/documentosanulados/ver/{id}',  [generalController::class, 'anulados'])->middleware('auth');
 //reporte tributario
 Route::get('/reporteTributario',  [formulariosController::class, 'nuevo'])->middleware('auth');
 Route::post('/reporteTributario',  [formulariosController::class, 'consultar'])->middleware('auth');

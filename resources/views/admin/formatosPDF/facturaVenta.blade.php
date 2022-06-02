@@ -72,12 +72,12 @@
             <tr>
               <td class="txt12"><b>OBLIGADO A LLEVAR CONTABILIDAD: </b> @if($empresa->empresa_contabilidad=='1')SI @ELSE NO @ENDIF</td>
             </tr>
-            @if($empresa->empresa_tipo=='Agente de Retención')
+            @if($empresa->empresa_tipo=='Microempresas')
               <tr>
               <td class="txt12"><b>Agente de retención Resolución No. 1</td>
               </tr>
             @endif
-            @if($empresa->empresa_tipo=='Microempresas')
+            @if($empresa->empresa_tipo=='Agente de Retención')
               <tr>
               <td class="txt12"><b>CONTRIBUYENTE RÉGIMEN MICROEMPRESAS</td>
               </tr>

@@ -53,7 +53,8 @@
         </form>
         <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
             <thead>
-                <tr class="text-center">    
+                <tr class="text-center">  
+                    <th></th>    
                     <th>Tipo</th>
                     <th>Fecha</th>
                     <th>Serie</th>
@@ -63,9 +64,11 @@
                     <th>Fecha Anul.</th>
                     <th>Motivo Anul.</th>
                     <th>Usuario Anul.</th>  
+                    
                 </tr>
             </thead>
             <tbody> 
+                
                 @if(isset($documentos)) 
                     @foreach($documentos as $documento)
                     <?php $bandera = false; ?>
@@ -76,12 +79,20 @@
                     @if($documento->liquidacion) @if($documento->liquidacion->rangoDocumento->puntoEmision->sucursal_id == $sucursalAux or $sucursalAux == '0') <?php $bandera = true; ?> @endif  @endif
                     @if($bandera)
                     <tr>
+                        <td>
+                            @if($documento->facturaVenta)<a href="{{ url("/documentosanulados/ver/{$documento->documento_anulado_id}") }}" style="color: #BF2929;" class=""  data-toggle="tooltip" data-placement="top" title="PDF" target="_blank"><i class="fas fa-2x fa-file-pdf " aria-hidden="true"></i></a> @endif
+                            @if($documento->notaCredito)<a href="{{ url("/documentosanulados/ver/{$documento->documento_anulado_id}") }}" style="color: #BF2929;" class=""  data-toggle="tooltip" data-placement="top" title="PDF" target="_blank"><i class="fas fa-2x fa-file-pdf " aria-hidden="true"></i></a>   @endif
+                            @if($documento->notaDebito)<a href="{{ url("/documentosanulados/ver/{$documento->documento_anulado_id}") }}" style="color: #BF2929;" class=""  data-toggle="tooltip" data-placement="top" title="PDF" target="_blank"><i class="fas fa-2x fa-file-pdf " aria-hidden="true"></i></a>   @endif
+                            @if($documento->retencion)  <a href="{{ url("/documentosanulados/ver/{$documento->documento_anulado_id}") }}" style="color: #BF2929;" class=""  data-toggle="tooltip" data-placement="top" title="PDF" target="_blank"><i class="fas fa-2x fa-file-pdf " aria-hidden="true"></i></a>  @endif
+                            @if($documento->liquidacion)<a href="{{ url("/documentosanulados/ver/{$documento->documento_anulado_id}") }}" style="color: #BF2929;" class=""  data-toggle="tooltip" data-placement="top" title="PDF" target="_blank"><i class="fas fa-2x fa-file-pdf " aria-hidden="true"></i></a>   @endif
+                        </td>
                         <td class="text-rigth">
                             @if($documento->facturaVenta) FACTURA @endif
                             @if($documento->notaCredito) NOTA DE CRÉDITO  @endif
                             @if($documento->notaDebito) NOTA DE DÉBITO  @endif
                             @if($documento->retencion) COMPROBANTE DE RETENCIÓN  @endif
                             @if($documento->liquidacion) LIQUIDACIÓN DE COMPRA  @endif
+
                         </td>
                         <td class="text-center">
                             @if($documento->facturaVenta) {{ $documento->facturaVenta->factura_fecha }} @endif
@@ -118,9 +129,11 @@
                             @if($documento->retencion)  {{ number_format($documento->retencion->retencion_total,2)  }} @endif
                             @if($documento->liquidacion) {{ number_format($documento->liquidacion->lc_total,2)  }}  @endif
                         </td> 
+                        
                         <td>{{ $documento->documento_anulado_fecha }}</td>
                         <td>{{ $documento->documento_anulado_motivo }}</td>
-                        <td></td>
+                        <td>{{ $documento->documento_anulado_motivo }}</td>
+                       
                     </tr>      
                     @endIf                   
                     @endforeach
@@ -131,4 +144,31 @@
     <!-- /.card-body -->
 </div>
 <!-- /.card -->
+<script>
+     <?php
+    if(isset($fecha_hasta)){  
+        ?>
+         document.getElementById("idHasta").value='<?php echo($fecha_hasta); ?>';
+         <?php
+    }
+    if(isset($fecha_desde)){  
+        ?>
+         document.getElementById("idDesde").value='<?php echo($fecha_desde); ?>';
+         <?php
+    }
+    if(isset($tipo)){  
+        ?>
+         document.getElementById("tipo_documento").value='<?php echo($tipo); ?>';
+         <?php
+    }
+    if(isset($idsucursal)){  
+     ?>
+
+      document.getElementById("sucursal_id").value='<?php echo($idsucursal); ?>';
+          <?php
+    }
+        ?>
+   
+    
+</script>
 @endsection

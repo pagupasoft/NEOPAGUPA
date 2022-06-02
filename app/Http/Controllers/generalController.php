@@ -12,6 +12,7 @@ use App\Models\Cuenta_Bancaria;
 use App\Models\Decimo_Cuarto;
 use App\Models\Decimo_Tercero;
 use App\Models\Diario;
+use App\Models\Documento_Anulado;
 use App\Models\Empleado;
 use App\Models\Empresa;
 use App\Models\Factura_Venta;
@@ -111,6 +112,55 @@ class generalController extends Controller
         $view =  \View::make('admin.formatosPDF.diario', ['empresa'=> $empresa,'diario'=> $diario]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
         return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y').'/'.$nombreArchivo;
+    }
+    public function anulados($id){
+        $documento=Documento_Anulado::findOrFail($id);
+        $empresa = Empresa::empresa()->first();
+        $codigosecue='';
+        $codigoini='';
+        $tipo='';
+        $fecha=date('d-m-Y');
+        if($documento->facturaVenta){
+            $tipo='FAC-';
+            $codigoini=$documento->facturaVenta->factura_serie;
+            $codigosecue=$documento->facturaVenta->factura_secuencial;
+            $fecha=$documento->facturaVenta->factura_fecha;
+
+        }
+        if($documento->notaCredito){
+            $tipo='NC-';
+            $codigoini=$documento->notaCredito->nc_serie;
+            $codigosecue=$documento->notaCredito->nc_secuencial;
+            $fecha=$documento->notaCredito->nc_fecha;
+
+        }
+        if($documento->notaDebito){
+            $tipo='ND-';
+            $codigoini=$documento->notaDebito->nd_serie;
+            $codigosecue=$documento->notaDebito->nd_secuencial;
+            $fecha=$documento->notaDebito->nd_fecha;
+
+        }
+        if($documento->retencion){
+            $tipo='RET-';
+            $codigoini=$documento->retencion->retencion_serie;
+            $codigosecue=$documento->retencion->retencion_secuencial;
+            $codigosecue=substr(str_repeat(0, 9).$documento->retencion->retencion_secuencial, - 9);
+            $fecha=$documento->retencion->retencion_fecha;
+
+        }
+        if($documento->liquidacion){
+            $tipo='LC-';
+            $codigoini=$documento->liquidacion->lc_serie;
+            $codigosecue=$documento->liquidacion->lc_secuencial;
+            $codigosecue=substr(str_repeat(0, 9).$documento->liquidacion->lc_secuencial, - 9);
+            $fecha=$documento->liquidacion->lc_fecha;
+
+        }
+        $codigopunto=substr($codigoini, -3);     
+        $codigoini=substr($codigoini, 0, -3);
+        $nombreArchivo = $tipo.$codigoini.'-'.$codigopunto.'-'.$codigosecue.".pdf";
+        return redirect('documentosElectronicos/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $fecha)->format('d-m-Y').'/'.$nombreArchivo);
     }
     public function pdfVariosDiario($diarios, $fecha){
         $empresa = Empresa::empresa()->first();

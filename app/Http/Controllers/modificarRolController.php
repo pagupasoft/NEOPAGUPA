@@ -75,15 +75,24 @@ class modificarRolController extends Controller
                
           
             foreach($rol as $x){
-                $datos[$count]["count"]=($count-1);
-                $datos[$count]["idrol"]=$x->cabecera_rol_id;
-                $datos[$count]["tipo"]=$x->cabecera_rol_tipo;
-                $datos[$count]["nombre"]=$x->empleado_nombre;
-                $datos[$count]["fecha"]=$x->cabecera_rol_fecha;
-                $datos[$count]["dias"]=$x->cabecera_rol_total_dias;
-                $datos[$count]["sueldo"]=$x->cabecera_rol_sueldo;
-                $datos[$count]["pago"]=$x->cabecera_rol_pago;
-                $count++;
+                $bandera=false;
+                $roles=Cabecera_Rol_CM::findOrFail($x->cabecera_rol_id);
+                foreach($roles->detalles as $detalle){
+                    if($detalle->detalle_rol_tipo!=null){
+                        $bandera=true;
+                    }
+                }
+                if ($bandera==false) {
+                    $datos[$count]["count"]=($count-1);
+                    $datos[$count]["idrol"]=$x->cabecera_rol_id;
+                    $datos[$count]["tipo"]=$x->cabecera_rol_tipo;
+                    $datos[$count]["nombre"]=$x->empleado_nombre;
+                    $datos[$count]["fecha"]=$x->cabecera_rol_fecha;
+                    $datos[$count]["dias"]=$x->cabecera_rol_total_dias;
+                    $datos[$count]["sueldo"]=$x->cabecera_rol_sueldo;
+                    $datos[$count]["pago"]=$x->cabecera_rol_pago;
+                    $count++;
+                }
             }
             
             return view('admin.RHCostaMarket.modificarRol.index',['datos'=>$datos,'fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'fecha_todo'=>$request->get('fecha_todo'),'nombre_empleado'=>$request->get('nombre_empleado'),'empleado'=>$empleado,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);   

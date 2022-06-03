@@ -12,12 +12,14 @@
                 <tr class="text-center neo-fondo-tabla">
                     <th></th>
                     <th>Fecha</th>
-                    <th>Valor</th>      
+                    <th>Interes</th>  
+                    <th>Capital</th>  
+                    <th>Monto Interes</th>      
                     <th>Diario</th>                                
                 </tr>
             </thead>            
             <tbody>
-               
+            <?php $valores= 0?>
                     @foreach($detalles as $detalle)
                     <tr class="text-center">
                         <td>
@@ -25,7 +27,16 @@
                             <a href="{{ url("detalleprestamos/{$detalle->detalle_id}/eliminar") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                         </td>
                         <td>{{ $detalle->detalle_fecha }}</td>  
-                        <td>{{ $detalle->detalle_total}}</td>       
+                        <td>{{ $detalle->detalle_total}}</td>    
+                        <td>{{ $detalle->prestamo->prestamo_monto}}</td> 
+                        @if(isset($detalle->diario->diario_id))
+                            <?php $valores= $valores+$detalle->detalle_total?>
+                        @endif
+                        <td> @if(isset($detalle->diario->diario_id))
+                        {{$valores+$detalle->prestamo->prestamo_monto }}
+                            @else
+                                0
+                        @endif</td>    
                         <td >@if(isset($detalle->diario->diario_id))<a href="{{ url("asientoDiario/ver/{$detalle->diario->diario_id}") }}" target="_blank">{{ $detalle->diario->diario_codigo }}</a>@endif</td>  
                     </tr>
                     @endforeach

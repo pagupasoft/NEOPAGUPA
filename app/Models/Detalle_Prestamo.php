@@ -25,7 +25,7 @@ class Detalle_Prestamo extends Model
     protected $guarded =[
     ];  
     public function scopeIntereses($query, $id){
-        return $query->join('prestamo_banco', 'prestamo_banco.prestamo_id','=','detalle_prestamo.prestamo_id')->where('detalle_prestamo.prestamo_id','=',$id)->where('empresa_id','=',Auth::user()->empresa_id)->where('detalle_estado','=','1');
+        return $query->join('prestamo_banco', 'prestamo_banco.prestamo_id','=','detalle_prestamo.prestamo_id')->where('detalle_prestamo.prestamo_id','=',$id)->where('empresa_id','=',Auth::user()->empresa_id)->where('detalle_estado','=','1')->orderBy('detalle_fecha','asc');;
     }  
     public function diario()
     {

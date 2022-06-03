@@ -71,7 +71,8 @@ class detallePrestamoController extends Controller
             $detalle->detalle_dias = $diff+1;
             $detalle->detalle_estado = '1';
             $detalle->prestamo()->associate($prestamo);
-
+            $detalle->save();
+            /*
             $general = new generalController();
             $diario = new Diario();
             $diario->diario_codigo = $general->generarCodigoDiario($request->get('idFecha'),'CIPB');
@@ -93,7 +94,7 @@ class detallePrestamoController extends Controller
             $detalle->diario()->associate($diario); 
 
             $general->registrarAuditoria('Registro de Diario de Diario codigo: -> '.$diario->diario_codigo, $diario->diario_codigo,'Tipo de Diario -> '.$diario->diario_referencia.'');
-            /********************detalle de diario de venta********************/
+          
             $detalleDiario = new Detalle_Diario();
             $detalleDiario->detalle_debe = $request->get('idValor');
             $detalleDiario->detalle_haber = 0.00 ;
@@ -123,16 +124,14 @@ class detallePrestamoController extends Controller
             
             $prestamo->prestamo_total_interes=(Detalle_Prestamo::Intereses($prestamo->prestamo_id)->sum('detalle_valor_interes'));
             $prestamo->prestamo_pago_total=$prestamo->prestamo_total_interes+$prestamo->prestamo_monto;
-            $prestamo->save();
-
+        
+            $url = $general->pdfDiario($diario);
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
-            /*Inicio de registro de auditoria */
-            
-            /*Fin de registro de auditoria */
-            $url = $general->pdfDiario($diario);
-
-            return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('success','Datos guardados exitosamente')->with('pdf',$url);
+            */
+           
+           
+            return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('success','Datos guardados exitosamente');
         
     }
 
@@ -216,17 +215,18 @@ class detallePrestamoController extends Controller
             DB::beginTransaction();
             $auditoria = new generalController();
             $detalle = Detalle_Prestamo::findOrFail($id);
-            $diario=Diario::findOrFail($detalle->diario_id);
-            $detalle->delete();  
-
-            foreach($diario->detalles as $detalles){
-                $detalles->delete();
-                $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo .'relacionado al interes del prestamo-> '.$detalle->detalle_total.' con el  monto del prestamo de '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre , 0, '');
-            }
-            $diario->delete();
-            $auditoria->registrarAuditoria('Eliminacion del  diario  N°'.$diario->diario_codigo .'relacionado al prestamo de -> '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre , 0, '');
-            /*Inicio de registro de auditoria */
             
+            $detalle->delete();  
+            if(isset($detalle->diario_id)){
+                $diario=Diario::findOrFail($detalle->diario_id);
+                foreach($diario->detalles as $detalles){
+                    $detalles->delete();
+                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo .'relacionado al interes del prestamo-> '.$detalle->detalle_total.' con el  monto del prestamo de '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre , 0, '');
+                }
+                $diario->delete();
+                $auditoria->registrarAuditoria('Eliminacion del  diario  N°'.$diario->diario_codigo .'relacionado al prestamo de -> '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre , 0, '');
+                /*Inicio de registro de auditoria */
+            }
             $auditoria->registrarAuditoria('Eliminacion de detalle del prestamo -> '.$detalle->detalle_total.' con el  monto del prestamo de '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre ,'0','');
             /*Fin de registro de auditoria */
             DB::commit();

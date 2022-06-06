@@ -273,7 +273,7 @@
                                                 <div class="form-group row">
                                                     <label for="numCheque" class="col-sm-5 col-form-label">No. Cheque : </label>
                                                     <div class="col-sm-7">
-                                                        <input type="number" class="form-control" min=1  id="numCheque" name="numCheque" value="0" >
+                                                        <input type="number" class="form-control"  id="numCheque" name="numCheque" value="0" >
                                                     </div>
                                                 </div>
                                             </div>

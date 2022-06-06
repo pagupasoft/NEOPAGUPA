@@ -285,7 +285,7 @@
                                             </div>
                                             <label for="numero_cheque" class="col-sm-2 col-form-label">Número cheque : </label>
                                             <div class="col-sm-2">
-                                                <input type="number" class="form-control" id="numero_cheque" name="numero_cheque" min=1; value="0">
+                                                <input type="number" class="form-control" id="numero_cheque" name="numero_cheque"  value="0">
                                             </div>
                                             <label for="idValorCheque" class="col-sm-2 col-form-label">Valor cheque : </label>
                                             <div class="col-sm-2">

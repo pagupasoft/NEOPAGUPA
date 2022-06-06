@@ -249,11 +249,13 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            @if(count($datos[17])>0)
+                            <!--@if(count($datos[17])>0)
                                 <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($datos[17][1]['valor'],2, '.', '') }}" onkeyup="calculos();" required/></td>
                             @else
-                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="0.00" onkeyup="calculos();" required/></td>
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($ant609,2, '.', '') }}" onkeyup="calculos();" required/></td>
                             @endif
+                            !-->
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($ant609,2, '.', '') }}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(+) Ajuste por IVA devuelto e IVA rechazado (por concepto de devoluciones de IVA), ajuste de IVA por procesos de control y otros (adquisiciones en importaciones), imputables al crédito tributario</td>
@@ -262,7 +264,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor4" name="valor4" value="0.00" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor4" name="valor4" value="{{number_format($ant612,2, '.', '')}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">Saldo crédito tributario para el próximo mes Por adquisiciones e importaciones</td>
@@ -271,7 +273,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor5" name="valor5" value="{{number_format($datos[23],2)}}" required readonly/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor5" name="valor5" value="{{number_format($datos[23],2)}}" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">Saldo crédito tributario para el próximo mes Por retenciones en la fuente de IVA que le han sido efectuadas</td>
@@ -282,7 +284,7 @@
                             <td class="centrar-texto"></td>
 
                             @if(count($datos[17])>0)
-                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="{{number_format($datos[17][1]['valor'],2, '.', '') }}" required readonly/></td>
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="{{number_format($datos[17][1]['valor'],2, '.', '') }}" required/></td>
                             @else
                                 <td class="centrar-texto"><input class="form-control derecha-texto" id="valor6" name="valor6" value="0.00" required readonly/></td>
                             @endif
@@ -328,8 +330,8 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto">302</td>
                             <td colspan="2"></td>
-                            <td class="centrar-texto"><input class="text-right" type="number" name="base_imponible" min="0" value="0" step="any"></input></td>
-                            <td class="centrar-texto"><input class="text-right" type="number" name="valor_retenido" min="0" value="0" step="any"></input></td>
+                            <td class="centrar-texto"><input class="text-right" type="number" id="valor7" name="base_imponible" min="0" value="{{number_format($ant302vneto,2, '.', '')}}" step="any"></input></td>
+                            <td class="centrar-texto"><input class="text-right" type="number" id="valor8" name="valor_retenido" min="0" value="{{number_format($ant302iva,2, '.', '')}}" step="any"></input></td>
                         </tr>
                         @for ($i = 1; $i <= count($datos[14]); ++$i)
                         <tr>
@@ -407,6 +409,11 @@
     </div>
 </form>
 <script type="text/javascript">
+    function cargarmetodo(){
+        document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
+        document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+
+    }
     function calculos(){
         document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
         document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);

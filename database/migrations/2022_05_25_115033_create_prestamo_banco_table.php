@@ -22,6 +22,7 @@ class CreatePrestamoBancoTable extends Migration
             $table->double('prestamo_plazo');
             $table->double('prestamo_total_interes');
             $table->double('prestamo_pago_total');
+            $table->text('prestamo_observacion');
             $table->string('prestamo_estado');
             $table->bigInteger('cuenta_debe');
             $table->foreign('cuenta_debe')->references('cuenta_id')->on('cuenta');

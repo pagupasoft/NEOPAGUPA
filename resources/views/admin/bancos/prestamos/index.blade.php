@@ -165,7 +165,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>                                                                                                            
+                        </div>  
+                        <div class="form-group row">
+                                <label for="idDescripcion" class="col-sm-3 col-form-label">Observación</label>
+                                <div class="col-sm-9">                                    
+                                    <textarea type="text" class="form-control" id="idDescripcion" name="idDescripcion" placeholder="Descripcion" ></textarea>
+                                </div>
+                        </div>                                                                                                          
                     </div>  
                 </div>
                 <div class="modal-footer justify-content-between">

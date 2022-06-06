@@ -20,6 +20,7 @@ class Prestamo_Banco extends Model
         'prestamo_plazo',
         'prestamo_total_interes',
         'prestamo_pago_total',
+        'prestamo_observacion',
         'prestamo_estado',
         'cuenta_debe',
         'cuenta_haber',

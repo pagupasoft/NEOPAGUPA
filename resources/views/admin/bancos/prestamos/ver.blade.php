@@ -68,6 +68,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="sucursal_id" class="col-sm-2 col-form-label">Observacion</label>
+                <div class="col-sm-10">                        
+                    <label class="form-control">{{ $prestamos->amortizacion_observacion}}</label>                          
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">
                     @if($prestamos->prestamo_estado=="1")

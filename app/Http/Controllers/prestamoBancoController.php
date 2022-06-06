@@ -85,6 +85,7 @@ class prestamoBancoController extends Controller
             $prestamo->prestamo_pago_total = 0;
             $prestamo->cuenta_debe = $request->get('idDebe');
             $prestamo->cuenta_haber = $request->get('idHaber');
+            $prestamo->prestamo_observacion = $request->get('idDescripcion');
             $prestamo->banco_id = $request->get('idBanco');
             $prestamo->sucursal_id = $request->get('sucursal_id');
             $prestamo->prestamo_estado = 1;

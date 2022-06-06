@@ -1,0 +1,207 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Amortizacion_Seguros;
+use App\Models\Cuenta;
+use App\Models\Detalle_Amortizacion;
+use App\Models\Detalle_Seguro;
+use App\Models\Proveedor;
+use App\Models\Punto_Emision;
+use App\Models\sucursal;
+use App\Models\Transaccion_Compra;
+use DateTime;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class amortizacionSegurosController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get(); 
+            return view('admin.bancos.seguros.index',[ 'cuentas'=>Cuenta::CuentasMovimiento()->get(),'proveedores'=>Proveedor::proveedores()->get(),'sucursales'=>sucursal::sucursales()->get(), 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function buscar(Request $request)
+    {
+        try{ 
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $seguros=Amortizacion_Seguros::segurosucursal($request->get('idsucursal'))->get();
+            return view('admin.bancos.seguros.index',['seguros'=>$seguros,'cuentas'=>Cuenta::CuentasMovimiento()->get(),'proveedores'=>Proveedor::proveedores()->get(),'sucursales'=>sucursal::Sucursales()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }catch(\Exception $ex){
+         
+            return redirect('inicio')->with('error','Ocurrio un error vuelva a intentarlo');
+        }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function validarfecha($fecha){
+        $valores = explode('/', $fecha);
+        if(count($valores) == 3 && checkdate($valores[1], $valores[0], $valores[2])){
+            return true;
+        }
+        return false;
+    }
+    public function store(Request $request)
+    {
+        try{
+            DB::beginTransaction();
+            $trasaccion=Transaccion_Compra::findOrFail($request->get('idFactura'));
+            $seguro = new Amortizacion_Seguros();
+            $seguro->amortizacion_fecha = $request->get('idFecha');
+            $seguro->amortizacion_periodo = $request->get('periodo');
+            $seguro->amortizacion_total = $request->get('idValor');
+            $seguro->amortizacion_observacion = $request->get('idDescripcion');
+            $seguro->amortizacion_pago_total = 0;
+            $seguro->transaccion_id = $request->get('idFactura');
+            $seguro->cuenta_debe = $request->get('idCuenta');
+            $seguro->sucursal_id = $request->get('idSucursal');
+            $seguro->amortizacion_estado = 1;
+            $seguro->save();
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Registro de Amortizacion se seguro -> Con Monto '.$request->get('idValor').' Con Factura Compra '.$trasaccion->transaccion_numero,'0','Con Periodo Amortizacion -> '.$request->get('periodo'));
+           
+            $dia=DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('d');
+            $mes=DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('m');
+            $anio=DateTime::createFromFormat('Y-m-d', $request->get('idFecha'))->format('Y');
+            for ($i = 0; $i < $request->get('periodo'); ++$i) {
+                    $mes++;
+                    $detalle=new Detalle_Amortizacion();
+                    if($mes==13){
+                        $mes=1;
+                    }
+                    $fecha=$dia.'/'.$mes.'/'.$anio;
+                    
+                if($this->validarfecha($fecha)==false){
+                    $L = new DateTime( $anio.'-'.$mes.'-01' ); 
+                    $day=DateTime::createFromFormat('Y-m-d',$L->format( 'Y-m-t' ))->format('d');
+                    $fecha=$day.'/'.$mes.'/'.$anio;
+                }
+                
+
+                $fecha=(DateTime::createFromFormat('d/m/Y', $fecha)->format('Y-m-d'));
+                $detalle->detalle_fecha=$fecha;
+                $detalle->detalle_mes=DateTime::createFromFormat('Y-m-d', $detalle->detalle_fecha)->format('m');
+                $detalle->detalle_anio=DateTime::createFromFormat('Y-m-d',$detalle->detalle_fecha)->format('Y');
+                $detalle->detalle_valor=round($request->get('idValor')/$request->get('periodo'),2);
+                $detalle->detalle_estado=1;
+               
+                $detalle->seguro()->associate($seguro); 
+                $detalle->save(); 
+                $auditoria = new generalController();
+                $auditoria->registrarAuditoria('Registro de Detalle de  Amortizacion se seguro -> Con Monto '.round($request->get('idValor')/$request->get('periodo'),2).' Con Factura Compra '.$trasaccion->transaccion_numero,'0','Con fecha -> '.$fecha);
+                          
+            }
+
+           
+          
+           
+            DB::commit();
+            return redirect('amortizacion')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('amortizacion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $seguro=Amortizacion_Seguros::findOrFail($id);  
+            if($seguro){
+                return view('admin.bancos.seguros.ver',['seguro'=>$seguro, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            }else{
+                return redirect('/denegado');
+            }
+        }
+        catch(\Exception $ex){      
+            return redirect('amortizacion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function delete($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $seguro=Amortizacion_Seguros::findOrFail($id);  
+            if($seguro){
+                return view('admin.bancos.seguros.eliminar',['seguro'=>$seguro, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            }else{
+                return redirect('/denegado');
+            }
+        }
+        catch(\Exception $ex){      
+            return redirect('amortizacion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

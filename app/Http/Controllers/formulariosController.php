@@ -53,15 +53,59 @@ class formulariosController extends Controller
             if (isset($_POST['consultar'])){
                 $ant615 = 0;
                 $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','615')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','615')->first();
                 if(isset($reporteAnt->reporte_viva)){
                     $ant615 = $reporteAnt->reporte_viva;
+                }else{                    
+                    $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','605')->first();
+                    if(isset($reporteAnt->reporte_viva)){
+                        $ant615 = $reporteAnt->reporte_viva;                    
+                    }
                 }
                 $ant617 = 0;
                 $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','617')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','617')->first();
                 if(isset($reporteAnt->reporte_viva)){
                     $ant617 = $reporteAnt->reporte_viva;
+                }else{
+                    $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','606')->first();
+                    if(isset($reporteAnt->reporte_viva)){
+                        $ant617 = $reporteAnt->reporte_viva;                    
+                    }
                 }
-            return view('admin.sri.formularios.reporteTributario',['ant615'=>$ant615,'ant617'=>$ant617,'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                $ant605 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','605')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant605 = $reporteAnt->reporte_viva;                    
+                }
+
+                $ant606 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','606')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','606')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant606 = $reporteAnt->reporte_viva;
+                }
+                $ant609 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','609')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','609')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant609 = $reporteAnt->reporte_viva;
+                }
+                $ant612 = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','612')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','612')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant612 = $reporteAnt->reporte_viva;
+                }
+                $ant302iva = 0;
+                $ant302vneto = 0;
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','302')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','612')->first();
+                if(isset($reporteAnt->reporte_viva)){
+                    $ant302vneto = $reporteAnt->reporte_vneto;
+                    $ant302iva = $reporteAnt->reporte_viva;
+                }
+            return view('admin.sri.formularios.reporteTributario',['ant302vneto'=>$ant302vneto,'ant302iva'=>$ant302iva,'ant612'=>$ant612,'ant609'=>$ant609,'ant606'=>$ant606,'ant605'=>$ant605,'ant615'=>$ant615,'ant617'=>$ant617,'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }
             if (isset($_POST['pdf'])){
                 $empresa =  Empresa::empresa()->first();
@@ -89,10 +133,10 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));          
                             $reporteTributario->reporte_tipo = $datos[0][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = $datos[0][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[0][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[0][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[0][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[0][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[0][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[0][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[0][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[0][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -106,10 +150,10 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          
                             $reporteTributario->reporte_tipo = $datos[1][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = $datos[1][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[1][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[1][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[1][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[1][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[1][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[1][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[1][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[1][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -124,10 +168,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 0;
-                        $reporteTributario->reporte_vbruto = $datos[2][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[2][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[2][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[2][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[2][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[2][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[2][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[2][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -142,10 +186,10 @@ class formulariosController extends Controller
                                                     
                             $reporteTributario->reporte_tipo = $datos[3][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = 0;
-                            $reporteTributario->reporte_vbruto = $datos[3][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[3][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[3][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[3][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[3][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[3][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[3][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[3][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -160,10 +204,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 434;
-                        $reporteTributario->reporte_vbruto = $datos[4][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[4][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[4][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[4][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[4][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[4][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[4][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[4][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -177,10 +221,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 0;
-                        $reporteTributario->reporte_vbruto = $datos[20][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[20][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[20][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[20][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[20][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[20][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[20][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[20][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -211,10 +255,10 @@ class formulariosController extends Controller
                                                     
                             $reporteTributario->reporte_tipo = $datos[5][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = $datos[5][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[5][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[5][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[5][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[5][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[5][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[5][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[5][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[5][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -228,10 +272,10 @@ class formulariosController extends Controller
                                                     
                             $reporteTributario->reporte_tipo = $datos[6][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = $datos[6][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[6][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[6][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[6][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[6][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[6][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[6][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[6][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[6][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -246,10 +290,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 0;
-                        $reporteTributario->reporte_vbruto = $datos[7][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[7][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[7][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[7][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[7][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[7][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[7][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[7][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -263,10 +307,10 @@ class formulariosController extends Controller
                                                     
                             $reporteTributario->reporte_tipo = $datos[8][$i]['porcentaje'];
                             $reporteTributario->reporte_casillero = $datos[8][$i]['casillero'];
-                            $reporteTributario->reporte_vbruto = $datos[8][$i]['compraBruta'];
-                            $reporteTributario->reporte_vnc = $datos[8][$i]['nc'];
-                            $reporteTributario->reporte_vneto = $datos[8][$i]['compraNeta'];
-                            $reporteTributario->reporte_viva = $datos[8][$i]['iva'];
+                            $reporteTributario->reporte_vbruto = floatval($datos[8][$i]['compraBruta']);
+                            $reporteTributario->reporte_vnc = floatval($datos[8][$i]['nc']);
+                            $reporteTributario->reporte_vneto = floatval($datos[8][$i]['compraNeta']);
+                            $reporteTributario->reporte_viva = floatval($datos[8][$i]['iva']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -280,10 +324,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 534;
-                        $reporteTributario->reporte_vbruto = $datos[9][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[9][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[9][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[9][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[9][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[9][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[9][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[9][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -297,10 +341,10 @@ class formulariosController extends Controller
                                                 
                         $reporteTributario->reporte_tipo = 0;
                         $reporteTributario->reporte_casillero = 0;
-                        $reporteTributario->reporte_vbruto = $datos[10][1]['compraBruta'];
-                        $reporteTributario->reporte_vnc = $datos[10][1]['nc'];
-                        $reporteTributario->reporte_vneto = $datos[10][1]['compraNeta'];
-                        $reporteTributario->reporte_viva = $datos[10][1]['iva'];
+                        $reporteTributario->reporte_vbruto = floatval($datos[10][1]['compraBruta']);
+                        $reporteTributario->reporte_vnc = floatval($datos[10][1]['nc']);
+                        $reporteTributario->reporte_vneto = floatval($datos[10][1]['compraNeta']);
+                        $reporteTributario->reporte_viva = floatval($datos[10][1]['iva']);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -317,7 +361,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $datos[22];
+                        $reporteTributario->reporte_viva = floatval($datos[22]);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -334,7 +378,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $datos[23];
+                        $reporteTributario->reporte_viva = floatval($datos[23]);
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -349,7 +393,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor1');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor1'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -363,7 +407,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor2');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor2'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -377,7 +421,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor3');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor3'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -390,7 +434,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor4');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor4'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -400,18 +444,18 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
                         $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
                         $reporteTributario->reporte_tipo = 0;
-                        $reporteTributario->reporte_casillero = 612;
+                        $reporteTributario->reporte_casillero = 615;
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor5');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor5'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
 
                         //615
                         //if(count($datos[23]) > 0){                        
-                        
+                        /*
                             $reporteTributario = new Reporte_Tributario();
                             $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
                             $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));
@@ -421,13 +465,13 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_vbruto = 0;
                             $reporteTributario->reporte_vnc = 0;
                             $reporteTributario->reporte_vneto = 0;
-                            $reporteTributario->reporte_viva = $datos[23];
+                            $reporteTributario->reporte_viva = floatval($datos[23]);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
                                                  
                         //}
-
+                            */
                         //codigo 617
                         $reporteTributario = new Reporte_Tributario();
                         $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
@@ -437,7 +481,7 @@ class formulariosController extends Controller
                         $reporteTributario->reporte_vbruto = 0;
                         $reporteTributario->reporte_vnc = 0;
                         $reporteTributario->reporte_vneto = 0;
-                        $reporteTributario->reporte_viva = $request->get('valor6');
+                        $reporteTributario->reporte_viva = floatval($request->get('valor6'));
                         $reporteTributario->reporte_estado = 1;
                         $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                         $reporteTributario->save();
@@ -451,8 +495,8 @@ class formulariosController extends Controller
                                 $reporteTributario->reporte_casillero = $datos[12][$i]['codigo'];
                                 $reporteTributario->reporte_vbruto = 0;
                                 $reporteTributario->reporte_vnc = 0;
-                                $reporteTributario->reporte_vneto = $datos[12][$i]['base'];
-                                $reporteTributario->reporte_viva = $datos[12][$i]['valor'];
+                                $reporteTributario->reporte_vneto = floatval($datos[12][$i]['base']);
+                                $reporteTributario->reporte_viva = floatval($datos[12][$i]['valor']);
                                 $reporteTributario->reporte_estado = 1;
                                 $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                                 $reporteTributario->save();
@@ -467,8 +511,8 @@ class formulariosController extends Controller
                                     $reporteTributario->reporte_casillero = 0;
                                     $reporteTributario->reporte_vbruto = 0;
                                     $reporteTributario->reporte_vnc = 0;
-                                    $reporteTributario->reporte_vneto = $datos[13][1]['base'];
-                                    $reporteTributario->reporte_viva = $datos[13][1]['valor'];
+                                    $reporteTributario->reporte_vneto = floatval($datos[13][1]['base']);
+                                    $reporteTributario->reporte_viva = floatval($datos[13][1]['valor']);
                                     $reporteTributario->reporte_estado = 1;
                                     $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                                     $reporteTributario->save();
@@ -483,8 +527,8 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_casillero = $datos[14][$i]['codigo'];
                             $reporteTributario->reporte_vbruto = 0;
                             $reporteTributario->reporte_vnc = 0;
-                            $reporteTributario->reporte_vneto = $datos[14][$i]['base'];
-                            $reporteTributario->reporte_viva = $datos[14][$i]['valor'];
+                            $reporteTributario->reporte_vneto = floatval($datos[14][$i]['base']);
+                            $reporteTributario->reporte_viva = floatval($datos[14][$i]['valor']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -500,8 +544,8 @@ class formulariosController extends Controller
                                 $reporteTributario->reporte_casillero = $datos[14][$i]['codigo'];
                                 $reporteTributario->reporte_vbruto = 0;
                                 $reporteTributario->reporte_vnc = 0;
-                                $reporteTributario->reporte_vneto = $datos[14][$i]['base'];
-                                $reporteTributario->reporte_viva = $datos[14][$i]['valor'];
+                                $reporteTributario->reporte_vneto = floatval($datos[14][$i]['base']);
+                                $reporteTributario->reporte_viva = floatval($datos[14][$i]['valor']);
                                 $reporteTributario->reporte_estado = 1;
                                 $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                                 $reporteTributario->save();
@@ -515,8 +559,8 @@ class formulariosController extends Controller
                     $reporteTributario->reporte_casillero = 0;
                     $reporteTributario->reporte_vbruto = 0;
                     $reporteTributario->reporte_vnc = 0;
-                    $reporteTributario->reporte_vneto = $datos[15][1]['base'];
-                    $reporteTributario->reporte_viva = $datos[15][1]['valor'];
+                    $reporteTributario->reporte_vneto = floatval($datos[15][1]['base']);
+                    $reporteTributario->reporte_viva = floatval($datos[15][1]['valor']);
                     $reporteTributario->reporte_estado = 1;
                     $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                     $reporteTributario->save();
@@ -530,8 +574,8 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_casillero = $datos[16][$i]['codigo'];
                             $reporteTributario->reporte_vbruto = 0;
                             $reporteTributario->reporte_vnc = 0;
-                            $reporteTributario->reporte_vneto = $datos[16][$i]['base'];
-                            $reporteTributario->reporte_viva = $datos[16][$i]['valor'];
+                            $reporteTributario->reporte_vneto = floatval($datos[16][$i]['base']);
+                            $reporteTributario->reporte_viva = floatval($datos[16][$i]['valor']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -545,8 +589,8 @@ class formulariosController extends Controller
                     $reporteTributario->reporte_casillero = 0;
                     $reporteTributario->reporte_vbruto = 0;
                     $reporteTributario->reporte_vnc = 0;
-                    $reporteTributario->reporte_vneto = $datos[17][1]['base'];
-                    $reporteTributario->reporte_viva = $datos[17][1]['valor'];
+                    $reporteTributario->reporte_vneto = floatval($datos[17][1]['base']);
+                    $reporteTributario->reporte_viva = floatval($datos[17][1]['valor']);
                     $reporteTributario->reporte_estado = 1;
                     $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                     $reporteTributario->save();
@@ -560,8 +604,8 @@ class formulariosController extends Controller
                             $reporteTributario->reporte_casillero = $datos[18][$i]['codigo'];
                             $reporteTributario->reporte_vbruto = 0;
                             $reporteTributario->reporte_vnc = 0;
-                            $reporteTributario->reporte_vneto = $datos[18][$i]['base'];
-                            $reporteTributario->reporte_viva = $datos[18][$i]['valor'];
+                            $reporteTributario->reporte_vneto = floatval($datos[18][$i]['base']);
+                            $reporteTributario->reporte_viva = floatval($datos[18][$i]['valor']);
                             $reporteTributario->reporte_estado = 1;
                             $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                             $reporteTributario->save();
@@ -575,8 +619,22 @@ class formulariosController extends Controller
                     $reporteTributario->reporte_casillero = 0;
                     $reporteTributario->reporte_vbruto = 0;
                     $reporteTributario->reporte_vnc = 0;
-                    $reporteTributario->reporte_vneto = $datos[19][1]['base'];
-                    $reporteTributario->reporte_viva = $datos[19][1]['valor'];
+                    $reporteTributario->reporte_vneto = floatval($datos[19][1]['base']);
+                    $reporteTributario->reporte_viva = floatval($datos[19][1]['valor']);
+                    $reporteTributario->reporte_estado = 1;
+                    $reporteTributario->empresa_id =  Auth::user()->empresa_id;
+                    $reporteTributario->save();
+
+                    //codigo 302
+                    $reporteTributario = new Reporte_Tributario();
+                    $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
+                    $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                                                
+                    $reporteTributario->reporte_tipo = 0;
+                    $reporteTributario->reporte_casillero = 302;
+                    $reporteTributario->reporte_vbruto = 0;
+                    $reporteTributario->reporte_vnc = 0;
+                    $reporteTributario->reporte_vneto = floatval($request->get('base_imponible'));
+                    $reporteTributario->reporte_viva = floatval($request->get('valor_retenido'));
                     $reporteTributario->reporte_estado = 1;
                     $reporteTributario->empresa_id =  Auth::user()->empresa_id;
                     $reporteTributario->save();

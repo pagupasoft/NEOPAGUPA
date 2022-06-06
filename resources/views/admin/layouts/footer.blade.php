@@ -70,6 +70,7 @@
     <script src="{{ asset('admin/js/bootbox/bootbox.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('admin/js/bootbox/bootbox.locales.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('admin/js/select3.full.min.js') }}"></script>
+    <script src="{{ asset('admin/js/jsTreeTable/javascript.js') }}"></script>
     <!-- Page specific script -->
     @yield('scriptAjax')
 <script type="text/javascript">

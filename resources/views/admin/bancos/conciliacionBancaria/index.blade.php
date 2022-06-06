@@ -25,7 +25,7 @@
                         </div>
                         <label for="idBanco" class="col-lg-1 col-md-1 col-form-label">Cuenta :</label>
                         <div class="col-lg-2 col-md-2">
-                            <select class="custom-select" id="cuenta_id" name="cuenta_id" onclick="cargarContable();"
+                            <select class="custom-select" id="cuenta_id" name="cuenta_id"
                                 required>
                                 <option value="" label>--Seleccione una opcion--</option>
                                 @if(isset($cuentaBancaria)) <option value="{{ $cuentaBancaria->cuenta_bancaria_id }}" selected>{{ $cuentaBancaria->cuenta_bancaria_numero }}</option> @endif
@@ -228,13 +228,15 @@
             </div>
             <hr>
             <?php 
+                $idCol = 0;
+                $idCol2 = 0;
                 $saldo = 0; 
                 if(isset($saldoAnteriorContable)){
                     $saldo = $saldoAnteriorContable;
                 }
-            ?>
+            ?> 
             <div class="card-body table-responsive p-0" style="height: 400px;">
-                <table class="table table-head-fixed text-nowrap">
+                <table id="tree-table" class="table table-head-fixed text-nowrap">
                     <thead>
                         <tr class="text-center">                            
                             <th>Fecha</th>                           
@@ -258,36 +260,44 @@
                             @endif
                         </tr>
                         @if(isset($conciliacionBancariaMatriz))
-                            @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)        
-                            <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
-                            <tr class="text-center" @if($conciliacionBancariaMatriz[$i]['conciliacion']) style="background:  #c7f0e4;" @endif>                                
-                                <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>                                
-                                <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
-                                <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
-                                <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
-                                <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>
-                                <td>
-                                    <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
-                                    @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
-                                        <label for="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
-                                    </div>
-                                    @endif
-                                </td> 
-                                <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
-                                <td class="text-right">$ {{ number_format($saldo,2)}}</td>                           
-                                <td>
-                                    @if(is_array($conciliacionBancariaMatriz[$i]['diario']))
-                                        @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
-                                            <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario'][$cd]}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario'][$cd]}}</a> - 
-                                        @endfor
-                                    @else
-                                        <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario']}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario']}}</a>
-                                    @endif
-                                </td>                                
-                                <td class="text-left">{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
-                            </tr>
+                            @for ($i = 0; $i < count($conciliacionBancariaMatriz); ++$i)    
+                                @if(empty($conciliacionBancariaMatriz[$i]['idCol']) == false)
+                                <?php $idCol = $i+1; ?>
+                                <tr data-id="{{$i+1}}" data-parent="0" data-level="1">
+                                    <td data-column="name" colspan="10">
+                                        {{$conciliacionBancariaMatriz[$i]['idCol']}}
+                                    </td>
+                                </tr>
+                                @endif
+                                <?php $saldo = $saldo + $conciliacionBancariaMatriz[$i]['credito'] - $conciliacionBancariaMatriz[$i]['debito']; ?>       
+                                <tr data-parent="{{$idCol}}" data-level="2" class="text-center" @if($conciliacionBancariaMatriz[$i]['conciliacion']) style="background:  #c7f0e4;" @endif>                                
+                                    <td>{{ $conciliacionBancariaMatriz[$i]['fecha'] }}</td>                                
+                                    <td>{{ $conciliacionBancariaMatriz[$i]['tipo'] }}</td>
+                                    <td>{{ $conciliacionBancariaMatriz[$i]['numero']}}</td>
+                                    <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['credito'],2)}}</td>
+                                    <td class="text-right">{{ number_format($conciliacionBancariaMatriz[$i]['debito'],2)}}</td>
+                                    <td>
+                                        <input type="hidden" name="idonciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}"/>
+                                        @if($conciliacionBancariaMatriz[$i]['bloqueo'] == false) 
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" name="chkConciliacion[]" value="{{$conciliacionBancariaMatriz[$i]['id'].'-'.$conciliacionBancariaMatriz[$i]['tabla']}}" @if($conciliacionBancariaMatriz[$i]['conciliacion'] == true) checked @endif>
+                                            <label for="chk-{{ $conciliacionBancariaMatriz[$i]['tabla'] }}-{{ $conciliacionBancariaMatriz[$i]['id'] }}" class="custom-control-label"></label>
+                                        </div>
+                                        @endif
+                                    </td> 
+                                    <td>{{ $conciliacionBancariaMatriz[$i]['fechaConsiliacion']}}</td>   
+                                    <td class="text-right">$ {{ number_format($saldo,2)}}</td>                           
+                                    <td>
+                                        @if(is_array($conciliacionBancariaMatriz[$i]['diario']))
+                                            @for($cd = 0; $cd < count($conciliacionBancariaMatriz[$i]['diario']); $cd++)
+                                                <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario'][$cd]}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario'][$cd]}}</a> - 
+                                            @endfor
+                                        @else
+                                            <a href="{{ url("asientoDiario/ver/{$conciliacionBancariaMatriz[$i]['diario']}")}}" target="_blank">{{ $conciliacionBancariaMatriz[$i]['diario']}}</a>
+                                        @endif
+                                    </td>                                
+                                    <td class="text-left">{{ $conciliacionBancariaMatriz[$i]['referencia']}}</td>                            
+                                </tr>
                             @endfor
                         @endif
                     </tbody>
@@ -296,7 +306,7 @@
             <hr>
             <center><h3><b>POR CONCILIAR EN OTROS MESES</b><h3></center>
             <div class="card-body table-responsive p-0" style="height: 400px;">
-            <table class="table table-head-fixed text-nowrap">
+            <table id="tree-table2" class="table table-head-fixed text-nowrap">
                 <thead>
                     <tr class="text-center">
                         <th>Fecha</th>
@@ -313,9 +323,17 @@
                 </thead>
                 <tbody>
                 @if(isset($otrasconciliacionesBancariaMatriz))
-                        @for ($c = 0; $c < count($otrasconciliacionesBancariaMatriz); ++$c)      
+                        @for ($c = 0; $c < count($otrasconciliacionesBancariaMatriz); ++$c) 
+                            @if(empty($otrasconciliacionesBancariaMatriz[$c]['idCol']) == false)
+                                <?php $idCol2 = $c+1; ?>
+                                <tr data-id="{{$c+1}}" data-parent="0" data-level="1">
+                                    <td data-column="name" colspan="10" style="cursor: pointer;">
+                                        {{$otrasconciliacionesBancariaMatriz[$c]['idCol']}}
+                                    </td>
+                                </tr>
+                            @endif     
                         <?php $saldo = $saldo + $otrasconciliacionesBancariaMatriz[$c]['credito'] - $otrasconciliacionesBancariaMatriz[$c]['debito']; ?>         
-                        <tr class="text-center" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion']) style="background:  #c7f0e4;" @endif>                            
+                        <tr data-parent="{{$idCol2}}" data-level="2" class="text-center" @if($otrasconciliacionesBancariaMatriz[$c]['conciliacion']) style="background:  #c7f0e4;" @endif>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['fecha'] }}</td>                            
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['tipo'] }}</td>
                             <td>{{ $otrasconciliacionesBancariaMatriz[$c]['numero']}}</td>

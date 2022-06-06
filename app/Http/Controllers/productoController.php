@@ -308,7 +308,10 @@ class productoController extends Controller
         return Producto::ProductosByNombreCodigo($buscar)->get();
     }
     public function buscarByNombreCompra($buscar){
-        return Producto::ProductosByCompraCodigo($buscar)->get();
+        return Producto::ProductosByNombreCodigo($buscar)
+        ->where(function ($query){
+            $query->where('producto_compra_venta','=','1')->orwhere('producto_compra_venta','=','3');
+        })->get(); 
     }
     public function buscarByNombreVenta($buscar){
         return Producto::ProductosByNombreCodigo($buscar)

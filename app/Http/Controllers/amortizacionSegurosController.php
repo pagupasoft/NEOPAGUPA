@@ -167,6 +167,7 @@ class amortizacionSegurosController extends Controller
         catch(\Exception $ex){      
             return redirect('amortizacion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
+       
     }
     /**
      * Show the form for editing the specified resource.
@@ -199,6 +200,19 @@ class amortizacionSegurosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            DB::beginTransaction();
+            $seguro = Amortizacion_Seguros::findOrFail($id);
+            $seguro->delete();
+            /*Inicio de registro de auditoria */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Eliminacion de Amortizacion de Seguro -> '.$seguro->amortizacion_total.' con Factura '.$seguro->transaccionCompra->transaccion_numero,'0','');
+            /*Fin de registro de auditoria */
+            DB::commit();
+            return redirect('amortizacion')->with('success','Datos eliminados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('amortizacion')->with('error','El registro no pudo ser borrado, tiene resgitros adjuntos.');
+        }
     }
 }

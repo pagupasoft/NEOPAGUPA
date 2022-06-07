@@ -511,6 +511,7 @@ Route::get('/grupo/{id}/eliminar', [grupoPerController::class, 'delete'])->middl
 Route::get('/sucursal/{id}/eliminar', [sucursalController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/permiso/{id}/eliminar', [permisoController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/prestamos/{id}/eliminar', [prestamoBancoController::class, 'delete'])->middleware('auth')->middleware('acceso');
+Route::get('/amortizacion/{id}/eliminar', [amortizacionSegurosController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/pais/{id}/eliminar', [paisController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/rol/{id}/eliminar', [rolController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/usuario/{id}/eliminar', [usuarioController::class, 'delete'])->middleware('auth')->middleware('acceso');

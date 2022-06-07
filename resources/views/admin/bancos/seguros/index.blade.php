@@ -48,8 +48,8 @@
                 <tr class="text-center">
                     <td>
                        
-                        <a href="{{ url("seguro/{$seguro->amortizacion_id}")}}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                        <a href="{{ url("seguro/{$seguro->amortizacion_id}/eliminar")}}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                        <a href="{{ url("amortizacion/{$seguro->amortizacion_id}")}}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                        <a href="{{ url("amortizacion/{$seguro->amortizacion_id}/eliminar")}}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                         <a href="{{ url("detalleamortizacion/{$seguro->amortizacion_id}/agregar") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Agregar Interes"><i class="fa fa-plus" aria-hidden="true"></i></a>
                         <a href="{{ url("detalleamortizacion/{$seguro->amortizacion_id}") }}" class="btn btn-xs btn-secondary"  data-toggle="tooltip" data-placement="top" title="Lista de Interes"><i class="fa fa-list" aria-hidden="true"></i></a>
                     </td>

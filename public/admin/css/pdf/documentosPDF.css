@@ -148,6 +148,11 @@ body {
     padding-top: 7px;
     padding-bottom: 7px;
 }
+.interlinea2 {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    text-align: left;
+}
 .cabecera-diario {
     border-top: 1px solid black; 
     border-bottom: 1px solid black;

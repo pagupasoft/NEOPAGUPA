@@ -32,7 +32,7 @@
                     </select>                                     
                 </div>
             </div>
-            <table id="example1" class="table table-bordered table-hover table-responsive sin-salto">
+            <table id="example5" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
                     <tr class="text-center">
                         <th><div class="icheck-primary d-inline"><input type="checkbox" id="checkboxPrimary1" value="select" onClick="SELECTITEMS()" checked>

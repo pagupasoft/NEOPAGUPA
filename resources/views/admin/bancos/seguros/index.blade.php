@@ -133,7 +133,7 @@
                         <div class="form-group row">
                                 <label for="idValor" class="col-sm-3 col-form-label">Periodo Amortización</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="periodo" name="periodo" value="0" required>
+                                    <input type="number" class="form-control" id="periodo" name="periodo" value="0" required>
                                 </div>
                         </div>
                         <div class="form-group row">

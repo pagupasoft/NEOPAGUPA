@@ -123,6 +123,20 @@ class prestamoBancoController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    public function editar($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();  
+            
+            $prestamos=Prestamo_Banco::findOrFail($id);
+            return view('admin.bancos.prestamos.edit',['prestamos'=>$prestamos, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     public function delete($id)
     {
         try{
@@ -144,7 +158,19 @@ class prestamoBancoController extends Controller
      */
     public function edit($id)
     {
-        //
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();  
+            $sucursales=sucursal::Sucursales()->get();
+            $bancos=Banco::Bancos()->get();
+            $cuentas=Cuenta::Cuentas()->get();
+            $prestamos=Prestamo_Banco::findOrFail($id);
+            return view('admin.bancos.prestamos.edit',['sucursales'=>$sucursales,'cuentas'=>$cuentas,'bancos'=>$bancos,'prestamos'=>$prestamos, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**
@@ -156,7 +182,31 @@ class prestamoBancoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try{
+            DB::beginTransaction();
+            $prestamo = Prestamo_Banco::findOrFail($id);
+            $prestamo->prestamo_inicio = $request->get('idFechaini');
+            $prestamo->prestamo_fin = $request->get('idFechafin');
+            $prestamo->prestamo_monto = $request->get('idMonto');
+            $prestamo->prestamo_interes = $request->get('idInteres');
+            $prestamo->prestamo_plazo = $request->get('idPlazo');      
+            $prestamo->cuenta_debe = $request->get('idDebe');
+            $prestamo->cuenta_haber = $request->get('idHaber');
+            $prestamo->prestamo_observacion = $request->get('idDescripcion');
+            $prestamo->banco_id = $request->get('idBanco');
+            $prestamo->sucursal_id = $request->get('sucursal_id');
+            $prestamo->save();
+            $Banco=Banco::findOrFail($request->get('idBanco'));
+            /*Inicio de registro de auditoria */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Actualizacion de prestamo -> Con Monto '.$request->get('idMonto').' Con Banco '.$Banco->bancoLista->banco_lista_nombre,'0','Con Interes -> '.$request->get('idInteres'));
+            /*Fin de registro de auditoria */
+            DB::commit();
+            return redirect('prestamos')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('prestamos')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**

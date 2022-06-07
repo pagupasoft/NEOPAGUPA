@@ -805,7 +805,6 @@ Route::get('/receta/entregar/{id}', [atencionRecetasController::class, 'entregar
 Route::get('/receta/imprimir/{id}', [atencionRecetasController::class, 'imprimirPrescripcion'])->middleware('auth')->middleware('acceso');
 Route::post('subirDocumento', [atencionRecetasController::class, 'subirDocumentoEscaneado'])->middleware('auth')->middleware('acceso');
 
-Route::get('/prestamos/{id}/edit', [prestamoBancoController::class, 'editar'])->middleware('auth');
 
 Route::get('/tareasProgramadas/{id}/edit', [tareasProgramadasController::class, 'editar'])->middleware('auth');
 Route::post('/tareasProgramadas/actualizar', [tareasProgramadasController::class, 'actualizar'])->middleware('auth');

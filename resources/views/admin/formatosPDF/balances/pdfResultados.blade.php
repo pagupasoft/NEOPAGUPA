@@ -23,9 +23,9 @@
     <br>
     <br>
     <table>
-        <tr><td class="interlinea"><b>TOTAL INGRESOS : </b> {{ $totIng }}</td></tr>
-        <tr><td class="interlinea"><b>TOTAL EGRESOS : </b> {{ $totEgr }}</td></tr>
-        <tr><td class="interlinea"><b>RESULTADO : </b> {{ $total }}</td></tr>
+        <tr><td class="interlinea" width="30%"><b>TOTAL INGRESOS : </td><td class="interlinea2" >{{ $totIng }}</td></tr>
+        <tr><td class="interlinea"><b>TOTAL EGRESOS : </td><td class="interlinea2">{{ $totEgr }}</td></tr>
+        <tr><td class="interlinea"><b>RESULTADO : </td><td class="interlinea2">{{ $total }}</td></tr>
     </table>
 
     <br><br><br><br><br>
@@ -35,7 +35,7 @@
             <td ></td>
             <td class="" style="border-top: 1px solid black;font-weight: bold;;width: 40%;">GERENTE GENERAL<br>{{$empresa->empresa_representante}}<br>C.I.{{$empresa->empresa_cedula_representante}}</td>
             <td ></td>
-            <td class="" style="border-top: 1px solid black;font-weight: bold;width: 40%;">CONTADOR:<br>{{$empresa->empresa_contador}}<br>C.I.{{$empresa->empresa_cedula_contador}}</td>
+            <td class="" style="border-top: 1px solid black;font-weight: bold;width: 40%;">CONTADOR:<br>{{$empresa->empresa_contador}}<br>R.U.C.{{$empresa->empresa_cedula_contador}}</td>
             <td ></td>
         </tr>
     </table>

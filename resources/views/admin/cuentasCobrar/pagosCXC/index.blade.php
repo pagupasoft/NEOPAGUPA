@@ -515,6 +515,8 @@
         $('#idValorCheque').prop("required", true);
         $('#idDueñoCheque').prop("required", true);
         $('#cuentaChequecliente').prop("required", true);
+        $('#numCheque').prop("required", true);
+        document.getElementById("numCheque").min = "1";
 
     }
     function tabDep(){
@@ -560,6 +562,9 @@
         $('#tarjeta_id').removeAttr("required");
         $('#numVoucher').removeAttr("required");
         $('#idCuentaTarjeta').removeAttr("required");
+
+        $('#numCheque').removeAttr("min");
+        $('#numCheque').removeAttr("required");
 
         $('#movimiento_id').removeAttr("required");
                 

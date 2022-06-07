@@ -518,6 +518,8 @@
         $('#idValorCheque').prop("required", true);
         $('#numCheque').prop("required", true);
         $('#idBeneficiario').prop("required", true);
+        document.getElementById("numCheque").min = "1";
+
         
     }
     function tabDep(){
@@ -549,6 +551,7 @@
         $('#idValorCheque').removeAttr("required");
         $('#idBeneficiario').removeAttr("required");
         $('#numCheque').removeAttr("required");
+        $('#numCheque').removeAttr("min");
         
         $('#banco_trans').removeAttr("required");
         $('#cuenta_trans').removeAttr("required");
@@ -558,6 +561,7 @@
 
         $('#banco_nd').removeAttr("required");
         $('#cuenta_nd').removeAttr("required");
+   
 
         document.getElementById("custom-tabs-efe-tab").classList.remove('disabled');
         document.getElementById("custom-tabs-che-tab").classList.remove('disabled');

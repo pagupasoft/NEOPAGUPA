@@ -6,6 +6,7 @@
         <td colspan="10" style="text-align: center;">CENTRO DE CONSUMO</td>
     </tr>
 </table>
+<?php $fechas=$datos[2]; $dias=$datos[1]; $hectarea=$datos[4];  $datos=$datos[3];   ?>
 <table>
     <thead>
         <tr class="text-center">

@@ -27,4 +27,16 @@
         <tr><td class="interlinea"><b>TOTAL EGRESOS : </b> {{ $totEgr }}</td></tr>
         <tr><td class="interlinea"><b>RESULTADO : </b> {{ $total }}</td></tr>
     </table>
+
+    <br><br><br><br><br>
+    <table >
+        <tr class="letra12">
+            
+            <td ></td>
+            <td class="" style="border-top: 1px solid black;font-weight: bold;;width: 40%;">GERENTE GENERAL<br>{{$empresa->empresa_representante}}<br>C.I.{{$empresa->empresa_cedula_representante}}</td>
+            <td ></td>
+            <td class="" style="border-top: 1px solid black;font-weight: bold;width: 40%;">CONTADOR:<br>{{$empresa->empresa_contador}}<br>C.I.{{$empresa->empresa_cedula_contador}}</td>
+            <td ></td>
+        </tr>
+    </table>
 @endsection

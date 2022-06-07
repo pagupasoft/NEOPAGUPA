@@ -131,7 +131,7 @@
                         <div class="form-group row">
                             <label for="idMonto" class="col-sm-3 col-form-label">Monto</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="idMonto" name="idMonto"  step="0.00" placeholder="Monto" required>
+                                <input type="number" class="form-control" id="idMonto" name="idMonto"  step="any" placeholder="Monto" required>
                             </div>
                         </div>
                         <div class="form-group row">

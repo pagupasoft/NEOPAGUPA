@@ -54,7 +54,9 @@ class detallePrestamoController extends Controller
      */
     public function store(Request $request)
     {
+        try{      
            
+            DB::beginTransaction();   
             
             $prestamo=Prestamo_Banco::findOrFail($request->get('idprestamo'));
            
@@ -129,9 +131,13 @@ class detallePrestamoController extends Controller
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
             */
-           
+            DB::commit();
            
             return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/detalleamortizacion/'.$request->get('idseguro').'/agregar')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
         
     }
 

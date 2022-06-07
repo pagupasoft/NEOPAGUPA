@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">¿Esta seguro de eliminar el Interes?</h3>
+      
         <div class="float-right">
               <!--  <button type="button" onclick='window.location = "{{ url("detalleprestamos/{$detalle->prestamo_id}") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>
                 -->   

@@ -4,6 +4,7 @@ use App\Http\Controllers\activoFijoController;
 use App\Http\Controllers\actualizarCostosController;
 use App\Http\Controllers\ajusteInventarioController;
 use App\Http\Controllers\alimentacionController;
+use App\Http\Controllers\amortizacionSegurosController;
 use App\Http\Controllers\analisis_LaboratorioController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\empresaController;
@@ -181,6 +182,7 @@ use App\Http\Controllers\depositoCajaController;
 use App\Http\Controllers\depreciacionMensualController;
 use App\Http\Controllers\descuentoManualAnticipoClienteController;
 use App\Http\Controllers\descuentoManualAnticipoProveedorController;
+use App\Http\Controllers\detalleAmortizacionController;
 use App\Http\Controllers\detalleLaboratorioController;
 use App\Http\Controllers\detallePrestamoController;
 use App\Http\Controllers\diasPlazoController;
@@ -364,6 +366,8 @@ Route::resource('listacontroldia', listaControlDiaController::class)->middleware
 Route::resource('beneficiosSociales', beneficiosSocialesConsolidadaController::class)->middleware('auth');
 Route::resource('tipoMovimientoEmpleado', tipoMovimientoEmpleadoController::class)->middleware('auth');
 Route::resource('verificadorComprasSri', verificarComprasSriController::class)->middleware('auth');
+Route::resource('amortizacion', amortizacionSegurosController::class)->middleware('auth');
+
 
 Route::resource('tipoTransaccion', tipoTransaccionController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -492,6 +496,7 @@ Route::resource('descuentoManualProveedores', descuentoManualAnticipoProveedorCo
 Route::resource('descuentoManualClientes', descuentoManualAnticipoClienteController::class)->middleware('auth');
 Route::resource('prestamos', prestamoBancoController::class)->middleware('auth');
 Route::resource('detalleprestamos', detallePrestamoController::class)->middleware('auth');
+Route::resource('detalleamortizacion', detalleAmortizacionController::class)->middleware('auth');
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
@@ -614,6 +619,9 @@ Route::post('prestamos/buscar', [prestamoBancoController::class, 'buscar'])->mid
 Route::get('/detalleprestamos/{id}/agregar', [detallePrestamoController::class, 'agregar'])->middleware('auth')->middleware('acceso');
 Route::get('/detalleprestamos/{id}/ver', [detallePrestamoController::class, 'ver'])->middleware('auth');
 Route::get('/detalleprestamos/{id}/eliminar', [detallePrestamoController::class, 'delete'])->middleware('auth');
+Route::get('/detalleamortizacion/{id}/agregar', [detalleAmortizacionController::class, 'agregar'])->middleware('auth')->middleware('acceso');
+Route::get('/detalleamortizacion/{id}/ver', [detalleAmortizacionController::class, 'ver'])->middleware('auth');
+Route::get('/detalleamortizacion/{id}/eliminar', [detalleAmortizacionController::class, 'delete'])->middleware('auth');
 
 Route::get('/controldiario/new/{id}', [controlDiasController::class, 'nuevo'])->middleware('auth');
 Route::get('/listacontroldia/{id}/ver', [listaControlDiaController::class, 'ver'])->middleware('auth');
@@ -690,6 +698,7 @@ Route::get('/excelCliente', [clienteController::class, 'excelCliente'])->middlew
 Route::post('/excelCliente', [clienteController::class, 'CargarExcelCliente'])->middleware('auth');
 
 Route::post('/facturacionsinOrden', [facturasinOrdenController::class, 'guardarfactura'])->middleware('auth');
+Route::post('/seguroBuscar', [amortizacionSegurosController::class, 'buscar'])->middleware('auth');
 
 Route::post('/cuenta/enviar', [cuentaController::class, 'enviar'])->middleware('auth');
 Route::get('/PlanCuentaUp', [cuentaController::class, 'subir'])->middleware('auth');

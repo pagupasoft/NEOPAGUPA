@@ -23,9 +23,9 @@
     <br>
     <br>
     <table>
-        <tr><td class="interlinea" width="30%"><b>TOTAL INGRESOS : </td><td class="interlinea2" width="30%">{{ $totIng }}</td><td ></td></tr>
-        <tr><td class="interlinea"><b>TOTAL EGRESOS : </td><td class="interlinea2" width="30%">{{ $totEgr }}</td><td ></td></tr>
-        <tr><td class="interlinea"><b>RESULTADO : </td><td class="interlinea2" width="30%">{{ $total }}</td><td ></td></tr>
+        <tr><td class="interlinea" width="30%"><b>TOTAL INGRESOS : </td><td class="interlinea2" width="15%">{{ $totIng }}</td><td ></td></tr>
+        <tr><td class="interlinea"><b>TOTAL EGRESOS : </td><td class="interlinea2" width="15%">{{ $totEgr }}</td><td ></td></tr>
+        <tr><td class="interlinea"><b>RESULTADO : </td><td class="interlinea2" width="15%">{{ $total }}</td><td ></td></tr>
     </table>
 
     <br><br><br><br><br>

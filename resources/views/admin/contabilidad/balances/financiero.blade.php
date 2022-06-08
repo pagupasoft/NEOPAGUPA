@@ -38,8 +38,16 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="nivel" class="col-sm-1 col-form-label"><center>Nivel :</center></label>
+                <div class="col-sm-1">
+                    <select class="custom-select" id="nivel" name="nivel" require>
+                        @foreach($niveles as $nivel)
+                            <option value="{{$nivel->cuenta_nivel}}" @if(isset($nivelC)) @if($nivelC == $nivel->cuenta_nivel) selected @endif @endif>{{ $nivel->cuenta_nivel }}</option>
+                        @endforeach
+                    </select>                    
+                </div>
                 <label for="cuenta_inicio" class="col-sm-1 col-form-label"><center>Cuenta Inicio</center></label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <select class="custom-select select2" id="cuenta_inicio" name="cuenta_inicio" require>
                         @foreach($cuentas as $cuenta)
                             <option value="{{$cuenta->cuenta_numero}}" @if(isset($ini)) @if($ini == $cuenta->cuenta_numero) selected @endif @endif>{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
@@ -47,7 +55,7 @@
                     </select>                    
                 </div>
                 <label for="cuenta_fin" class="col-sm-1 col-form-label"><center>Cuenta Fin</center></label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <select class="custom-select select2" id="cuenta_fin" name="cuenta_fin" require>
                         @foreach($cuentas as $cuenta)
                             <option value="{{$cuenta->cuenta_numero}}" @if(isset($fin)) @if($fin == $cuenta->cuenta_numero) selected @endif @else @if($cuentaFinal == $cuenta->cuenta_id) selected @endif @endif>{{ $cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre }}</option>
@@ -55,12 +63,7 @@
                     </select>                    
                 </div>
                 <label for="cResultado" class="col-sm-1 col-form-label"><center>Resultado :</center></label>
-                <div class="col-sm-3">
-                    <select class="invisible" id="nivel" name="nivel" require>
-                        @foreach($niveles as $nivel)
-                            <option value="{{$nivel->cuenta_nivel}}" @if(isset($nivelC)) @if($nivelC == $nivel->cuenta_nivel) selected @endif @endif>{{ $nivel->cuenta_nivel }}</option>
-                        @endforeach
-                    </select>  
+                <div class="col-sm-2">                    
                     <select class="custom-select select2" id="cResultado" name="cResultado" require>
                         @foreach($cuentas as $cuenta)
                             <option value="{{$cuenta->cuenta_numero}}" @if(isset($resultadoC)) @if($resultadoC == $cuenta->cuenta_numero) selected @endif @else @if(isset($resultado)) @if($resultado == $cuenta->cuenta_id) selected @endif @endif @endif>{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
@@ -86,8 +89,13 @@
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)    
                         <tr>
-                            <td align="left">{{ $datos[$i]['numero'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
-                            <td align="left">{{ $datos[$i]['nombre'] }}<input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>
+                            @if($datos[$i]['nivel'] <=4)
+                                <td align="left"><b>{{ $datos[$i]['numero'] }}</b><input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
+                                <td align="left"><b>{{ $datos[$i]['nombre'] }}</b><input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>                                
+                            @else
+                                <td align="left">{{ $datos[$i]['numero'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
+                                <td align="left">{{ $datos[$i]['nombre'] }}<input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>  
+                            @endif
                             @for($j=1 ; $j <= $cantSucursal; $j++)
                             <td align="right">$ {{ number_format($datos[$i][$j],2) }}</td>
                             @endfor
@@ -127,8 +135,8 @@
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <center><label for="totEgr">Utilidad Acumulada:</label></center>
-                        <input type="text" class="form-control centrar-texto letra15" name="totUtil"  value='$ {{ number_format($totUtil,2) }}' readonly>
+                        <center><label for="totEgr">Patrimonio Neto:</label></center>
+                        <input type="text" class="form-control centrar-texto letra15" name="totPat"  value='$ {{ number_format(abs($totPat),2) }}' readonly>
                     </div>
                 </div>
                 <div class="col-sm-1">
@@ -139,8 +147,8 @@
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <center><label for="tot">Total Patrimonio:</label></center>
-                        <input type="text" class="form-control centrar-texto letra15" name="totPat"  value='$ {{ number_format($totAct-abs($totPas)-$totUtil ,2) }}' readonly>
+                        <center><label for="tot">Total Pasivo + Patrimonio Neto:</label></center>
+                        <input type="text" class="form-control centrar-texto letra15" name="totUtil"  value='$ {{ number_format(abs($totPas) + abs($totPat) ,2) }}' readonly>
                     </div>
                 </div>      
             </div>

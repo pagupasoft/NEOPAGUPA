@@ -63,9 +63,15 @@ class estadoFinancieroController extends Controller
             foreach($sucursales as $sucursal){
                 $totAct = $totAct + Detalle_Diario::SaldoActualByFecha('1',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
                 $totPas = $totPas + Detalle_Diario::SaldoActualByFecha('2',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
+                $totUtil = $totUtil + abs(Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo) - 
+                abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo) - 
+                abs(Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
+                
                 $totPat = $totPat + Detalle_Diario::SaldoActualByFecha('3',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo;
-                $totUtil = $totUtil + Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo - abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo + Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
+                //$totUtil = $totUtil + Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo - abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo + Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
+                
             }
+            $totPat = abs($totPat) + abs($totUtil);
             $tot = 0;
             foreach(Cuenta::CuentasRango($request->get('cuenta_inicio'),$request->get('cuenta_fin'))->where('cuenta_nivel','<=',$request->get('nivel'))->get() as $cuenta){
                 $datos[$count]['numero'] = $cuenta->cuenta_numero;
@@ -81,6 +87,7 @@ class estadoFinancieroController extends Controller
                         $datos[$count][$count2] = $datos[$count][$count2] + $aux;
                     }
                     $tot = $tot + $datos[$count][$count2];
+                    
                     $count2 ++;
                 }
                 $datos[$count]['total'] = $tot;
@@ -101,6 +108,7 @@ class estadoFinancieroController extends Controller
             $count = 1;
             $totAct = doubleval(str_replace('$ ','',str_replace(',','',$request->get('totAct'))));
             $totPas = doubleval(str_replace('$ ','',str_replace(',','',$request->get('totPas'))));
+            $totUtil = doubleval(str_replace('$ ','',str_replace(',','',$request->get('totUtil'))));
             $totPat = $totAct - $totPas;
             $num = $request->get('idNum');
             $nom = $request->get('idNom');
@@ -120,7 +128,7 @@ class estadoFinancieroController extends Controller
             if (!is_dir($ruta)) {
                 mkdir($ruta, 0777, true);
             }
-            $view =  \View::make('admin.formatosPDF.balances.pdfFinanciero', ['totAct'=>$totAct,'totPas'=>$totPas,'totPat'=>$totPat,'datos'=>$datos,'desde'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d/m/Y'),'hasta'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d/m/Y'),'empresa'=>$empresa]);
+            $view =  \View::make('admin.formatosPDF.balances.pdfFinanciero', ['totUtil'=>$totUtil,'totAct'=>$totAct,'totPas'=>$totPas,'totPat'=>$totPat,'datos'=>$datos,'desde'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d/m/Y'),'hasta'=>DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d/m/Y'),'empresa'=>$empresa]);
             $nombreArchivo = 'ESTADO DE SITUACION FINANCIERA '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
             return PDF::loadHTML($view)->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             //return PDF::loadHTML($view)->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->stream($nombreArchivo.'.pdf');

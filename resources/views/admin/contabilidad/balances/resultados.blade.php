@@ -81,8 +81,13 @@
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)    
                         <tr>
-                            <td align="left">{{ $datos[$i]['numero'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
-                            <td align="left">{{ $datos[$i]['nombre'] }}<input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>
+                            @if($datos[$i]['nivel'] <=4)
+                                <td align="left"><b>{{ $datos[$i]['numero'] }}</b><input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
+                                <td align="left"><b>{{ $datos[$i]['nombre'] }}</b><input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>
+                            @else
+                                <td align="left">{{ $datos[$i]['numero'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
+                                <td align="left">{{ $datos[$i]['nombre'] }}<input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>
+                            @endif
                             @for($j=1 ; $j <= $cantSucursal; $j++)
                             <td align="right">$ {{ number_format($datos[$i][$j],2) }}</td>
                             @endfor

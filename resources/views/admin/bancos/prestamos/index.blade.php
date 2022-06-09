@@ -46,6 +46,7 @@
                         <th>Plazo</th>     
                         <th>Pago Interes</th> 
                         <th>Pago Total</th>     
+                        <th>Observacion</th>     
                         <th>Cuenta Debe</th>     
                         <th>Cuenta Haber</th>                                  
                     </tr>
@@ -70,6 +71,7 @@
                             <td>{{ $prestamo->prestamo_plazo }}</td>  
                             <td>{{ $prestamo->prestamo_total_interes }}</td>  
                             <td>{{ $prestamo->prestamo_pago_total }}</td>  
+                            <td>{{ $prestamo->prestamo_observacion }}</td>  
                             <td>{{ $prestamo->cuentadebe->cuenta_numero.' -  '.$prestamo->cuentadebe->cuenta_nombre}}</td>
                             <td>{{ $prestamo->cuentahaber->cuenta_numero.' -  '.$prestamo->cuentahaber->cuenta_nombre}}</td>             
                         </tr>

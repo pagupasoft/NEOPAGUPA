@@ -618,6 +618,7 @@ Route::post('cargarEgreso', [rubroController::class, 'cargaregreso'])->middlewar
 Route::post('prestamos/buscar', [prestamoBancoController::class, 'buscar'])->middleware('auth');
 /*RUTAS ADICIONALES*/
 Route::get('/detalleprestamos/{id}/agregar', [detallePrestamoController::class, 'agregar'])->middleware('auth')->middleware('acceso');
+Route::get('/detalleprestamos/{id}/editar', [detallePrestamoController::class, 'editar'])->middleware('auth');
 Route::get('/detalleprestamos/{id}/ver', [detallePrestamoController::class, 'ver'])->middleware('auth');
 Route::get('/detalleprestamos/{id}/eliminar', [detallePrestamoController::class, 'delete'])->middleware('auth');
 Route::get('/detalleamortizacion/{id}/agregar', [detalleAmortizacionController::class, 'agregar'])->middleware('auth')->middleware('acceso');

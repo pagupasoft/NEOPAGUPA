@@ -136,7 +136,7 @@ class detallePrestamoController extends Controller
             return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('/detalleamortizacion/'.$request->get('idseguro').'/agregar')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
         
     }
@@ -154,6 +154,19 @@ class detallePrestamoController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $detalles=Detalle_Prestamo::Intereses($id)->get();
             return view('admin.bancos.detallePrestamos.index',['detalles'=>$detalles,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function editar($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();  
+            $detalle=Detalle_Prestamo::findOrFail($id);
+            return view('admin.bancos.detallePrestamos.editar',['detalle'=>$detalle, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -206,7 +219,34 @@ class detallePrestamoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try{      
+           
+            DB::beginTransaction();   
+            
+            $detalle = Detalle_Prestamo::findOrFail($request->get('iddetalle'));
+            $prestamo=Prestamo_Banco::findOrFail($detalle->prestamo_id);
+           
+            $datetime1 = strtotime($prestamo->prestamo_inicio);
+            $datetime2 = strtotime($request->get('idFecha'));
+            $diff =  abs(($datetime1 - $datetime2) / 86400);
+        
+           
+            $detalle->detalle_fecha = $request->get('idFecha');
+            $detalle->detalle_interes = $prestamo->prestamo_interes;
+            $detalle->detalle_valor_interes = $request->get('idValor');
+            $detalle->detalle_total = $request->get('idValor');
+            
+            $detalle->detalle_dias = $diff+1;
+            $detalle->detalle_estado = '1';
+            $detalle->save();
+            
+            DB::commit();
+           
+            return redirect('/detalleprestamos/'.$request->get('idprestamo'))->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('/detalleprestamos/'.$request->get('idprestamo'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
     }
 
     /**

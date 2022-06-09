@@ -693,7 +693,7 @@ class formulariosController extends Controller
                 ->where('factura_tarifa12','>','0')->get() as $venta){
                 foreach($venta->detalles as $detalle){
                     if($detalle->detalle_iva > 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
                         ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detalle->producto_id)->first();
@@ -723,7 +723,7 @@ class formulariosController extends Controller
                 ->where('nc_tarifa12','>','0')->get()as $nc){
                 foreach($nc->detalles as $detallenc){
                     if($detallenc->detalle_iva > 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
                         ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detallenc->producto_id)->first();
@@ -787,7 +787,7 @@ class formulariosController extends Controller
                 ->where('factura_tarifa0','>','0')->get() as $venta){
                 foreach($venta->detalles as $detalle){
                     if($detalle->detalle_iva == 0){           
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
                         ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detalle->producto_id)->first();
@@ -831,7 +831,7 @@ class formulariosController extends Controller
                 ->where('nc_tarifa0','>','0')->get()as $nc){
                 foreach($nc->detalles as $detallenc){
                     if($detallenc->detalle_iva == 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
                         ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detallenc->producto_id)->first();

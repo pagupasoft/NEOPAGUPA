@@ -97,6 +97,10 @@ class Transaccion_Compra extends Model
     public function scopeTransaccionByFecha($query, $fechaInicio, $fechaFin){
         return $query->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id)->where('transaccion_fecha','>=',$fechaInicio)->where('transaccion_fecha','<=',$fechaFin);
     }
+    public function scopeTransaccionSinFecha($query){
+        return $query->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')
+        ->where('tipo_comprobante.empresa_id','=',Auth::user()->empresa_id);
+    }
     public function scopeMovimientoCConsumo($query, $cc, $fechaInicio, $fechaFin){
         $query->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')
         ->join('producto','producto.producto_id','=','detalle_tc.producto_id')

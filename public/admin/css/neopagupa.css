@@ -46,6 +46,24 @@
 .text-acumulado {
   color: #B1E2DD!important;
 }
+.nivel-1 {
+  color: #C9FABE!important;
+}
+.nivel-2 {
+  color: #AFFFFB!important;
+}
+.nivel-3 {
+  color: #D6AEF8!important;
+}
+.nivel-4 {
+  color: #F9FA87!important;
+}
+.nivel-5 {
+  color: #FFFFFF!important;
+}
+.nivel-6 {
+  color: #F9D07A!important;
+}
 .form-controltext {
   display: block;
   width: 90px;

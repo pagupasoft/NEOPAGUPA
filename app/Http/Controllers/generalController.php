@@ -124,6 +124,8 @@ class generalController extends Controller
             $tipo='FAC-';
             $codigoini=$documento->facturaVenta->factura_serie;
             $codigosecue=$documento->facturaVenta->factura_secuencial;
+           
+            $codigosecue=substr(str_repeat(0, 9).$documento->facturaVenta->factura_secuencial, - 9);
             $fecha=$documento->facturaVenta->factura_fecha;
 
         }
@@ -131,6 +133,7 @@ class generalController extends Controller
             $tipo='NC-';
             $codigoini=$documento->notaCredito->nc_serie;
             $codigosecue=$documento->notaCredito->nc_secuencial;
+            $codigosecue=substr(str_repeat(0, 9).$documento->notaCredito->nc_secuencial, - 9);
             $fecha=$documento->notaCredito->nc_fecha;
 
         }
@@ -138,6 +141,7 @@ class generalController extends Controller
             $tipo='ND-';
             $codigoini=$documento->notaDebito->nd_serie;
             $codigosecue=$documento->notaDebito->nd_secuencial;
+            $codigosecue=substr(str_repeat(0, 9).$documento->notaDebito->nd_secuencial, - 9);
             $fecha=$documento->notaDebito->nd_fecha;
 
         }

@@ -63,7 +63,7 @@
                     </select>                    
                 </div>
                 <label for="cResultado" class="col-sm-1 col-form-label"><center>Resultado :</center></label>
-                <div class="col-sm-2">                    
+                <div class="col-sm-3">                    
                     <select class="custom-select select2" id="cResultado" name="cResultado" require>
                         @foreach($cuentas as $cuenta)
                             <option value="{{$cuenta->cuenta_numero}}" @if(isset($resultadoC)) @if($resultadoC == $cuenta->cuenta_numero) selected @endif @else @if(isset($resultado)) @if($resultado == $cuenta->cuenta_id) selected @endif @endif @endif>{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
@@ -71,6 +71,32 @@
                     </select>                    
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-6"> 
+                </div>                
+                <div class="col-sm-6">   
+                    <div class="d-flex flex-row justify-content-end">
+                        <span class="mr-2">
+                        <i class="fas fa-square nivel-1"></i> Nivel 1
+                        </span>
+                        <span class="mr-2">
+                        <i class="fas fa-square nivel-2"></i> Nivel 2
+                        </span>
+                        <span class="mr-2">
+                        <i class="fas fa-square nivel-3"></i> Nivel 3
+                        </span >
+                        <span class="mr-2">
+                        <i class="fas fa-square nivel-4"></i> Nivel 4
+                        </span>
+                        <span class="mr-2">
+                        <i></i> Nivel 5
+                        </span>
+                        <span class="mr-2">
+                        <i class="fas fa-square nivel-6"></i> Nivel 6
+                        </span>
+                    </div>
+                </div>
+            </div>            
             <hr>
             <table id="example4" class="table table-bordered table-hover table-responsive sin-salto">
                 <thead>
@@ -88,18 +114,22 @@
                 <tbody>
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)    
-                        <tr>
-                            @if($datos[$i]['nivel'] <=4)
+                        <tr  style="background: @if($datos[$i]['nivel'] == 1) #C9FABE; @endif @if($datos[$i]['nivel'] == 2) #AFFFFB; @endif  @if($datos[$i]['nivel'] == 3) #D6AEF8; @endif  @if($datos[$i]['nivel'] == 4) #F9FA87; @endif  @if($datos[$i]['nivel'] == 6) #F9D07A; @endif">
+                            @if($datos[$i]['nivel'] <=5)
                                 <td align="left"><b>{{ $datos[$i]['numero'] }}</b><input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
                                 <td align="left"><b>{{ $datos[$i]['nombre'] }}</b><input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>                                
+                                @for($j=1 ; $j <= $cantSucursal; $j++)
+                                <td align="right"><b>$ {{ number_format($datos[$i][$j],2) }}</b></td>
+                                @endfor
+                                <td align="right"><b>$ {{ number_format($datos[$i]['total'],2) }}</b><input type="hidden" name="idTot[]" value="{{ $datos[$i]['total'] }}"/></td>
                             @else
                                 <td align="left">{{ $datos[$i]['numero'] }}<input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
                                 <td align="left">{{ $datos[$i]['nombre'] }}<input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>  
-                            @endif
-                            @for($j=1 ; $j <= $cantSucursal; $j++)
-                            <td align="right">$ {{ number_format($datos[$i][$j],2) }}</td>
-                            @endfor
-                            <td align="right">$ {{ number_format($datos[$i]['total'],2) }}<input type="hidden" name="idTot[]" value="{{ $datos[$i]['total'] }}"/></td>
+                                @for($j=1 ; $j <= $cantSucursal; $j++)
+                                <td align="right">$ {{ number_format($datos[$i][$j],2) }}</td>
+                                @endfor
+                                <td align="right">$ {{ number_format($datos[$i]['total'],2) }}<input type="hidden" name="idTot[]" value="{{ $datos[$i]['total'] }}"/></td>
+                            @endif                            
                         </tr>
                         @endfor
                     @endif

@@ -535,7 +535,7 @@ class anticipoEmpleadoController extends Controller
                     $diario = null;
                     if(isset($anticipo->diario)){
                         $diario = $anticipo->diario;
-                        /*if($anticipo->anticipo_tipo == 'Efectivo'){
+                        if($anticipo->anticipo_tipo == 'Efectivo'){
                               $cajaAbierta=Arqueo_Caja::ArqueoCajaxid($anticipo->arqueo_id)->first();
                             if(isset($cajaAbierta->arqueo_id)){
                                 $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($anticipo->arqueo_id, $anticipo->diario_id)->first();
@@ -543,9 +543,9 @@ class anticipoEmpleadoController extends Controller
                                 $jo=true;
                             }else{
                                 $cajaAbierta=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();
-                                 if ($cajaAbierta){*/
+                                 if ($cajaAbierta){
                                     /**********************movimiento caja****************************/
-                                  /*  $movimientoCaja = new Movimiento_Caja();          
+                                    $movimientoCaja = new Movimiento_Caja();          
                                     $movimientoCaja->movimiento_fecha=date("Y")."-".date("m")."-".date("d");
                                     $movimientoCaja->movimiento_hora=date("H:i:s");
                                     $movimientoCaja->movimiento_tipo="ENTRADA";
@@ -561,15 +561,14 @@ class anticipoEmpleadoController extends Controller
                                     $movimientoAnterior->diario_id = null;
                                     $movimientoAnterior->update();
 
-                                    $jo=true;*/
-                                /*********************************************************************/                               
-                          /*      }else{
+                                    $jo=true;
+                                     }else{
                                     $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque no dispone de CAJA ABIERTA';                               
                                 }
                             }
                         }else{
                             $jo=true;
-                        }*/
+                        }
 
                     }
                     if($jo){

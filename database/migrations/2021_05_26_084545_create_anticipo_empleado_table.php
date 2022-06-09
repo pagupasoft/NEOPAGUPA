@@ -24,6 +24,8 @@ class CreateAnticipoEmpleadoTable extends Migration
             $table->string('anticipo_motivo');
             $table->double('anticipo_valor');
             $table->double('anticipo_saldo');
+            $table->bigInteger('arqueo_id')->nullable();
+            $table->foreign('arqueo_id')->references('arqueo_id')->on('arqueo_caja');
             $table->bigInteger('rango_id');
             $table->foreign('rango_id')->references('rango_id')->on('rango_documento');
             $table->bigInteger('empleado_id');

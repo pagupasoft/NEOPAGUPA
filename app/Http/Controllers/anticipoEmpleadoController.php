@@ -188,6 +188,7 @@ class anticipoEmpleadoController extends Controller
             $anticipoEmpleado->anticipo_tipo = $request->get('idTipo');      
             if($request->get('idTipo') == "Efectivo"){
                 $anticipoEmpleado->anticipo_documento = 0;
+                $anticipoCliente->arqueo_id = $cajasxusuario->arqueo_id;
             } 
             if($request->get('idTipo') == "Cheque"){
                 $anticipoEmpleado->anticipo_documento = $request->get('idNcheque');      
@@ -536,7 +537,7 @@ class anticipoEmpleadoController extends Controller
                     if(isset($anticipo->diario)){
                         $diario = $anticipo->diario;
                         if($anticipo->anticipo_tipo == 'Efectivo'){
-                              $cajaAbierta=Arqueo_Caja::ArqueoCajaxid($anticipo->arqueo_id)->first();
+                            $cajaAbierta=Arqueo_Caja::ArqueoCajaxid($anticipo->arqueo_id)->first();
                             if(isset($cajaAbierta->arqueo_id)){
                                 $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($anticipo->arqueo_id, $anticipo->diario_id)->first();
                                 $movimientoCaja->delete();

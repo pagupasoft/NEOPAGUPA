@@ -26,6 +26,7 @@ class Anticipo_Empleado extends Model
         'rango_id',
         'empleado_id',
         'diario_id',
+        'arqueo_id',
         'anticipo_estado'       
     ];
     protected $guarded =[

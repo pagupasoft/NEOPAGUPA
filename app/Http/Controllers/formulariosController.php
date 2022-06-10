@@ -693,10 +693,11 @@ class formulariosController extends Controller
                 ->where('factura_tarifa12','>','0')->get() as $venta){
                 foreach($venta->detalles as $detalle){
                     if($detalle->detalle_iva > 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
-                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detalle->producto_id)->first();
+                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detalle->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta12)){
                             if($compra->sustento_venta12 == '401' or $detalle->producto->producto_compra_venta == '2'){
                                 $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa diferente de cero';
@@ -723,10 +724,11 @@ class formulariosController extends Controller
                 ->where('nc_tarifa12','>','0')->get()as $nc){
                 foreach($nc->detalles as $detallenc){
                     if($detallenc->detalle_iva > 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
-                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detallenc->producto_id)->first();
+                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detallenc->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta12)){
                             if($compra->sustento_venta12 == '401' or $detalle->producto->producto_compra_venta == '2'){
                                 $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
@@ -787,10 +789,11 @@ class formulariosController extends Controller
                 ->where('factura_tarifa0','>','0')->get() as $venta){
                 foreach($venta->detalles as $detalle){
                     if($detalle->detalle_iva == 0){           
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
-                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detalle->producto_id)->first();
+                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detalle->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta0)){
                             if($compra->sustento_venta0 == '403'){
                                 $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que no dan derecho a crédito tributario';
@@ -831,10 +834,11 @@ class formulariosController extends Controller
                 ->where('nc_tarifa0','>','0')->get()as $nc){
                 foreach($nc->detalles as $detallenc){
                     if($detallenc->detalle_iva == 0){
-                        $compra = Transaccion_Compra::TransaccionByFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                        $compra = Transaccion_Compra::TransaccionSinFecha()
                         ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
                         ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
-                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detallenc->producto_id)->first();
+                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detallenc->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta0)){
                             if($compra->sustento_venta0 == '403'){
                                 $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 

@@ -697,7 +697,7 @@ class ordenRecepcionController extends Controller
                 $transaccion->arqueo_id = $arqueoCaja->arqueo_id;
             }
             $transaccion->save();
-            $general->registrarAuditoria('Registro por medio de orden de recepcion de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero,$transaccion->transaccion_numero,'Registro de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero.' con proveedor -> '.$request->get('buscarProveedor').' con un total de -> '.$request->get('idTotal').' y con codigo de diario -> '.$diario->diario_codigo);
+            $general->registrarAuditoria('Registro por medio de orden de recepcion de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero.' con sustento tributario '.Sustento_Tributario::sustento($transaccion->sustento_id)->first()->sustento_codigo,$transaccion->transaccion_numero,'Registro de '. strtoupper($tipoComprobante->tipo_comprobante_nombre) .' de compra numero -> '.$transaccion->transaccion_numero.' con proveedor -> '.$request->get('buscarProveedor').' con un total de -> '.$request->get('idTotal').' y con codigo de diario -> '.$diario->diario_codigo);
             /****************************************************************/
             /********************detalle de transaccion de compra********************/
             for ($i = 1; $i < count($cantidad); ++$i){

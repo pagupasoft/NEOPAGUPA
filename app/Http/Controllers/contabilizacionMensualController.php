@@ -301,6 +301,7 @@ class contabilizacionMensualController extends Controller
     public function guardarId(Request $request){
        
     try{ 
+        DB::beginTransaction();
         setlocale(LC_ALL, 'es_ES');
         $general = new generalController();
 
@@ -1310,7 +1311,7 @@ class contabilizacionMensualController extends Controller
             $url3 = $general->pdfDiario($diariocontabilizado);
             $url2 = $general->pdfDiario($diariobeneficios);
 
-            
+            DB::commit();
             return redirect('contabilizacionMensual')->with('success','Datos guardados exitosamente')->with('pdf2', $url2)->with('pdf', $url3);
         }catch(\Exception $ex){
             return redirect('contabilizacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

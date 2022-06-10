@@ -40,7 +40,7 @@ class cargaractivofijoXMLController extends Controller
     }
     public function cargarproducto(Request $request)
     {
-       
+       try{
             DB::beginTransaction();
             $nombre = $request->get('DLdias');
             $provedor = $request->get('idproveedor');
@@ -183,6 +183,10 @@ class cargaractivofijoXMLController extends Controller
                 DB::commit();
                 return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir retenciones, configueros y vuelva a intentar');
             }
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }    
        
     }
     public function cargar(Request $request)

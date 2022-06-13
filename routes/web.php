@@ -240,6 +240,7 @@ use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
 use App\Http\Controllers\piscinaController;
 use App\Http\Controllers\prestamoBancoController;
+use App\Http\Controllers\reporteComprasProductoController;
 use App\Http\Controllers\ReporteConsumoController;
 use App\Http\Controllers\reporteUtilidadController;
 use App\Http\Controllers\reporteVentasProductoController;
@@ -504,6 +505,8 @@ Route::resource('prestamos', prestamoBancoController::class)->middleware('auth')
 Route::resource('detalleprestamos', detallePrestamoController::class)->middleware('auth');
 Route::resource('detalleamortizacion', detalleAmortizacionController::class)->middleware('auth');
 Route::resource('listarContabilizado', listarContabilizadoController::class)->middleware('auth');
+Route::resource('reporteComprasxProducto', reporteComprasProductoController::class)->middleware('auth');
+
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
@@ -1068,6 +1071,8 @@ Route::get('/provincia/searchN/{buscar}', [pacienteController::class, 'buscarByP
 Route::get('/ciudad/searchN/{buscar}', [pacienteController::class, 'buscarByProvincia'])->middleware('auth');
 Route::get('/aseguradoraProcedimiento/searchN/{buscar}', [aseguradoraProcedimientoController::class, 'buscarByNombre'])->middleware('auth');
 Route::get('/cuentaBancaria/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByBanco'])->middleware('auth');
+Route::get('/cargarCentroConsumo/searchN/{buscar}', [reporteComprasProductoController::class, 'buscarBySustento'])->middleware('auth');
+
 Route::get('/cuentaBanco/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByBancoCuenta'])->middleware('auth');
 Route::get('/cuentaContable/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByCuentaBanco'])->middleware('auth');
 Route::get('/cuentaBancariaId/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByCuentaBancaria'])->middleware('auth');

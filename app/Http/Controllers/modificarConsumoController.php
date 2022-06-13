@@ -71,6 +71,7 @@ class modificarConsumoController extends Controller
     public function guardar(Request $request)
     {
         try{ 
+            DB::beginTransaction();
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $idcc=$request->get('idcc');
@@ -83,23 +84,23 @@ class modificarConsumoController extends Controller
                     $aux=Detalle_TC::findOrFail($detalle->detalle_id);
                     $aux->centro_consumo_id=$request->get('idConsumo');
                     $aux->save();
-                    $general->registrarAuditoria('Actualizacion de la transaccion compra '.$transaccion->transaccion_numero.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,0,'');
+                    $general->registrarAuditoria('Actualizacion de la transaccion compra '.$transaccion->transaccion_numero.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,$transaccion->transaccion_numero,'');
                     $auxmov=Movimiento_Producto::findOrFail($aux->movimiento_id);
                     $auxmov->centro_consumo_id=$request->get('idConsumo');
                     $auxmov->save();
-                    $general->registrarAuditoria('Actualizacion de la transaccion compra de Movimiento Producto '.$transaccion->transaccion_numero.' Con movimientos de Productos de id '.$auxmov->movimiento_id.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,0,'');
+                    $general->registrarAuditoria('Actualizacion de la transaccion compra de Movimiento Producto '.$transaccion->transaccion_numero.' Con movimientos de Productos de id '.$auxmov->movimiento_id.' del detalle del centro de consumo con producto  -> '.$aux->producto->producto_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,$transaccion->transaccion_numero,'');
                    
                 }
                 $transaccion->sustento_id=$centro->sustento->sustento_id;
                 $transaccion->save();
-                $general->registrarAuditoria('Actualizacion de la transaccion compra '.$transaccion->transaccion_numero.' con sustento -> '.$centro->sustento->sustento_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,0,'');
-                       
+                $general->registrarAuditoria('Actualizacion de la transaccion compra '.$transaccion->transaccion_numero.' con sustento -> '.$centro->sustento->sustento_nombre.' con centro de consumo '.$centro->centro_consumo_nombre,$transaccion->transaccion_numero,' cambio a centro de consumo con sustento '.$centro->sustento->sustento_id);        
             }
-           
             $productos=Transaccion_Compra::MovimientoCConsumo($request->get('idCentroc'), $request->get('idDesde'), $request->get('idHasta'))->orderBy('transaccion_fecha', 'asc')->orderBy('transaccion_numero', 'asc')->get();
+            DB::commit();
             return view('admin.compras.modificarConsumos.index',['fecI'=>$request->get('idDesde'),'fecF'=>$request->get('idHasta'),'cc'=>$request->get('idCentroc'),'productos'=>$productos,'CentroConsumos'=>Centro_Consumo::CentroConsumos()->get(),'gruposPermiso'=>$gruposPermiso, 'PE'=>Punto_Emision::puntos()->get(),'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
+            DB::rollBack();
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
         

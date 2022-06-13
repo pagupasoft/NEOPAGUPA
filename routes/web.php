@@ -231,6 +231,7 @@ use App\Http\Controllers\listaControlDiaController;
 use App\Http\Controllers\listadecimoCuartoController;
 use App\Http\Controllers\tarjetaCreditoController;
 use App\Http\Controllers\listaPrecioController;
+use App\Http\Controllers\listarContabilizadoController;
 use App\Http\Controllers\listaRolCMController;
 use App\Http\Controllers\listaRolReporteController;
 use App\Http\Controllers\modificarConsumoController;
@@ -502,6 +503,7 @@ Route::resource('descuentoManualClientes', descuentoManualAnticipoClienteControl
 Route::resource('prestamos', prestamoBancoController::class)->middleware('auth');
 Route::resource('detalleprestamos', detallePrestamoController::class)->middleware('auth');
 Route::resource('detalleamortizacion', detalleAmortizacionController::class)->middleware('auth');
+Route::resource('listarContabilizado', listarContabilizadoController::class)->middleware('auth');
 
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 
@@ -512,6 +514,7 @@ Route::resource('transaccionCActivoFijo', transaccionCompraActivoFijoController:
 
 Route::get('/datosEmpresa', [empresaController::class, 'indexDatosEmpresa'])->middleware('auth');
 Route::get('/empresa/{id}/eliminar', [empresaController::class, 'delete'])->middleware('auth')->middleware('acceso');
+Route::get('/listarContabilizado/{id}/eliminar', [listarContabilizadoController::class, 'eliminar'])->middleware('auth')->middleware('acceso');
 Route::get('/grupo/{id}/eliminar', [grupoPerController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/sucursal/{id}/eliminar', [sucursalController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/permiso/{id}/eliminar', [permisoController::class, 'delete'])->middleware('auth')->middleware('acceso');
@@ -1222,6 +1225,10 @@ Route::get('/ingresoBodega/new/{id}', [ingresoBodegaController::class, 'nuevo'])
 Route::get('/ingresoBodega/eliminar/{id}', [ingresoBodegaController::class, 'Presentardelete'])->middleware('auth');
 Route::get('/ingresoBodega/visualizar/{id}', [ingresoBodegaController::class, 'Presentarvisualizar'])->middleware('auth');
 Route::post('/ingresoBodega/buscar', [ingresoBodegaController::class, 'consultar'])->middleware('auth');
+
+Route::post('/listarContabilizado/extraer', [listarContabilizadoController::class, 'extraer'])->middleware('auth');
+
+
 
 // quincena
 Route::post('/quincenaConsolidada/generar', [quincenaConsolidadaController::class, 'generar'])->middleware('auth');

@@ -1440,7 +1440,7 @@ class contabilizacionMensualController extends Controller
                 }    
             }
            
-            return view('admin.recursosHumanos.contabilizacionMensual.nuevo',['fechames'=>$request->get('fechames'),'datos'=>$datos,'rol'=>$rol,'consumo'=>Centro_Consumo::CentroConsumos()->get(),'categoria'=>Categoria_Producto::Categorias()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.recursosHumanos.contabilizacionMensual.nuevo',['sucursal'=>$sucursal_id,'fechames'=>$request->get('fechames'),'datos'=>$datos,'rol'=>$rol,'consumo'=>Centro_Consumo::CentroConsumos()->get(),'categoria'=>Categoria_Producto::Categorias()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('contabilizacionMensual')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }

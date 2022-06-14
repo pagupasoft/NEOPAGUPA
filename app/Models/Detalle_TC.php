@@ -35,6 +35,9 @@ class Detalle_TC extends Model
     public function scopeDetalleFactura($query, $facturaID){
         return $query->join('producto','producto.producto_id','=','detalle_tc.producto_id')->where('transaccion_id','=', $facturaID)->orderBy('detalle_id','asc');
     }
+    public function scopeDetalleFacturaxProducto($query, $productoID, $fechaDesde, $fechaHasta){
+        return $query->join('transaccion_compra','transaccion_compra.transaccion_id','=','detalle_tc.transaccion_id')->where('producto_id','=', $productoID)->where('transaccion_compra.transaccion_fecha','>=', $fechaDesde)->where('transaccion_compra.transaccion_fecha','<=', $fechaHasta)->orderBy('transaccion_compra.transaccion_fecha','desc');
+    }
     public function transaccionCompra(){
         return $this->belongsTo(Transaccion_Compra::class, 'transaccion_id', 'transaccion_id');
     }

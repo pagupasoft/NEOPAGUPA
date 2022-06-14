@@ -28,6 +28,9 @@ class Centro_Consumo extends Model
     public function scopeCentroConsumo($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('centro_consumo_id','=',$id);
     }
+    public function scopeCentroConsumoxSustento($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('sustento_id','=',$id)->where('centro_consumo_estado','=','1');
+    }
     public function detallesTC(){
         return $this->hasMany(Detalle_TC::class, 'centro_consumo_id', 'centro_consumo_id');
     }

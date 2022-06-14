@@ -84,6 +84,9 @@ class Producto extends Model
     public function scopeProductos($query){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->orderBy('producto_nombre','asc');
     }
+    public function scopeProductosCompraVenta($query){
+        return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_compra_venta','<>','2')->orderBy('producto_nombre','asc');
+    }
     public function scopeProducto($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_id','=',$id);
     }

@@ -1319,7 +1319,13 @@ class rolOperactivoCostaMarketController extends Controller
                     }else{
                         $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
                     }
-                    $anticipo->anticipo_estado='1';
+                    if( $anticipo->anticipo_saldo==0){
+                        $anticipo->anticipo_estado='2';
+                    }
+                    else{
+                        $anticipo->anticipo_estado='1';
+                    }
+                   
                     $anticipo->update();
                  
                     $auditoria->registrarAuditoria('Actualziacion de  Anticipos para la eliminacion de descuento de anticipo para la eliminacion de rol con valor '.$detalle->descuento_valor ,'0','');

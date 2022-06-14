@@ -59,7 +59,7 @@ class listaAnticipoEmpleadoController extends Controller
                 $datos[$count]['ben'] = $empleado->empleado_nombre; 
                 $datos[$count]['mon'] = Anticipo_Empleado::AnticiposByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->sum('anticipo_valor'); 
                 $datos[$count]['pag'] = Descuento_Anticipo_Empleado::DescuentosAnticipoByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->sum('descuento_valor');
-                $datos[$count]['sal'] = floatval($datos[$count]['mon']) - floatval($datos[$count]['pag'])- floatval(Anticipo_Empleado::AnticiposByClienteFecha($empleado->empleado_id, $request->get('idCorte'))->whereNotNull('anticipo_saldom')->sum('anticipo_valor')) + floatval(Anticipo_Empleado::AnticiposByClienteFecha($empleado->empleado_id, $request->get('idCorte'))->whereNotNull('anticipo_saldom')->sum('anticipo_saldom')); 
+                $datos[$count]['sal'] = floatval($datos[$count]['mon']) - floatval($datos[$count]['pag'])- floatval(Anticipo_Empleado::AnticiposByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->whereNotNull('anticipo_saldom')->sum('anticipo_valor')) + floatval(Anticipo_Empleado::AnticiposByEmpleadoFecha($empleado->empleado_id, $request->get('idCorte'))->whereNotNull('anticipo_saldom')->sum('anticipo_saldom')); 
                 $datos[$count]['fec'] = ''; 
                 $datos[$count]['fep'] = ''; 
                 $datos[$count]['dir'] = ''; 

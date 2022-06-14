@@ -81,10 +81,10 @@
                         <i class="fas fa-square nivel-4"></i> Nivel 4
                         </span>
                         <span class="mr-2">
-                        <i></i> Nivel 5
+                        <i class="fas fa-square nivel-6"></i> Nivel 5
                         </span>
                         <span class="mr-2">
-                        <i class="fas fa-square nivel-6"></i> Nivel 6
+                        <i></i> Nivel 6
                         </span>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                 <tbody>
                     @if(isset($datos))
                         @for ($i = 1; $i <= count($datos); ++$i)    
-                        <tr style="background: @if($datos[$i]['nivel'] == 1) #C9FABE; @endif @if($datos[$i]['nivel'] == 2) #AFFFFB; @endif  @if($datos[$i]['nivel'] == 3) #D6AEF8; @endif  @if($datos[$i]['nivel'] == 4) #F9FA87; @endif  @if($datos[$i]['nivel'] == 6) #F9D07A; @endif">
+                        <tr style="background: @if($datos[$i]['nivel'] == 1) #C9FABE; @endif @if($datos[$i]['nivel'] == 2) #AFFFFB; @endif  @if($datos[$i]['nivel'] == 3) #D6AEF8; @endif  @if($datos[$i]['nivel'] == 4) #F9FA87; @endif  @if($datos[$i]['nivel'] == 5) #F9D07A; @endif">
                             @if($datos[$i]['nivel'] <=5)
                                 <td align="left"><b>{{ $datos[$i]['numero'] }}</b><input type="hidden" name="idNum[]" value="{{ $datos[$i]['numero'] }}"/><input type="hidden" name="idNiv[]" value="{{ $datos[$i]['nivel'] }}"/></td>
                                 <td align="left"><b>{{ $datos[$i]['nombre'] }}</b><input type="hidden" name="idNom[]" value="{{ $datos[$i]['nombre'] }}"/></td>

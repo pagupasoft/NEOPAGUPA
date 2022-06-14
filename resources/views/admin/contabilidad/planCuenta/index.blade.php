@@ -31,10 +31,10 @@
                         <i class="fas fa-square nivel-4"></i> Nivel 4
                         </span>
                         <span class="mr-2">
-                        <i></i> Nivel 5
+                        <i class="fas fa-square nivel-6"></i> Nivel 5
                         </span>
                         <span class="mr-2">
-                        <i class="fas fa-square nivel-6"></i> Nivel 6
+                        <i ></i> Nivel 6
                         </span>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
             </thead> 
             <tbody>
                 @foreach($cuentas as $cuenta)
-                <tr style="background: @if($cuenta->cuenta_nivel == 1) #C9FABE; @endif @if($cuenta->cuenta_nivel == 2) #AFFFFB; @endif  @if($cuenta->cuenta_nivel == 3) #D6AEF8; @endif  @if($cuenta->cuenta_nivel == 4) #F9FA87; @endif  @if($cuenta->cuenta_nivel == 6) #F9D07A; @endif">
+                <tr style="background: @if($cuenta->cuenta_nivel == 1) #C9FABE; @endif @if($cuenta->cuenta_nivel == 2) #AFFFFB; @endif  @if($cuenta->cuenta_nivel == 3) #D6AEF8; @endif  @if($cuenta->cuenta_nivel == 4) #F9FA87; @endif  @if($cuenta->cuenta_nivel == 5) #F9D07A; @endif">
                     @if($cuenta->cuenta_nivel <=5)
                         <td ><b>
                             <a href="{{ url("cuenta/{$cuenta->cuenta_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>

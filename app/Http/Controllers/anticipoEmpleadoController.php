@@ -188,7 +188,7 @@ class anticipoEmpleadoController extends Controller
             $anticipoEmpleado->anticipo_tipo = $request->get('idTipo');      
             if($request->get('idTipo') == "Efectivo"){
                 $anticipoEmpleado->anticipo_documento = 0;
-                $anticipoCliente->arqueo_id = $cajasxusuario->arqueo_id;
+                $anticipoEmpleado->arqueo_id = $cajasxusuario->arqueo_id;
             } 
             if($request->get('idTipo') == "Cheque"){
                 $anticipoEmpleado->anticipo_documento = $request->get('idNcheque');      

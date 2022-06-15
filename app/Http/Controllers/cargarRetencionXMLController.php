@@ -292,61 +292,63 @@ class cargarRetencionXMLController extends Controller
             $general->registrarAuditoria('Registro de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de retencion de venta numero -> '.$retencion->retencion_numero.' y con codigo de diario -> '.$diario->diario_codigo);
             /******************************************************************/
             foreach($xml->impuestos->impuesto as $impuesto){
-                if($impuesto->codigo == '1'){
-                    $detalleRV = new Detalle_RV();
-                    $detalleRV->detalle_tipo = 'FUENTE';
-                    $detalleRV->detalle_base = $impuesto->baseImponible;
-                    $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
-                    $detalleRV->detalle_valor = $impuesto->valorRetenido;
-                    $detalleRV->detalle_asumida = '0';
-                    $detalleRV->detalle_estado = '1';
-                    $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
-                    $retencion->detalles()->save($detalleRV);
-                    $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
-                        /********************detalle de diario de retencion de venta*******************/
-                        if($detalleRV->detalle_valor > 0){
-                            $detalleDiario = new Detalle_Diario();
-                            $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
-                            $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
-                            $detalleDiario->detalle_haber = 0.00;
-                            $detalleDiario->detalle_comentario = 'P/R RETENCION EN LA FUENTE '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
-                            $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE VENTA';
-                            $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                            $detalleDiario->detalle_conciliacion = '0';
-                            $detalleDiario->detalle_estado = '1';
-                            $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
-                            $diario->detalles()->save($detalleDiario);
-                            $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
-                        }
-                        /******************************************************************/
-                }
-                if($impuesto->codigo == '2'){
-                    $detalleRV = new Detalle_RV();
-                    $detalleRV->detalle_tipo = 'IVA';
-                    $detalleRV->detalle_base = $impuesto->baseImponible;
-                    $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
-                    $detalleRV->detalle_valor = $impuesto->valorRetenido;
-                    $detalleRV->detalle_asumida = '0';
-                    $detalleRV->detalle_estado = '1';
-                    $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
-                    $retencion->detalles()->save($detalleRV);
-                    $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
-                        /********************detalle de diario de retencion de venta*******************/
-                        if($detalleRV->detalle_valor > 0){
-                            $detalleDiario = new Detalle_Diario();
-                            $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
-                            $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
-                            $detalleDiario->detalle_haber = 0.00;
-                            $detalleDiario->detalle_comentario = 'P/R RETENCION DE IVA '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
-                            $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE VENTA';
-                            $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
-                            $detalleDiario->detalle_conciliacion = '0';
-                            $detalleDiario->detalle_estado = '1';
-                            $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
-                            $diario->detalles()->save($detalleDiario);
-                            $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
-                        }
-                        /******************************************************************/
+                if($impuesto->valorRetenido > 0){
+                    if($impuesto->codigo == '1'){
+                        $detalleRV = new Detalle_RV();
+                        $detalleRV->detalle_tipo = 'FUENTE';
+                        $detalleRV->detalle_base = $impuesto->baseImponible;
+                        $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
+                        $detalleRV->detalle_valor = $impuesto->valorRetenido;
+                        $detalleRV->detalle_asumida = '0';
+                        $detalleRV->detalle_estado = '1';
+                        $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
+                        $retencion->detalles()->save($detalleRV);
+                        $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
+                            /********************detalle de diario de retencion de venta*******************/
+                            if($detalleRV->detalle_valor > 0){
+                                $detalleDiario = new Detalle_Diario();
+                                $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
+                                $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
+                                $detalleDiario->detalle_haber = 0.00;
+                                $detalleDiario->detalle_comentario = 'P/R RETENCION EN LA FUENTE '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
+                                $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE VENTA';
+                                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                                $detalleDiario->detalle_conciliacion = '0';
+                                $detalleDiario->detalle_estado = '1';
+                                $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
+                                $diario->detalles()->save($detalleDiario);
+                                $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
+                            }
+                            /******************************************************************/
+                    }
+                    if($impuesto->codigo == '2'){
+                        $detalleRV = new Detalle_RV();
+                        $detalleRV->detalle_tipo = 'IVA';
+                        $detalleRV->detalle_base = $impuesto->baseImponible;
+                        $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
+                        $detalleRV->detalle_valor = $impuesto->valorRetenido;
+                        $detalleRV->detalle_asumida = '0';
+                        $detalleRV->detalle_estado = '1';
+                        $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
+                        $retencion->detalles()->save($detalleRV);
+                        $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
+                            /********************detalle de diario de retencion de venta*******************/
+                            if($detalleRV->detalle_valor > 0){
+                                $detalleDiario = new Detalle_Diario();
+                                $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
+                                $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
+                                $detalleDiario->detalle_haber = 0.00;
+                                $detalleDiario->detalle_comentario = 'P/R RETENCION DE IVA '.$cuentaContableRetencion->concepto_codigo.' CON PORCENTAJE '.$cuentaContableRetencion->concepto_porcentaje.' %';
+                                $detalleDiario->detalle_tipo_documento = 'COMPROBANTE DE RETENCION DE VENTA';
+                                $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
+                                $detalleDiario->detalle_conciliacion = '0';
+                                $detalleDiario->detalle_estado = '1';
+                                $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
+                                $diario->detalles()->save($detalleDiario);
+                                $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
+                            }
+                            /******************************************************************/
+                    }
                 }
             }
             /******************************************************************/

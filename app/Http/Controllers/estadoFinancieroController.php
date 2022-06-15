@@ -71,7 +71,8 @@ class estadoFinancieroController extends Controller
                 //$totUtil = $totUtil + Detalle_Diario::SaldoActualByFecha('4',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo - abs(Detalle_Diario::SaldoActualByFecha('5',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo + Detalle_Diario::SaldoActualByFecha('6',$desde,$request->get('fecha_hasta'))->where('diario.sucursal_id','=',$sucursal->sucursal_id)->select(DB::raw('SUM(detalle_debe)-SUM(detalle_haber) as saldo'))->first()->saldo);
                 
             }
-            $totPat = abs($totPat) + abs($totUtil);
+            //$totPat = abs($totPat) + abs($totUtil);
+            $totPat = abs($totPat) + $totUtil;
             $tot = 0;
             foreach(Cuenta::CuentasRango($request->get('cuenta_inicio'),$request->get('cuenta_fin'))->where('cuenta_nivel','<=',$request->get('nivel'))->get() as $cuenta){
                 $datos[$count]['numero'] = $cuenta->cuenta_numero;

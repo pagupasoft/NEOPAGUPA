@@ -117,12 +117,11 @@ class Empleado extends Model
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)->orderBy('empleado_nombre','asc');
     }
     public function scopeEmpleadosBySucursalAdministrativo($query, $sucursal){
-        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
-        ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
-        ->join('parametrizar_rol','parametrizar_rol.empresa_id','=','empleado_cargo.empresa_id')
-        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')
+        return $query->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
+        ->where('tipo_empleado.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')
         ->where('tipo_empleado.sucursal_id','=',$sucursal)
-        ->where('tipo_empleado.tipo_categoria','!=','OPERATIVO CONTROL DIAS')
+        ->where('tipo_empleado.tipo_categoria','=','ADMINISTRATIVO')
+        ->orwhere('tipo_empleado.tipo_categoria','=','OPERATIVO')
         ->orderBy('empleado_nombre','asc');
        
     }

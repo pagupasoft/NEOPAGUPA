@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Detalle_Diario;
 use App\Models\Detalle_Prestamo;
 use App\Models\Diario;
+use App\Models\Empresa;
 use App\Models\Prestamo_Banco;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class detallePrestamoController extends Controller
 {
@@ -131,6 +133,11 @@ class detallePrestamoController extends Controller
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
             */
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Registro de detalle de Interes -> '.$request->get('idValor').' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
+            
+            $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
+           
             DB::commit();
            
             return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('success','Datos guardados exitosamente');
@@ -153,10 +160,73 @@ class detallePrestamoController extends Controller
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             $detalles=Detalle_Prestamo::Intereses($id)->get();
-            return view('admin.bancos.detallePrestamos.index',['detalles'=>$detalles,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            return view('admin.bancos.detallePrestamos.index',['ide'=>$id,'detalles'=>$detalles,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function cargarexel($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $detalles=Detalle_Prestamo::Intereses($id)->get();
+            return view('admin.bancos.detallePrestamos.cargarexcel',['ide'=>$id,'detalles'=>$detalles,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function GuardarExcel(Request $request){
+        try{
+            DB::beginTransaction();
+            $auditoria = new generalController();
+            if($request->file('excelPrestamos')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelPrestamos')->getClientOriginalExtension();
+                $path = $request->file('excelPrestamos')->move(public_path().'\temp\INTERESES', $name); 
+                $array = Excel::toArray(new Detalle_Prestamo(), $path); 
+                $prestamo=Prestamo_Banco::findOrFail($request->get('idprestamo'));
+                if (count($array[0])>1) {
+                    foreach ($prestamo->detalles as $detalle) {
+                        if (!isset($detalle->diario)) {
+                            $detalle->delete();
+                            $auditoria->registrarAuditoria('Eliminacion de detalle del prestamo -> '.$detalle->detalle_total.' con el  monto del prestamo de '.$detalle->prestamo->prestamo_monto.' con Banco '.$detalle->prestamo->banco->bancoLista->banco_lista_nombre, '0', '');
+                        }
+                    }
+                }
+                for ($i=1;$i < count($array[0]);$i++) {
+                    $validar=trim($array[0][$i][0]);
+                    if ($validar) {
+
+                        $datetime1 = strtotime($prestamo->prestamo_inicio);
+                        $datetime2 = strtotime(($array[0][$i][0]));
+                        $diff =  abs(($datetime1 - $datetime2) / 86400);
+                        $detalle = new Detalle_Prestamo();
+                        $Excel_date = $array[0][$i][0]; 
+                        $unix_date = ($Excel_date - 25569) * 86400;
+                        $Excel_date = 25569 + ($unix_date / 86400);
+                        $unix_date = ($Excel_date - 25569) * 86400;
+                        $detalle->detalle_fecha = gmdate("Y-m-d", $unix_date);
+                        $detalle->detalle_interes = $prestamo->prestamo_interes;
+                        $detalle->detalle_valor_interes = round(floatval($array[0][$i][1]),2);
+                        $detalle->detalle_total = round(floatval($array[0][$i][1]),2);                        
+                        $detalle->detalle_dias = $diff+1;
+                        $detalle->detalle_estado = '1';
+                        $detalle->prestamo()->associate($prestamo);
+                        $detalle->save();
+                        $auditoria->registrarAuditoria('Registro de detalle de Interes -> '.($array[0][$i][1]).' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));   
+                    }
+                }
+                $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
+                    
+            }
+        DB::commit();
+        return redirect('detalleprestamos/'.$request->get('idprestamo'))->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('detalleprestamo/'.$request->get('idprestamo'))->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
         }
     }
     public function editar($id)

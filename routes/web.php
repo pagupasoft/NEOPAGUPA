@@ -633,6 +633,10 @@ Route::post('prestamos/buscar', [prestamoBancoController::class, 'buscar'])->mid
 Route::get('/detalleprestamos/{id}/agregar', [detallePrestamoController::class, 'agregar'])->middleware('auth')->middleware('acceso');
 Route::get('/detalleprestamos/{id}/editar', [detallePrestamoController::class, 'editar'])->middleware('auth');
 Route::get('/detalleprestamos/{id}/ver', [detallePrestamoController::class, 'ver'])->middleware('auth');
+Route::get('/detalleprestamos/{id}/cargar', [detallePrestamoController::class, 'cargarexel'])->middleware('auth');
+
+Route::post('/excelPrestamo', [detallePrestamoController::class, 'GuardarExcel'])->middleware('auth');
+
 Route::get('/detalleprestamos/{id}/eliminar', [detallePrestamoController::class, 'delete'])->middleware('auth');
 Route::get('/detalleamortizacion/{id}/agregar', [detalleAmortizacionController::class, 'agregar'])->middleware('auth')->middleware('acceso');
 Route::get('/detalleamortizacion/{id}/ver', [detalleAmortizacionController::class, 'ver'])->middleware('auth');

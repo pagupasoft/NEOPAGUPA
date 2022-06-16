@@ -4,6 +4,8 @@
     <div class="card-header">
         <h3 class="card-title">Prestamos</h3>
         <button type="button" onclick='window.location = "{{ url("prestamos") }}";' class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
+        <a class="btn btn-info btn-sm float-right" href="{{ asset('admin/archivos/FORMATO_INTERESES.xlsx') }}" download="FORMATO INTERESES"><i class="fas fa-file-excel"></i>&nbsp;Formato</a>
+        <a class="btn btn-success btn-sm float-right" href="{{ url("/detalleprestamos/{$ide}/cargar") }}"><i class="fas fa-file-excel"></i>&nbsp;Cargar Excel</a>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -29,12 +31,12 @@
                         </td>
                         <td>{{ $detalle->detalle_fecha }}</td>  
                         <td>{{ $detalle->detalle_total}}</td>    
-                        <td>{{ $detalle->prestamo->prestamo_monto}}</td> 
+                        <td>{{ round($detalle->prestamo->prestamo_monto,2)}}</td> 
                         @if(isset($detalle->diario->diario_id))
                             <?php $valores= $valores+$detalle->detalle_total?>
                         @endif
                         <td> @if(isset($detalle->diario->diario_id))
-                        {{$valores+$detalle->prestamo->prestamo_monto }}
+                        {{round($valores+$detalle->prestamo->prestamo_monto,2) }}
                             @else
                                 0
                         @endif</td>    

@@ -543,6 +543,50 @@ class clienteController extends Controller
                             $cliente->credito()->associate($credito);
                         }
                         $cliente->cliente_estado = '1';
+                        $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE CLIENTE')->first();
+           
+                        if ($cuentap) {
+                            $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
+                            $sec=1;
+                            if ($cuentaapdre) {
+                                $sec=$sec+$cuentaapdre;
+                            }
+                            $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
+                            $cuentaa = new Cuenta();
+                            $cuentaa->cuenta_numero =$numerocuenta;
+                            $cuentaa->cuenta_nombre = 'ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre;
+                            $cuentaa->cuenta_secuencial = $sec;
+                            $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
+                            $cuentaa->cuenta_estado = 1;
+                            $cuentaa->empresa_id = Auth::user()->empresa_id;
+                            $cuentaa->save();
+                            /*Inicio de registro de auditoria */
+                            $auditoria = new generalController();
+                            $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                            $cliente->cliente_cuenta_anticipo=$cuentaa->cuenta_id;
+                        }
+                        $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR COBRAR')->first();
+                       
+                        if ($cuentapr) {
+                            $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
+                            $sec=1;
+                            if ($cuentaapdre) {
+                                $sec=$sec+$cuentaapdre;
+                            }
+                            $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
+                            $cuentap = new Cuenta();
+                            $cuentap->cuenta_numero =$numerocuenta;
+                            $cuentap->cuenta_nombre = 'CUENTA POR COBRAR -'.$cliente->cliente_nombre;
+                            $cuentap->cuenta_secuencial = $sec;
+                            $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
+                            $cuentap->cuenta_estado = 1;
+                            $cuentap->empresa_id = Auth::user()->empresa_id;
+                            $cuentap->save();
+                            /*Inicio de registro de auditoria */
+                            $auditoria = new generalController();
+                            $auditoria->registrarAuditoria('Registro de cuenta -> CUENTA POR COBRAR -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                            $cliente->cliente_cuenta_cobrar=$cuentap->cuenta_id;
+                        }
                         $cliente->save();
                         /*Inicio de registro de auditoria */
                         $auditoria = new generalController();

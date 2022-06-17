@@ -1,13 +1,13 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
         <h3 class="card-title">Mayor Auxiliar</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
         <form class="form-horizontal" method="POST" action="{{ url("mayorAuxiliar") }} ">
-        @csrf
+            @csrf
             <div class="form-group row">
                 <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Desde:</center></label>
                 <div class="col-sm-2">
@@ -27,7 +27,7 @@
                     </select> 
                 </div>
                 <div class="col-sm-1">
-                    <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                    <button type="submit" onclick="girarGif()" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
                     <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                 </div>
             </div>
@@ -93,10 +93,19 @@
     </div>
     <!-- /.card-body -->
 </div>
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
 <!-- /.card -->
 <script type="text/javascript">
     function autoCuenta(){        
         $("#cuenta_fin").val(document.getElementById("cuenta_inicio").value).change()
+    }
+</script>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
     }
 </script>
 @endsection

@@ -2,7 +2,7 @@
 @section('principal')
 <form class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}" onsubmit="return verificarFecha();">
 @csrf
-    <div class="card card-secondary">
+    <div class="card card-secondary"  style="position: absolute; width: 100%">
         <div class="card-header">
             <h3 class="card-title">Conciliación Bancaria</h3>
             <div class="float-right">
@@ -366,6 +366,16 @@
             </div>
         </div>
     </div>
+
+    <div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+        <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+    </div>
+    <script>
+        function girarGif(){
+            document.getElementById("div-gif").style.display="inline"
+            console.log("girando")
+        }
+    </script>
 </form>
 <script type="text/javascript">
     function verificarFecha() {
@@ -378,6 +388,7 @@
             });
             return false;
         }
+        girarGif(); 
         return true;
     }
 function cargarCuenta(){

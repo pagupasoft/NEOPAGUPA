@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cuenta_Pagar;
+use App\Models\Descuento_Anticipo_Proveedor;
 use App\Models\Detalle_Diario;
 use App\Models\Detalle_Pago_CXP;
 use App\Models\Empresa;
@@ -133,6 +134,28 @@ class cuentaPagarController extends Controller
                         $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                         $count ++;
                     }
+                    if($cuenta->transaccionCompra){
+                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cuenta->transaccionCompra->transaccion_id)->orderBy('descuento_fecha')->get() as $pago){
+                            $datos[$count]['nom'] = ''; 
+                            $datos[$count]['doc'] = ''; 
+                            $datos[$count]['num'] = ''; 
+                            $datos[$count]['fec'] = '';
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['sal'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor;                             
+                            $datos[$count]['fep'] = $pago->descuento_fecha; 
+                            if(Auth::user()->empresa->empresa_contabilidad == '1'){
+                                $datos[$count]['dia'] = $pago->diario->diario_codigo; 
+                            }else{
+                                $datos[$count]['dia'] = ''; 
+                            }
+                            $datos[$count]['tip'] = 'CRUCE DE ANTICIPO DE PROVEEDOR';
+                            $datos[$count]['tot'] = '3';
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
+                            $count ++;
+                        }
+                    }
                     $datos[$countProveedor]['mon'] = floatval($datos[$countProveedor]['mon']) + floatval($datos[$countCuenta]['mon']);
                     $datos[$countProveedor]['sal'] = floatval($datos[$countProveedor]['sal']) + floatval($datos[$countCuenta]['sal']);
                     $datos[$countProveedor]['pag'] = floatval($datos[$countProveedor]['pag']) + floatval($datos[$countCuenta]['pag']);
@@ -232,6 +255,28 @@ class cuentaPagarController extends Controller
                         $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
                         $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                         $count ++;
+                    }
+                    if($cuenta->transaccionCompra){
+                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cuenta->transaccionCompra->transaccion_id)->orderBy('descuento_fecha')->get() as $pago){
+                            $datos[$count]['nom'] = ''; 
+                            $datos[$count]['doc'] = ''; 
+                            $datos[$count]['num'] = ''; 
+                            $datos[$count]['fec'] = '';
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['sal'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor;                             
+                            $datos[$count]['fep'] = $pago->descuento_fecha; 
+                            if(Auth::user()->empresa->empresa_contabilidad == '1'){
+                                $datos[$count]['dia'] = $pago->diario->diario_codigo; 
+                            }else{
+                                $datos[$count]['dia'] = ''; 
+                            }
+                            $datos[$count]['tip'] = 'CRUCE DE ANTICIPO DE PROVEEDOR';
+                            $datos[$count]['tot'] = '3';
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
+                            $count ++;
+                        }
                     }
                     $datos[$countProveedor]['mon'] = floatval($datos[$countProveedor]['mon']) + floatval($datos[$countCuenta]['mon']);
                     $datos[$countProveedor]['sal'] = floatval($datos[$countProveedor]['sal']) + floatval($datos[$countCuenta]['sal']);

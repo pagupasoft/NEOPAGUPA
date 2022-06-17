@@ -133,55 +133,57 @@
                         </thead>
                         <tbody>
                             @if(isset($datos))
-                                @for ($i = 1; $i <= count($datos); ++$i)   
-                                <tr class="invisible">
-                                    <input type="hidden" name="idNom[]" value="{{ $datos[$i]['nom'] }}"/>
-                                    <input type="hidden" name="idDoc[]" value="{{ $datos[$i]['doc'] }}"/>
-                                    <input type="hidden" name="idNum[]" value="{{ $datos[$i]['num'] }}"/>
-                                    <input type="hidden" name="idFec[]" value="{{ $datos[$i]['fec'] }}"/>
-                                    <input type="hidden" name="idMon[]" value="{{ $datos[$i]['mon'] }}"/>
-                                    <input type="hidden" name="idSal[]" value="{{ $datos[$i]['sal'] }}"/>
-                                    <input type="hidden" name="idPag[]" value="{{ $datos[$i]['pag'] }}"/>
-                                    <input type="hidden" name="idFep[]" value="{{ $datos[$i]['fep'] }}"/>
-                                    <input type="hidden" name="idDia[]" value="{{ $datos[$i]['dia'] }}"/>
-                                    <input type="hidden" name="idTip[]" value="{{ $datos[$i]['tip'] }}"/>
-                                    <input type="hidden" name="idTot[]" value="{{ $datos[$i]['tot'] }}"/>
-                                </tr>
-                                <tr>
-                                    @if($datos[$i]['tot'] == '1')
-                                        <td style="background:  #A7CCF3;" colspan="3">{{ $datos[$i]['nom'] }}</td>
-                                        <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['mon'],2) }}</td>
-                                        <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['sal'],2) }}</td>
-                                        <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['pag'],2) }}</td>
-                                        <td style="background:  #A7CCF3;" colspan="3"></td>  
-                                    @endif
-                                    @if($datos[$i]['tot'] == '2')    
-                                        <td style="background:  #F3DCA7;">{{ $datos[$i]['doc'] }}</td>
-                                        <td style="background:  #F3DCA7;">{{ $datos[$i]['num'] }}</td>
-                                        <td style="background:  #F3DCA7;">{{ $datos[$i]['fec'] }}</td>
-                                        <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['mon'],2) }}</td>
-                                        <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['sal'],2) }}</td>
-                                        <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['pag'],2) }}</td>
-                                        <td style="background:  #F3DCA7;">{{ $datos[$i]['fep'] }}</td>
-                                        @if(Auth::user()->empresa->empresa_contabilidad == '1')
-                                        <td style="background:  #F3DCA7;"><a href="{{ url("asientoDiario/ver/{$datos[$i]['dia']}") }}" target="_blank">{{ $datos[$i]['dia'] }}</a></td>   
+                                @for ($i = 1; $i <= count($datos); ++$i) 
+                                @if($datos[$i]['sal'] >0)  
+                                    <tr class="invisible">
+                                        <input type="hidden" name="idNom[]" value="{{ $datos[$i]['nom'] }}"/>
+                                        <input type="hidden" name="idDoc[]" value="{{ $datos[$i]['doc'] }}"/>
+                                        <input type="hidden" name="idNum[]" value="{{ $datos[$i]['num'] }}"/>
+                                        <input type="hidden" name="idFec[]" value="{{ $datos[$i]['fec'] }}"/>
+                                        <input type="hidden" name="idMon[]" value="{{ $datos[$i]['mon'] }}"/>
+                                        <input type="hidden" name="idSal[]" value="{{ $datos[$i]['sal'] }}"/>
+                                        <input type="hidden" name="idPag[]" value="{{ $datos[$i]['pag'] }}"/>
+                                        <input type="hidden" name="idFep[]" value="{{ $datos[$i]['fep'] }}"/>
+                                        <input type="hidden" name="idDia[]" value="{{ $datos[$i]['dia'] }}"/>
+                                        <input type="hidden" name="idTip[]" value="{{ $datos[$i]['tip'] }}"/>
+                                        <input type="hidden" name="idTot[]" value="{{ $datos[$i]['tot'] }}"/>
+                                    </tr>
+                                    <tr>
+                                        @if($datos[$i]['tot'] == '1')
+                                            <td style="background:  #A7CCF3;" colspan="3">{{ $datos[$i]['nom'] }}</td>
+                                            <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['mon'],2) }}</td>
+                                            <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['sal'],2) }}</td>
+                                            <td style="background:  #A7CCF3;">{{ number_format($datos[$i]['pag'],2) }}</td>
+                                            <td style="background:  #A7CCF3;" colspan="3"></td>  
                                         @endif
-                                        <td style="background:  #F3DCA7;">{{ $datos[$i]['tip'] }}</td>   
-                                    @endif 
-                                    @if($datos[$i]['tot'] == '3')    
-                                        <td>{{ $datos[$i]['doc'] }}</td>
-                                        <td>{{ $datos[$i]['num'] }}</td>
-                                        <td>{{ $datos[$i]['fec'] }}</td>
-                                        <td>{{ $datos[$i]['mon'] }}</td>
-                                        <td>{{ $datos[$i]['sal'] }}</td>
-                                        <td>{{ number_format($datos[$i]['pag'],2) }}</td>
-                                        <td>{{ $datos[$i]['fep'] }}</td>
-                                        @if(Auth::user()->empresa->empresa_contabilidad == '1')
-                                        <td><a href="{{ url("asientoDiario/ver/{$datos[$i]['dia']}") }}" target="_blank">{{ $datos[$i]['dia'] }}</a></td>   
-                                        @endif
-                                        <td>{{ $datos[$i]['tip'] }}</td>   
-                                    @endif                  
-                                </tr>
+                                        @if($datos[$i]['tot'] == '2')    
+                                            <td style="background:  #F3DCA7;">{{ $datos[$i]['doc'] }}</td>
+                                            <td style="background:  #F3DCA7;">{{ $datos[$i]['num'] }}</td>
+                                            <td style="background:  #F3DCA7;">{{ $datos[$i]['fec'] }}</td>
+                                            <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['mon'],2) }}</td>
+                                            <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['sal'],2) }}</td>
+                                            <td style="background:  #F3DCA7;">{{ number_format($datos[$i]['pag'],2) }}</td>
+                                            <td style="background:  #F3DCA7;">{{ $datos[$i]['fep'] }}</td>
+                                            @if(Auth::user()->empresa->empresa_contabilidad == '1')
+                                            <td style="background:  #F3DCA7;"><a href="{{ url("asientoDiario/ver/{$datos[$i]['dia']}") }}" target="_blank">{{ $datos[$i]['dia'] }}</a></td>   
+                                            @endif
+                                            <td style="background:  #F3DCA7;">{{ $datos[$i]['tip'] }}</td>   
+                                        @endif 
+                                        @if($datos[$i]['tot'] == '3')    
+                                            <td>{{ $datos[$i]['doc'] }}</td>
+                                            <td>{{ $datos[$i]['num'] }}</td>
+                                            <td>{{ $datos[$i]['fec'] }}</td>
+                                            <td>{{ $datos[$i]['mon'] }}</td>
+                                            <td>{{ $datos[$i]['sal'] }}</td>
+                                            <td>{{ number_format($datos[$i]['pag'],2) }}</td>
+                                            <td>{{ $datos[$i]['fep'] }}</td>
+                                            @if(Auth::user()->empresa->empresa_contabilidad == '1')
+                                            <td><a href="{{ url("asientoDiario/ver/{$datos[$i]['dia']}") }}" target="_blank">{{ $datos[$i]['dia'] }}</a></td>   
+                                            @endif
+                                            <td>{{ $datos[$i]['tip'] }}</td>   
+                                        @endif                  
+                                    </tr>
+                                @endif
                                 @endfor
                             @endif
                         </tbody>
@@ -248,15 +250,15 @@
                         </thead>
                         <tbody>
                             @if(isset($datosSaldo))
-                                @for ($i = 1; $i <= count($datosSaldo); ++$i)   
-                                <tr>  
-                                    <td>{{ $datosSaldo[$i]['ruc'] }}<input type="hidden" name="idRuc[]" value="{{ $datosSaldo[$i]['ruc'] }}"/></td>
-                                    <td>{{ $datosSaldo[$i]['nom'] }}<input type="hidden" name="idNom[]" value="{{ $datosSaldo[$i]['nom'] }}"/></td>
-                                    <td>{{ number_format($datosSaldo[$i]['ant'],2) }}<input type="hidden" name="idAnt[]" value="{{ $datosSaldo[$i]['ant'] }}"/></td>
-                                    <td>{{ number_format($datosSaldo[$i]['deb'],2) }}<input type="hidden" name="idDeb[]" value="{{ $datosSaldo[$i]['deb'] }}"/></td>
-                                    <td>{{ number_format($datosSaldo[$i]['hab'],2) }}<input type="hidden" name="idHab[]" value="{{ $datosSaldo[$i]['hab'] }}"/></td>
-                                    <td>{{ number_format($datosSaldo[$i]['sal'],2) }}<input type="hidden" name="idSal[]" value="{{ $datosSaldo[$i]['sal'] }}"/></td>                    
-                                </tr>
+                                @for ($i = 1; $i <= count($datosSaldo); ++$i)                                                                   
+                                        <tr>  
+                                            <td>{{ $datosSaldo[$i]['ruc'] }}<input type="hidden" name="idRuc[]" value="{{ $datosSaldo[$i]['ruc'] }}"/></td>
+                                            <td>{{ $datosSaldo[$i]['nom'] }}<input type="hidden" name="idNom[]" value="{{ $datosSaldo[$i]['nom'] }}"/></td>
+                                            <td>{{ number_format($datosSaldo[$i]['ant'],2) }}<input type="hidden" name="idAnt[]" value="{{ $datosSaldo[$i]['ant'] }}"/></td>
+                                            <td>{{ number_format($datosSaldo[$i]['deb'],2) }}<input type="hidden" name="idDeb[]" value="{{ $datosSaldo[$i]['deb'] }}"/></td>
+                                            <td>{{ number_format($datosSaldo[$i]['hab'],2) }}<input type="hidden" name="idHab[]" value="{{ $datosSaldo[$i]['hab'] }}"/></td>
+                                            <td>{{ number_format($datosSaldo[$i]['sal'],2) }}<input type="hidden" name="idSal[]" value="{{ $datosSaldo[$i]['sal'] }}"/></td>                    
+                                        </tr>                                   
                                 @endfor
                             @endif
                         </tbody>

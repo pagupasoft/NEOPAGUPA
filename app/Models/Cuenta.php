@@ -37,7 +37,15 @@ class Cuenta extends Model
     }
     public function scopebuscarCuenta($query, $cuenta){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cuenta_numero','=',$cuenta);
-}
+    }
+    public function scopeBuscarByCuentaPadre($query, $cuentaPadre){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)
+        ->where('cuenta_padre_id','=',$cuentaPadre);
+    }
+    public function scopeBuscarByCuenta($query, $cuenta){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)
+        ->where('cuenta_nombre','like','%'.$cuenta.'%');
+    }
 
     public function scopeCuentasNivel($query){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cuenta_estado','=','1')->orderBy('cuenta_nivel','desc');

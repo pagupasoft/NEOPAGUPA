@@ -240,7 +240,7 @@
                                     </div>
                                     <label for="idEstatura" class="col-sm-2 col-form-label">Estatura</label>
                                     <div class="col-sm-3 input-group mb-2">
-                                        <input type="text" class="form-control" id="idEstatura" name="idEstatura" placeholder="Estatura" required>
+                                        <input type="text" class="form-control" id="idEstatura" name="idEstatura" placeholder="Estatura" >
                                         <div class="input-group-append">
                                             <div class="input-group-text">cm</div>
                                         </div>
@@ -249,7 +249,7 @@
                                 <div class="form-group row">
                                     <label for="idGrupoS" class="col-sm-3 col-form-label">Grupo Sanguineo</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="idGrupoS" name="idGrupoS" placeholder="Grupo Sanguineo" required>
+                                        <input type="text" class="form-control" id="idGrupoS" name="idGrupoS" placeholder="Grupo Sanguineo" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -269,14 +269,14 @@
                                     </div>
                                     <label for="idNacionalidad" class="col-sm-3 col-form-label">Nacionalidad</label>
                                     <div class="col-sm-3">
-                                        <input type="text" class="form-control" id="idNacionalidad" name="idNacionalidad" placeholder="Nacionalidad" required>
+                                        <input type="text" class="form-control" id="idNacionalidad" name="idNacionalidad" placeholder="Nacionalidad" >
                                     </div>
 
                                 </div>
                                 <div class="form-group row">
                                     <label for="idEstadoCivil" class="col-sm-3 col-form-label">Estado Civil</label>
                                     <div class="col-sm-9">
-                                        <select id="idEstadoCivil" name="idEstadoCivil" class="form-control show-tick " data-live-search="true" required>
+                                        <select id="idEstadoCivil" name="idEstadoCivil" class="form-control show-tick " data-live-search="true" >
                                             <option value="" label>--Seleccione una opcion--</option>
                                             <option value="SOLTERO/A">SOLTERO/A</option>
                                             <option value="UNION DE HECHO">UNION DE HECHO</option>
@@ -289,7 +289,7 @@
                                 <div class="form-group row">
                                     <label for="idDireccion" class="col-sm-3 col-form-label">Direccion</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="idDireccion" name="idDireccion" placeholder="Direccion" required>
+                                        <input type="text" class="form-control" id="idDireccion" name="idDireccion" placeholder="Direccion" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -313,7 +313,7 @@
                                     <div class="form-group row">
                                         <label for="idCuentaAnti" class="col-sm-3 col-form-label">Cuenta Anticipo</label>
                                         <div class="col-sm-9">
-                                            <select id="idCuentaAnti" name="idCuentaAnti" class="form-control select2" data-live-search="true" required>
+                                            <select id="idCuentaAnti" name="idCuentaAnti" class="form-control select2" data-live-search="true" >
                                                 <option value="" label>--Seleccione una opcion--</option>
                                                 @foreach($cuentas as $cuenta)
                                                 <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
@@ -324,7 +324,7 @@
                                     <div class="form-group row">
                                         <label for="idCuentaPres" class="col-sm-3 col-form-label">Cuenta Prestamo</label>
                                         <div class="col-sm-9">
-                                            <select id="idCuentaPres" name="idCuentaPres" class="form-control select2" data-live-search="true" required>
+                                            <select id="idCuentaPres" name="idCuentaPres" class="form-control select2" data-live-search="true" >
                                                 <option value="" label>--Seleccione una opcion --</option>
                                                 @foreach($cuentas as $cuenta)
                                                 <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
@@ -393,14 +393,14 @@
                                     </div>
                                     <label for="idCosecha" class="col-sm-2 col-form-label">Cosecha</label>
                                     <div class="col-sm-4 ">
-                                        <input type="text" class="form-control derecha-texto" id="idCosecha" name="idCosecha" placeholder="0.00" required>
+                                        <input type="text" class="form-control derecha-texto" id="idCosecha" name="idCosecha" placeholder="0.00" value="0" >
                                     </div>
                                    
                                 </div>
                                 <div class="form-group row">
                                     <label for="idJornada" class="col-sm-3 col-form-label">Jornada de Trabajo</label>
                                     <div class="col-sm-3">
-                                        <select id="idJornada" name="idJornada" class="form-control select2" data-live-search="true" required>
+                                        <select id="idJornada" name="idJornada" class="form-control select2" data-live-search="true" >
                                             <option value="" label>--Seleccione --</option>
                                             <option value="22-8">22-8</option>
                                             <option value="20-10">20-10</option>
@@ -537,35 +537,35 @@
                                 <div class="form-group row">
                                     <label for="idContactoNombre" class="col-sm-3 col-form-label">Nombre de Contacto</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="idContactoNombre" name="idContactoNombre" placeholder="Nombre de Contacto" required>
+                                        <input type="text" class="form-control" id="idContactoNombre" name="idContactoNombre" placeholder="Nombre de Contacto" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="idContactoTelefono" class="col-sm-3 col-form-label">Teléfono de Contacto</label>
                                     <div class="col-sm-3">
-                                        <input type="text" class="form-control" id="idContactoTelefono" name="idContactoTelefono" placeholder="Número de Teléfono" required>
+                                        <input type="text" class="form-control" id="idContactoTelefono" name="idContactoTelefono" placeholder="Número de Teléfono" >
                                     </div>
                                     <label for="idContactoCelular" class="col-sm-3 col-form-label">Celular de Contacto</label>
                                     <div class="col-sm-3">
-                                        <input type="text" class="form-control" id="idContactoCelular" name="idContactoCelular" placeholder="Número Celular" required>
+                                        <input type="text" class="form-control" id="idContactoCelular" name="idContactoCelular" placeholder="Número Celular" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="idContactoDireccion" class="col-sm-3 col-form-label">Direccion de Contacto</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="idContactoDireccion" name="idContactoDireccion" placeholder="Direccion" required>
+                                        <input type="text" class="form-control" id="idContactoDireccion" name="idContactoDireccion" placeholder="Direccion" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="idCargaF" class="col-sm-3 col-form-label">Carga Familiar</label>
                                     <div class="col-sm-3">
-                                        <input type="number" class="form-control" id="idCargaF" name="idCargaF" placeholder="Carga Familiar" required>
+                                        <input type="number" class="form-control" id="idCargaF" name="idCargaF" placeholder="Carga Familiar" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="idObservacion" class="col-sm-3 col-form-label">Observacion</label>
                                     <div class="col-sm-9">
-                                        <textarea type="text" class="form-control" id="idObservacion" name="idObservacion" required> </textarea>
+                                        <textarea type="text" class="form-control" id="idObservacion" name="idObservacion" > </textarea>
                                     </div>
                                 </div>
                             </div>

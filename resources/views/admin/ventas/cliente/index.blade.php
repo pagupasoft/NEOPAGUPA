@@ -195,8 +195,9 @@
                                 <input type="number" class="form-control" id="idCupoCredito" name="idCupoCredito" placeholder="0.00" value="0.00" step="any">
                             </div>                    
                         </div>    
-                        @if($parametrizacionContable->parametrizacion_cuenta_general == '0')          
-                            @if(Auth::user()->empresa->empresa_contabilidad == '1')                                  
+                        @if(isset($parametrizacionContable->parametrizacion_cuenta_general))      
+                            @if($parametrizacionContable->parametrizacion_cuenta_general == '0')          
+                                              
                             <div class="form-group row">
                                 <label for="idCuentaxcobrar" class="col-sm-3 col-form-label">Cuenta por Cobrar</label>
                                 <div class="col-sm-9">
@@ -207,6 +208,10 @@
                                     </select>
                                 </div>
                             </div>
+                            @endif
+                        @endif   
+                        @if(isset($parametrizacionContableCliente->parametrizacion_cuenta_general))         
+                            @if($parametrizacionContableCliente->parametrizacion_cuenta_general == '0')   
                             <div class="form-group row">
                                 <label for="idCuentaAnticipo" class="col-sm-3 col-form-label">Cuenta Anticipo</label>
                                 <div class="col-sm-9">

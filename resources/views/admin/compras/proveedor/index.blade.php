@@ -218,28 +218,34 @@
                                     <label class="custom-control-label" for="idContribuyente"></label>                                 
                                </div>
                             </div>                
-                        </div>                         
-                            @if($parametrizacionContable->parametrizacion_cuenta_general == '0')                  
-                            <div class="form-group row">
-                                <label for="idCuentaxpagar" class="col-sm-3 col-form-label">Cuenta por Pagar</label>
-                                <div class="col-sm-9">
-                                    <select class="custom-select select2" id="idCuentaxpagar" name="idCuentaxpagar" require>
-                                        @foreach($cuentas as $cuenta)
-                                            <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
-                                        @endforeach
-                                    </select>
+                        </div>    
+                            @if(isset($parametrizacionContable->parametrizacion_cuenta_general))                          
+                                @if($parametrizacionContable->parametrizacion_cuenta_general == '0')                  
+                                <div class="form-group row">
+                                    <label for="idCuentaxpagar" class="col-sm-3 col-form-label">Cuenta por Pagar</label>
+                                    <div class="col-sm-9">
+                                        <select class="custom-select select2" id="idCuentaxpagar" name="idCuentaxpagar" require>
+                                            @foreach($cuentas as $cuenta)
+                                                <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="idCuentaAnticipo" class="col-sm-3 col-form-label">Cuenta Anticipo</label>
-                                <div class="col-sm-9">
-                                    <select class="custom-select select2" id="idCuentaAnticipo" name="idCuentaAnticipo" require>
-                                        @foreach($cuentas as $cuenta)
-                                            <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
-                                        @endforeach
-                                    </select>
+                                @endif
+                            @endif
+                            @if(isset($parametrizacionContableProveedor->parametrizacion_cuenta_general))                          
+                                @if($parametrizacionContableProveedor->parametrizacion_cuenta_general == '0')    
+                                <div class="form-group row">
+                                    <label for="idCuentaAnticipo" class="col-sm-3 col-form-label">Cuenta Anticipo</label>
+                                    <div class="col-sm-9">
+                                        <select class="custom-select select2" id="idCuentaAnticipo" name="idCuentaAnticipo" require>
+                                            @foreach($cuentas as $cuenta)
+                                                <option value="{{$cuenta->cuenta_id}}">{{$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+                                @endif
                             @endif
                         @endif
                         

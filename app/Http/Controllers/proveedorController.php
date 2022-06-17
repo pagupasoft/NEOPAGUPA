@@ -39,7 +39,8 @@ class proveedorController extends Controller
             $categoriaProveedores=Categoria_Proveedor::categoriaproveedores()->get();      
             $proveedores=Proveedor::proveedores()->get();
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('CUENTA POR PAGAR')->first();
-            return view('admin.compras.proveedor.index',['parametrizacionContable'=>$parametrizacionContable,'proveedores'=>$proveedores,'PE'=>Punto_Emision::puntos()->get(),'cuentas'=>$cuentas,'ciudades'=>$ciudades, 'tipoIdentificaciones'=>$tipoIdentificaciones,'tipoSujetos'=>$tipoSujetos,'categoriaProveedores'=>$categoriaProveedores,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            $parametrizacionContableProveedor=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();
+            return view('admin.compras.proveedor.index',['parametrizacionContableProveedor'=>$parametrizacionContableProveedor,'parametrizacionContable'=>$parametrizacionContable,'proveedores'=>$proveedores,'PE'=>Punto_Emision::puntos()->get(),'cuentas'=>$cuentas,'ciudades'=>$ciudades, 'tipoIdentificaciones'=>$tipoIdentificaciones,'tipoSujetos'=>$tipoSujetos,'categoriaProveedores'=>$categoriaProveedores,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -111,7 +112,52 @@ class proveedorController extends Controller
             $proveedor->tipo_identificacion_id = $request->get('idTidentificacion');
             $proveedor->ciudad_id = $request->get('idCiudad');          
             $proveedor->categoria_proveedor_id = $request->get('idCategoria');
-            $proveedor->proveedor_estado  = 1;            
+            $proveedor->proveedor_estado  = 1; 
+            
+            $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE PROVEEDOR')->first();
+           
+            if ($cuentap) {
+                $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
+                $sec=1;
+                if ($cuentaapdre) {
+                    $sec=$sec+$cuentaapdre;
+                }
+                $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
+                $cuentaa = new Cuenta();
+                $cuentaa->cuenta_numero =$numerocuenta;
+                $cuentaa->cuenta_nombre = 'ANTICIPO DE PROVEEDOR -'.$proveedor->proveedor_nombre;
+                $cuentaa->cuenta_secuencial = $sec;
+                $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
+                $cuentaa->cuenta_estado = 1;
+                $cuentaa->empresa_id = Auth::user()->empresa_id;
+                $cuentaa->save();
+                /*Inicio de registro de auditoria */
+                $auditoria = new generalController();
+                $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPO DE PROVEEDOR -'.$proveedor->proveedor_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                $proveedor->proveedor_cuenta_anticipo=$cuentaa->cuenta_id;
+            }
+            $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR PAGAR')->first();
+           
+            if ($cuentapr) {
+                $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
+                $sec=1;
+                if ($cuentaapdre) {
+                    $sec=$sec+$cuentaapdre;
+                }
+                $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
+                $cuentap = new Cuenta();
+                $cuentap->cuenta_numero =$numerocuenta;
+                $cuentap->cuenta_nombre = 'CUENTA POR PAGAR -'.$proveedor->proveedor_nombre;
+                $cuentap->cuenta_secuencial = $sec;
+                $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
+                $cuentap->cuenta_estado = 1;
+                $cuentap->empresa_id = Auth::user()->empresa_id;
+                $cuentap->save();
+                /*Inicio de registro de auditoria */
+                $auditoria = new generalController();
+                $auditoria->registrarAuditoria('Registro de cuenta -> CUENTA POR PAGAR -'.$proveedor->proveedor_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                $proveedor->proveedor_cuenta_pagar=$cuentap->cuenta_id;
+            }
             $proveedor->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

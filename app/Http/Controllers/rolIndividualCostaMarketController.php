@@ -19,6 +19,7 @@ use App\Models\Detalle_Rol_CM;
 use App\Models\Diario;
 use App\Models\Empleado;
 use App\Models\Movimiento_Consumo_Rol;
+use App\Models\Parametrizacion_Contable;
 use App\Models\Punto_Emision;
 use App\Models\Quincena;
 use App\Models\Rango_Documento;
@@ -417,33 +418,33 @@ class rolIndividualCostaMarketController extends Controller
             }
             if (isset($anticipos)) {
                 for ($j = 0; $j < count($anticipos); ++$j) {
-                    if(($valoranticipos[$j])>0)
-                    $anticipo=Anticipo_Empleado::findOrFail($idanticipos[$anticipos[$j]]);
+                    if (($valoranticipos[$j])>0) {
+                        $anticipo=Anticipo_Empleado::findOrFail($idanticipos[$anticipos[$j]]);
         
-                    $anticipodescuento=new Descuento_Anticipo_Empleado();
-                    $anticipodescuento->descuento_fecha=$request->get('fechaactual');
-                    $anticipodescuento->descuento_descripcion='Descuento de anticipo en Rol';
-                    $anticipodescuento->descuento_valor=$valoranticipos[$j];
-                    $anticipodescuento->descuento_estado='1';
-                    $anticipodescuento->rolcm()->associate($cabecera_rol);
-                    $anticipodescuento->anticipo()->associate($anticipo);
-                    $anticipodescuento->diario()->associate($diario);
-                    $anticipodescuento->save();
+                        $anticipodescuento=new Descuento_Anticipo_Empleado();
+                        $anticipodescuento->descuento_fecha=$request->get('fechaactual');
+                        $anticipodescuento->descuento_descripcion='Descuento de anticipo en Rol';
+                        $anticipodescuento->descuento_valor=$valoranticipos[$j];
+                        $anticipodescuento->descuento_estado='1';
+                        $anticipodescuento->rolcm()->associate($cabecera_rol);
+                        $anticipodescuento->anticipo()->associate($anticipo);
+                        $anticipodescuento->diario()->associate($diario);
+                        $anticipodescuento->save();
         
-                    $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Resgitro del descuento del Anticipo de empleado-> '.$request->get('idEmpleado'), '0', 'Por el pago de rol');
-                    if($anticipo->anticipo_saldom){
-                        $anticipo->anticipo_saldo=$anticipo->anticipo_saldom-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                        $auditoria = new generalController();
+                        $auditoria->registrarAuditoria('Resgitro del descuento del Anticipo de empleado-> '.$request->get('idEmpleado'), '0', 'Por el pago de rol');
+                        if ($anticipo->anticipo_saldom) {
+                            $anticipo->anticipo_saldo=$anticipo->anticipo_saldom-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                        } else {
+                            $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
+                        }
+                        if ($anticipo->anticipo_saldo=='0') {
+                            $anticipo->anticipo_estado='2';
+                        }
+                        $anticipo->update();
+                        $auditoria = new generalController();
+                        $auditoria->registrarAuditoria('Actualizacion del Anticipo de estado a 2 con empleado-> '.$empleado->empleado_nombre, '0', 'Por el pago de rol');
                     }
-                    else{
-                        $anticipo->anticipo_saldo=$anticipo->anticipo_valor-(Descuento_Anticipo_Empleado::Anticipos($anticipo->anticipo_id)->sum('descuento_valor'));
-                    }
-                    if ($anticipo->anticipo_saldo=='0') {
-                        $anticipo->anticipo_estado='2';
-                    }
-                    $anticipo->update();
-                    $auditoria = new generalController();
-                    $auditoria->registrarAuditoria('Actualizacion del Anticipo de estado a 2 con empleado-> '.$empleado->empleado_nombre, '0', 'Por el pago de rol');
                 }
             }
             $matriz=null;
@@ -453,6 +454,7 @@ class rolIndividualCostaMarketController extends Controller
             for ($i = 0; $i < count($rubros); ++$i) {
                 if ($idrubros[$i]!="{idrubro}") {
                     if ($valorrubros[$i]>0) {
+                        $activadoranti=true;
                         $auxrubro=Rubro::findOrFail($idrubros[$i]);
                         $detalle= new Detalle_Rol_CM();
                         $detalle->detalle_rol_fecha_inicio = $fechaini[1];
@@ -497,29 +499,50 @@ class rolIndividualCostaMarketController extends Controller
                                 }                               
                        }
                         if ($tiporubros[$i]=='1') {
-                            $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, $rubros[$i])->first();
-                            if($matriz==null){
-                                $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
-                                $matriz[$count]["haber"]= floatval($valorrubros[$i]);
-                                $matriz[$count]["tipo"]= 'HABER';
-                                $matriz[$count]["debe"]=0;
-                                $count++;
-                            }
-                            else{
-                                $activador=true;
-                                for ($k = 1; $k <= count($matriz); ++$k) {
-                                    if($matriz[$k]["idcuenta"]==$tipo->cuenta_haber && $matriz[$k]["haber"]>0){
-                                        $matriz[$k]["haber"]=  $matriz[$k]["haber"]+floatval($valorrubros[$i]);
-                                        $activador=false;
+                            if (isset($valoranticipos)) {
+                                $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();
+                                $emplea=Empleado::findOrFail($idempleado);
+                                if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                                    $activadoranti=false;
+                                    if ($matriz==null) {
+                                        $matriz[$count]["idcuenta"]= $emplea->empleado_cuenta_anticipo;
+                                        $matriz[$count]["debe"]= 0;
+                                        $matriz[$count]["tipo"]= 'HABER';
+                                        $matriz[$count]["haber"]=floatval($valorrubros[$i]);
+                                        $count++;
+                                    } else {
+                                        $matriz[$count]["idcuenta"]= $emplea->empleado_cuenta_anticipo;
+                                        $matriz[$count]["debe"]= 0;
+                                        $matriz[$count]["tipo"]= 'HABER';
+                                        $matriz[$count]["haber"]=floatval($valorrubros[$i]);
+                                        $count++;
                                     }
                                 }
-                                if($activador==true){
+                            }
+                            if ($activadoranti==true) {
+                                $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, $rubros[$i])->first();
+                                if ($matriz==null) {
                                     $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
                                     $matriz[$count]["haber"]= floatval($valorrubros[$i]);
                                     $matriz[$count]["tipo"]= 'HABER';
                                     $matriz[$count]["debe"]=0;
                                     $count++;
-                                }  
+                                } else {
+                                    $activador=true;
+                                    for ($k = 1; $k <= count($matriz); ++$k) {
+                                        if ($matriz[$k]["idcuenta"]==$tipo->cuenta_haber && $matriz[$k]["haber"]>0) {
+                                            $matriz[$k]["haber"]=  $matriz[$k]["haber"]+floatval($valorrubros[$i]);
+                                            $activador=false;
+                                        }
+                                    }
+                                    if ($activador==true) {
+                                        $matriz[$count]["idcuenta"]= $tipo->cuenta_haber;
+                                        $matriz[$count]["haber"]= floatval($valorrubros[$i]);
+                                        $matriz[$count]["tipo"]= 'HABER';
+                                        $matriz[$count]["debe"]=0;
+                                        $count++;
+                                    }
+                                }
                             }
                                                      
                         }

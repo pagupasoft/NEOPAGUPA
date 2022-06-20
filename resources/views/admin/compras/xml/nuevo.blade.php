@@ -1263,6 +1263,13 @@ function eliminarItemI(id, valorI) {
     totalRI(valorI * (-1));
 }
 function validarForm(){
+    if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
+        bootbox.alert({
+            message: "El total se retención en la fuente es diferente del subtotal de la factura.",
+            size: 'small'
+        });
+        return false;
+    }
     if(document.getElementById("proveedorID").value == ''){
         bootbox.alert({
             message: "Seleccione un proveedor antes de guardar.",

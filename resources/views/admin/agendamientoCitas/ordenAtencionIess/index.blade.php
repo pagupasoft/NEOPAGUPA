@@ -18,7 +18,7 @@
                             <option value=0 @if($seleccionado==0) selected @endif >Todos</option>
 
                             @foreach($medicos as $medico)
-                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>{{ $medico->empleado->empleado_nombre }}</option>
+                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>@if(isset($medico->empleado)) {{$medico->empleado->empleado_nombre}} @else - @endif</option>
                             @endforeach
                         </select>
                     </div>

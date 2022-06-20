@@ -42,6 +42,7 @@
                                 <a href="{{ url("analisisLaboratorio/{$ordenanalisisuser->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Ordenr"><i class="fa fa-print"></i></a>
                                 
                                 @if($ordenanalisisuser->analisis_estado == 3)
+                                    {{$ordenanalisisuser->analisis_estado}}
                                     <a target="_blank" href="{{ url("analisisLaboratorio/{$ordenanalisisuser->analisis_laboratorio_id}/resultados") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver Resultados"><i class="fa fa-vial"></i></a> 
 
                                     @if($count=='1')
@@ -65,7 +66,8 @@
                 @foreach($analisis as $ordenanalisis)
                     <tr class="text-center">
                         <td> 
-                            <a href="{{ url("analisisLaboratorio/{$ordenanalisis->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Ordenr"><i class="fa fa-print"></i></a>  
+                            {{$ordenanalisis->analisis_estado}}
+                            <a href="{{ url("analisisLaboratorio/{$ordenanalisis->orden->orden_id}/imprimirorden") }}" target="_blank" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Imprimir Orden"><i class="fa fa-print"></i></a>  
                             @if($ordenanalisis->analisis_estado == 3)   
                                 <a  target="_blank" href="{{ url("analisisLaboratorio/{$ordenanalisis->analisis_laboratorio_id}/resultados") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver Resultados"><i class="fa fa-vial"></i></a> 
                                 <a href="{{ url("analisisLaboratorio/{$ordenanalisis->analisis_laboratorio_id}/enviar") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Enviar por Correo"><i class="fas fa-envelope"></i></a> 

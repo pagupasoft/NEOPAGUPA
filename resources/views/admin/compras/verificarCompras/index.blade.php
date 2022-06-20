@@ -128,27 +128,7 @@
 
 <div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
     <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
-
 </div>
-<!-- /.card -->
-<script>
-     <?php
-    if(isset($fecha_todo)){  
-        echo('document.getElementById("fecha_todo").checked=true;');
-    }
-    if(isset($fecF)){  
-        ?>
-         document.getElementById("fecha_hasta").value='<?php echo($fecF); ?>';
-         <?php
-    }
-    if(isset($fecI)){  
-        ?>
-         document.getElementById("fecha_desde").value='<?php echo($fecI); ?>';
-         <?php
-    }
-    ?>
-</script>
-
 <script>
     function girarGif(){
         document.getElementById("div-gif").style.display="inline"
@@ -175,9 +155,27 @@
             verificarCompras(i)
         }
     });
-
-
 </script>
+
+<script>
+     <?php
+    if(isset($fecha_todo)){  
+        echo('document.getElementById("fecha_todo").checked=true;');
+    }
+    if(isset($fecF)){  
+        ?>
+         document.getElementById("fecha_hasta").value='<?php echo($fecF); ?>';
+         <?php
+    }
+    if(isset($fecI)){  
+        ?>
+         document.getElementById("fecha_desde").value='<?php echo($fecI); ?>';
+         <?php
+    }
+    ?>
+</script>
+
+
 
 <script>
     var tabla1 = document.getElementById("example4");

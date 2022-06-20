@@ -48,9 +48,7 @@
             @foreach($ordenesExamenes as $ordenExamen)
                 <tr class="text-center">
                     <td>
-                        @if($ordenExamen->orden_estado == 1)
-                            <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/editarOrden") }}" class="btn btn-xs btn-warning " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Editar Orden">&nbsp;&nbsp;<i class="fas fa-edit"></i></a>
-                            
+                        @if($ordenExamen->orden_estado == 1)                            
                             @if($rol->rol_nombre!="Medico")
                                 <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar">&nbsp;&nbsp;<i class="fas fa-dollar-sign"></i>&nbsp;&nbsp;</a>
                             @endif

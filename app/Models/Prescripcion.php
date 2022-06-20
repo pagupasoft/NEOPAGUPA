@@ -35,7 +35,7 @@ class Prescripcion extends Model
                     )->join('sucursal','sucursal.sucursal_id','=','orden_atencion.sucursal_id'
                     )->join('paciente', 'paciente.paciente_id', '=', 'orden_atencion.paciente_id'
                     )->where('sucursal.empresa_id','=',Auth::user()->empresa_id
-    );//->where('prescripcion.prescripcion_estado','=','1');
+                    )->orderBy('orden_atencion.orden_id', 'desc');
     }
 
     public function scopePrescripcionesBusqueda($query, $request){

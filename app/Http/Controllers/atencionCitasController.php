@@ -10,6 +10,7 @@ use App\Models\Empresa;
 use App\Models\Proveedor;
 use App\Models\Signos_Vitales;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\examenController;
 use App\Models\Aseguradora_Procedimiento;
 use App\Models\Bodega;
 use App\Models\Cliente;
@@ -39,6 +40,9 @@ use Illuminate\Http\Request;
 use App\Models\Punto_Emision;
 use App\Models\Sucursal;
 use App\Models\Tipo_Examen;
+use App\Models\Analisis_Laboratorio;
+use App\Models\Detalle_Analisis;
+use App\Models\Rango_Documento;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use PDF;
@@ -72,7 +76,7 @@ class atencionCitasController extends Controller
             $mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
             $ordenesAtencion = Orden_Atencion::OrdenesHoy()->get();
 
-            //return $medicos;
+            //return $ordenesAtencion;
 
             return view('admin.citasMedicas.atencionCitas.index',['medico'=>$medico, 'mespecialidadM'=>$mespecialidadM,'ordenesAtencion'=>$ordenesAtencion, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
@@ -252,8 +256,59 @@ class atencionCitasController extends Controller
                 ///////////  si es iess pasa directo a subir examenes (estado 2)
                 if($atencion->orden_iess == '0')
                     $ordenExamen->orden_estado = 1; 
-                else
-                    $ordenExamen->orden_estado = 2; 
+                else{
+                    $ordenExamen->orden_estado = 2;
+
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    ///////////////////////////////////////////////////////creo un examen de laboratorio que no lleva factura //////////////////////////////////////////////////////////////////////////////
+                    $puntoEmision = Punto_Emision::PuntoSucursalUser($atencion->expediente->ordenatencion->sucursal_id, Auth::user()->user_id)->first();
+                    $rangoDocumento=Rango_Documento::PuntoRango($puntoEmision->punto_id, 'Analisis de Laboratorio')->first();
+                    $secuencial=1;
+                    $analisis=new Analisis_Laboratorio();
+
+                    
+
+                    if($rangoDocumento){
+                        $secuencialAux=Analisis_Laboratorio::secuencial($rangoDocumento->rango_id)->max('analisis_secuencial');
+                        if($secuencialAux){
+                            $secuencial=$secuencialAux+1;  
+                        }
+                    
+                        $analisis->analisis_numero=$atencion->orden_codigo.'-'.substr(str_repeat(0, 9).$secuencial, - 9);
+                        $analisis->analisis_serie=$atencion->orden_codigo;
+                        $analisis->analisis_secuencial=$secuencial;
+
+                        $analisis->analisis_fecha=(new DateTime())->format('Y-m-d');
+                        $analisis->analisis_otros=$request->get('otros_examenes');;
+                        $analisis->analisis_observacion='';
+                        $analisis->analisis_estado='1';
+                        $analisis->sucursal_id=Rango_Documento::rango($rangoDocumento->rango_id)->first()->puntoEmision->sucursal_id;
+                        $analisis->orden_id=$atencion->orden_id;
+                        $analisis->factura_id=null;
+                        $analisis->orden_particular_id=null;
+                        $analisis->save();
+
+                        for ($i = 1; $i < count($laboratorio); ++$i){
+                            $detalleanalisis=new Detalle_Analisis();
+                            $detalleanalisis->detalle_estado='1';
+                            $detalleanalisis->producto_id=$laboratorio[$i];
+
+                            $producto = Producto::findOrFail($laboratorio[$i]);
+                            $detalleanalisis->id_externo=$producto->producto_codigo;
+
+                            $analisis->detalles()->save($detalleanalisis);
+                            $detalleanalisis->save();
+                        }
+
+                    }else{
+                        return redirect('inicio')->with('error','No tiene configurado, un punto de emisión o un rango de documentos para emitir facturas de venta, configueros y vuelva a intentar');
+                    }
+
+
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                }
+
 
                 $ordenExamen->expediente_id = $request->get('expediente_id'); 
                 $ordenExamen->save();  
@@ -275,6 +330,22 @@ class atencionCitasController extends Controller
                     $auditoria->registrarAuditoria('Ingreso de Detalle Examenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, 'Con examen Id '.$laboratorio[$i]);
                 }
 
+                $ExamenController=new examenController();
+                $resultadoEnvio = $ExamenController->postCrearOrden($ordenExamen);
+
+                if($resultadoEnvio->codigo==201){ //////éxito
+                    $analisis->analisis_estado = '2';
+                    $analisis->save();
+                    $ordenExamen->orden_id_referencia=$resultadoEnvio->resultado['data']['id'];
+                    $ordenExamen->orden_numero_referencia=$resultadoEnvio->resultado['data']['numero_orden'];
+                    $ordenExamen->update();
+
+                    //$this->sendMailNotifications($orden->orden_numero_referencia);
+                }
+                else{ //no se pudo enviar al laboratorio
+
+                }
+
                 $OrdenExamenPdfDir=$this->crearOrdenExamenPdf($atencion, $ordenExamen, $tipos);
             }
 
@@ -284,15 +355,16 @@ class atencionCitasController extends Controller
             if (count($ImagenId)>1) {
                 $ordenImagen = new Orden_Imagen();
 
-                 ///////////  si es iess pasa directo a subir examenes (estado 2)
-                 if($atencion->orden_iess == '0')
+                ///////////  si es iess pasa directo a subir examenes (estado 2)
+                if($atencion->orden_iess == '0')
                     $ordenImagen->orden_estado = 1; 
                 else
-                    $ordenImagen->orden_estado = 2; 
+                    $ordenImagen->orden_estado = 2;
 
                 if ($request->get('otros_imagen')) {
                     $ordenImagen->orden_observacion=$request->get('otros_imagen');
                 }
+
                 $ordenImagen->expediente_id = $request->get('expediente_id');
                 $ordenImagen->save();
                 $auditoria->registrarAuditoria('Ingreso de Imagenes con expediente -> ' .  $request->get('expediente_id'),$atencion->orden_id, '');
@@ -316,9 +388,10 @@ class atencionCitasController extends Controller
             if($request->file('imagefile')!=null) 
                 $AnexoPdfDir=$this->crearAnexoPdf($atencion, $request->file('imagefile'));
             
-
+            $atencion->orden_frecuencia=$request->get('tipo_atencion');
             $atencion->orden_estado='4';
             $atencion->save();
+
             /*Inicio de registro de auditoria */
             $auditoria->registrarAuditoria('Actualizacion de Examen a estado Atendido Numero'.$atencion->orden_numero.' Con Expediente '.$request->get('expediente_id'),$atencion->orden_id, '');
             /*Fin de registro de auditoria */
@@ -370,7 +443,7 @@ class atencionCitasController extends Controller
     }
 
     public function informeHistoricoPlano(Request $request){
-        //try{   
+        try{   
             $sucursal=Sucursal::findOrFail($request->sucursal);
             $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
             
@@ -422,8 +495,191 @@ class atencionCitasController extends Controller
 
             $datos['ordenes']= $ordenes;
             return Excel::download(new ViewExcel('admin.formatosExcel.historicoplano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
+        }catch(\Exception $ex){
+            return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+
+    public function informeIndividualIndex(Request $request){
+        //try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $medicos = Medico::medicos()->get();
+            $sucursales=Sucursal::sucursales()->get();
+
+            $ordenes=null;
+            $id = 0;
+
+            foreach($medicos as $medico){
+                if($medico->user_id == Auth::user()->user_id){
+                    $id = $medico->medico_id;
+                }
+            }
+
+            if($id>0)
+                $medico = Medico::findOrFail($id);
+            else
+                $medico=null;
+
+            if($request->fecha_desde!=null){
+                $sucursal=Sucursal::findOrFail($request->sucursal);
+                $ordenes=Orden_Atencion::ordenesByFechaSuc($request->fecha_desde, $request->fecha_hasta, $sucursal->sucursal_id)->get();
+
+                foreach($ordenes as $orden){
+                    $orden->paciente;
+                }
+            }
+            else
+                $sucursal=Sucursal::sucursales()->first();
+            
+            
+            //$mespecialidadM = Medico_Especialidad::mespecialidadM($id)->get();
+            //$prescripciones = Prescripcion::prescripcionesPaciente()->get();
+            //$pacientes = Paciente::pacientes()->get();
+
+
+            
+            
+            $data = [
+                'medico'=>$medico,
+                'sucursales'=>$sucursales,
+                "ordenes"=>$ordenes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin,
+                'fDesde'=>$request->fecha_desde,
+                'fHasta'=>$request->fecha_hasta,
+                'sucursal_id'=> $sucursal->sucursal_id
+            ];
+
+            //return $data;
+
+            return view('admin.citasMedicas.atencionCitas.individualPlano', $data);
         //}catch(\Exception $ex){
-        //    return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+       // }
+    }
+
+    public function informeIndividualPlano(Request $request){
+        //return $request;
+        //try{
+            //$sucursal=Sucursal::findOrFail($request->sucursal_id);
+            $ordenes=Orden_Atencion::ordenesByFechaSucPac($request->fechaA, $request->fechaB, $request->sucursal_id, $request->paciente_id)->get();
+            
+            if($ordenes){
+                foreach($ordenes as $orden){
+                    $expediente=$orden->expediente;
+                    $producto=$orden->producto;
+                    $paciente=$orden->paciente;
+                    $especialidad=$orden->especialidad;
+                    $tipoSeguro=$orden->tipoSeguro;
+
+
+                    $procedimientoEspecialidad=Procedimiento_Especialidad::procedimientoProductoEspecialidad($producto->producto_id, $especialidad->especialidad_id)->first();
+                    $procedimientoAseguradora=Aseguradora_Procedimiento::procedimientosAsignados($procedimientoEspecialidad->procedimiento_id, $orden->paciente->cliente_id)->first();
+                    $datos[$orden->orden_id][$producto->producto_id]=$procedimientoAseguradora;
+
+                    if($paciente){
+                        $dependencia=$paciente->tipoDependencia;
+                    }
+
+                    ///////////////diagnóstico///////////////////////////////
+                    if($expediente){
+                        $diagnostico=$expediente->diagnostico;
+
+                        if($diagnostico){
+                            $diagDetalle=$diagnostico->detallediagnostico;
+
+                            foreach($diagDetalle as $detalle){
+                                $detalle->enfermedad;
+                            }
+                        }
+
+                        $ordenExamen=$expediente->ordenExamen;
+                        $ordenImagen=$expediente->ordenImagen;
+                        $prescripcion=$expediente->prescripcion;
+
+                        if($ordenExamen){
+                            $detalleExamen=$ordenExamen->detalle;
+
+                            foreach($detalleExamen as $detalle){
+                                $examen=$detalle->examen;
+                                
+                                    
+                                if($examen){
+                                    $productoExamen=$examen->producto;
+                                    $examen->tipoExamen;
+                                    $procEspe=Procedimiento_Especialidad::procedimientoProductoEspecialidad($productoExamen->producto_id, $especialidad->especialidad_id)->first();
+
+                                    if($procEspe){
+                                        $procAseg=Aseguradora_Procedimiento::procedimientosAsignados($procEspe->procedimiento_id, $orden->paciente->cliente_id)->first();
+                                        $datos['detalle_examen'][$detalle->detalle_id] = $procAseg;
+
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
+                        if($ordenImagen){
+                            $detalleImagen=$ordenImagen->detalleImagen;
+                            
+                            foreach($detalleImagen as $detalle){
+                                $imagen=$detalle->imagen;
+                                
+                                if($imagen){
+                                    $productoImagen=$imagen->producto;
+                                    $imagen->tipoImagen;
+
+                                    $procEspe=Procedimiento_Especialidad::procedimientoProductoEspecialidad($productoImagen->producto_id, $especialidad->especialidad_id)->first();
+
+                                    if($procEspe){
+                                        $procAseg=Aseguradora_Procedimiento::procedimientosAsignados($procEspe->procedimiento_id, $orden->paciente->cliente_id)->first();
+                                        $datos['detalle_imagen'][$detalle->detalle_id] = $procAseg;
+                                    }
+                                }
+                            }
+                        }
+
+                        if($prescripcion){
+                            //return 'si presc';
+                            $detalleprescipcion=$prescripcion->presMedicamento;
+
+                            foreach($detalleprescipcion as $detalle){
+                                $medicamento=$detalle->medicamento;
+                                
+                                    
+                                if($medicamento){
+                                    $productoMedic=$medicamento->producto;
+                                    $medicamento->tipoMedicamento;
+
+                                    $procEspe=Procedimiento_Especialidad::procedimientoProductoEspecialidad($productoMedic->producto_id, $especialidad->especialidad_id)->first();
+
+                                    if($procEspe){
+                                        $procAseg=Aseguradora_Procedimiento::procedimientosAsignados($procEspe->procedimiento_id, $orden->paciente->cliente_id)->first();
+                                        $datos['detalle_medicamento'][$detalle->prescripcionM_id] = $procAseg;
+                                    }
+                                }
+                            }
+                        }
+                        //else
+                            //return 'no presc';
+
+                        //if($orden->orden_secuencial==78)
+                        //    return $expediente;
+                    }
+                }
+            }
+
+            
+            $datos['ordenes']= $ordenes;
+            //return  $datos['ordenes'];
+
+
+            return Excel::download(new ViewExcel('admin.formatosExcel.individualPlano', $datos), 'NEOPAGUPA  Sistema Contable.xls');
+        //}catch(\Exception $ex){
+            return redirect('informehistoricoplano')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         //}
     }
 
@@ -700,7 +956,8 @@ class atencionCitasController extends Controller
             $imagenes = Imagen::Imagenes()->get();
             $sucursales = Sucursal::Sucursales()->get();
             $especialidades = Especialidad::Especialidades()->get();
-            $examenes = Examen::Examenes()->get();
+            //$examenes = Examen::Examenes()->get();
+            
             $tipoExamenes = Tipo_Examen::TipoExamenes()->get();
             $productos = Producto::Productos()->get();
             
@@ -719,6 +976,9 @@ class atencionCitasController extends Controller
             $cespecialidad=Configuracion_Especialidad::ConfiEspecialidades($ordenAtencion->especialidad_id)->get();
      
             $signoVital=Signos_Vitales::SignoVitalOrdenId($ordenAtencion->orden_id)->get();
+            $examenes= Examen::buscarProductosProcedimiento($ordenAtencion->paciente->paciente_id, $ordenAtencion->especialidad_id)->get();
+
+            //return $examenes;
              
             //if($medico){
                 return view('admin.citasMedicas.atencionCitas.atender',['cespecialidad'=>$cespecialidad,'medico'=>$medico,'examenes'=>$examenes,'tipoExamenes'=>$tipoExamenes,'especialidades'=>$especialidades,'productos'=>$productos,'imagenes'=>$imagenes,'sucursales'=>$sucursales,'enfermedades'=>$enfermedades,'medicamentos'=>$medicamentos,'diagnosticos'=>$diagnosticos,'signoVital'=>$signoVital,'ordenAtencion'=>$ordenAtencion,'mespecialidadM'=>$mespecialidadM,'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
@@ -745,20 +1005,24 @@ class atencionCitasController extends Controller
     {
         $ordenAtencion=Orden_Atencion::findOrFail($id);
         $enfermedades = Enfermedad::Enfermedades()->get();
+        $especialidades = Especialidad::especialidades()->get();
 
         $expediente=$ordenAtencion->expediente;
         $diagnostico=$expediente->diagnostico;
 
-        if($diagnostico->detalle){
+        if($diagnostico!=null){
             foreach($diagnostico->detallediagnostico as $detalle){
                 $det = $detalle->enfermedad;
             }
         }
 
         $data=[
-            "diagnostico" => $diagnostico->detallediagnostico,
+            "especialidades" => $especialidades,
+            "diagnostico" => $diagnostico? $diagnostico->detallediagnostico : [],
             "ordenAtencion"=>$ordenAtencion,
-            "enfermedades"=>$enfermedades
+            "enfermedades"=>$enfermedades,
+            "medico"=>$ordenAtencion->medico,
+            "observacion"=>$diagnostico? $diagnostico->diagnostico_observacion: ""
         ];
 
         //return $data;
@@ -806,11 +1070,19 @@ class atencionCitasController extends Controller
             $auditoria->registrarAuditoria('Modificación de Examenes con expediente -> ' .   $expediente->expediente_id, $id, 'Con examenes Ids '.json_encode($enfermedades));
 
             DB::commit();
-            return $redirect = redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente');
+
+            if($ordenAtencion->orden_iess==0)
+                return $redirect = redirect('ordenAtencion')->with('success', 'Datos guardados exitosamente');
+            else
+                return $redirect = redirect('ordenAtencionIess')->with('success', 'Datos guardados exitosamente');
         }
         catch(\Exception $e){
             DB::rollBack();
-            return $redirect = redirect('ordenAtencion')->with('error', 'Ocurrió un error al actualizar: '.$e->getMessage());
+
+            if($ordenAtencion->orden_iess==0)
+                return $redirect = redirect('ordenAtencion')->with('error', 'Ocurrió un error al actualizar: '.$e->getMessage());
+            else
+                return $redirect = redirect('ordenAtencionIess')->with('error', 'Ocurrió un error al actualizar: '.$e->getMessage());
         }
     }
     

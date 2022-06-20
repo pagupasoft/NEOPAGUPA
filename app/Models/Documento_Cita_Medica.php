@@ -20,4 +20,10 @@ class Documento_Cita_Medica extends Model
     protected $guarded =[
     ];
 
+    public function scopeDocumentoCita($query, $orden_id, $documento_id){
+        return $query->join('orden_atencion', 'orden_atencion.orden_id','=','documento_cita_medica.documento_id')
+                     ->where('orden_atencion.orden_id','=', $orden_id)
+                     ->where('documento_cita_medica.documento_id','=',$documento_id);
+    }
+
 }

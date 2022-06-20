@@ -39,8 +39,8 @@ class Analisis_Laboratorio extends Model
     public function scopeorden($query, $id){
         return $query->join('sucursal','sucursal.sucursal_id','=','analisis_laboratorio.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('analisis_estado','=','1')->where('analisis_laboratorio.orden_id','=',$id);
     }
-    public function scopeAnalisisorden($query, $id){
-        return $query->join('sucursal','sucursal.sucursal_id','=','analisis_laboratorio.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('analisis_estado','=','1')->where('analisis_laboratorio.orden_id','=',$id);
+    public function scopeAnalisisByOrden($query, $id){
+        return $query->join('sucursal','sucursal.sucursal_id','=','analisis_laboratorio.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('analisis_laboratorio.orden_id','=',$id);
     }
 
     public function scopeAnalisisById($query, $id){

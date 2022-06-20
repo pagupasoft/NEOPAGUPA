@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
         <h3 class="card-title">Venta de Activos Fijos</h3>
         <a href= "ventaActivo/create"><button class="btn btn-default btn-sm float-right"><i class="fa fa-plus"></i>&nbsp;Nuevo</button></a>
@@ -31,7 +31,7 @@
                         </select>
                     </div>                                              
                 <div class="col-sm-1">
-                    <center><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button></center>
+                    <center><button onclick="girarGif()" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button></center>
                 </div>                    
             </div>            
         </form>        
@@ -76,7 +76,16 @@
     </div>
     <!-- /.card-body -->
 </div>
-<!-- /.card -->
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+</script>
+
 <div class="modal fade" id="modal-nuevo">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

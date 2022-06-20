@@ -3,7 +3,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="row">
     <div class="col-sm-3">
-        <div class="card card-secondary">
+        <div class="card card-secondary" style="position: absolute; width: 100%">
             <div class="card-header">
                 <h3 class="card-title">Proveedores</h3>
             </div>
@@ -23,7 +23,7 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" id="buscar" name="buscar" class="btn btn-primary btn-sm"><i class="fa fa-search"></i></button>
+                            <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary btn-sm"><i class="fa fa-search"></i></button>
                         </div>
                     </div>
                 </form>
@@ -45,6 +45,16 @@
                 </table>
             </div>
         </div>
+        <div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+            <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+        </div>
+        <script>
+            function girarGif(){
+                document.getElementById("div-gif").style.display="inline"
+                console.log("girando")
+            }
+        </script>
+
     </div>
     <div class="col-sm-9">
         <form class="form-horizontal" method="POST" action="{{ url("pagosCXP") }}" onsubmit="return validacion()">

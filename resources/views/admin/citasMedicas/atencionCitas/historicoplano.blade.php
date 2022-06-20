@@ -15,7 +15,7 @@
                     <div class="row mb-2">
                         <label for="fecha_desde" class="col-sm-1 col-form-label text-right">Desde :</label>
                         <div class="col-sm-3">
-                            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"  value='<?php if(isset($fDesde)){echo $fDesde;}else{ echo(date("Y")."-".date("m")."-".date("d"));} ?>' required>
+                            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"  value='<?php if(isset($fDesde)){echo $fDesde;}else{ echo(date("Y")."-".date("m")."-"."01");} ?>' required>
                         </div>
                         <label for="fecha_hasta" class="col-sm-1 col-form-label text-right">Hasta :</label>
                         <div class="col-sm-3">

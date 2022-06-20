@@ -151,7 +151,7 @@
         formData.append("prescripcion_id", id)
 
         $.ajax({
-            url: "/subirDocumento",
+            url: "{{ url('subirDocumento') }}",
             method: "post",
             dataType: "json",
             contentType: false,

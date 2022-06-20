@@ -69,6 +69,76 @@ class ordenExamenController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    public function indexEditar()
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();         
+            $ordenesExamenes=Orden_Examen::OrdenExamenesHOY()->select('orden_examen.orden_id as orden_examen_id', 'orden_atencion.orden_id', 'orden_fecha','orden_codigo','orden_numero', 'paciente_apellidos','paciente_nombres','orden_otros','orden_examen.orden_estado', 'expediente.expediente_id')->get();
+
+            $medicos = Medico::medicos()->get();
+            $rol=User::findOrFail(Auth::user()->user_id)->roles->first();
+
+            if($ordenesExamenes){
+                foreach($ordenesExamenes as $exa)
+                    $exa->expediente->ordenatencion;
+            }
+
+            $data = [
+                "medicos"=>$medicos,
+                "rol"=>$rol,
+                'sucursales'=>Sucursal::Sucursales()->get(),
+                'ordenesExamenes'=>$ordenesExamenes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin
+            ];
+           
+            return view('admin.laboratorio.ordenesExamen.indexEditar', $data);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function indexEditarBuscar(Request $request)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $ordenesExamenes = Orden_Examen::OrdenesByFechaSuc($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal_id'))->select('orden_examen.orden_id as orden_examen_id', 'orden_atencion.orden_id', 'orden_fecha','orden_codigo','orden_numero', 'paciente_apellidos','paciente_nombres','orden_otros','orden_examen.orden_estado', 'expediente.expediente_id')->orderBy('orden_numero','asc')->get();
+            
+            $medicos = Medico::medicos()->get();
+            $rol=User::findOrFail(Auth::user()->user_id)->roles->first();
+
+            if($ordenesExamenes){
+                foreach($ordenesExamenes as $exa){
+                    if($exa->expediente)
+                        $exa->expediente->ordenatencion;
+                }
+            }
+
+            //return $ordenesExamenes;
+            
+            $data=[
+                "medicos"=>$medicos,
+                "rol"=>$rol,
+                'fecI'=>$request->get('fecha_desde'),
+                'fecF'=>$request->get('fecha_hasta'),
+                'sucurslaC'=>$request->get('sucursal_id'),
+                'sucursales'=>Sucursal::Sucursales()->get(),
+                'ordenesExamenes'=>$ordenesExamenes,
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso,
+                'permisosAdmin'=>$permisosAdmin
+            ];
+
+            return view('admin.laboratorio.ordenesExamen.indexEditar', $data);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        } 
+    }
+
     public function atender($id)
     {
         try{

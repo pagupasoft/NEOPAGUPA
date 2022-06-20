@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
         <h3 class="card-title">ESTADO DE SITUACIÓN FINANCIERA</h3>
     </div>
@@ -33,7 +33,7 @@
                     </div>                    
                 </div>
                 <div class="col-sm-1">
-                        <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                        <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
                         <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                 </div>
             </div>
@@ -188,4 +188,34 @@
     <!-- /.card-body -->
 </div>
 <!-- /.card -->
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+
+        
+    }    
+
+    docReady(function() {
+        console.log("cargando")
+
+        for (var i = 2, row; row = tabla1.rows[i]; i++) {
+            ultima=i
+            verificarCompras(i)
+        }
+    });
+</script>
 @endsection

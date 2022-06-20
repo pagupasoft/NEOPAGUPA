@@ -2,12 +2,11 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title pt-1">Orden de Atencion</h3> &nbsp; <img src="{{ asset('img/iess.png')  }}" width="50px" style="background-color: white; border-radius: 6px; padding: 5px;">
-        <button type="button" onclick='window.location = "{{ url("nuevaOrdenAtencionIess") }}"'  class="btn btn-default btn-sm float-right"><i class="fa fa-plus"></i>&nbsp;Nuevo</button>
+        <h3 class="card-title mt-1">Informe Consolidado Individual</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="GET" action="{{ url("buscarOrdenAtencionIess") }}">
+        <form class="form-horizontal" method="GET" action="{{ url("buscarOrdenAtencionConsolidado") }}">
         @csrf
             @if($rol->rol_nombre=="Administrador")
                 <div class="form-group row">
@@ -18,7 +17,7 @@
                             <option value=0 @if($seleccionado==0) selected @endif >Todos</option>
 
                             @foreach($medicos as $medico)
-                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>@if(isset($medico->empleado)) {{$medico->empleado->empleado_nombre}} @else - @endif</option>
+                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>@if($medico->empleado) $medico->empleado->empleado_nombre @endif</option>
                             @endforeach
                         </select>
                     </div>
@@ -73,32 +72,20 @@
                     @if($ordenAtencion->medico->user_id==Auth::user()->user_id || ($rol->rol_nombre=="Administrador" && ($seleccionado==0 || $seleccionado==$ordenAtencion->medico->medico_id)))
                         <tr class="text-center">
                             <td>
-                                @if($ordenAtencion->orden_estado == 1)
-                                    <a href="{{ url("facturarOrden/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-dollar-sign"></i></a>                         
-                                @endif 
-                                @if($ordenAtencion->orden_estado == 2)
-                                    <a href="{{ url("nuevoSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Signos vitales"><i class="fas fa-heartbeat"></i></a>                         
-                                @endif
-
-                                @if($rol->rol_nombre=="Administrador" && ($ordenAtencion->orden_estado == 3 || $ordenAtencion->orden_estado == 4))
-                                    <a href="{{ url("editarSignosV/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-warning " data-toggle="tooltip" data-placement="top" title="Editar Signos V."><i class="fas fa-heartbeat"></i><i class="fa fa-pencil-alt"></i></a>                         
-                                @endif
-
-                                @if($ordenAtencion->orden_estado == 4)
-                                    <a href="{{ url("editarDiagnostico/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-info text-dark" data-toggle="tooltip" data-placement="top" title="Editar Diagnóstico"><i class="fas fa-book"></i><i class="fa fa-pencil-alt"></i></a>                         
-                                @endif
-                                
                                 <a href="{{ url("ordenAtencion/{$ordenAtencion->orden_id}")}}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fas fa-eye"></i></a>
-                                
-                                @if($ordenAtencion->orden_estado != 0 && $rol->rol_nombre=="Administrador")
-                                    <a class="btn btn-xs btn-danger" style="padding: 2px 8px;"  data-toggle="tooltip" title="Cancelar cita"><i class="fas fa-times"></i></a>
-                                @endif     
+
+                                <a href="{{ url("ordenAtencion/{$ordenAtencion->orden_id}/consolidado")}}" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Generar Archivo Conglomerado">&nbsp;&nbsp;<i class="fas fa-book"></i>&nbsp;<i class="fa fa-pencil-alt"></i>&nbsp;</a>
                             </td>
                             <td>
                                 {{ $ordenAtencion->orden_fecha }} <br>
                                 {{ $ordenAtencion->orden_hora }}
                             </td>
-                            <td>{{ $ordenAtencion->orden_numero }}</td>
+                            <td>{{ $ordenAtencion->orden_numero }}
+                                &nbsp;
+                                @if($ordenAtencion->orden_iess==1)
+                                    <img src="{{ asset('img/iess.png')  }}" width="50px" style="background-color: white; border-radius: 6px; padding: 5px;">
+                                @endif
+                            </td>
                             <td>
                                 {{ $ordenAtencion->paciente->paciente_apellidos}} <br>
                                 {{ $ordenAtencion->paciente->paciente_nombres }}                   

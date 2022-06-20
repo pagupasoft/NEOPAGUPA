@@ -701,7 +701,7 @@ class examenController extends Controller
         //return $detalle_examen;
         foreach($detalle_examen as $detalle){
             $examenes[] = array(
-                "id_externo"=> $detalle->examen->producto->producto_codigo_referencia,
+                "id_externo"=> $detalle->examen->producto->producto_codigo,
                 "muestra_pendiente"=> 0,
             );
         }

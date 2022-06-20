@@ -2,7 +2,7 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Orden de Atencion</h3>
+        <h3 class="card-title mt-1">Orden de Atencion</h3>
         <button type="button" onclick='window.location = "{{ url("nuevaOrden") }}";' class="btn btn-default btn-sm float-right"><i class="fa fa-plus"></i>&nbsp;Nuevo</button>
     </div>
     <!-- /.card-header -->
@@ -18,7 +18,7 @@
                             <option value=0 @if($seleccionado==0) selected @endif >Todos</option>
 
                             @foreach($medicos as $medico)
-                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>{{ $medico->empleado->empleado_nombre }}</option>
+                                <option value="{{ $medico->medico_id }}" @if($seleccionado==$medico->medico_id) selected @endif>@if(isset($medico->empleado)) {{$medico->empleado->empleado_nombre}} @else - @endif</option>
                             @endforeach
                         </select>
                     </div>

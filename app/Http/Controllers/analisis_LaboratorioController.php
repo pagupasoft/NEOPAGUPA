@@ -248,7 +248,7 @@ class analisis_LaboratorioController extends Controller
     }
 
     /* get PDF exam results from Oreon API */
-    private function showExamenResults($orden_id_referencia)
+    public function showExamenResults($orden_id_referencia)
     {
         $headers = array();
         $headers[] = 'Accept: application/pdf';

@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary card-tabs">
+<div class="card card-secondary card-tabs" style="position: absolute; width: 100%">
     <div class="card-header p-0 pt-1">
         <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
             <li class="nav-item" style="margin-left: 4px">
@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-sm-2">
                             <center>
-                                <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                                <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
                                 <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                                 <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
                             </center>
@@ -222,7 +222,7 @@
                         </div>
                         <div class="col-sm-2">
                             <center>
-                                <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                                <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
                                 <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                                 <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
                             </center>
@@ -266,6 +266,16 @@
         </div>
     </div>
 </div>
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+</script>
+
 <script type="text/javascript">
     if (document.getElementById('pago1').checked) {
         pagos();

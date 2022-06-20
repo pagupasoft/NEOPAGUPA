@@ -3,6 +3,9 @@
 <div class="card card-secondary">
     <div class="card-header">
         <h3 class="card-title">Signos Vitales</h3>
+        <div class="float-right">
+            <button type="button" onclick="location.reload()" class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Actualizar</button>
+        </div>
     </div>
     <!-- /.card-header -->
     <div class="card-body">

@@ -2,11 +2,11 @@
 @section('principal')
 <div class="card card-secondary">
     <div class="card-header">
-        <h3 class="card-title">Ordenes de Examenes</h3>
+        <h3 class="card-title">Editar Ordenes de Examenes</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="{{ url("ordenesExamen") }}">
+        <form class="form-horizontal" method="POST" action="{{ url("ordenExamenEditar") }}">
         @csrf
             <div class="form-group row">
                 <div class="col-sm-6">
@@ -48,18 +48,15 @@
             @foreach($ordenesExamenes as $ordenExamen)
                 <tr class="text-center">
                     <td>
-                        @if($ordenExamen->orden_estado == 1)                            
-                            @if($rol->rol_nombre!="Medico")
-                                <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/facturarOrden") }}" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Facturar">&nbsp;&nbsp;<i class="fas fa-dollar-sign"></i>&nbsp;&nbsp;</a>
-                            @endif
+                        @if($ordenExamen->orden_estado == 1)
+                            <a href="{{ url("ordenExamen/{$ordenExamen->orden_examen_id}/editarOrden") }}" class="btn btn-xs btn-warning " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Editar Orden">&nbsp;&nbsp;<i class="fas fa-edit"></i></a>
                         @elseif($ordenExamen->orden_estado == 2)
                             <a class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="En espera Resultados"><i class="fas fa-clock"></i></a>
                         @elseif($ordenExamen->orden_estado == 3)
-                            <a href="#" class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Listo"><i class="fas fa-check"></i></a>
+                            <a class="btn btn-xs btn-primary " style="padding: 2px 8px;" data-toggle="tooltip" data-placement="top" title="Listo"><i class="fas fa-check"></i></a>
                         @endif 
 
                     </td>    
-                    <!--td>{{ $ordenExamen->orden_codigo }}</td-->
                     <td>{{ $ordenExamen->orden_numero }} &nbsp;
                         @if($ordenExamen->expediente->ordenatencion->orden_iess==1)
                             <img src="{{ asset('img/iess.png')  }}" width="50px">

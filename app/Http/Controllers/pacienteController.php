@@ -247,6 +247,39 @@ class pacienteController extends Controller
         }
     }
 
+    public function subirDocumento(Request $request){
+        try{
+            $paciente=Paciente::findOrFail($request->paciente_id);
+
+            if($paciente){
+                if($request->file('documento')!=null){
+                    DB::beginTransaction();
+                    $dir=$this->crearDocumento($paciente, $request->file('documento'), $request->tipo);
+
+                    if($request->tipo=="paciente")
+                        $paciente->documento_paciente=$dir;
+                    else
+                        $paciente->documento_afiliado=$dir;
+
+                    $paciente->update();
+
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Actualizacion de paciente -> '.$request->get('idApellidos').' '.$request->get('idNombres').' con Cedula -> '.$request->get('idNumero').", subió una imagen",'0','con el tipo de Identificacion ->'.$request->get('idTipoIdentificacion'));
+                    DB::commit();
+                    return json_encode(array("result"=>"OK", "documento"=>$dir));
+                }
+                else
+                    return json_encode(array("result"=>"FAIL","mensaje"=> "nada que subir"));
+            }
+            else
+                return json_encode(array("result"=>"FAIL","mensaje"=> "paciente no encontrado"));
+        }
+        catch(\Exception $e){
+            DB::rollBack();
+            return json_encode(array("result"=>"FAIL","mensaje"=> $e->getMessage()));
+        }
+    }
+
     private function crearDocumento($paciente, $imagen, $tipo){
         $imagenes=[];
         $empresa = Empresa::empresa()->first();

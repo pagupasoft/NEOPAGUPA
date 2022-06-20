@@ -169,6 +169,23 @@ class amortizacionSegurosController extends Controller
         }
        
     }
+    public function editar($id)
+    {
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            $seguro=Amortizacion_Seguros::findOrFail($id);  
+            if($seguro){
+                return view('admin.bancos.seguros.editar',['cuentas'=>Cuenta::CuentasMovimiento()->get(),'seguro'=>$seguro, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            }else{
+                return redirect('/denegado');
+            }
+        }
+        catch(\Exception $ex){      
+            return redirect('amortizacion')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+       
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -189,7 +206,21 @@ class amortizacionSegurosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try{
+            DB::beginTransaction();
+            $seguro = Amortizacion_Seguros::findOrFail($id);
+            $seguro->amortizacion_observacion = $request->get('idDescripcion');
+            $seguro->cuenta_debe = $request->get('idCuenta');
+            $seguro->amortizacion_estado = 1;
+            $seguro->save();
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Actualizacion de Amortizacion de seguro -> Con uuenta '.$request->get('idCuenta').' Con Factura Compra '.$seguro->transaccionCompra->transaccion_numero,'0','Con Observacion -> '.$request->get('idDescripcion'));
+            DB::commit();
+            return redirect('amortizacion')->with('success','Datos Actualizados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('amortizacion')->with('error','El registro no pudo ser Actualizado.');
+        }
     }
 
     /**

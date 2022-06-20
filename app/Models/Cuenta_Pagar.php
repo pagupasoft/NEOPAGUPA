@@ -123,7 +123,7 @@ class Cuenta_Pagar extends Model
         return $query;
     }
     public function scopeCuentasPagarPendientes($query,$fecha_corte,$proveedor_id,$sucursal){
-        $query->join('proveedor','proveedor.proveedor_id','=','cuenta_pagar.proveedor_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','proveedor.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_pagar.proveedor_id','=',$proveedor_id)->where('cuenta_fecha','<=',$fecha_corte)->orderBy('cuenta_pagar.cuenta_fecha','asc')->orderBy('cuenta_pagar.cuenta_id', 'asc');
+        $query->join('proveedor','proveedor.proveedor_id','=','cuenta_pagar.proveedor_id')->join('tipo_identificacion','tipo_identificacion.tipo_identificacion_id','=','proveedor.tipo_identificacion_id')->where('tipo_identificacion.empresa_id','=',Auth::user()->empresa_id)->where('cuenta_pagar.cuenta_saldo','>', 0)->where('cuenta_pagar.proveedor_id','=',$proveedor_id)->where('cuenta_fecha','<=',$fecha_corte)->orderBy('cuenta_pagar.cuenta_fecha','asc')->orderBy('cuenta_pagar.cuenta_id', 'asc');
         if($sucursal != '0'){
             $query->where('sucursal_id','=',$sucursal);
         }

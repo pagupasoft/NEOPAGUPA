@@ -273,7 +273,10 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor5" name="valor5" value="{{number_format($ant615,2)}}" required/></td>
+                             <!--
                             <td class="centrar-texto"><input class="form-control derecha-texto" id="valor5" name="valor5" value="{{number_format($datos[23],2)}}" required/></td>
+                            !-->                        
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">Saldo crédito tributario para el próximo mes Por retenciones en la fuente de IVA que le han sido efectuadas</td>

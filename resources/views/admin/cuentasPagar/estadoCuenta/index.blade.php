@@ -133,8 +133,7 @@
                         </thead>
                         <tbody>
                             @if(isset($datos))
-                                @for ($i = 1; $i <= count($datos); ++$i) 
-                                @if($datos[$i]['sal'] >0)  
+                                @for ($i = 1; $i <= count($datos); ++$i)                                 
                                     <tr class="invisible">
                                         <input type="hidden" name="idNom[]" value="{{ $datos[$i]['nom'] }}"/>
                                         <input type="hidden" name="idDoc[]" value="{{ $datos[$i]['doc'] }}"/>
@@ -182,8 +181,7 @@
                                             @endif
                                             <td>{{ $datos[$i]['tip'] }}</td>   
                                         @endif                  
-                                    </tr>
-                                @endif
+                                    </tr>                                
                                 @endfor
                             @endif
                         </tbody>

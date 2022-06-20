@@ -92,7 +92,8 @@ class cuentaPagarController extends Controller
                     $datos[$count]['dia'] = '';
                     if($cuenta->transaccionCompra){
                         $datos[$count]['doc'] = $cuenta->transaccionCompra->tipoComprobante->tipo_comprobante_nombre; 
-                        $datos[$count]['num'] = $cuenta->transaccionCompra->tc_numero;
+                        //$datos[$count]['num'] = $cuenta->transaccionCompra->tc_numero;
+                        $datos[$count]['num'] = $cuenta->transaccionCompra->transaccion_numero;
                         $datos[$count]['dia'] = $cuenta->transaccionCompra->diario->diario_codigo; 
                     }
                     if($cuenta->liquidacionCompra){
@@ -214,7 +215,8 @@ class cuentaPagarController extends Controller
                     $datos[$count]['dia'] = '';
                     if($cuenta->transaccionCompra){
                         $datos[$count]['doc'] = $cuenta->transaccionCompra->tipoComprobante->tipo_comprobante_nombre; 
-                        $datos[$count]['num'] = $cuenta->transaccionCompra->tc_numero;
+                        //$datos[$count]['num'] = $cuenta->transaccionCompra->tc_numero;transaccion_numero
+                        $datos[$count]['num'] = $cuenta->transaccionCompra->transaccion_numero;
                         $datos[$count]['dia'] = $cuenta->transaccionCompra->diario->diario_codigo; 
                     }
                     if($cuenta->liquidacionCompra){

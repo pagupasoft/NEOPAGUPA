@@ -82,6 +82,21 @@ class ingresoBancoController extends Controller
                 $ingresoBanco->deposito()->associate($deposito);
                 $general->registrarAuditoria('Registro de deposito del banco',$banco->banco_lista_nombre,'Registro de depostio por un valor de '.$request->get('idValor')); 
             }
+            if($request->get('idTipo') == 'TRANSFERENCIA'){
+                $banco = Banco::Banco($request->get('banco_id'))->first();               
+                $deposito = new Deposito();
+                $deposito->deposito_descripcion = 'Transferencia '.' - '.$request->get('idMensaje');  
+                $deposito->deposito_fecha = $request->get('idFecha');
+                $deposito->deposito_tipo = 'TRANSFERENCIA';
+                $deposito->deposito_numero = $request->get('idNumD');
+                $deposito->deposito_valor = $request->get('idValor');
+                $deposito->cuenta_bancaria_id = $request->get('cuenta_id');
+                $deposito->deposito_estado = '1';
+                $deposito->empresa_id = Auth::user()->empresa->empresa_id;
+                $deposito->save();
+                $ingresoBanco->deposito()->associate($deposito);
+                $general->registrarAuditoria('Registro de Transferencia del banco',$banco->banco_lista_nombre,'Registro de Transferencia por un valor de '.$request->get('idValor')); 
+            }
             /**********************asiento diario****************************/
             $general = new generalController();
             $diario = new Diario();
@@ -127,6 +142,9 @@ class ingresoBancoController extends Controller
             $detalleDiario->detalle_conciliacion = '0';
             $detalleDiario->detalle_estado = '1'; 
             if($request->get('idTipo') == 'DEPOSITO'){
+                $detalleDiario->deposito()->associate($deposito);
+            }
+            if($request->get('idTipo') == 'TRANSFERENCIA'){
                 $detalleDiario->deposito()->associate($deposito);
             }
             $cuentaB = Cuenta_Bancaria::findOrFail($request->get('cuenta_id'));

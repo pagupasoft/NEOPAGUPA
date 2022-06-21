@@ -30,6 +30,9 @@ class GrupoPer extends Model
     public function permisos(){
         return $this->hasMany(Permiso::class, 'grupo_id', 'grupo_id');
     }
+    public function detalles(){
+        return $this->hasMany(Tipo_Grupo::class, 'grupo_id', 'grupo_id');
+    }
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'empresa_id');

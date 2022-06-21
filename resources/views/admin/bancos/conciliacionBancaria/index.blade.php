@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}" onsubmit="return verificarFecha();">
+<form id="idForm" class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}" onsubmit="return verificarFecha();">
 @csrf
     <div class="card card-secondary"  style="position: absolute; width: 100%">
         <div class="card-header">
@@ -53,8 +53,8 @@
                         </div>
                         <div class="col-md-2 centrar-texto">
                             <button type="submit" id="buscar" name="buscar" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Buscar"><i class="fa fa-search"></i></button>
-                            <button type="submit" id="excel" name="excel" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar a Excel"><i class="fas fa-file-excel"></i></button>
-                            <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                            <button onclick="setTipo('&excel=descarga')" type="submit" id="excel" name="excel" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar a Excel" value="fdds"><i class="fas fa-file-excel"></i></button>
+                            <button onclick="setTipo('&pdf=descarga')" type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                         </div>
                     </div>
                     <div class=" row">
@@ -375,6 +375,42 @@
             document.getElementById("div-gif").style.display="inline"
             console.log("girando")
         }
+
+        function ocultarGif(){
+            document.getElementById("div-gif").style.display="none"
+            console.log("no girando")
+        }
+
+        tipo=""
+
+        function setTipo(t){
+            tipo=t
+        }
+
+        setTimeout(function(){
+            console.log("registro de la funcion")
+            $("#idForm").submit(function(e) {
+                var form = $(this);
+                form.append("excel", "descargar excel");
+                var actionUrl = form.attr('action');
+
+
+                console.log("submit "+actionUrl)
+                console.log(form.serialize())
+                console.log(form)
+                girarGif()
+                $.ajax({
+                    type: "POST",
+                    url: actionUrl,
+                    data: form.serialize()+tipo,
+                    success: function(data) {
+                        setTimeout(function(){
+                            ocultarGif()
+                        }, 1000)
+                    }
+                });
+            });
+        }, 2000)
     </script>
 </form>
 <script type="text/javascript">
@@ -388,24 +424,26 @@
             });
             return false;
         }
-        girarGif(); 
+        //calculate_load_times();
+        girarGif();
         return true;
     }
-function cargarCuenta(){
-    $.ajax({
-        url: '{{ url("cuentaBancaria/searchN") }}'+ '/' +document.getElementById("banco_id").value,
-        dataType: "json",
-        type: "GET",
-        data: {
-            buscar: document.getElementById("banco_id").value
-        },
-        success: function(data){
-            document.getElementById("cuenta_id").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
-            for (var i=0; i<data.length; i++) {
-                document.getElementById("cuenta_id").innerHTML += "<option value='"+data[i].cuenta_bancaria_id+"'>"+data[i].cuenta_bancaria_numero+"</option>";
-            }           
-        },
-    });
-}
+
+    function cargarCuenta(){
+        $.ajax({
+            url: '{{ url("cuentaBancaria/searchN") }}'+ '/' +document.getElementById("banco_id").value,
+            dataType: "json",
+            type: "GET",
+            data: {
+                buscar: document.getElementById("banco_id").value
+            },
+            success: function(data){
+                document.getElementById("cuenta_id").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
+                for (var i=0; i<data.length; i++) {
+                    document.getElementById("cuenta_id").innerHTML += "<option value='"+data[i].cuenta_bancaria_id+"'>"+data[i].cuenta_bancaria_numero+"</option>";
+                }           
+            },
+        });
+    }
 </script>
 @endsection

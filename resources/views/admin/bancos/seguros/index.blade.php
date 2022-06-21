@@ -91,7 +91,7 @@
                             <label for="idSucursal" class="col-sm-3 col-form-label">Sucursales</label>
                             <div class="col-sm-9">
                                 <select class="custom-select select2" id="idSucursal" name="idSucursal" required>
-                                    <option value="" label>--Seleccione un prodcuto--</option>                                  
+                                    <option value="" label>--Seleccione una Sucursal--</option>                                  
                                     @foreach($sucursales as $sucursal)
                                         <option value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
                                     @endforeach

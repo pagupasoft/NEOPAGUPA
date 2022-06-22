@@ -6,7 +6,7 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST"  action="{{ url("mayorClientes") }} ">
+        <form id="idForm" class="form-horizontal" method="POST"  action="{{ url("mayorClientes") }} ">
         @csrf
             <div class="form-group row">
                 <label for="fecha_desde" class="col-sm-1 col-form-label"><center>Desde:</center></label>
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-sm-1">
                     <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                    <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                    <button onclick="setTipo('&pdf=descarga')" type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
                 </div>
             </div>
             <hr>
@@ -89,6 +89,43 @@
         document.getElementById("div-gif").style.display="inline"
         console.log("girando")
     }
+    function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    tipo=""
+
+    function setTipo(t){
+        tipo=t
+    }
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            if(tipo=="") return
+            var form = $(this);
+            form.append("excel", "descargar excel");
+            var actionUrl = form.attr('action');
+
+
+            console.log("submit "+actionUrl)
+            console.log(form.serialize())
+            console.log(form)
+            girarGif()
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize()+tipo,
+                success: function(data) {
+                    setTimeout(function(){
+                        ocultarGif()
+                        tipo=""
+                    }, 1000)
+                }
+            });
+        });
+    }, 1200)
 </script>
 <!-- /.card -->
 @endsection

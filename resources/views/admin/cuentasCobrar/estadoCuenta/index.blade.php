@@ -21,7 +21,7 @@
         <div class="tab-content" id="custom-tabs-one-tabContent">
             <div class="tab-pane fade @if(isset($tab)) @if($tab == '1') show active @endif @else show active @endif" id="custom-tabs-estado-cuenta" role="tabpanel"
                 aria-labelledby="custom-tabs-estado-cuenta-tab">
-                <form class="form-horizontal" method="POST"  action="{{ url("cxc/buscar") }} ">
+                <form id="idForm" class="form-horizontal" method="POST"  action="{{ url("cxc/buscar") }} ">
                     @csrf
                     <div class="form-group row">
                         <label class="col-sm-1 col-form-label">Cliente : </label>
@@ -45,8 +45,8 @@
                         <div class="col-sm-2">
                             <center>
                                 <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
-                                <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
+                                <button onclick="setTipo('&pdf=descarga')" type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                                <button onclick="setTipo('&excel=descarga')" type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
                             </center>
                         </div>
                     </div>
@@ -190,7 +190,7 @@
             </div>
             <div class="tab-pane fade @if(isset($tab)) @if($tab == '2') show active @endif @endif" id="custom-tabs-saldo-cliente" role="tabpanel"
                 aria-labelledby="custom-tabs-saldo-cliente-tab">
-                <form class="form-horizontal" method="POST"  action="{{ url("cxc/buscarSaldo") }} ">
+                <form id="idForm2" class="form-horizontal" method="POST"  action="{{ url("cxc/buscarSaldo") }} ">
                     @csrf
                     <div class="form-group row">
                         <div class="col-sm-5">
@@ -223,8 +223,8 @@
                         <div class="col-sm-2">
                             <center>
                                 <button onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
-                                <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
+                                <button onclick="setTipo('&pdf=descarga')" type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                                <button onclick="setTipo('&excel=descarga')" type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
                             </center>
                         </div>
                     </div>
@@ -274,6 +274,65 @@
         document.getElementById("div-gif").style.display="inline"
         console.log("girando")
     }
+    function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    tipo=""
+
+    function setTipo(t){
+        tipo=t
+    }
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            if(tipo=="")  return
+            var form = $(this);
+            form.append("excel", "descargar excel");
+            var actionUrl = form.attr('action');
+
+
+            console.log("submit "+actionUrl)
+            console.log(form.serialize())
+            console.log(form)
+            girarGif()
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize()+tipo,
+                success: function(data) {
+                    setTimeout(function(){
+                        ocultarGif()
+                        tipo=""
+                    }, 1000)
+                }
+            });
+        });
+        $("#idForm2").submit(function(e) {
+            if(tipo=="")  return
+            var form = $(this);
+            var actionUrl = form.attr('action');
+
+
+            console.log("submit "+actionUrl)
+            console.log(form.serialize())
+            console.log(form)
+            girarGif()
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize()+tipo,
+                success: function(data) {
+                    setTimeout(function(){
+                        ocultarGif()
+                        tipo=""
+                    }, 1000)
+                }
+            });
+        });
+    }, 1200)
 </script>
 <script type="text/javascript">
     if (document.getElementById('pago1').checked) {

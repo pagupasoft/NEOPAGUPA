@@ -1,6 +1,6 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<form class="form-horizontal" method="POST" action="{{ url("reporteTributario") }} "> 
+<form id="idForm" class="form-horizontal" method="POST" action="{{ url("reporteTributario") }} "> 
 @csrf
     <div class="card card-secondary" style="position: absolute; width: 100%">
         <div class="card-header">
@@ -19,8 +19,8 @@
                 </div>
                 <div class="col-sm-2">
                     <button onclick="girarGif()" type="submit" name="consultar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                    <button type="submit" name="guardar" class="btn btn-success"><i class="fa fa-save"></i></button>
-                    <button type="submit" name="pdf" class="btn btn-secondary"><i class="fa fa-print"></i></button>
+                    <button onclick="girarGif()" type="submit" name="guardar" class="btn btn-success"><i class="fa fa-save"></i></button>
+                    <button onclick="setTipo('&pdf=descarga')" type="submit" name="pdf" class="btn btn-secondary"><i class="fa fa-print"></i></button>
                 </div>
             </div>            
         
@@ -418,6 +418,43 @@
             document.getElementById("div-gif").style.display="inline"
             console.log("girando")
         }
+        function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    tipo=""
+
+    function setTipo(t){
+        tipo=t
+    }
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            if(tipo=="")  return
+            var form = $(this);
+            form.append("excel", "descargar excel");
+            var actionUrl = form.attr('action');
+
+
+            console.log("submit "+actionUrl)
+            console.log(form.serialize())
+            console.log(form)
+            girarGif()
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize()+tipo,
+                success: function(data) {
+                    setTimeout(function(){
+                        ocultarGif()
+                        tipo=""
+                    }, 1000)
+                }
+            });
+        });
+    }, 1200)
     </script>
 
 </form>

@@ -390,10 +390,9 @@
         setTimeout(function(){
             console.log("registro de la funcion")
             $("#idForm").submit(function(e) {
+                if(tipo=="") return
                 var form = $(this);
-                form.append("excel", "descargar excel");
                 var actionUrl = form.attr('action');
-
 
                 console.log("submit "+actionUrl)
                 console.log(form.serialize())
@@ -406,11 +405,12 @@
                     success: function(data) {
                         setTimeout(function(){
                             ocultarGif()
+                            tipo=""
                         }, 1000)
                     }
                 });
             });
-        }, 2000)
+        }, 1200)
     </script>
 </form>
 <script type="text/javascript">

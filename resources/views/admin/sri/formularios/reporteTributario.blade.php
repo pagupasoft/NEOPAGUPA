@@ -213,7 +213,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto">{{'$ '.number_format($datos[22],2)}}</td>
+                            <td class="centrar-texto"><input id="casill601" name="casill601" type="hidden" value="{{number_format($datos[22],2)}}">{{'$ '.number_format($datos[22],2)}}</td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">Crédito tributario aplicable en este período (si la diferencia de los campos 499-564 es menor que cero)</td>
@@ -231,7 +231,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="{{number_format($ant615,2, '.', '')}}" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor1" name="valor1" value="{{number_format($ant605,2, '.', '')}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Saldo crédito tributario del mes anterior Por retenciones en la fuente de IVA que le han sido efectuadas (trasládese el campo 617 de la declaración del período anterior)</td>
@@ -240,7 +240,7 @@
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
                             <td class="centrar-texto"></td>
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="{{number_format($ant617,2, '.', '')}}" onkeyup="calculos();" required/></td>
+                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor2" name="valor2" value="{{number_format($ant606,2, '.', '')}}" onkeyup="calculos();" required/></td>
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(-) Retenciones en la fuente de IVA que le han sido efectuadas en este período</td>
@@ -255,7 +255,9 @@
                                 <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($ant609,2, '.', '') }}" onkeyup="calculos();" required/></td>
                             @endif
                             !-->
-                            <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($ant609,2, '.', '') }}" onkeyup="calculos();" required/></td>
+                            @for ($i = 1; $i <= count($datos[16]); ++$i)
+                                <td class="centrar-texto"><input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($datos[16][$i]['valor'],2)}}" onkeyup="calculos();" required/></td>
+                            @endfor
                         </tr>
                         <tr>
                             <td style="white-space: pre-wrap;">(+) Ajuste por IVA devuelto e IVA rechazado (por concepto de devoluciones de IVA), ajuste de IVA por procesos de control y otros (adquisiciones en importaciones), imputables al crédito tributario</td>
@@ -422,14 +424,78 @@
 
 </form>
 <script type="text/javascript">
-    function cargarmetodo(){
-        document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
-        document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+    function cargarmetodo(){        
+        //VALOR5 = CASILLERO 615
+        //VALOR6 = CASILLERO 617
+        //VALOR0 = CASILLERO 602
+        //VALOR1 = CASILLERO 605
+        //VALOR2 = CASILLERO 606
+        //VALOR3 = CASILLERO 609
+        //document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
+        if(parseFloat(document.getElementById("casill601").value) > 0){
+                console.log("601");
+                console.log(Number(document.getElementById("casill601").value).toFixed(2)); 
+            if (parseFloat(document.getElementById("casill601").value) > parseFloat(document.getElementById("valor1").value)){ 
+                document.getElementById("valor5").value = 0
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+            if (parseFloat(document.getElementById("casill601").value) < parseFloat(document.getElementById("valor1").value)){ 
+                console.log("601 si es menor");
+                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+            if (parseFloat(document.getElementById("casill601").value) == parseFloat(document.getElementById("valor1").value)){ 
+                //CASILLERO 615
+                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                //CASILLERO 617
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+        }
+        //CASILLERO 602
+        if(parseFloat(document.getElementById("valor0").value) > 0){            
+            document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value)).toFixed(2);
+            document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);            
+        }
+        //CASILLERO 617
+        //document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+
 
     }
     function calculos(){
-        document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
-        document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+        //VALOR5 = CASILLERO 615
+        //VALOR6 = CASILLERO 617
+        //VALOR0 = CASILLERO 602
+        //VALOR1 = CASILLERO 605
+        //VALOR2 = CASILLERO 606
+        //VALOR3 = CASILLERO 609
+        //document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
+        if(parseFloat(document.getElementById("casill601").value) > 0){
+                console.log("601");
+                console.log(Number(document.getElementById("casill601").value).toFixed(2)); 
+            if (parseFloat(document.getElementById("casill601").value) > parseFloat(document.getElementById("valor1").value)){ 
+                document.getElementById("valor5").value = 0
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+            if (parseFloat(document.getElementById("casill601").value) < parseFloat(document.getElementById("valor1").value)){ 
+                console.log("601 si es menor");
+                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+            if (parseFloat(document.getElementById("casill601").value) == parseFloat(document.getElementById("valor1").value)){ 
+                //CASILLERO 615
+                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                //CASILLERO 617
+                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+            }
+        }
+        //CASILLERO 602
+        if(parseFloat(document.getElementById("valor0").value) > 0){            
+            document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value)).toFixed(2);
+            document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);            
+        }
+        //CASILLERO 617
+        //document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+
     }
 </script>
 @endsection

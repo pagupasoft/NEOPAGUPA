@@ -107,61 +107,14 @@ class ordenRecepcionController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();  
             $proveedores = Orden_Recepcion::ProveedorDistinsc()->select('proveedor.proveedor_id','proveedor.proveedor_nombre')->distinct()->get();
             $estados = Orden_Recepcion::EstadoDistinsc()->select('ordenr_estado')->distinct()->get();
-            $sucursales= Orden_Recepcion::SucursalDistinsc()->select('sucursal_nombre')->distinct()->get();
+            $sucursales= Orden_Recepcion::SucursalDistinsc()->select('sucursal.sucursal_id','sucursal_nombre')->distinct()->get();
             $valor_proveedor=$request->get('nombre_proveedor');
             $valor_estado=$request->get('estados');
             $ordenes=null;
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $ordenes=Orden_Recepcion::OrdenBusqueda()->get();
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {          
-                $ordenes=Orden_Recepcion::TodosDiferentes($request->get('fecha_desde'),$request->get('fecha_hasta'),$valor_estado,$valor_proveedor,$request->get('sucursal'))->get();              
-            }             
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $ordenes=Orden_Recepcion::Fecha($request->get('fecha_desde'),$request->get('fecha_hasta'))->get();
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $ordenes=Orden_Recepcion::BuscarProveedor($valor_proveedor)->get();                   
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $ordenes=Orden_Recepcion::BurcarEstado($valor_estado)->get();
-                            
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::BurcarSucursal($request->get('sucursal'))->get();
-                            
-            } 
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {          
-                $ordenes=Orden_Recepcion::TodosDiferentesNombreFecha($request->get('fecha_desde'),$request->get('fecha_hasta'),$valor_proveedor)->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {          
-                $ordenes=Orden_Recepcion::TodosDiferentesEstadoFecha($request->get('fecha_desde'),$request->get('fecha_hasta'),$valor_estado)->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') == "--TODOS--") {          
-                $ordenes=Orden_Recepcion::TodosDiferentesNombreEstado($valor_estado,$valor_proveedor)->get();              
-            } 
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::Estadosurcursal($request->get('estados'),$request->get('sucursal'))->get();           
-            } 
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesFechasurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') == "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesFechaEstadoCliente($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_proveedor'),$request->get('estados'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') == "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesFechaEstadosurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('estados'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') != "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesFechaClientesurcursal($request->get('fecha_desde'),$request->get('fecha_hasta'),$request->get('nombre_proveedor'),$request->get('sucursal'))->get();              
-            }
             
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') != "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesEstadoClientesurcursal($request->get('estados'),$request->get('nombre_proveedor'),$request->get('sucursal'))->get();              
-            }
-            if ($request->get('fecha_todo') == "on" && $request->get('nombre_proveedor') != "--TODOS--" && $request->get('estados') == "--TODOS--" && $request->get('sucursal') != "--TODOS--") {
-                $ordenes=Orden_Recepcion::TodosDiferentesClientesurcursal($request->get('nombre_proveedor'),$request->get('sucursal'))->get();              
-            }
+            $ordenes=Orden_Recepcion::Filtrarbusqueda($request->get('fecha_todo'),$request->get('fecha_desde'),$request->get('fecha_hasta'),$valor_estado,$valor_proveedor,$request->get('sucursal'))->get();              
+                         
+            
             
             return view('admin.compras.ordenrecepcion.index',['fecha_desde'=>$request->get('fecha_desde'),'fecha_hasta'=>$request->get('fecha_hasta'),'idsucursal'=>$request->get('sucursal'),'sucursales'=>$sucursales,'fecha_todo'=>$request->get('fecha_todo'),'idproveedor'=>$request->get('nombre_proveedor'),'valorestados'=>$request->get('estados'),'orden'=>$ordenes,'estados'=>$estados,'proveedores'=>$proveedores, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){

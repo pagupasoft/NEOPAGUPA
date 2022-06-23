@@ -150,8 +150,8 @@ class Testeo extends Command
                         $diario->diario_tipo_documento = 'AMORTIZACION DE SEGURO';
                         $diario->diario_numero_documento = $mes.$ano.substr(str_repeat(0, 7).$sec, - 7);
                         $diario->diario_beneficiario = $seguroref->transaccionCompra->proveedor->proveedor_nombre;
-                        ;
-                        $diario->diario_tipo ='CIPB';
+                        
+                        $diario->diario_tipo ='CASE';
                         $diario->diario_secuencial = substr($codigoDiario, 8);
                         $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $fecha)->format('m');
                         $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $fecha)->format('Y');

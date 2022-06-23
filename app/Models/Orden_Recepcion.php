@@ -62,6 +62,32 @@ class Orden_Recepcion extends Model
         ->where('sucursal_nombre','=',$sucursal);
                   
     }
+    public function scopeFiltrar($query, $desde,$hasta, $estado,$proveedor,$sucursal){
+        return $query->join('proveedor','proveedor.proveedor_id','=','orden_recepcion.proveedor_id')->join('bodega','bodega.bodega_id','=','orden_recepcion.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
+        ->where('ordenr_fecha', '>=',$desde)
+        ->where('ordenr_fecha', '<=', $hasta)
+        ->where('ordenr_estado','=',$estado)
+        ->where('proveedor_nombre','=',$proveedor)
+        ->where('sucursal_nombre','=',$sucursal);
+                  
+    }
+    public function scopeFiltrarbusqueda($query,$fechatodo, $desde,$hasta, $estado,$proveedor,$sucursal){
+         $query->join('proveedor','proveedor.proveedor_id','=','orden_recepcion.proveedor_id')->join('bodega','bodega.bodega_id','=','orden_recepcion.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id);
+        if($fechatodo != 'on'){
+            $query->where('orden_recepcion.ordenr_fecha', '>=', $desde)->where('orden_recepcion.ordenr_fecha', '<=', $hasta);
+        }  
+        if($estado != '0'){
+            $query->where('orden_recepcion.ordenr_estado', '=', $estado);
+        } 
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id', '=', $sucursal);
+        }
+        if($proveedor != '0'){
+            $query->where('proveedor.proveedor_id', '=', $proveedor);
+        }   
+        return $query;
+                  
+    }
     public function scopeFecha($query, $desde,$hasta){
         return $query->join('proveedor','proveedor.proveedor_id','=','orden_recepcion.proveedor_id')->join('bodega','bodega.bodega_id','=','orden_recepcion.bodega_id')->join('sucursal','sucursal.sucursal_id','=','bodega.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('ordenr_fecha', '>=',$desde)->where('ordenr_fecha', '<=', $hasta);
     }

@@ -672,6 +672,7 @@
                                                             <input id="id_total_fuente" name="id_total_fuente"
                                                                 type="text" class="form-control" placeholder="0.00"
                                                                 value="0.00" readonly>
+                                                            <input type="hidden" id="totalBaseFuenteId" value="0.00">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1189,7 +1190,7 @@ function agregarItemRF() {
         linea = linea.replace(/{DvalorRF}/g, Number(valorRF).toFixed(2));
         $("#cargarItemRF tbody").append(linea);
         id_itemRF = id_itemRF + 1;
-        totalRF(valorRF);
+        totalRF(valorRF, baseRF);
         resetearCamposRF();
     }else{
         bootbox.alert({
@@ -1199,9 +1200,12 @@ function agregarItemRF() {
     }
 }
 
-function totalRF(valorF) {
+
+function totalRF(valorF, baseF) {
     document.getElementById("id_total_fuente").value = Number(Number(document.getElementById("id_total_fuente").value) +
         Number(valorF)).toFixed(2);
+    document.getElementById("totalBaseFuenteId").value = Number(Number(document.getElementById("totalBaseFuenteId").value) +
+        Number(baseF)).toFixed(2);
 }
 
 function resetearCamposRF() {
@@ -1209,9 +1213,9 @@ function resetearCamposRF() {
     document.getElementById("valorFuente").value = "0.00";
 }
 
-function eliminarItemF(id, valorF) {
+function eliminarItemF(id, valorF, baseF) {
     $("#rowRF_" + id).remove();
-    totalRF(valorF * (-1));
+    totalRF(valorF * (-1), baseF * (-1));
 }
 /************PROCESO DE RETENCION DE IVA******************/
 function calcularRI() {

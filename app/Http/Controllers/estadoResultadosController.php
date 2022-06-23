@@ -73,7 +73,7 @@ class estadoResultadosController extends Controller
                     $count2 ++;
                 }
                 $datos[$count]['total'] = $tot;
-                if( $datos[$count]['total'] <> 0 ){
+                if(round($datos[$count]['total'],2) <> 0 ){
                     $count ++;
                 }else{
                     array_pop($datos);

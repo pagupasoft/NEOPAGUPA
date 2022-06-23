@@ -2,7 +2,7 @@
 @section('principal')
 <form class="form-horizontal" method="POST" action="{{ url("reporteBancario") }}">
 @csrf
-    <div class="card card-secondary">
+    <div class="card card-secondary" style="position: absolute; width: 100%">
         <div class="card-header">
             <h3 class="card-title">Rerpote Bancario</h3>                                 
         </div>
@@ -69,7 +69,7 @@
                     </select>                                     
                 </div>
                 <div class="col-sm-1">
-                    <button type="submit"  class="btn btn-primary btn-sm" data-toggle="modal"><i class="fa fa-search"></i></button>
+                    <button onclick="girarGif()" type="submit"  class="btn btn-primary btn-sm" data-toggle="modal"><i class="fa fa-search"></i></button>
                 </div>
             </div>
             <hr>        
@@ -156,7 +156,17 @@
             </table>        
         </div>
     </div>
+    <div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+        <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+    </div>
 </form>
+
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+</script>
 <script>
       <?php
       if(isset($fecha_todo)){  

@@ -145,7 +145,7 @@ class conciliacionBancariaController extends Controller
                     $datosItem = explode('-', $items[$i]);
                     if($datosItem[1] == 'DEPOSITO'){
                         $deposito = Deposito::deposito($datosItem[0])->first();
-                        if(!!$deposito){
+                        if(isset($deposito->deposito_id)){
                             if(is_null($deposito->deposito_fecha_conciliacion) or (is_null($deposito->deposito_fecha_conciliacion) == false and
                             $deposito->deposito_fecha_conciliacion == $request->get('idHasta') )){
                                 $deposito->deposito_conciliacion = false;
@@ -156,7 +156,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'TRANSFERENCIA'){
                         $transferencia = Transferencia::Transferencia($datosItem[0])->first();
-                        if(!!$transferencia){
+                        if(isset($transferencia->transferencia_id)){
                             if(is_null($transferencia->transferencia_fecha_conciliacion) or (is_null($transferencia->transferencia_fecha_conciliacion) == false and
                                 $transferencia->transferencia_fecha_conciliacion == $request->get('idHasta') )){
                                 $transferencia->transferencia_conciliacion = false;
@@ -167,7 +167,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'CHEQUE'){
                         $cheque = Cheque::cheque($datosItem[0])->first();
-                        if(!!$cheque){
+                        if(isset($cheque->cheque_id)){
                             if(is_null($cheque->cheque_fecha_conciliacion) or (is_null($cheque->cheque_fecha_conciliacion) == false and
                                 $cheque->cheque_fecha_conciliacion == $request->get('idHasta') )){
                                 $cheque->cheque_conciliacion = false;
@@ -178,7 +178,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'NOTA DEBITO BANCO'){
                         $ncb = Nota_Debito_banco::NotaCreditoBanco($datosItem[0])->first();
-                        if(!!$ncb){
+                        if(isset($ncb->nota_id)){
                             if(is_null($ncb->nota_fecha_conciliacion) or (is_null($ncb->nota_fecha_conciliacion) == false and
                                 $ncb->nota_fecha_conciliacion == $request->get('idHasta') )){
                                 $ncb->nota_conciliacion = false;
@@ -189,7 +189,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'NOTA CREDITO BANCO'){
                         $ndb = Nota_Credito_banco::NotaCreditoBanco($datosItem[0])->first();
-                        if(!!$ndb){
+                        if(isset($ndb->nota_id)){
                             if(is_null($ndb->nota_fecha_conciliacion) or (is_null($ndb->nota_fecha_conciliacion) == false and
                             $ndb->nota_fecha_conciliacion == $request->get('idHasta') )){
                                 $ndb->nota_conciliacion = false;
@@ -253,7 +253,7 @@ class conciliacionBancariaController extends Controller
                     $datosItem = explode('-', $items[$i]);
                     if($datosItem[1] == 'DEPOSITO'){
                         $deposito = Deposito::deposito($datosItem[0])->first();
-                        if(!!$deposito){
+                        if(isset($deposito->deposito_id)){
                             if(is_null($deposito->deposito_fecha_conciliacion) or (is_null($deposito->deposito_fecha_conciliacion) == false and
                             $deposito->deposito_fecha_conciliacion == $request->get('idHasta') )){
                                 $deposito->deposito_conciliacion = false;
@@ -264,7 +264,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'TRANSFERENCIA'){
                         $transferencia = Transferencia::Transferencia($datosItem[0])->first();
-                        if(!!$transferencia){
+                        if(isset($transferencia->transferencia_id)){
                             if(is_null($transferencia->transferencia_fecha_conciliacion) or (is_null($transferencia->transferencia_fecha_conciliacion) == false and
                             $transferencia->transferencia_fecha_conciliacion == $request->get('idHasta') )){
                                 $transferencia->transferencia_conciliacion = false;
@@ -275,7 +275,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'CHEQUE'){
                         $cheque = Cheque::cheque($datosItem[0])->first();
-                        if(!!$cheque){
+                        if(isset($cheque->cheque_id)){
                             if(is_null($cheque->cheque_fecha_conciliacion) or (is_null($cheque->cheque_fecha_conciliacion) == false and
                                 $cheque->cheque_fecha_conciliacion == $request->get('idHasta') )){
                                 $cheque->cheque_conciliacion = false;
@@ -286,7 +286,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'NOTA DEBITO BANCO'){
                         $ncb = Nota_Debito_banco::NotaCreditoBanco($datosItem[0])->first();
-                        if(!!$ncb){
+                        if(isset($ncb->nota_id)){
                             if(is_null($ncb->nota_fecha_conciliacion) or (is_null($ncb->nota_fecha_conciliacion) == false and
                             $ncb->nota_fecha_conciliacion == $request->get('idHasta') )){
                                 $ncb->nota_conciliacion = false;
@@ -297,7 +297,7 @@ class conciliacionBancariaController extends Controller
                     }  
                     if($datosItem[1] == 'NOTA CREDITO BANCO'){
                         $ndb = Nota_Credito_banco::NotaCreditoBanco($datosItem[0])->first();
-                        if(!!$ndb){
+                        if(isset($ndb->nota_id)){
                             if(is_null($ndb->nota_fecha_conciliacion) or (is_null($ndb->nota_fecha_conciliacion) == false and
                             $ndb->nota_fecha_conciliacion == $request->get('idHasta') )){
                                 $ndb->nota_conciliacion = false;
@@ -1067,7 +1067,7 @@ class conciliacionBancariaController extends Controller
                 $otrasconciliacionesBancariaMatriz[$count2]['numero'] = $ncBanco->nota_numero;
                 $otrasconciliacionesBancariaMatriz[$count2]['debito'] = 0;
                 $otrasconciliacionesBancariaMatriz[$count2]['credito'] = $ncBanco->nota_valor;
-                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $ndBanco->diario->diario_codigo;
+                $otrasconciliacionesBancariaMatriz[$count2]['diario'] = $ncBanco->diario->diario_codigo;
                 $otrasconciliacionesBancariaMatriz[$count2]['Beneficiario'] = $ncBanco->nota_beneficiario;
                 $otrasconciliacionesBancariaMatriz[$count2]['referencia'] = $ncBanco->nota_descripcion;
                 //$otrasconciliacionesBancariaMatriz[$count2]['fechaConsiliacion'] = $ncBanco->nota_fecha_conciliacion;

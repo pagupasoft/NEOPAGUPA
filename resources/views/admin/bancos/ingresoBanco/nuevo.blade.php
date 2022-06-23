@@ -62,6 +62,7 @@
                     <label for="idTipo" class="col-sm-2 col-form-label">Tipo</label>
                     <div class="col-sm-10">
                         <select class="custom-select" id="idTipo" name="idTipo" required>
+                            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                             <option value="DEPOSITO">DEPOSITO</option>
                         </select>
                     </div>

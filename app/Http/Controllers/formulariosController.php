@@ -52,36 +52,27 @@ class formulariosController extends Controller
             if($request->get('valor6')){$valor6 = str_replace(',','',$request->get('valor6'));}
             if (isset($_POST['consultar'])){
                 $ant615 = 0;
-                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','615')->first();
-                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','615')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','615')->first();
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','615')->first();
                 if(isset($reporteAnt->reporte_viva)){
                     $ant615 = $reporteAnt->reporte_viva;
-                }else{                    
-                    $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','605')->first();
-                    if(isset($reporteAnt->reporte_viva)){
-                        $ant615 = $reporteAnt->reporte_viva;                    
-                    }
-                }
+                }                
                 $ant617 = 0;
-                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','617')->first();
-                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','617')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','617')->first();
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','617')->first();
                 if(isset($reporteAnt->reporte_viva)){
-                    $ant617 = $reporteAnt->reporte_viva;
-                }else{
-                    $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','606')->first();
-                    if(isset($reporteAnt->reporte_viva)){
-                        $ant617 = $reporteAnt->reporte_viva;                    
-                    }
+                    $ant617 = $reporteAnt->reporte_viva;                
                 }
                 $ant605 = 0;
-                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','605')->first();
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','615')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','605')->first();
                 if(isset($reporteAnt->reporte_viva)){
                     $ant605 = $reporteAnt->reporte_viva;                    
                 }
 
                 $ant606 = 0;
-                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','606')->first();
-                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','606')->first();
+                //$reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->where('reporte_casillero','=','606')->first();
+                $reporteAnt = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('m'))->where('reporte_ano','=',DateTime::createFromFormat('Y-m-d', date("Y-m-d",strtotime($request->get('fecha_desde')."- 1 days")))->format('Y'))->where('reporte_casillero','=','617')->first();
                 if(isset($reporteAnt->reporte_viva)){
                     $ant606 = $reporteAnt->reporte_viva;
                 }

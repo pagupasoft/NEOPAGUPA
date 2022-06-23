@@ -602,7 +602,7 @@
                                                         @foreach($compras->retencionCompra->detalles as $x)
                                                             @if($x->detalle_tipo=='FUENTE')
                                                             <tr class="text-center" id="rowRF_<?php echo $id_itemRF; ?>">
-                                                                <td><a onclick="eliminarItemF({{$id_itemRF}}, '{{$x->detalle_valor}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
+                                                                <td><a onclick="eliminarItemF({{$id_itemRF}}, '{{$x->detalle_valor}}', '{{$x->detalle_base}}');" class="btn btn-danger waves-effect" style="padding: 2px 8px;">X</a></td>
                                                                 <td>{{ $x->detalle_base}}<input class="invisible" name="DbaseRF[]" value="{{$x->detalle_base}}" /></td>  
                                                                 <td>{{ $x->conceptoRetencion->concepto_nombre}}<input class="invisible" name="DcodigoRF[]" value="{{$x->conceptoRetencion->concepto_nombre}}" /><input class="invisible" name="DRFID[]" value="{{$x->conceptoRetencion->concepto_id}}" /></td>  
                                                                 <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRF[]" value="{{ $x->detalle_porcentaje}}" /></td>  
@@ -735,6 +735,7 @@
                                                     @endif
                                                     </tbody>
                                                 </table>
+                                                <input type="hidden" id="totalBaseFuenteId" value="0.00">
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"
@@ -1205,14 +1206,16 @@ function agregarItemRF() {
         linea = linea.replace(/{DvalorRF}/g, Number(valorRF).toFixed(2));
         $("#cargarItemRF tbody").append(linea);
         id_itemRF = id_itemRF + 1;
-        totalRF(valorRF);
+        totalRF(valorRF,baseF);
         resetearCamposRF();
     }
 }
 
-function totalRF(valorF) {
+function totalRF(valorF,baseF) {
     document.getElementById("id_total_fuente").value = Number(Number(document.getElementById("id_total_fuente").value) +
         Number(valorF)).toFixed(2);
+    document.getElementById("totalBaseFuenteId").value = Number(Number(document.getElementById("totalBaseFuenteId").value) +
+    Number(baseF)).toFixed(2);
 }
 
 function resetearCamposRF() {
@@ -1220,10 +1223,10 @@ function resetearCamposRF() {
     document.getElementById("valorFuente").value = "0.00";
 }
 
-function eliminarItemF(id, valorF) {
+function eliminarItemF(id, valorF,baseF) {
     if(document.getElementById("checkboxPrimary1").checked==true){
         $("#rowRF_" + id).remove();
-        totalRF(valorF * (-1));
+        totalRF(valorF * (-1), baseF * (-1));
     }
 }
 /************PROCESO DE RETENCION DE IVA******************/
@@ -1272,25 +1275,7 @@ function eliminarItemI(id, valorI) {
         totalRI(valorI * (-1));
     }
 }
-function validarForm(){
-    comprobante = document.getElementById("tipo_comprobante_id");
-    comprobanteCodigo = document.getElementById("tipo_comprobante_codigo");
-    if(comprobanteCodigo.options[comprobante.selectedIndex].value == '04' || comprobanteCodigo.options[comprobante.selectedIndex].value == '05'){
-        if(document.getElementById("factura_id").value == ''){
-            alert('Seleccione la factura antes de guardar');
-            return false
-        }
-    }
-    if(Number(id_itemRF)+Number(id_itemRI) == 2 && comprobanteCodigo.options[comprobante.selectedIndex].value != '04'){
-        alert('Registre datos de retencion antes de guardar');
-        return false
-    }
-    if(Number(id_itemRF)+Number(id_itemRI) > 2 && comprobanteCodigo.options[comprobante.selectedIndex].value == '04'){
-        alert('Elimine los datos de retencion antes de guardar');
-        return false
-    }
-    return true;
-}
+
 
 
 
@@ -1379,6 +1364,20 @@ function editaretencion(){
 
 }
 function validarForm(){
+    if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
+        bootbox.alert({
+            message: "El total se retención en la fuente es diferente del subtotal de la factura.",
+            size: 'small'
+        });
+        return false;
+    }
+    if(document.getElementById("proveedorID").value == ''){
+        bootbox.alert({
+            message: "Seleccione un proveedor antes de guardar.",
+            size: 'small'
+        });
+        return false;
+    }
     comprobante = document.getElementById("tipo_comprobante_id");
     comprobanteCodigo = document.getElementById("tipo_comprobante_codigo");
     if(comprobanteCodigo.options[comprobante.selectedIndex].value == '04' || comprobanteCodigo.options[comprobante.selectedIndex].value == '05'){

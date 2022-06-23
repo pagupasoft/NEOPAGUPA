@@ -12,9 +12,9 @@
                 <label for="nombre_proveedor" class="col-sm-1 col-form-label"><center>Proveedor:</center></label>
                 <div class="col-sm-4">
                     <select class="custom-select select2" id="nombre_proveedor" name="nombre_proveedor">  
-                        <option value="--TODOS--" label>--TODOS--</option>                      
+                        <option value="0" label>--TODOS--</option>                      
                         @foreach($proveedores as $proveedor)
-                            <option id="{{$proveedor->nombre_proveedor}}" name="nombre_proveedor" value="{{$proveedor->proveedor_nombre}}" @if(isset($idproveedor)) @if($proveedor->proveedor_nombre==$idproveedor) selected @endif @endif>{{$proveedor->proveedor_nombre}}</option>
+                            <option   value="{{$proveedor->proveedor_id}}" @if(isset($idproveedor)) @if($proveedor->proveedor_id==$idproveedor) selected @endif @endif>{{$proveedor->proveedor_nombre}}</option>
                         @endforeach
                     </select>                                     
                 </div>    
@@ -37,9 +37,9 @@
                 <label for="sucursal" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
                 <div class="col-sm-4">
                     <select class="custom-select select2" id="sucursal" name="sucursal">  
-                        <option value="--TODOS--" label>--TODOS--</option>                      
+                        <option value="0" label>--TODOS--</option>                      
                         @foreach($sucursales as $sucursal)
-                            <option id="{{$sucursal->sucursal_nombre}}" name="sucursal" value="{{$sucursal->sucursal_nombre}}" @if(isset($idsucursal)) @if($sucursal->sucursal_nombre==$idsucursal) selected @endif @endif>
+                            <option value="{{$sucursal->sucursal_id}}" @if(isset($idsucursal)) @if($sucursal->sucursal_id==$idsucursal) selected @endif @endif>
                                 {{$sucursal->sucursal_nombre}} 
                             </option>
                         @endforeach
@@ -48,9 +48,9 @@
                 <label for="estados" class="col-sm-1 col-form-label"><center>Estados:</center></label>
                 <div class="col-sm-4">
                     <select class="custom-select" id="estados" name="estados" >
-                        <option value="--TODOS--" label>--TODOS--</option>                        
+                        <option value="0" label>--TODOS--</option>                        
                         @foreach($estados as $estado)
-                            <option id="{{$estado->ordenr_estado}}" name="{{$estado->ordenr_estado}}" value="{{$estado->ordenr_estado}}">
+                            <option  value="{{$estado->ordenr_estado}}">
                             @if( $estado->ordenr_estado ==0) Anulado @endif
                             @if( $estado->ordenr_estado ==1) Activo @endif
                             @if( $estado->ordenr_estado ==2) Facturada @endif

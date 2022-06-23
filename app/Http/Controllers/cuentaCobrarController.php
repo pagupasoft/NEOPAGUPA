@@ -91,7 +91,9 @@ class cuentaCobrarController extends Controller
                 $datos[$count]['tot'] = '1';
                 $count ++;
                 $countCliente = $count - 1;
-                foreach(Cuenta_Cobrar::CuentasCobrarByPagos($request->get('fecha_desde'),$request->get('fecha_hasta'),$cliente->cliente_id,$todo,$request->get('sucursal_id') )->select('cuenta_cobrar.cuenta_id','cuenta_cobrar.cuenta_fecha','cuenta_cobrar.cuenta_monto','cuenta_cobrar.cuenta_descripcion')->distinct('cuenta_cobrar.cuenta_fecha','cuenta_cobrar.cuenta_id')->get() as $cuenta){
+                $banderaMigrada = false;
+                foreach(Cuenta_Cobrar::CuentasCobrarByPagos($request->get('fecha_desde'),$request->get('fecha_hasta'),$cliente->cliente_id,$todo,$request->get('sucursal_id') )->select('cuenta_cobrar.cuenta_id','cuenta_cobrar.cuenta_fecha','cuenta_cobrar.cuenta_monto','cuenta_cobrar.cuenta_descripcion','cuenta_cobrar.cuenta_saldo')->distinct('cuenta_cobrar.cuenta_fecha','cuenta_cobrar.cuenta_id')->get() as $cuenta){
+                    $banderaMigrada = false;
                     $datos[$count]['nom'] = ''; 
                     $datos[$count]['doc'] = ''; 
                     $datos[$count]['num'] = ''; 
@@ -115,9 +117,19 @@ class cuentaCobrarController extends Controller
                         $datos[$count]['num'] = $cuenta->notaDebito->nd_numero;  
                         $datos[$count]['dia'] = $cuenta->notaDebito->diario->diario_codigo; 
                     }
+                    if($datos[$count]['doc'] == ''){
+                        $datos[$count]['doc'] = 'FACTURA';
+                        $datos[$count]['num'] = substr($cuenta->cuenta_descripcion, 38); 
+                        $datos[$count]['dia'] = '';
+                        $banderaMigrada = true;
+                    }
                     $datos[$count]['fec'] = $cuenta->cuenta_fecha;
                     $datos[$count]['mon'] = $cuenta->cuenta_monto; 
-                    $datos[$count]['sal'] = $cuenta->cuenta_monto;  
+                    if($banderaMigrada){
+                        $datos[$count]['sal'] = $cuenta->cuenta_saldo;  
+                    }else{
+                        $datos[$count]['sal'] = $cuenta->cuenta_monto; 
+                    }
                     $datos[$count]['pag'] = 0; 
                     $datos[$count]['fep'] = ''; 
                     $datos[$count]['tip'] = ''; 
@@ -140,7 +152,11 @@ class cuentaCobrarController extends Controller
                         }
                         $datos[$count]['tip'] = $pago->detalle_pago_descripcion; 
                         $datos[$count]['tot'] = '3';
-                        $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        if(!$banderaMigrada){
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        }else{
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
+                        }
                         $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                         $count ++;
                     }
@@ -161,7 +177,11 @@ class cuentaCobrarController extends Controller
                             }
                             $datos[$count]['tip'] = 'DESCUENTO DE ANTICIPO DE CLIENTE';
                             $datos[$count]['tot'] = '3';
-                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            if(!$banderaMigrada){
+                                $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            }else{
+                                $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
+                            }
                             $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                             $count ++;
                         }

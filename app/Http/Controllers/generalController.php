@@ -533,4 +533,16 @@ class generalController extends Controller
         }
         return $precioCosto;
     }
+
+    public function validateUnbalancedJournal(Diario $diario){
+        $totalDebe = 0;
+        $totalHaber = 0;
+
+        foreach ($diario->detalles as $detalle) {
+            $totalDebe = floatval($totalDebe) + floatval($detalle->detalle_debe);
+            $totalHaber =  floatval($totalHaber) + floatval($detalle->detalle_haber);
+        }
+        
+        return round($totalDebe,2) == round($totalHaber,2) ? true : false;
+    }
 }

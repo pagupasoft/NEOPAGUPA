@@ -220,7 +220,7 @@ class cargarRetencionXMLController extends Controller
             }
             $valorRetencion = 0;
             foreach($xml->impuestos->impuesto as $impuesto){
-                $valorRetencion = $valorRetencion + floatval($impuesto->valorRetenido);
+                $valorRetencion = round($valorRetencion,2) + round(floatval($impuesto->valorRetenido),2);
                 $factura = null;
                 $nd = null;
                 if($impuesto->codDocSustento == '01'){
@@ -305,7 +305,7 @@ class cargarRetencionXMLController extends Controller
                         $retencion->detalles()->save($detalleRV);
                         $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
                             /********************detalle de diario de retencion de venta*******************/
-                            if($detalleRV->detalle_valor > 0){
+                            if(round(floatval($impuesto->valorRetenido),2) > 0){
                                 $detalleDiario = new Detalle_Diario();
                                 $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
                                 $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
@@ -333,7 +333,7 @@ class cargarRetencionXMLController extends Controller
                         $retencion->detalles()->save($detalleRV);
                         $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
                             /********************detalle de diario de retencion de venta*******************/
-                            if($detalleRV->detalle_valor > 0){
+                            if(round(floatval($impuesto->valorRetenido),2) > 0){
                                 $detalleDiario = new Detalle_Diario();
                                 $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
                                 $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
@@ -352,7 +352,7 @@ class cargarRetencionXMLController extends Controller
                 }
             }
             /******************************************************************/
-            if($cxcAux->cuenta_saldo == 0){
+            if(round($cxcAux->cuenta_saldo,2) == 0){
                 if(isset($factura->factura_id)){
                     $rangoDocumentoRetencion=Rango_Documento::PuntoRango($factura->rangoDocumento->punto_id, 'Anticipo de Cliente')->first();
                 }else{
@@ -422,7 +422,7 @@ class cargarRetencionXMLController extends Controller
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' por un valor de -> '.$valorRetencion);
                 /******************************************************************/
                 
-            }else if($cxcAux->cuenta_saldo >= $valorRetencion){        
+            }else if(round($cxcAux->cuenta_saldo,2) >= round($valorRetencion,2)){        
                 /********************Pago por Retencion de Venta***************************/
                 $pago = new Pago_CXC();
                 $pago->pago_descripcion = 'Retencion de venta No. '.$retencion->retencion_numero;

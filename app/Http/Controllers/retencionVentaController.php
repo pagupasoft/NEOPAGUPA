@@ -247,8 +247,8 @@ class retencionVentaController extends Controller
                     /******************************************************************/
             }
             /******************************************************************/
-            $valorRetencion= $request->get('idTotalRetenido');
-            if($cxcAux->cuenta_saldo == 0){
+            $valorRetencion= round($request->get('idTotalRetenido'),2);
+            if(round($cxcAux->cuenta_saldo,2) == 0){
                 if($request->get('tipo_doc') == '0'){
                     $rangoDocumentoRetencion=Rango_Documento::PuntoRango($facturaAux->rangoDocumento->punto_id, 'Anticipo de Cliente')->first();
                 }else{
@@ -318,7 +318,7 @@ class retencionVentaController extends Controller
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' por un valor de -> '.$valorRetencion);
                 /******************************************************************/
                 
-            }else if($cxcAux->cuenta_saldo >= $valorRetencion){        
+            }else if(round($cxcAux->cuenta_saldo) >= round($valorRetencion)){        
                 /********************Pago por Retencion de Venta***************************/
                 $pago = new Pago_CXC();
                 $pago->pago_descripcion = 'Retencion de venta No. '.$retencion->retencion_numero;

@@ -147,6 +147,9 @@ class cargarRetencionXMLController extends Controller
                                                 }elseif($response[0] == '4'){
                                                     $datos[$i]['mensaje'] = $response[1];
                                                     $datos[$i]['estado'] = 'no';
+                                                }elseif($response[0] == '5'){
+                                                    $datos[$i]['mensaje'] = 'Error la retencion no pudo ser registrada error al crear asiento diario.';
+                                                    $datos[$i]['estado'] = 'no';
                                                 }
                                             }else{
                                                 $datos[$i]['mensaje'] = 'La base de impuesto a la renta de la retencion es diferente al subtotal de la factura.';
@@ -179,6 +182,9 @@ class cargarRetencionXMLController extends Controller
                                                     $datos[$i]['estado'] = 'no';
                                                 }elseif($response == '4'){
                                                     $datos[$i]['mensaje'] = 'Ocurrio un Error al guardar la retención. Verifique la factura y vuelva a intentar';
+                                                    $datos[$i]['estado'] = 'no';
+                                                }elseif($response[0] == '5'){
+                                                    $datos[$i]['mensaje'] = 'Error la retencion no pudo ser registrada error al crear asiento diario.';
                                                     $datos[$i]['estado'] = 'no';
                                                 }
                                             }else{
@@ -220,7 +226,7 @@ class cargarRetencionXMLController extends Controller
             }
             $valorRetencion = 0;
             foreach($xml->impuestos->impuesto as $impuesto){
-                $valorRetencion = $valorRetencion + floatval($impuesto->valorRetenido);
+                $valorRetencion = round($valorRetencion,2) + round(floatval($impuesto->valorRetenido),2);
                 $factura = null;
                 $nd = null;
                 if($impuesto->codDocSustento == '01'){
@@ -294,18 +300,18 @@ class cargarRetencionXMLController extends Controller
             foreach($xml->impuestos->impuesto as $impuesto){
                 if($impuesto->valorRetenido > 0){
                     if($impuesto->codigo == '1'){
-                        $detalleRV = new Detalle_RV();
-                        $detalleRV->detalle_tipo = 'FUENTE';
-                        $detalleRV->detalle_base = $impuesto->baseImponible;
-                        $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
-                        $detalleRV->detalle_valor = $impuesto->valorRetenido;
-                        $detalleRV->detalle_asumida = '0';
-                        $detalleRV->detalle_estado = '1';
-                        $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
-                        $retencion->detalles()->save($detalleRV);
-                        $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
+                        if(round(floatval($impuesto->valorRetenido),2) > 0){
+                            $detalleRV = new Detalle_RV();
+                            $detalleRV->detalle_tipo = 'FUENTE';
+                            $detalleRV->detalle_base = $impuesto->baseImponible;
+                            $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
+                            $detalleRV->detalle_valor = $impuesto->valorRetenido;
+                            $detalleRV->detalle_asumida = '0';
+                            $detalleRV->detalle_estado = '1';
+                            $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
+                            $retencion->detalles()->save($detalleRV);
+                            $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
                             /********************detalle de diario de retencion de venta*******************/
-                            if($detalleRV->detalle_valor > 0){
                                 $detalleDiario = new Detalle_Diario();
                                 $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
                                 $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
@@ -318,22 +324,22 @@ class cargarRetencionXMLController extends Controller
                                 $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
                                 $diario->detalles()->save($detalleDiario);
                                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
-                            }
                             /******************************************************************/
+                        }
                     }
                     if($impuesto->codigo == '2'){
-                        $detalleRV = new Detalle_RV();
-                        $detalleRV->detalle_tipo = 'IVA';
-                        $detalleRV->detalle_base = $impuesto->baseImponible;
-                        $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
-                        $detalleRV->detalle_valor = $impuesto->valorRetenido;
-                        $detalleRV->detalle_asumida = '0';
-                        $detalleRV->detalle_estado = '1';
-                        $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
-                        $retencion->detalles()->save($detalleRV);
-                        $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
+                        if(round(floatval($impuesto->valorRetenido),2) > 0){
+                            $detalleRV = new Detalle_RV();
+                            $detalleRV->detalle_tipo = 'IVA';
+                            $detalleRV->detalle_base = $impuesto->baseImponible;
+                            $detalleRV->detalle_porcentaje = $impuesto->porcentajeRetener;
+                            $detalleRV->detalle_valor = $impuesto->valorRetenido;
+                            $detalleRV->detalle_asumida = '0';
+                            $detalleRV->detalle_estado = '1';
+                            $detalleRV->concepto_id = Concepto_Retencion::ConceptoRetencionByCodigo($impuesto->codigoRetencion)->first()->concepto_id;
+                            $retencion->detalles()->save($detalleRV);
+                            $general->registrarAuditoria('Registro de detalle de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de detalle de retencion de venta, con base imponible -> '.$detalleRV->detalle_base.' porcentaje -> '.$detalleRV->detalle_porcentaje.' valor de retencion -> '.$detalleRV->detalle_valor);
                             /********************detalle de diario de retencion de venta*******************/
-                            if($detalleRV->detalle_valor > 0){
                                 $detalleDiario = new Detalle_Diario();
                                 $cuentaContableRetencion=Concepto_Retencion::ConceptoRetencion($detalleRV->concepto_id)->first();
                                 $detalleDiario->detalle_debe = $detalleRV->detalle_valor;
@@ -346,13 +352,13 @@ class cargarRetencionXMLController extends Controller
                                 $detalleDiario->cuenta_id = $cuentaContableRetencion->concepto_recibida_cuenta;
                                 $diario->detalles()->save($detalleDiario);
                                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$cuentaContableRetencion->cuentaEmitida->cuenta_numero.' en el haber por un valor de -> '.$detalleRV->detalle_valor);
-                            }
                             /******************************************************************/
+                        }
                     }
                 }
             }
             /******************************************************************/
-            if($cxcAux->cuenta_saldo == 0){
+            if(round($cxcAux->cuenta_saldo,2) == 0){
                 if(isset($factura->factura_id)){
                     $rangoDocumentoRetencion=Rango_Documento::PuntoRango($factura->rangoDocumento->punto_id, 'Anticipo de Cliente')->first();
                 }else{
@@ -422,7 +428,7 @@ class cargarRetencionXMLController extends Controller
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$retencion->retencion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta->cuenta_numero.' por un valor de -> '.$valorRetencion);
                 /******************************************************************/
                 
-            }else if($cxcAux->cuenta_saldo >= $valorRetencion){        
+            }else if(round($cxcAux->cuenta_saldo,2) >= round($valorRetencion,2)){        
                 /********************Pago por Retencion de Venta***************************/
                 $pago = new Pago_CXC();
                 $pago->pago_descripcion = 'Retencion de venta No. '.$retencion->retencion_numero;
@@ -619,6 +625,9 @@ class cargarRetencionXMLController extends Controller
                 /******************************************************************/
             }
             $general->pdfDiario($diario);
+            if($general->validateUnbalancedJournal($diario) ==  false){
+                return '5';
+            }
             /****************************************************************/
             DB::commit();
             return 'ok';

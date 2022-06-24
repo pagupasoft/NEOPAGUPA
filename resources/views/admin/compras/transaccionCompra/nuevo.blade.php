@@ -1188,12 +1188,17 @@ function eliminarItemI(id, valorI) {
     totalRI(valorI * (-1));
 }
 function validarForm(){
-    if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
-        bootbox.alert({
-            message: "El total se retención en la fuente es diferente del subtotal de la factura.",
-            size: 'small'
-        });
-        return false;
+    comprobante = document.getElementById("tipo_comprobante_id");
+    comprobanteCodigo = document.getElementById("tipo_comprobante_codigo");
+   
+    if(comprobanteCodigo.options[comprobante.selectedIndex].value != '04'){
+        if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
+            bootbox.alert({
+                message: "El total se retención en la fuente es diferente del subtotal de la factura.",
+                size: 'small'
+            });
+            return false;
+        }
     }
     if(document.getElementById("proveedorID").value == ''){
         bootbox.alert({
@@ -1202,10 +1207,10 @@ function validarForm(){
         });
         return false;
     }
-    comprobante = document.getElementById("tipo_comprobante_id");
-    comprobanteCodigo = document.getElementById("tipo_comprobante_codigo");
+   
     if(comprobanteCodigo.options[comprobante.selectedIndex].value == '04' || comprobanteCodigo.options[comprobante.selectedIndex].value == '05'){
-        if(document.getElementById("manualID").checked){
+       
+        if(document.getElementById("manualID").checked ==true){
             if(document.getElementById("serieFacManual").value == ''){
                 bootbox.alert({
                     message: "Tiene que registrar la serie de la factura",
@@ -1228,7 +1233,7 @@ function validarForm(){
                 return false
             }
         }else{
-            if(document.getElementById("factura_id").value == ''){
+            if(document.getElementById("factura_id").value == '0'){
                 bootbox.alert({
                     message: "Seleccione la factura antes de guardar",
                     size: 'small'

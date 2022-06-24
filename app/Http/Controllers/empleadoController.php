@@ -124,6 +124,7 @@ class empleadoController extends Controller
     {
         try{
             DB::beginTransaction();
+            $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();
             $empleado = new Empleado();
             $empleado->empleado_cedula = $request->get('idCedula');
             $empleado->empleado_nombre = $request->get('idNombre');
@@ -203,53 +204,57 @@ class empleadoController extends Controller
             $empleado->empleado_cuenta_numero = $request->get('idCuenta');
             $empleado->cargo_id = $request->get('idCargo');
             $empleado->departamento_id = $request->get('idDepartamento');
-            
+            $empleado->empleado_cuenta_anticipo=null;
+            $empleado->empleado_cuenta_prestamo=null;
             $empleado->tipo_id = $request->get('idTipo');
             $empleado->banco_lista_id = $request->get('idBanco'); 
-
-            $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADOS')->first();
+            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADOS')->first();
            
-            if ($cuentap) {
-                $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
-                $sec=1;
-                if ($cuentaapdre) {
-                    $sec=$sec+$cuentaapdre;
+                if ($cuentap) {
+                    $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
+                    $sec=1;
+                    if ($cuentaapdre) {
+                        $sec=$sec+$cuentaapdre;
+                    }
+                    $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
+                    $cuentaa = new Cuenta();
+                    $cuentaa->cuenta_numero =$numerocuenta;
+                    $cuentaa->cuenta_nombre = 'ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre;
+                    $cuentaa->cuenta_secuencial = $sec;
+                    $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
+                    $cuentaa->cuenta_estado = 1;
+                    $cuentaa->empresa_id = Auth::user()->empresa_id;
+                    $cuentaa->save();
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                    $empleado->empleado_cuenta_anticipo=$cuentaa->cuenta_id;
                 }
-                $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
-                $cuentaa = new Cuenta();
-                $cuentaa->cuenta_numero =$numerocuenta;
-                $cuentaa->cuenta_nombre = 'ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre;
-                $cuentaa->cuenta_secuencial = $sec;
-                $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
-                $cuentaa->cuenta_estado = 1;
-                $cuentaa->empresa_id = Auth::user()->empresa_id;
-                $cuentaa->save();
-                /*Inicio de registro de auditoria */
-                $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                $empleado->empleado_cuenta_anticipo=$cuentaa->cuenta_id;
             }
-            $cuentapr=Cuenta::BuscarByCuenta('PRESTAMOS A EMPLEADOS')->first();
+            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                $cuentapr=Cuenta::BuscarByCuenta('PRESTAMOS A EMPLEADOS')->first();
            
-            if ($cuentapr) {
-                $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
-                $sec=1;
-                if ($cuentaapdre) {
-                    $sec=$sec+$cuentaapdre;
+                if ($cuentapr) {
+                    $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
+                    $sec=1;
+                    if ($cuentaapdre) {
+                        $sec=$sec+$cuentaapdre;
+                    }
+                    $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
+                    $cuentap = new Cuenta();
+                    $cuentap->cuenta_numero =$numerocuenta;
+                    $cuentap->cuenta_nombre = 'PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre;
+                    $cuentap->cuenta_secuencial = $sec;
+                    $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
+                    $cuentap->cuenta_estado = 1;
+                    $cuentap->empresa_id = Auth::user()->empresa_id;
+                    $cuentap->save();
+                    /*Inicio de registro de auditoria */
+                    $auditoria = new generalController();
+                    $auditoria->registrarAuditoria('Registro de cuenta -> PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                    $empleado->empleado_cuenta_prestamo=$cuentap->cuenta_id;
                 }
-                $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
-                $cuentap = new Cuenta();
-                $cuentap->cuenta_numero =$numerocuenta;
-                $cuentap->cuenta_nombre = 'PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre;
-                $cuentap->cuenta_secuencial = $sec;
-                $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
-                $cuentap->cuenta_estado = 1;
-                $cuentap->empresa_id = Auth::user()->empresa_id;
-                $cuentap->save();
-                /*Inicio de registro de auditoria */
-                $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de cuenta -> PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                $empleado->empleado_cuenta_prestamo=$cuentap->cuenta_id;
             }
             $empleado->save();
             /*Inicio de registro de auditoria */
@@ -476,6 +481,7 @@ class empleadoController extends Controller
         try{
             $mensaje='';            
             DB::beginTransaction();
+            $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE EMPLEADO')->first();     
             if($request->file('excelEmpl')->isValid()){
                 $empresa = Empresa::empresa()->first();
                 $name = $empresa->empresa_ruc. '.' .$request->file('excelEmpl')->getClientOriginalExtension();
@@ -608,49 +614,53 @@ class empleadoController extends Controller
                         //campos vacios                        
                         //$empleado->empleado_cuenta_anticipo = $array[0][$i][44];
                         //$empleado->empleado_cuenta_prestamo = $array[0][$i][44];
-                        $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADOS')->first();
+                        if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                            $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADOS')->first();
                     
-                        if ($cuentap) {
-                            $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
-                            $sec=1;
-                            if ($cuentaapdre) {
-                                $sec=$sec+$cuentaapdre;
+                            if ($cuentap) {
+                                $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
+                                $sec=1;
+                                if ($cuentaapdre) {
+                                    $sec=$sec+$cuentaapdre;
+                                }
+                                $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
+                                $cuentaa = new Cuenta();
+                                $cuentaa->cuenta_numero =$numerocuenta;
+                                $cuentaa->cuenta_nombre = 'ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre;
+                                $cuentaa->cuenta_secuencial = $sec;
+                                $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
+                                $cuentaa->cuenta_estado = 1;
+                                $cuentaa->empresa_id = Auth::user()->empresa_id;
+                                $cuentaa->save();
+                                /*Inicio de registro de auditoria */
+                                $auditoria = new generalController();
+                                $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                                $empleado->empleado_cuenta_anticipo=$cuentaa->cuenta_id;
                             }
-                            $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
-                            $cuentaa = new Cuenta();
-                            $cuentaa->cuenta_numero =$numerocuenta;
-                            $cuentaa->cuenta_nombre = 'ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre;
-                            $cuentaa->cuenta_secuencial = $sec;
-                            $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
-                            $cuentaa->cuenta_estado = 1;
-                            $cuentaa->empresa_id = Auth::user()->empresa_id;
-                            $cuentaa->save();
-                            /*Inicio de registro de auditoria */
-                            $auditoria = new generalController();
-                            $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                            $empleado->empleado_cuenta_anticipo=$cuentaa->cuenta_id;
                         }
-                        $cuentapr=Cuenta::BuscarByCuenta('PRESTAMOS A EMPLEADOS')->first();
+                        if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                            $cuentapr=Cuenta::BuscarByCuenta('PRESTAMOS A EMPLEADOS')->first();
                     
-                        if ($cuentapr) {
-                            $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
-                            $sec=1;
-                            if ($cuentaapdre) {
-                                $sec=$sec+$cuentaapdre;
+                            if ($cuentapr) {
+                                $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
+                                $sec=1;
+                                if ($cuentaapdre) {
+                                    $sec=$sec+$cuentaapdre;
+                                }
+                                $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
+                                $cuentap = new Cuenta();
+                                $cuentap->cuenta_numero =$numerocuenta;
+                                $cuentap->cuenta_nombre = 'PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre;
+                                $cuentap->cuenta_secuencial = $sec;
+                                $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
+                                $cuentap->cuenta_estado = 1;
+                                $cuentap->empresa_id = Auth::user()->empresa_id;
+                                $cuentap->save();
+                                /*Inicio de registro de auditoria */
+                                $auditoria = new generalController();
+                                $auditoria->registrarAuditoria('Registro de cuenta -> PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                                $empleado->empleado_cuenta_prestamo=$cuentap->cuenta_id;
                             }
-                            $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
-                            $cuentap = new Cuenta();
-                            $cuentap->cuenta_numero =$numerocuenta;
-                            $cuentap->cuenta_nombre = 'PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre;
-                            $cuentap->cuenta_secuencial = $sec;
-                            $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
-                            $cuentap->cuenta_estado = 1;
-                            $cuentap->empresa_id = Auth::user()->empresa_id;
-                            $cuentap->save();
-                            /*Inicio de registro de auditoria */
-                            $auditoria = new generalController();
-                            $auditoria->registrarAuditoria('Registro de cuenta -> PRESTAMOS A EMPLEADOS -'.$empleado->empleado_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                            $empleado->empleado_cuenta_prestamo=$cuentap->cuenta_id;
                         }
                         $empleado->save();
                         /*Inicio de registro de auditoria */

@@ -156,6 +156,8 @@
                         </select>
                     </div>                    
                 </div>
+                @endif
+                @if($parametrizacionContableProveedor->parametrizacion_cuenta_general == '0') 
                 <div class="form-group row">
                     <label for="idCuentaAnticipo" class="col-sm-2 col-form-label">Cuenta de Anticipo</label>
                     <div class="col-sm-10">

@@ -63,7 +63,8 @@ class clienteController extends Controller
             $credito=Credito::creditos()->get();
             $categoriaCliente=Categoria_Cliente::categoriaClientes()->get();   
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('CUENTA POR COBRAR')->first();
-            return view('admin.ventas.cliente.create',['parametrizacionContable'=>$parametrizacionContable,'precios'=>Lista_Precio::ListasPrecios()->get(),'PE'=>Punto_Emision::puntos()->get(),'cuentas'=>$cuentas,'ciudad'=>$ciudad, 'tipoIdentificacion'=>$tipoIdentificacion,'tipoCliente'=>$tipoCliente, 'credito'=>$credito,'categoriaCliente'=>$categoriaCliente,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+            $parametrizacionContableCliente=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE CLIENTE')->first();
+            return view('admin.ventas.cliente.create',['parametrizacionContableCliente'=>$parametrizacionContableCliente,'parametrizacionContable'=>$parametrizacionContable,'precios'=>Lista_Precio::ListasPrecios()->get(),'PE'=>Punto_Emision::puntos()->get(),'cuentas'=>$cuentas,'ciudad'=>$ciudad, 'tipoIdentificacion'=>$tipoIdentificacion,'tipoCliente'=>$tipoCliente, 'credito'=>$credito,'categoriaCliente'=>$categoriaCliente,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -79,6 +80,8 @@ class clienteController extends Controller
     {
         try{
             DB::beginTransaction();
+            $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('CUENTA POR COBRAR')->first();
+            $parametrizacionContableCliente=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE CLIENTE')->first();
             $cliente = new Cliente();
             $cliente->cliente_cedula = $request->get('idCedula');
             $cliente->cliente_nombre = $request->get('idNombre');
@@ -102,6 +105,59 @@ class clienteController extends Controller
                 $cliente->cliente_cuenta_cobrar = $request->get('idCuentaxcobrar');
                 $cliente->cliente_cuenta_anticipo = $request->get('idCuentaAnticipo');
             }
+            if ($parametrizacionContableCliente->parametrizacion_cuenta_general == '0') {
+                
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE CLIENTE')->first();
+           
+                    if ($cuentap) {
+                        $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
+                        $sec=1;
+                        if ($cuentaapdre) {
+                            $sec=$sec+$cuentaapdre;
+                        }
+                        $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
+                        $cuentaa = new Cuenta();
+                        $cuentaa->cuenta_numero =$numerocuenta;
+                        $cuentaa->cuenta_nombre = 'ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre;
+                        $cuentaa->cuenta_secuencial = $sec;
+                        $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
+                        $cuentaa->cuenta_estado = 1;
+                        $cuentaa->empresa_id = Auth::user()->empresa_id;
+                        $cuentaa->save();
+                        /*Inicio de registro de auditoria */
+                        $auditoria = new generalController();
+                        $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                        $cliente->cliente_cuenta_anticipo=$cuentaa->cuenta_id;
+                    }
+                
+            }
+            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+           
+                    $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR COBRAR')->first();
+           
+                    if ($cuentapr) {
+                        $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
+                        $sec=1;
+                        if ($cuentaapdre) {
+                            $sec=$sec+$cuentaapdre;
+                        }
+                        $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
+                        $cuentap = new Cuenta();
+                        $cuentap->cuenta_numero =$numerocuenta;
+                        $cuentap->cuenta_nombre = 'CUENTA POR COBRAR -'.$cliente->cliente_nombre;
+                        $cuentap->cuenta_secuencial = $sec;
+                        $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
+                        $cuentap->cuenta_estado = 1;
+                        $cuentap->empresa_id = Auth::user()->empresa_id;
+                        $cuentap->save();
+                        /*Inicio de registro de auditoria */
+                        $auditoria = new generalController();
+                        $auditoria->registrarAuditoria('Registro de cuenta -> CUENTA POR COBRAR -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
+                        $cliente->cliente_cuenta_cobrar=$cuentap->cuenta_id;
+                    }
+                
+            }
+           
             $cliente->ciudad_id = $request->get('idCiudad');
             $cliente->tipo_identificacion_id = $request->get('idTidentificacion');
             $cliente->tipo_cliente_id = $request->get('idTipoCliente');
@@ -161,6 +217,7 @@ class clienteController extends Controller
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
             
             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('CUENTA POR COBRAR')->first();
+            $parametrizacionContableCliente=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE CLIENTE')->first();
             $cuentas=Cuenta::CuentasMovimiento()->get();
             $ciudades=Ciudad::ciudades()->get();
             $tipoIdentificacions=Tipo_Identificacion::tipoIdentificaciones()->get();
@@ -169,7 +226,7 @@ class clienteController extends Controller
             $categoriaClientes=Categoria_Cliente::categoriaClientes()->get();
             $cliente=Cliente::cliente($id)->first();
             if($cliente){
-                return view('admin.ventas.cliente.editar',['parametrizacionContable'=>$parametrizacionContable,'precios'=>Lista_Precio::ListasPrecios()->get(),'cliente'=>$cliente, 'cuentas'=>$cuentas,'ciudades'=>$ciudades,'tipoIdentificacions'=>$tipoIdentificacions,'tipoClientes'=>$tipoClientes,'creditos'=>$creditos,'categoriaClientes'=>$categoriaClientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+                return view('admin.ventas.cliente.editar',['parametrizacionContableCliente'=>$parametrizacionContableCliente,'parametrizacionContable'=>$parametrizacionContable,'precios'=>Lista_Precio::ListasPrecios()->get(),'cliente'=>$cliente, 'cuentas'=>$cuentas,'ciudades'=>$ciudades,'tipoIdentificacions'=>$tipoIdentificacions,'tipoClientes'=>$tipoClientes,'creditos'=>$creditos,'categoriaClientes'=>$categoriaClientes, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }else{
                 return redirect('/denegado');
             }
@@ -190,6 +247,9 @@ class clienteController extends Controller
     {
         try{            
             DB::beginTransaction();
+            $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('CUENTA POR COBRAR')->first();
+            $parametrizacionContableCliente=Parametrizacion_Contable::ParametrizacionByNombreFinanciero('ANTICIPO DE CLIENTE')->first();
+           
             $cliente = Cliente::findOrFail($id);
             $cliente->cliente_cedula = $request->get('idCedula');
             $cliente->cliente_nombre = $request->get('idNombre');
@@ -229,49 +289,11 @@ class clienteController extends Controller
             }else{
                 $cliente->lista_id  = null; 
             }
-            $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE CLIENTE')->first();
-           
-            if ($cuentap) {
-                $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
-                $sec=1;
-                if ($cuentaapdre) {
-                    $sec=$sec+$cuentaapdre;
-                }
-                $numerocuenta=$cuentap->cuenta_numero.'.'.$sec;
-                $cuentaa = new Cuenta();
-                $cuentaa->cuenta_numero =$numerocuenta;
-                $cuentaa->cuenta_nombre = 'ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre;
-                $cuentaa->cuenta_secuencial = $sec;
-                $cuentaa->cuenta_nivel = $cuentap->cuenta_secuencial+1;
-                $cuentaa->cuenta_estado = 1;
-                $cuentaa->empresa_id = Auth::user()->empresa_id;
-                $cuentaa->save();
-                /*Inicio de registro de auditoria */
-                $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de cuenta -> ANTICIPO DE CLIENTE -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                $cliente->cliente_cuenta_anticipo=$cuentaa->cuenta_id;
+            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                $cliente->cliente_cuenta_anticipo = $request->get('idAnticipo');
             }
-            $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR COBRAR')->first();
-           
-            if ($cuentapr) {
-                $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
-                $sec=1;
-                if ($cuentaapdre) {
-                    $sec=$sec+$cuentaapdre;
-                }
-                $numerocuenta=$cuentapr->cuenta_numero.'.'.$sec;
-                $cuentap = new Cuenta();
-                $cuentap->cuenta_numero =$numerocuenta;
-                $cuentap->cuenta_nombre = 'CUENTA POR COBRAR -'.$cliente->cliente_nombre;
-                $cuentap->cuenta_secuencial = $sec;
-                $cuentap->cuenta_nivel = $cuentapr->cuenta_secuencial+1;
-                $cuentap->cuenta_estado = 1;
-                $cuentap->empresa_id = Auth::user()->empresa_id;
-                $cuentap->save();
-                /*Inicio de registro de auditoria */
-                $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de cuenta -> CUENTA POR COBRAR -'.$cliente->cliente_nombre, '0', 'Numero de la cuenta registrada es -> '.$numerocuenta);
-                $cliente->cliente_cuenta_cobrar=$cuentap->cuenta_id;
+            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+                $cliente->cliente_cuenta_cobrar = $request->get('idCobrar');
             }
             $cliente->save();
             /*Inicio de registro de auditoria */

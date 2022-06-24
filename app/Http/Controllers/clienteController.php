@@ -289,7 +289,7 @@ class clienteController extends Controller
             }else{
                 $cliente->lista_id  = null; 
             }
-            if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
+            if ($parametrizacionContableCliente->parametrizacion_cuenta_general == '0') {
                 $cliente->cliente_cuenta_anticipo = $request->get('idAnticipo');
             }
             if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {

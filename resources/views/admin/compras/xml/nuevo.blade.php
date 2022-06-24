@@ -937,7 +937,7 @@ function cargarmetodo(){
     $('#transaccion_porcentaje_iva').css('pointer-events', 'none');
      id_item =<?php echo $count;?>;
     document.getElementById("subtotal").innerHTML = (<?php echo $subtotal;?>).toFixed(2);
-    document.getElementById("idSubtotal").value = <?php echo $subtotal;?>;
+    document.getElementById("idSubtotal").value = Number(<?php echo $subtotal;?>).toFixed(2);
     document.getElementById("descuento").innerHTML = (<?php echo $descuento;?>).toFixed(2);
     document.getElementById("idDescuento").value = <?php echo $descuento;?>;
     document.getElementById("tarifa12").innerHTML = (<?php echo  $t12;?>).toFixed(2);

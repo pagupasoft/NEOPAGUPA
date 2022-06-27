@@ -584,7 +584,7 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                            <?php $id_itemRF=1;?>
+                                            <?php $id_itemRF=1;$id_itemRFtotal=0;?>
                                             @include ('admin.compras.transaccionCompra.itemRetencionFuente')
                                               
                                                 <table id="cargarItemRF" class="table table-bordered">
@@ -608,12 +608,14 @@
                                                                 <td>{{ $x->detalle_porcentaje}}<input class="invisible" name="DporcentajeRF[]" value="{{ $x->detalle_porcentaje}}" /></td>  
                                                                 <td>{{ $x->detalle_valor}}<input class="invisible" name="DvalorRF[]" value="{{$x->detalle_valor}}" /></td> 
                                                                 <?php $id_itemRF++;?> 
+                                                                <?php $id_itemRFtotal=$id_itemRFtotal+$x->detalle_base;?> 
                                                             </tr>
                                                             @endif 
                                                         @endforeach
                                                     @endif
                                                     </tbody>
                                                 </table>
+                                                <input type="hidden" id="totalBaseFuenteId" value="{{$id_itemRFtotal}}">
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"
@@ -735,7 +737,7 @@
                                                     @endif
                                                     </tbody>
                                                 </table>
-                                                <input type="hidden" id="totalBaseFuenteId" value="0.00">
+                                               
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"
@@ -870,7 +872,7 @@
                                         <td class="letra-blanca fondo-azul-claro negrita" width="90">Sub-Total
                                         </td>
                                         <td id="subtotal" width="100" class="derecha-texto negrita">0.00</td>
-                                        <input id="idSubtotal" name="idSubtotal" type="hidden" value="0" />
+                                        <input id="idSubtotal" name="idSubtotal" type="hidden" value="0.00" />
                                     </tr>
                                     <tr>
                                         <td class="letra-blanca fondo-azul-claro negrita">Descuento</td>
@@ -948,7 +950,7 @@
       
        cargarFactura();
        
-      
+       document.getElementById("totalBaseFuenteId").value=Number(document.getElementById("totalBaseFuenteId").value).toFixed(2);
 
         
        

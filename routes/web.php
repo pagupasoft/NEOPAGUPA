@@ -170,6 +170,7 @@ use App\Http\Controllers\cargaractivofijoXMLController;
 use App\Http\Controllers\cargarBalancesController;
 use App\Http\Controllers\cargarRetencionXMLController;
 use App\Http\Controllers\cargarXMLController;
+use App\Http\Controllers\CasilleroTributarioController;
 use App\Http\Controllers\categoriaCostoController;
 use App\Http\Controllers\categoriaRolController;
 use App\Http\Controllers\cierreMesController;
@@ -261,6 +262,7 @@ use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
 use App\Models\Camaronera;
+use App\Models\Casillero_tributario;
 use App\Models\Imagen;
 use App\Models\Movimiento_Producto;
 use App\Models\Punto_Emision;
@@ -443,6 +445,8 @@ Route::resource('modificacionRoles', modificarRolController::class)->middleware(
 Route::resource('listadecimocuarto', listadecimoCuartoController::class)->middleware('auth');
 Route::resource('contabilizacionMensual', contabilizacionMensualController::class)->middleware('auth');
 Route::resource('modificarConsumo', modificarConsumoController::class)->middleware('auth');
+Route::resource('casilleroTributario', CasilleroTributarioController::class)->middleware('auth');
+
 
 
 Route::resource('tipoMedicamento', tipoMedicamentoController::class)->middleware('auth');
@@ -610,6 +614,8 @@ Route::get('/listaEgresoBanco/{id}/eliminar', [listaEgresoBancoController::class
 Route::get('/listaIngresoBanco/{id}/eliminar', [listaIngresoBancoController::class, 'delete'])->middleware('auth');
 Route::get('/listaIngresoCaja/{id}/eliminar', [listaIngresoCajaController::class, 'delete'])->middleware('auth');
 Route::get('/caja/{id}/eliminar', [cajaController::class, 'delete'])->middleware('auth');
+Route::get('/casilleroTributario/{id}/eliminar', [CasilleroTributarioController::class, 'delete'])->middleware('auth');
+
 Route::get('/tipoImagen/{id}/eliminar', [tipoImagenController::class, 'delete'])->middleware('auth');
 Route::get('/tipoExamen/{id}/eliminar', [tipoExamenController::class, 'delete'])->middleware('auth');
 Route::get('/tipoMedicamento/{id}/eliminar', [tipoMedicamentoController::class, 'delete'])->middleware('auth');

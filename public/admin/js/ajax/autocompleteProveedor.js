@@ -46,7 +46,7 @@
 					buscar: ui.item.id
 				},
 				success: function(data){
-					document.getElementById("factura_id").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
+					document.getElementById("factura_id").innerHTML = "<option value='0' label>--Seleccione una opcion--</option>";
 					for (var i=0; i<data.length; i++) {
 						document.getElementById("factura_id").innerHTML += "<option value='"+data[i].transaccion_id+"'>"+data[i].transaccion_numero+"</option>";
 					}           

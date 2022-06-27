@@ -786,7 +786,7 @@
                                                     <div class="form-group">
                                                         <select class="form-control select" id="factura_id"
                                                             name="factura_id" data-live-search="true" onchange="cargarDatosFactura();">
-                                                            <option value="" label>--Seleccione una opcion--</option>
+                                                            <option value="0" label>--Seleccione una opcion--</option>
                                                             @if(isset($compras->facturaModificar->transaccion_id))
                                                             <option value="{{$compras->facturaModificar->transaccion_id}}" selected>{{$compras->facturaModificar->transaccion_numero}}</option>
                                                             @endif
@@ -1290,7 +1290,7 @@ function cargarFactura(){
             buscar: document.getElementById("proveedorID").value
         },
         success: function(data){
-            document.getElementById("factura_id").innerHTML = "<option value='' label>--Seleccione una opcion--</option>";
+            document.getElementById("factura_id").innerHTML = "<option value='0' label>--Seleccione una opcion--</option>";
             for (var i=0; i<data.length; i++) {
                 document.getElementById("factura_id").innerHTML += "<option value='"+data[i].transaccion_id+"'>"+data[i].transaccion_numero+"</option>";
             } 
@@ -1366,22 +1366,26 @@ function editaretencion(){
 
 }
 function validarForm(){
-    if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
-        bootbox.alert({
-            message: "El total se retención en la fuente es diferente del subtotal de la factura.",
-            size: 'small'
-        });
-        return false;
-    }
-    if(document.getElementById("proveedorID").value == ''){
-        bootbox.alert({
-            message: "Seleccione un proveedor antes de guardar.",
-            size: 'small'
-        });
-        return false;
-    }
     comprobante = document.getElementById("tipo_comprobante_id");
     comprobanteCodigo = document.getElementById("tipo_comprobante_codigo");
+    if(comprobanteCodigo.options[comprobante.selectedIndex].value != '04'){
+        if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
+            bootbox.alert({
+                message: "El total se retención en la fuente es diferente del subtotal de la factura.",
+                size: 'small'
+            });
+            return false;
+        }
+    }
+        if(document.getElementById("proveedorID").value == ''){
+            bootbox.alert({
+                message: "Seleccione un proveedor antes de guardar.",
+                size: 'small'
+            });
+            return false;
+        }
+
+   
     if(comprobanteCodigo.options[comprobante.selectedIndex].value == '04' || comprobanteCodigo.options[comprobante.selectedIndex].value == '05'){
         if(document.getElementById("manualID").checked){
             if(document.getElementById("serieFacManual").value == ''){
@@ -1406,7 +1410,7 @@ function validarForm(){
                 return false
             }
         }else{
-            if(document.getElementById("factura_id").value == ''){
+            if(document.getElementById("factura_id").value == '0'){
                 bootbox.alert({
                     message: "Seleccione la factura antes de guardar",
                     size: 'small'

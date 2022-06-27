@@ -626,6 +626,7 @@ class cargarRetencionXMLController extends Controller
             }
             $general->pdfDiario($diario);
             if($general->validateUnbalancedJournal($diario) ==  false){
+                DB::commit();
                 return '5';
             }
             /****************************************************************/

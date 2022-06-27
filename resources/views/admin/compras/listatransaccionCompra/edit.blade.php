@@ -1208,7 +1208,7 @@ function agregarItemRF() {
         linea = linea.replace(/{DvalorRF}/g, Number(valorRF).toFixed(2));
         $("#cargarItemRF tbody").append(linea);
         id_itemRF = id_itemRF + 1;
-        totalRF(valorRF,baseF);
+        totalRF(valorRF,baseRF);
         resetearCamposRF();
     }
 }
@@ -1217,7 +1217,7 @@ function totalRF(valorF,baseF) {
     document.getElementById("id_total_fuente").value = Number(Number(document.getElementById("id_total_fuente").value) +
         Number(valorF)).toFixed(2);
     document.getElementById("totalBaseFuenteId").value = Number(Number(document.getElementById("totalBaseFuenteId").value) +
-    Number(baseF)).toFixed(2);
+        Number(baseF)).toFixed(2);
 }
 
 function resetearCamposRF() {

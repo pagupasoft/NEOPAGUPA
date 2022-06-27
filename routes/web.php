@@ -256,6 +256,7 @@ use App\Http\Controllers\tareasProgramadasController;
 use App\Http\Controllers\tipoMovimientoEmpleadoController;
 use App\Http\Controllers\tipoPiscinaController;
 use App\Http\Controllers\transaccionCompraActivoFijoController;
+use App\Http\Controllers\transferenciaSiembraController;
 use App\Http\Controllers\verificarComprasSriController;
 use App\Models\Beneficios_Sociales;
 use App\Models\Cabecera_Rol_CM;
@@ -380,6 +381,7 @@ Route::resource('amortizacion', amortizacionSegurosController::class)->middlewar
 Route::resource('camaronera', CamaroneraController::class)->middleware('auth');
 Route::resource('piscina', piscinaController::class)->middleware('auth');
 Route::resource('siembra', SiembraController::class)->middleware('auth');
+Route::resource('transferencia', transferenciaSiembraController::class)->middleware('auth');
 
 Route::resource('tipoPiscina', tipoPiscinaController::class)->middleware('auth');
 Route::resource('tipoEmpleado', tipoEmpleadoController::class)->middleware('auth');
@@ -522,6 +524,8 @@ Route::resource('transaccionCActivoFijo', transaccionCompraActivoFijoController:
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
 Route::get('/nauplio/{id}/ver', [nauplioController::class, 'ver'])->middleware('auth')->middleware('acceso');
+Route::get('/transferenciasiembra/nuevo', [transferenciaSiembraController::class, 'nuevo'])->middleware('auth');
+
 Route::get('/nauplio/{id}/edit', [nauplioController::class, 'edit'])->middleware('auth')->middleware('acceso');
 Route::get('/nauplio/{id}/eliminar', [nauplioController::class, 'delete'])->middleware('auth')->middleware('acceso');
 Route::get('/laboratorioC/{id}/edit', [laboratorioCamaroneraController::class, 'edit'])->middleware('auth')->middleware('acceso');
@@ -797,6 +801,7 @@ Route::post('/eliminarChequeAnulado', [listaChequeAnuladoController::class, 'eli
 
 Route::get('/codigopiscina/{buscar}', [piscinaController::class, 'buscarByPiscina'])->middleware('auth');
 Route::get('/codigosiembra/{buscar}', [SiembraController::class, 'buscarBySiembra'])->middleware('auth');
+Route::get('/codigosiembra/transferencia/{buscar}', [SiembraController::class, 'buscarBySiembra'])->middleware('auth');
 Route::get('/verificarDocumentos', [ordenAtencionController::class, 'verificarDocumentosOrden'])->middleware('auth');
 Route::get('/facturarOrden/{id}', [ordenAtencionController::class, 'facturarOrden'])->middleware('auth');
 Route::post('/facturarOrden', [ordenAtencionController::class, 'facturarOrdenGuardar'])->middleware('auth');
@@ -1045,6 +1050,7 @@ Route::post('/sriDocElec', [facturacionElectronicaController::class, 'consultarD
 
 
 //AJAX
+Route::get('/piscina/search/{ide}', [piscinaController::class, 'extraerPiscina'])->middleware('auth');
 Route::get('/nauplio/search/{ide}', [nauplioController::class, 'buscarByNauplio'])->middleware('auth');
 Route::get('/puntomision/searchN/{ide}', [puntoEmisionController::class, 'buscarByIdSucursal'])->middleware('auth');
 Route::post('/procedimiento/searchN', [procedimientoEspecialidadController::class, 'buscarBy'])->middleware('auth');
@@ -1092,6 +1098,8 @@ Route::get('/aseguradoraProcedimiento/searchN/{buscar}', [aseguradoraProcedimien
 Route::get('/cuentaBancaria/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByBanco'])->middleware('auth');
 Route::get('/cargarCentroConsumo/searchN/{buscar}', [reporteComprasProductoController::class, 'buscarBySustento'])->middleware('auth');
 
+Route::get('/Siembra/searchN/{buscar}', [SiembraController::class, 'buscarBy'])->middleware('auth');
+Route::get('/SiembraM/searchN/{buscar}', [SiembraController::class, 'buscarByM'])->middleware('auth');
 Route::get('/cuentaBanco/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByBancoCuenta'])->middleware('auth');
 Route::get('/cuentaContable/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByCuentaBanco'])->middleware('auth');
 Route::get('/cuentaBancariaId/searchN/{buscar}', [cuentaBancariaController::class, 'buscarByCuentaBancaria'])->middleware('auth');

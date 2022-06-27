@@ -61,7 +61,7 @@
                         <th>Debe</th>
                         <th>Haber</th>
                         <th>Saldo</th>
-                        <th>Beneficiario</th>
+                        <th>Referencia</th>
                         <th>Diario</th>
                         <th>Comentario</th>
                         <th>Sucursal</th>  

@@ -429,7 +429,7 @@ class conciliacionBancariaController extends Controller
             }*/
             $general->registrarAuditoria('Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta'),0,'Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta').' de banco -> '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.' con cuenta bancaria -> '.$cuentaBancaria->cuenta_bancaria_numero);
             DB::commit();
-            return $this->buscar($request)->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar.');
+            return $this->buscar($request);
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('conciliacionBancaria')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

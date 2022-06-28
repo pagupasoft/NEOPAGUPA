@@ -1,6 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <form id="idForm" class="form-horizontal" method="POST" action="{{ url("conciliacionBancaria") }}" onsubmit="return verificarFecha();">
+
 @csrf
     <div class="card card-secondary"  style="position: absolute; width: 100%">
         <div class="card-header">
@@ -9,6 +10,7 @@
                 <button type="submit" id="guardar" name="guardar" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Guardar Conciliación"><i class="fa fa-save"></i>&nbsp;Guardar</button>
             </div>
         </div>
+        
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-12 col-md-12">

@@ -58,6 +58,52 @@ class conciliacionBancariaController extends Controller
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
+    private function buscar(Request $request){
+        try{ 
+            $datos =  $this->consulta($request);
+           
+                $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+                $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+                $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();  
+                return view('admin.bancos.conciliacionBancaria.index',
+                ['bancoC'=>$cuentaBancaria->banco,
+                'saldoAnteriorContable'=>$datos[0],
+                'saldoContableActual'=>$datos[1],
+                'saldoEstadoCuenta'=>$datos[2],
+                'chequeGiradoNoCobrado'=>$datos[3],
+                'depositosConciliados'=>$datos[4],
+                'depositosNoConciliados'=>$datos[5],
+                'depositosConciliadosOtros'=>$datos[6],
+                'ndConciliado'=>$datos[7],
+                'ndNoConciliado'=>$datos[8],
+                'ncConciliado'=>$datos[9],
+                'ncNoConciliado'=>$datos[10],
+                'ncConciliadoOtros'=>$datos[11],
+                'ndConciliadoOtros'=>$datos[12],
+                'chequesConciliados'=>$datos[13],
+                'chequesNoConciliados'=>$datos[14],
+                'chequesConciliadosOtros'=>$datos[15],
+                'transferenciasEgresosConciliadas'=>$datos[16],
+                'transferenciasEgresosNoConciliadas'=>$datos[17],
+                'transferenciasEgresosConciliadasOtros'=>$datos[18],
+                'transferenciaIngresosConciliados'=>$datos[19],
+                'transferenciaIngresosNoConciliados'=>$datos[20],
+                'transferenciaIngresosConciliadosOtros' =>$datos[21],
+                'cuentaBancaria'=>$cuentaBancaria,
+                'conciliacionBancariaMatriz'=>$datos[22],
+                'otrasconciliacionesBancariaMatriz'=>$datos[23],
+                'fechaI'=>$request->get('idDesde'),
+                'fechaF'=>$request->get('idHasta'),           
+                'bancos'=>Banco::Bancos()->get(),
+                'PE'=>Punto_Emision::puntos()->get(),
+                'gruposPermiso'=>$gruposPermiso, 
+                'permisosAdmin'=>$permisosAdmin])->with('successMsg','Datos guardados exitosamente');
+            
+            
+        }catch(\Exception $ex){
+            return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
     private function procesar(Request $request){
         try{ 
             $datos =  $this->consulta($request);
@@ -383,7 +429,7 @@ class conciliacionBancariaController extends Controller
             }*/
             $general->registrarAuditoria('Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta'),0,'Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta').' de banco -> '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.' con cuenta bancaria -> '.$cuentaBancaria->cuenta_bancaria_numero);
             DB::commit();
-            return redirect('conciliacionBancaria')->with('success','Datos guardados exitosamente');
+            return $this->buscar($request)->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar.');
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('conciliacionBancaria')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

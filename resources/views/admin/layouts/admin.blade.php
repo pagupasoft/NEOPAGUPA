@@ -26,6 +26,12 @@
                 </div>
             </noscript>
                 <div class="container-fluid">
+                    @if(!empty($successMsg))
+                    <div class="mensajeria1 alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-check"></i>{{ $successMsg }}</h5>
+                    </div>
+                    @endif                   
                     @if(session('success'))
                     <div class="mensajeria1 alert alert-success alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>

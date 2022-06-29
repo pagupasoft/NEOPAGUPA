@@ -407,7 +407,7 @@
                                             <th width="100">Descuento</th>
                                             <th width="100">Total</th>
                                             <th width="150">Bodega</th>
-                                            <th width="150">C. Consumo</th>
+                                            <th width="250">C. Consumo</th>
                                             <th width="300">Descripcion</th>
                                             <th width="90">Bien/Serv.</th>
                                         </tr>
@@ -437,15 +437,15 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select class="form-control select2" id="cconsumos" name="Dcconsumo[]" onchange="cargarSustento2();"
-                                                    >
-                                                    <option value="" label>--Seleccione una opcion--</option>
+                                                <select class="form-control" id="cconsumos" name="Dcconsumo[]"
+                                                    data-live-search="true" onchange="cargarSustento2();" required>
+                                                    <option value="" selected disabled>--Seleccione una opcion--</option>
                                                     @foreach($centros as $centro)
-                                                    <option value="{{$centro->centro_consumo_id}}">{{$centro->centro_consumo_nombre}}
-                                                    </option>
+                                                        <option value="{{$centro->centro_consumo_id}}" >{{$centro->centro_consumo_nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
+                                            
                                             <td><input type="text" class="form-control" name="Ddescripcion[]" value="{{ $datos[$i]['descripcion']}}" /></td>
                                             <td>{{ $datos[$i]['bien']}}<input class="invisible" name="DbienServ[]" value="{{ $datos[$i]['bien']}}" /></td>
                                             <?php $iva =$iva+$datos[$i]['diva']; 

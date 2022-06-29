@@ -20,6 +20,7 @@ use App\Models\Punto_Emision;
 use App\Models\Rango_Documento;
 use App\Models\Retencion_Venta;
 use DateTime;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -147,9 +148,6 @@ class cargarRetencionXMLController extends Controller
                                                 }elseif($response[0] == '4'){
                                                     $datos[$i]['mensaje'] = $response[1];
                                                     $datos[$i]['estado'] = 'no';
-                                                }elseif($response[0] == '5'){
-                                                    $datos[$i]['mensaje'] = 'Error la retencion no pudo ser registrada error al crear asiento diario.';
-                                                    $datos[$i]['estado'] = 'no';
                                                 }
                                             }else{
                                                 $datos[$i]['mensaje'] = 'La base de impuesto a la renta de la retencion es diferente al subtotal de la factura.';
@@ -182,9 +180,6 @@ class cargarRetencionXMLController extends Controller
                                                     $datos[$i]['estado'] = 'no';
                                                 }elseif($response == '4'){
                                                     $datos[$i]['mensaje'] = 'Ocurrio un Error al guardar la retención. Verifique la factura y vuelva a intentar';
-                                                    $datos[$i]['estado'] = 'no';
-                                                }elseif($response[0] == '5'){
-                                                    $datos[$i]['mensaje'] = 'Error la retencion no pudo ser registrada error al crear asiento diario.';
                                                     $datos[$i]['estado'] = 'no';
                                                 }
                                             }else{
@@ -626,8 +621,7 @@ class cargarRetencionXMLController extends Controller
             }
             $general->pdfDiario($diario);
             if($general->validateUnbalancedJournal($diario) ==  false){
-                DB::commit();
-                return '5';
+                throw new Exception('Error la retencion no pudo ser registrada error al crear asiento diario.');
             }
             /****************************************************************/
             DB::commit();

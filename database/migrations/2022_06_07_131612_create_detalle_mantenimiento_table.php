@@ -18,11 +18,9 @@ class CreateDetalleMantenimientoTable extends Migration
             $table->date('detalle_fecha_inicio');
             $table->date('detalle_fecha_fin')->nullable();
             $table->string('detalle_descripcion');
-            $table->string('detalle_estado');
+            $table->integer('detalle_estado');
             $table->bigInteger('orden_id');
             $table->foreign('orden_id')->references('orden_id')->on('orden_mantenimiento');
-            $table->bigInteger('diario_id')->nullable();
-            $table->foreign('diario_id')->references('diario_id')->on('diario');
             $table->timestamps();
         });
     }

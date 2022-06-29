@@ -244,6 +244,7 @@ use App\Http\Controllers\ordenAtencionIessController;
 use App\Http\Controllers\ordenRecepcionController;
 use App\Http\Controllers\piscinaController;
 use App\Http\Controllers\prestamoBancoController;
+use App\Http\Controllers\ProductoCasillaTributariaController;
 use App\Http\Controllers\reporteComprasProductoController;
 use App\Http\Controllers\ReporteConsumoController;
 use App\Http\Controllers\reporteUtilidadController;
@@ -519,6 +520,8 @@ Route::resource('detalleprestamos', detallePrestamoController::class)->middlewar
 Route::resource('detalleamortizacion', detalleAmortizacionController::class)->middleware('auth');
 Route::resource('listarContabilizado', listarContabilizadoController::class)->middleware('auth');
 Route::resource('reporteComprasxProducto', reporteComprasProductoController::class)->middleware('auth');
+Route::resource('productoCasillaTributaria', ProductoCasillaTributariaController::class)->middleware('auth');
+
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 Route::resource('listaConsumo', ReporteConsumoController::class)->middleware('auth');
 

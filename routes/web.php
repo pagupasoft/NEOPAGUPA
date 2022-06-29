@@ -690,6 +690,9 @@ Route::get('/excelProvincia', [provinciaController::class, 'CargarExcel'])->midd
 Route::post('/excelProvincia', [provinciaController::class, 'CargarExcelProvincia'])->middleware('auth');
 Route::get('/excelCiudad', [ciudadController::class, 'CargarExcel'])->middleware('auth');
 Route::post('/excelCiudad', [ciudadController::class, 'CargarExcelCiudad'])->middleware('auth');
+Route::get('/excelCasillero', [CasilleroTributarioController::class, 'subir'])->middleware('auth');
+Route::post('/excelCasillero', [CasilleroTributarioController::class, 'cargarguardar'])->middleware('auth');
+
 
 Route::get('/envioCorreos', [envioCorreosController::class, 'index'])->middleware('auth');
 Route::post('/envioCorreos', [envioCorreosController::class, 'buscar'])->middleware('auth');

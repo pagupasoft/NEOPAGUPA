@@ -906,5 +906,11 @@ class productoController extends Controller
     }
     public function buscarByProducto($buscar){
         return Producto::Producto($buscar)->get();
-    }   
+    }
+
+    public function buscarProductoByNombre(Request $request){
+        return Producto::productosByNombreStock($request->buscar)
+            ->limit(10)
+            ->get();
+    }
 }

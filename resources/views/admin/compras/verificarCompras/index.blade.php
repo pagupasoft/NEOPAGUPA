@@ -99,6 +99,7 @@
                             <td> <?php echo '$' . number_format($total, 2) ?> </td-->
                         </tr>   
                         @foreach($transaccionCompras as $transaccionCompra)
+                        @if(strtoupper($transaccionCompra->tipoComprobante->tipo_comprobante_nombre)!="FACTURA" || (strtoupper($transaccionCompra->tipoComprobante->tipo_comprobante_nombre)=="FACTURA" && strlen($transaccionCompra->transaccion_autorizacion)==49))
                         <tr>
                             <td>
                                 <img src="{{ url('img/loading.gif') }}" width="25px">
@@ -116,7 +117,8 @@
                             <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_descuento,2)}}</td>
                             <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_iva,2)}}</td>
                             <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_total,2)}}</td-->
-                        </tr>                         
+                        </tr>
+                        @endif
                         @endforeach
                     @endif
                 </tbody>

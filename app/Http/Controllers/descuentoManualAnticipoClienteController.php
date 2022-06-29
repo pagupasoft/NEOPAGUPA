@@ -124,7 +124,7 @@ class descuentoManualAnticipoClienteController extends Controller
     }
 
     private function cruzar(Request $request){
-        try{
+        //try{
             DB::beginTransaction();
             $general = new generalController();
             $cierre = $general->cierre($request->get('idFechaCruze'));         
@@ -286,13 +286,23 @@ class descuentoManualAnticipoClienteController extends Controller
                                 $detalleDiario->detalle_tipo_documento = 'DESCUENTO ANTICIPO DE CLIENTE';
                                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                                 $detalleDiario->detalle_conciliacion = '0';
-                                $detalleDiario->detalle_estado = '1';
-                                $detalleDiario->cuenta_id = $cuentaBancaria->cuenta_id;
+                                $detalleDiario->detalle_estado = '1';                                
                                 if($request->get('flexRadioDefault') == 'BANCO'){
+                                    $detalleDiario->cuenta_id = $cuentaBancaria->cuenta_id;
                                     $detalleDiario->transferencia()->associate($transferencia);
                                 }
+                                if($request->get('flexRadioDefault') == 'CAJA'){
+                                    $detalleDiario->cuenta_id = $arqueoCaja->caja->cuenta_id;
+                                }
                                 $diario->detalles()->save($detalleDiario);
-                                $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $cuentaBancaria->cuenta->cuenta_numero.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+                                if($request->get('flexRadioDefault') == 'BANCO'){
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $cuentaBancaria->cuenta->cuenta_numero.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+
+                                }
+                                if($request->get('flexRadioDefault') == 'CAJA'){
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $arqueoCaja->caja->cuenta->cuenta_numero.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+
+                                }
                                 /***************************************************************************/
                             }
                         }
@@ -302,10 +312,10 @@ class descuentoManualAnticipoClienteController extends Controller
             $url = $general->pdfVariosDiario($diarios, $request->get('idFechaCruze'));
             DB::commit();
             return redirect('descuentoManualClientes')->with('success','Cruce realizado exitosamente')->with('diario',$url);
-        }catch(\Exception $ex){
+       // }catch(\Exception $ex){
             DB::rollBack();
             return redirect('descuentoManualClientes')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        }
+        //}
     }
 
     /**

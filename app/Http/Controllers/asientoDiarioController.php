@@ -522,9 +522,24 @@ class asientoDiarioController extends Controller
         try{
             $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
             $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            
+            /*
             $diarios = Diario::DiariosDescuadrados($request->get('sucursal_id'),$request->get('fecha_desde'),$request->get('fecha_hasta'))
             ->select('diario.diario_id','diario.diario_fecha','diario.diario_codigo',DB::raw("(select sum(detalle_diario.detalle_debe) from detalle_diario where diario.diario_id = detalle_diario.diario_id ) as debe"),DB::raw("(select sum(detalle_diario.detalle_haber) from detalle_diario where diario.diario_id = detalle_diario.diario_id ) as haber"),'diario.diario_beneficiario','diario.diario_tipo_documento','diario.diario_numero_documento','diario.diario_referencia','diario.diario_comentario')
-            ->orhavingRaw("((select sum(detalle_diario.detalle_debe) from detalle_diario where diario.diario_id = detalle_diario.diario_id)-(select sum(detalle_diario.detalle_haber) from detalle_diario where diario.diario_id = detalle_diario.diario_id )) <> 0")->groupBy('diario.diario_id')->get();       
+            ->orhavingRaw("((select sum(detalle_diario.detalle_debe) from detalle_diario where diario.diario_id = detalle_diario.diario_id)-(select sum(detalle_diario.detalle_haber) from detalle_diario where diario.diario_id = detalle_diario.diario_id )) <> 0")->groupBy('diario.diario_id')->get();
+            */
+
+            /**/
+            $diarios=DB::select(DB::raw("select * from (
+                select dr.diario_id, sum(dt.detalle_debe)-sum(dt.detalle_haber) as diff, dr.diario_fecha, dr.diario_codigo, sum(dt.detalle_debe) as debe, sum(dt.detalle_haber) as haber,
+                dr.diario_beneficiario, dr.diario_tipo_documento, dr.diario_numero_documento, dr.diario_referencia, dr.diario_comentario 
+                from diario as dr, detalle_diario as dt 
+                where dr.diario_id=dt.diario_id and dr.empresa_id =".Auth::user()->empresa_id." and dr.diario_fecha >= '".$request->get('fecha_desde')."' and dr.diario_fecha <= '".$request->get('fecha_hasta')."'
+                group by dr.diario_id) as busqueda where diff<>0 order by diario_id"));
+            /**/
+            //return 'diarios '.count($diarios);
+
+
             return view('admin.contabilidad.asientoDiario.descuadrados',['diarios'=>$diarios,'sucurslaC'=>$request->get('sucursal_id'),'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'sucursales'=>Sucursal::sucursales()->get(),'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

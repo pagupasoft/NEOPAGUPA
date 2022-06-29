@@ -90,6 +90,9 @@ class Producto extends Model
     public function scopeProducto($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_id','=',$id);
     }
+    public function scopeProductoTipo($query, $tipo){
+        return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_tipo','=',$tipo);
+    }
     public function scopeProductoCodigo($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_codigo','=',$id);
     }
@@ -160,6 +163,14 @@ class Producto extends Model
     public function scopeProductosByNombre($query, $buscar){
         return $query->join('empresa','empresa.empresa_id','=','producto.empresa_id'
                     )->where('producto.empresa_id','=',Auth::user()->empresa_id
+                    )->where('producto_estado','=','1'
+                    )->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%'
+                    )->orderBy('producto_nombre','asc');
+    }
+    public function scopeProductosByNombreStock($query, $buscar){
+        return $query->select('producto.producto_id','producto.producto_nombre', 'producto.producto_stock'
+                    )->join('empresa','empresa.empresa_id','=','producto.empresa_id'
+                    )->where('producto.empresa_id','=', 1
                     )->where('producto_estado','=','1'
                     )->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%'
                     )->orderBy('producto_nombre','asc');

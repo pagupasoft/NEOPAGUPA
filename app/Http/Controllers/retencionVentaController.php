@@ -516,6 +516,9 @@ class retencionVentaController extends Controller
                 /******************************************************************/
             }
             $url = $general->pdfDiario($diario);
+            if($general->validateUnbalancedJournal($diario) ==  false){
+                throw new Exception('Error la retencion no pudo ser registrada error al crear asiento diario.');
+            }
             /****************************************************************/
             DB::commit();
             return redirect('/retencionVenta')->with('success','Datos guardados exitosamente')->with('diario',$url);

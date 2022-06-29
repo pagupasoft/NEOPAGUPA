@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDetalleOrdenMantenimientoTable extends Migration
+class CreateResponsableMantenimientoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,16 @@ class CreateDetalleOrdenMantenimientoTable extends Migration
      */
     public function up()
     {
-        Schema::create('detalle_orden_mantenimiento', function (Blueprint $table) {
-            $table->id('detalle_orden_id');
-            $table->integer('detalle_orden_cantidad');
-            
-            $table->bigInteger('producto_id');
-            $table->foreign('producto_id')->references('producto_id')->on('producto');
-
-            $table->integer('detalle_orden_estado');
+        Schema::create('responsable_mantenimiento', function (Blueprint $table) {
+            $table->id('responsable_id');
+            $table->integer('responsable_estado');
 
             $table->bigInteger('orden_id');
             $table->foreign('orden_id')->references('orden_id')->on('orden_mantenimiento');
+
+            $table->bigInteger('empleado_id');
+            $table->foreign('empleado_id')->references('empleado_id')->on('empleado');
+
             $table->timestamps();
         });
     }
@@ -35,6 +34,6 @@ class CreateDetalleOrdenMantenimientoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detalle_orden_mantenimiento');
+        Schema::dropIfExists('responsable_mantenimiento');
     }
 }

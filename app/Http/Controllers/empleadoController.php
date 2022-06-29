@@ -771,4 +771,8 @@ class empleadoController extends Controller
         //PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo.'.pdf');
         return PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->stream('ficha.pdf');
     }
+
+    public function buscarEmpleadoByNombreCedula(Request $request){
+        return Empleado::buscarEmpleadoByNombreCedula($request->buscar)->get();
+    }
 }

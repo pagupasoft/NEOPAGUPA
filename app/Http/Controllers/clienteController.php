@@ -807,4 +807,9 @@ class clienteController extends Controller
     public function buscarByNombreCedula($buscar){
         return Cliente::ClientesByCedulaRuc($buscar)->get();
     }
+
+    public function buscarClienteByNombreCedula(Request $request){
+        //return $request;
+        return Cliente::clientesByCedulaNombre($request->buscar)->get();
+    }
 }

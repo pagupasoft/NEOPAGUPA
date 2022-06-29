@@ -167,6 +167,14 @@ class Producto extends Model
                     )->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%'
                     )->orderBy('producto_nombre','asc');
     }
+    public function scopeProductosByNombreStock($query, $buscar){
+        return $query->select('producto.producto_id','producto.producto_nombre', 'producto.producto_stock'
+                    )->join('empresa','empresa.empresa_id','=','producto.empresa_id'
+                    )->where('producto.empresa_id','=', 1
+                    )->where('producto_estado','=','1'
+                    )->where(DB::raw('lower(producto_nombre)'), 'like', '%'.strtolower($buscar).'%'
+                    )->orderBy('producto_nombre','asc');
+    }
     public function scopeProductosByNombreCodigo($query, $buscar){
         return $query->join('empresa','empresa.empresa_id','=','producto.empresa_id')
         ->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')

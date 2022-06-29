@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Empleado extends Model
 {
@@ -151,7 +152,13 @@ class Empleado extends Model
                     )->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')
                     ->where('empleado.empleado_id','=',$id)
                     ->where('rubro.rubro_nombre','=',$rubro);
-    } 
+    }
+
+    public function scopeBuscarEmpleadoByNombreCedula($query, $params){
+        return $query->where(DB::raw('lower(empleado.empleado_nombre)'),'like', "%".strtolower($params)."%")
+                     ->orwhere(DB::raw('lower(empleado.empleado_cedula)'),'like', "%".strtolower($params)."%")
+                     ->where('empleado_estado','=','1');
+    }
     
     public function scopeEmpleadoME($query){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id'                    

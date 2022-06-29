@@ -63,6 +63,19 @@ class Cliente extends Model
         ->orwhere('cliente_cedula','=',$cedula.'001')
         ->orderBy('cliente_nombre','asc');
     }
+
+    public function scopeClientesByCedulaNombre($query, $cedula){
+        return $query->join('tipo_cliente', 'tipo_cliente.tipo_cliente_id','=','cliente.tipo_cliente_id')
+        ->join('credito','credito.credito_id','=','cliente.credito_id')
+        //->where('tipo_cliente.empresa_id','=',Auth::user()->empresa_id)
+        ->where('cliente_estado','=','1')
+        ->where('cliente_cedula','=',$cedula)
+        ->orwhere('cliente_cedula','=',$cedula.'001')
+        ->orwhere(DB::raw('lower(cliente_nombre)'),'like','%'.strtolower($cedula).'%')
+        ->orderBy('cliente_nombre','asc');
+    }
+
+
     public function scopeClienteAseguradora($query){
         return $query->join('tipo_cliente', 'cliente.tipo_cliente_id', '=', 'tipo_cliente.tipo_cliente_id')->where('tipo_cliente.tipo_cliente_nombre', '=', 'Aseguradora');
       //  $clientesAseguradoras = DB::table('cliente')->select('cliente_id', 'cliente_cedula', 'cliente_nombre', 'categoria_cliente_id', 'cliente_estado', 'tipo_cliente.tipo_cliente_nombre')->join('tipo_cliente', 'cliente.tipo_cliente_id', '=', 'tipo_cliente.tipo_cliente_id')->where('tipo_cliente.tipo_cliente_nombre', '=', 'Aseguradora')->get();

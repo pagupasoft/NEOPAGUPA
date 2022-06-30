@@ -66,6 +66,11 @@ class listaChequeAnuladoController extends Controller
             $cheque=Cheque::cheque($request->get("cheque_id"))->first();
 
             $general = new generalController();
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($cheque->cheque_fecha_emision);          
+            if($cierre){
+                return redirect('listaChequesAnulados')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $general->registrarAuditoria('Eliminado Cheque #'.$cheque->cheque_numero.' con valor de $'.$cheque->cheque_valor.' y cuenta bancaria id: '.$cheque->cuenta_bancaria_id.', beneficiario '.$cheque->cheque_beneficiario, $cheque->cheque_id, $cheque->cheque_descripcion);
             
             $cheque->delete();

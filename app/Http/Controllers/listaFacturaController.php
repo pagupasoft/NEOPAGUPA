@@ -249,6 +249,11 @@ class listaFacturaController extends Controller
             DB::beginTransaction(); 
             $factura = Factura_Venta::findOrFail($id);
             $general = new generalController();
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($factura->factura_fecha);          
+            if($cierre){
+                return redirect('listaFactura')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $rangoDocumentoorden=Rango_Documento::PuntoRango($factura->rangoDocumento->punto_id, 'Orden de Despacho')->first();
             if($rangoDocumentoorden){
                 $secuencial=$rangoDocumentoorden->rango_inicio;

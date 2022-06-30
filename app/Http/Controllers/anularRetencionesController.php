@@ -52,6 +52,11 @@ class anularRetencionesController extends Controller
     {
         try{            
             DB::beginTransaction();
+            $general = new generalController();         
+            $cierre = $general->cierre($request->get('idFechaRet'));
+            if ($cierre) {
+                return redirect('anularRetencion')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $serie = Rango_Documento::Rango($request->get('idRango'))->first();
             $serieaux = $serie->puntoEmision->sucursal->sucursal_codigo.$serie->puntoEmision->punto_serie;
             $retencionCompra = new Retencion_Compra();
@@ -153,13 +158,18 @@ class anularRetencionesController extends Controller
     {
         try{
             DB::beginTransaction();
+            $auditoria = new generalController();
             $retencionCompra = Retencion_Compra::findOrFail($id);
+            $cierre = $auditoria->cierre($retencionCompra->retencion_fecha);
+            if ($cierre) {
+                return redirect('anularRetencion')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $retencionComprauax = $retencionCompra;
             $retencionCompra->delete();
             $documetoAnul = Documento_Anulado::findOrFail($retencionComprauax->documento_anulado_id);
             $documetoAnul->delete();            
             /*Inicio de registro de auditoria */
-            $auditoria = new generalController();
+           
             $auditoria->registrarAuditoria('Eliminacion de Doumento Anulado -> '.$retencionComprauax->retencion_numero,'0','Con # de Autorizacion -> '.$retencionComprauax->retencion_autorizacion);
             /*Fin de registro de auditoria */
             DB::commit();

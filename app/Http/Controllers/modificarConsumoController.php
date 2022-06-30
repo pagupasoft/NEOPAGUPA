@@ -79,6 +79,14 @@ class modificarConsumoController extends Controller
             $general = new generalController();
             for ($i = 0; $i < count($contador); ++$i) {
                 $transaccion=Transaccion_Compra::findOrFail($idcc[$contador[$i]]);
+                $auditoria = new generalController();
+                $cierre = $auditoria->cierre($transaccion->transaccion_fecha);          
+                if($cierre){
+                    return redirect('inicio')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                }
+            }
+            for ($i = 0; $i < count($contador); ++$i) {
+                $transaccion=Transaccion_Compra::findOrFail($idcc[$contador[$i]]);
                 $centro=Centro_Consumo::findOrFail($request->get('idConsumo'));
                 foreach($transaccion->detalles as $detalle){
                     $aux=Detalle_TC::findOrFail($detalle->detalle_id);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GrupoPer;
 use App\Http\Controllers\Controller;
 use App\Models\Punto_Emision;
+use App\Models\Tipo_Grupo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,11 @@ class grupoPerController extends Controller
     {
         try{
             DB::beginTransaction();
+            
+            $matriz[0]='MANTENIMIENTOS';
+            $matriz[1]='TRANSACCIONES';
+            $matriz[2]='REPORTES Y CONSULTAS';
+            
             $grupoPer = new GrupoPer();
             $grupoPer->grupo_nombre = $request->get('idNombre');
             $grupoPer->grupo_icono = $request->get('idIcono');
@@ -46,10 +52,19 @@ class grupoPerController extends Controller
             $grupoPer->grupo_estado  = 1;
             $grupoPer->empresa_id = Auth::user()->empresa_id;
             $grupoPer->save();
-            /*Inicio de registro de auditoria */
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Registro de grupo de permiso -> '.$request->get('idNombre'),'0','');
-            /*Fin de registro de auditoria */
+            $auditoria->registrarAuditoria('Registro de grupo de permiso -> '.$request->get('idNombre'), '0', '');  
+            for ($k = 0; $k < count($matriz); ++$k) {
+                $tipo = new Tipo_Grupo();
+                $tipo->tipo_nombre = $matriz[$k];
+                $tipo->tipo_icono = 'fas fa-circle';
+                $tipo->tipo_estado = 1;
+                $tipo->grupo_id  = $grupoPer->grupo_id;
+                $tipo->save();
+                $auditoria = new generalController();
+                $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.$matriz[$k], '0', '');
+            }
+           
             DB::commit();
             return redirect('grupo')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){

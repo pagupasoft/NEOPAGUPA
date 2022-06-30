@@ -137,7 +137,7 @@ class cargarRetencionXMLController extends Controller
                                                     $datos[$i]['mensaje'] = 'Retención registrada exitosamente.';
                                                     $datos[$i]['estado'] = 'si';
                                                 }elseif($response == '1'){
-                                                    $datos[$i]['mensaje'] = 'La retención no se registro porque pertence a un periodo cerro.';
+                                                    $datos[$i]['mensaje'] = 'La retención no se registro porque pertence a un periodo cerrado.';
                                                     $datos[$i]['estado'] = 'no';
                                                 }elseif($response == '2'){
                                                     $datos[$i]['mensaje'] = 'La factura ya tiene registrada una retencion, verifique la información y vuelva a intentar.';

@@ -158,7 +158,14 @@ class rolIndividualCostaMarketController extends Controller
             
             $tiporubros=$request->get('tiporubro'); 
             $valorrubros=$request->get('valor');
+            $general = new generalController();
            
+            $cierre = $general->cierre($request->get('fechafinal'));  
+            
+            if($cierre){
+                return redirect('/rolindividualCM/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+            
 
             $sueldototal=0;
             $totaladelanto=0;
@@ -220,14 +227,7 @@ class rolIndividualCostaMarketController extends Controller
                 $banco=Banco::findOrFail($request->get('banco_id_transfer'));
             }
             $cuentabancaria=Cuenta_Bancaria::findOrFail($cuentabanca);
-            $general = new generalController();
            
-            $cierre = $general->cierre($request->get('fechafinal'));  
-            /*
-            if($cierre){
-                return redirect('roloperativoCM/new/')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-            }
-            */
             $tipo=Empleado::EmpleadoBusquedaCuenta($idempleado, 'sueldos')->first();
             $empleado=Empleado::findOrFail($idempleado);
 

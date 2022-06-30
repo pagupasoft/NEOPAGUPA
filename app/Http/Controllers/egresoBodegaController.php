@@ -253,6 +253,11 @@ class egresoBodegaController extends Controller
             DB::beginTransaction();
             $egreso = Egreso_Bodega::findOrFail($id);
             $auditoria = new generalController();
+            $cierre = $auditoria->cierre($egreso->cabecera_egreso_fecha);          
+            if($cierre){
+                return redirect('egresoBodega')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+           
             foreach($egreso->detalles as $detalle){
                 $movimiento=$detalle->movimiento;
                 $detalle->movimiento_id=null;

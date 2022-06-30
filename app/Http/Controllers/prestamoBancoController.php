@@ -75,6 +75,11 @@ class prestamoBancoController extends Controller
     {
         try{
             DB::beginTransaction();
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($request->get('idFechaini'));          
+            if($cierre){
+                return redirect('prestamos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $prestamo = new Prestamo_Banco();
             $prestamo->prestamo_inicio = $request->get('idFechaini');
             $prestamo->prestamo_fin = $request->get('idFechafin');
@@ -185,6 +190,11 @@ class prestamoBancoController extends Controller
         try{
             DB::beginTransaction();
             $prestamo = Prestamo_Banco::findOrFail($id);
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($request->get('idFechaini'));          
+            if($cierre){
+                return redirect('prestamos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $prestamo->prestamo_inicio = $request->get('idFechaini');
             $prestamo->prestamo_fin = $request->get('idFechafin');
             $prestamo->prestamo_monto = $request->get('idMonto');
@@ -220,6 +230,11 @@ class prestamoBancoController extends Controller
         try{
             DB::beginTransaction();
             $prestamo = Prestamo_Banco::findOrFail($id);
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($prestamo->prestamo_inicio);          
+            if($cierre){
+                return redirect('prestamos')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $prestamo->delete();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

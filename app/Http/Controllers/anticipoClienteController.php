@@ -166,13 +166,14 @@ class anticipoClienteController extends Controller
         try{           
             DB::beginTransaction();
             $general = new generalController();
+            $rangoDocumento = Rango_Documento::Rango($request->get('rango_id'))->first();
             $cierre = $general->cierre($request->get('idFecha'));
             
             if($cierre){
-                return redirect('listaAnticipoCliente')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                return redirect('anticipoCliente/new/'.$rangoDocumento->punto_id)->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
             $movimientoCaja = new Movimiento_Caja();
-            $rangoDocumento = Rango_Documento::Rango($request->get('rango_id'))->first();
+           
             $cuentaBanco = Cuenta_Bancaria::CuentaBanco($request->get('cuenta_id'))->first();
             $cuentacaja=Caja::caja($request->get('idCaja'))->first();
             $cajasxusuario=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();  
@@ -490,9 +491,13 @@ class anticipoClienteController extends Controller
                 for ($i = 0; $i < count($seleccion); ++$i) {
                     $anticipo = Anticipo_Cliente::findOrFail($seleccion[$i]);
                     $cierre = $general->cierre($anticipo->anticipo_fecha);
-                    if($cierre){
-                        return redirect('eliminatAntCli')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    if ($cierre) {
+                        return redirect('eliminatAntCli')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
                     }
+                }
+               
+                for ($i = 0; $i < count($seleccion); ++$i) {
+                    $anticipo = Anticipo_Cliente::findOrFail($seleccion[$i]);
                     $diario = null;
                     if(isset($anticipo->diario)){
                         $diario = $anticipo->diario;
@@ -561,19 +566,26 @@ class anticipoClienteController extends Controller
                 $seleccion2 = $request->get('checkbox2');
                 for ($i = 0; $i < count($seleccion2); ++$i) {
                     $descuento =  Descuento_Anticipo_Cliente::findOrFail($seleccion2[$i]);
+                   
+                    $anticipo =  Anticipo_Cliente::findOrFail($descuento->anticipo_id);
+                    $cierre = $general->cierre($descuento->descuento_fecha);                   
+                    if($cierre){
+                        return redirect('eliminatAntCli')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
+                    $cierre = $general->cierre($anticipo->anticipo_fecha);    
+                    if($cierre){
+                        return redirect('eliminatAntCli')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    } 
+                }
+
+                for ($i = 0; $i < count($seleccion2); ++$i) {
+                    $descuento =  Descuento_Anticipo_Cliente::findOrFail($seleccion2[$i]);
                     $valorDescuento = $descuento->descuento_valor;
                     $anticipo =  Anticipo_Cliente::findOrFail($descuento->anticipo_id);
                     $general = new generalController();
                     $diario = null;
                     $cxcAux = null;
-                    $cierre = $general->cierre($descuento->descuento_fecha);                   
-                    if($cierre){
-                        return redirect('anticipoCliente')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-                    }
-                    $cierre = $general->cierre($anticipo->anticipo_fecha);    
-                    if($cierre){
-                        return redirect('anticipoCliente')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-                    }  
+                     
                     if(isset($descuento->diario->diario_id)){
                         $diario = $descuento->diario;
                     }

@@ -98,6 +98,16 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="idTipo" class="col-sm-3 col-form-label">Tipo Grupo</label>
+                            <div class="col-sm-9">
+                                <select class="form-control select2" id="idTipo" name="idTipo" require>         
+                                    <option value="MANTENIMIENTOS">MANTENIMIENTOS</option>
+                                    <option value="TRANSACCIONES">TRANSACCIONES</option>
+                                    <option value="REPORTES Y CONSULTAS">REPORTES Y CONSULTAS</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <!-- /.card-body -->
                 </div>

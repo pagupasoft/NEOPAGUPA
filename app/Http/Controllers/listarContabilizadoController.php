@@ -576,9 +576,15 @@ class listarContabilizadoController extends Controller
         try{
             
             $roles=Rol_Consolidado::buscardiario($id)->get();
+           
             foreach($roles as $rol){
                 $diario=Diario::findOrFail($rol->diario_contabilizacion_id);
                 $diariobene=Diario::findOrFail($rol->diario_contabilizacion_beneficios_id);
+                $auditoria = new generalController();
+                $cierre = $auditoria->cierre($diario->diario_fecha);          
+                if($cierre){
+                    return redirect('listarContabilizado')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                }
                 $role=Rol_Consolidado::findOrFail($rol->cabecera_rol_id);
                 $role->diario_contabilizacion_id=null;
                 $role->diario_contabilizacion_beneficios_id=null;

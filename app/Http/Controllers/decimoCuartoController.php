@@ -81,7 +81,11 @@ class decimoCuartoController extends Controller
             $dth = new DateTime($fechahasta);
             $fechahasta=($dth->format('Y-m-t'));
             $emplead=Decimo_Cuarto::validarDecimoCuarto($fechadesde,$request->get('sucursal_id'),$request->get('empleado_id'))->get();
-         
+            $cierre = $general->cierre($request->get('idFechaemision'));
+          
+            if ($cierre) {
+                return redirect('individualdecimoCuarto/new/'.$request->get('punto_id'))->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $empleado=Empleado::findOrFail($request->get('empleado_id'));
             if(count($emplead)>0){
                 return redirect('individualdecimoCuarto/new/'.$request->get('punto_id'))->with('error2', 'Ya existe el decimo caurto del empleado');

@@ -73,7 +73,12 @@ class ingresoBodegaController extends Controller
             $nombre = $request->get('Ddescripcion');
             $pu = $request->get('Dpu');
             $total = $request->get('Dtotal');  
-            $consumo = $request->get('Didconsumo');       
+            $consumo = $request->get('Didconsumo'); 
+            $auditoria = new generalController();
+            $cierre = $auditoria->cierre($request->get('ingreso_fecha'));          
+            if($cierre){
+                return redirect('/ingresoBodega/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }      
             /********************cabecera de ingreso de venta ********************/
             $general = new generalController();           
             $ingreso = new Ingreso_Bodega();

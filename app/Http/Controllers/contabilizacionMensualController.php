@@ -354,7 +354,10 @@ class contabilizacionMensualController extends Controller
         
         $anticipos = $request->get('anticipos');
         $fechadesde=$request->get('fecha_hasta');
-
+        $cierre = $general->cierre($fechadesde);                   
+        if($cierre){
+            return redirect('contabilizacionMensual')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+        }
         $diariocontabilizado = new Diario();
         $diariocontabilizado->diario_codigo = $general->generarCodigoDiario($fechadesde, 'CCMR');
         $diariocontabilizado->diario_fecha = $fechadesde;

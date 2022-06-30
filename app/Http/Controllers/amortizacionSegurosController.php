@@ -71,6 +71,11 @@ class amortizacionSegurosController extends Controller
     {
         try{
             DB::beginTransaction();
+            $general = new generalController();
+            $cierre = $general->cierre($request->get('idFecha'));          
+            if($cierre){
+                return redirect('amortizacion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $trasaccion=Transaccion_Compra::findOrFail($request->get('idFactura'));
             $seguro = new Amortizacion_Seguros();
             $seguro->amortizacion_fecha = $request->get('idFecha');

@@ -12,7 +12,19 @@
             </div>
         </div>
     <!-- /.card-header -->
-    <div class="card-body">            
+    <div class="card-body">     
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tipo</label>
+                <div class="col-sm-10">
+                    <select class="custom-select select2" id="idTipo" name="idTipo" required>
+                        <option value="Piscina" @if($piscina->piscina_tipo=='Piscina') selected @endif>Piscina</option>
+                        <option value="Precriadero" @if($piscina->piscina_tipo=='Precriadero') selected @endif>Precriadero</option>
+                        <option value="Reservorio" @if($piscina->piscina_tipo=='Reservorio') selected @endif>Reservorio</option>
+                        <option value="Estuario" @if($piscina->piscina_tipo=='Estuario') selected @endif>Estuario</option>     
+                    </select>
+                    <input type="hidden" class="form-control" id="idSecuencial" name="idSecuencial" value="{{$piscina->piscina_tipo}}"  required>
+                </div>
+            </div>       
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Codigo</label>
                 <div class="col-sm-10">
@@ -25,17 +37,7 @@
                     <input type="text" class="form-control" id="idNombre" name="idNombre" placeholder="Codigo" value="{{$piscina->piscina_nombre}}" required>
                 </div>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Tipo</label>
-                <div class="col-sm-10">
-                    <select class="custom-select select2" id="idTipo" name="idTipo" required>
-                        <option value="" label>--Seleccione una opcion--</option>
-                        @foreach($tipos as $tipo)
-                        <option value="{{$tipo->tipo_id}}" @if($piscina->tipo_id==$tipo->tipo_id) selected @endif>{{$tipo->tipo_nombre}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+            
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Largo</label>
                 <div class="col-sm-10">
@@ -96,9 +98,9 @@
                 <label class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">
                     <select class="custom-select select2" id="idTipoEstado" name="idTipoEstado" onchange="extraer();" required>
-                        <option value="Seca" @if($piscina->piscina_salida_agua=='Seca') selected @endif>Seca</option>
-                        <option value="En Preparacion" @if($piscina->piscina_salida_agua=='En Preparacion') selected @endif>En Preparacion</option>
-                        <option value="En Produccion" @if($piscina->piscina_salida_agua=='En Produccion') selected @endif>En Produccion</option>
+                        <option value="SECA" @if($piscina->piscina_salida_agua=='SECA') selected @endif>SECA</option>
+                        <option value="EN PREPARACIÓN" @if($piscina->piscina_salida_agua=='EN PREPARACIÓN') selected @endif>EN PREPARACIÓN</option>
+                        <option value="EN PRODUCCIÓN" @if($piscina->piscina_salida_agua=='EN PRODUCCIÓN') selected @endif>EN PRODUCCIÓN</option>
                     </select>
                 </div>
             </div>
@@ -113,5 +115,21 @@
         document.getElementById("idArea").value = (document.getElementById("idLargo").value*document.getElementById("idAncho").value*document.getElementById("idAltura").value*264.2);
         document.getElementById("idVolumen").value = (document.getElementById("idLargo").value*document.getElementById("idAncho").value)/10000;
     }
+    function codigo(){
+       
+       $.ajax({
+       url: '{{ url("codigopiscina") }}'+'/'+document.getElementById("idTipo").value,
+       dataType: "json",
+       type: "GET",
+       data: { 
+        
+       },
+       success: function(data){           
+           document.getElementById("idCodigo").value=data[0];
+           document.getElementById("idSecuencial").value=data[1];
+       },
+   });
+
+   }
 </script>
 @endsection

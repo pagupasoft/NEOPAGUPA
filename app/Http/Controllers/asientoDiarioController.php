@@ -561,6 +561,10 @@ class asientoDiarioController extends Controller
             $general = new generalController();
             $diario = new Diario();
             $general = new generalController();
+            $cierre = $general->cierre($diario->diario_fecha);
+            if($cierre){
+                return redirect('/asientoDiario/asientoAjuste')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $cierre = $general->cierre($request->get('IdFecha'));
             if($cierre){
                 return redirect('/asientoDiario/asientoAjuste')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');

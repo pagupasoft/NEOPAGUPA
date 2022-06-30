@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Camaronera;
 use App\Models\Piscina;
+use App\Models\Siembra;
 use App\Models\Tipo_Piscina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +67,7 @@ class piscinaController extends Controller
             $piscina->piscina_salida_agua = $request->get('idSalidas');             
             $piscina->piscina_tipo_estado = $request->get('idTipoEstado');  
             $piscina->piscina_estado  = 1;  
-            $piscina->tipo_id = $request->get('idTipo');  
+            $piscina->piscina_tipo = $request->get('idTipo');  
             $piscina->camaronera_id = $camaronera->camaronera_id;       
             $piscina->save();
             /*Inicio de registro de auditoria */
@@ -157,6 +158,7 @@ class piscinaController extends Controller
            
             $piscina = Piscina::findOrFail($id);
             $piscina->piscina_codigo = $request->get('idCodigo');             
+            $piscina->piscina_secuencial = $request->get('idSecuencial');             
             $piscina->piscina_nombre = $request->get('idNombre');  
             $piscina->piscina_largo = $request->get('idLargo');             
             $piscina->piscina_ancho = $request->get('idAncho');  
@@ -168,7 +170,7 @@ class piscinaController extends Controller
             $piscina->piscina_salida_agua = $request->get('idSalidas');             
             $piscina->piscina_tipo_estado = $request->get('idTipoEstado');  
             $piscina->piscina_estado  = 1;  
-            $piscina->tipo_id = $request->get('idTipo');  
+            $piscina->piscina_tipo = $request->get('idTipo');  
             $piscina->save();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();
@@ -206,4 +208,32 @@ class piscinaController extends Controller
 
         }
     }
+    public function extraerPiscina($id){
+       return Piscina::findOrFail($id);
+    }
+    public function buscarByPiscina($id){
+        $piscinas=Piscina::tipoPiscinas($id)->max('piscina_secuencial');
+        $sec=1;
+        $piscina_codigo='P';
+        if($piscinas){
+            $sec=$piscinas;
+            $sec=$sec+1;
+        }
+        if($id=='Piscina'){
+            $piscina_codigo='P';
+        }
+        if($id=='Precriadero'){
+            $piscina_codigo='PR';
+        }
+        if($id=='Reservorio'){
+            $piscina_codigo='R';
+        }
+        if($id=='Estuario'){
+            $piscina_codigo='E';
+        }
+        $datos[0]=$piscina_codigo.$sec;
+        $datos[1]=$sec;
+        return $datos;
+    } 
+    
 }

@@ -108,9 +108,15 @@ class rolOperactivoCostaMarketController extends Controller
         try{
             DB::beginTransaction();
             $roles=Cabecera_Rol_CM::RolesValidar($request->get('fechafinal'),$request->get('empleadoid'))->get();
+            $general = new generalController();
+            $cierre = $general->cierre($request->get('fechafinal'));  
+            
+            if($cierre){
+                return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
            
             if(count($roles)>0){
-                return redirect('/rolindividualCM/new/'.$request->get('punto_id'))->with('error2','Ya esta realizado el rol del empleado verifique por favor');
+                return redirect('/roloperativoCM/new/'.$request->get('punto_id'))->with('error2','Ya esta realizado el rol del empleado verifique por favor');
             }
             $urlcheque = '';
             $anticipos=$request->get('check');

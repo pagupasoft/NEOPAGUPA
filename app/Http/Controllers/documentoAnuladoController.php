@@ -74,6 +74,10 @@ class documentoAnuladoController extends Controller
             switch ($request->get('tipo_documento')) {
                 case '1':
                     $factura = Factura_Venta::factura($request->get('doc_id'))->first();
+                    $cierre = $general->cierre($factura->factura_fecha);          
+                    if($cierre){
+                        return redirect('anularDocumento')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
                     if(isset($factura->notaDebito->nd_id)){
                         return redirect('anularDocumento')->with('error2','El documento no se puede anular porque tiene notas de debito.');
                     }
@@ -96,8 +100,14 @@ class documentoAnuladoController extends Controller
                     }
                     $jo=false;
                     if($factura->cuentaCobrar->cuenta_tipo =='EN EFECTIVO'){
+                        
                         $cajaAbierta=Arqueo_Caja::ArqueoCajaxid($factura->arqueo_id)->first();
+                       
                         if(isset($cajaAbierta->arqueo_id)){
+                            $cierre = $general->cierre($cajaAbierta->arqueo_fecha);          
+                            if($cierre){
+                                return redirect('anularDocumento')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                            }
                             $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($factura->arqueo_id, $factura->diario_id)->first();
                             $movimientoCaja->delete();
                             $jo=true;

@@ -51,10 +51,7 @@ class alimentacionController extends Controller
         try{           
             DB::beginTransaction();
             $general = new generalController();
-            $cierre = $general->cierre($request->get('transaccion_fecha'));          
-            if($cierre){
-                return redirect('alimentacion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-            }
+           
             $idEmpleado = $request->get('IDE');   
             $idEmpleado = $request->get('DID');   
             $valor = $request->get('Valor');   

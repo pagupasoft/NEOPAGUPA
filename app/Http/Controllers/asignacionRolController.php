@@ -55,13 +55,13 @@ class asignacionRolController extends Controller
             DB::beginTransaction();
             setlocale(LC_TIME, 'spanish');
             $temp = new DateTime($request->get('fechames').'-01');
-          
+           
             $anio = $temp->format('Y');
             $mes=strftime("%B", strtotime($request->get('fechames').'-01'));
             $general = new generalController();
-            $cierre = $general->cierre($request->get('transaccion_fecha'));          
+            $cierre = $general->cierre(($request->get('fechames').'-01'));          
             if($cierre){
-                return redirect('alimentacion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                return redirect('asignacionRol')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
             $tipo = $request->get('rubro_tipo'); 
             $rubro = $request->get('rubro_id');

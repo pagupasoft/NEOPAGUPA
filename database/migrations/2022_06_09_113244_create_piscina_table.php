@@ -15,7 +15,8 @@ class CreatePiscinaTable extends Migration
     {
         Schema::create('piscina', function (Blueprint $table) {
             $table->id("piscina_id");
-            $table->string("piscina_codigo");
+            $table->string("piscina_codigo")->unique();
+            $table->bigInteger("piscina_secuencial");
             $table->string("piscina_nombre");
             $table->double("piscina_largo");
             $table->double("piscina_ancho");
@@ -27,8 +28,6 @@ class CreatePiscinaTable extends Migration
             $table->double("piscina_salida_agua");
             $table->string("piscina_tipo_estado");
             $table->string("piscina_estado");
-            $table->bigInteger('tipo_id');
-            $table->foreign('tipo_id')->references('tipo_id')->on('tipo_piscina');
             $table->bigInteger('camaronera_id');
             $table->foreign('camaronera_id')->references('camaronera_id')->on('camaronera');
             $table->timestamps();

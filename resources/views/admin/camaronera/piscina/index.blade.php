@@ -35,7 +35,7 @@
                     </td>
                     <td>{{ $piscina->piscina_codigo}}</td>  
                     <td>{{ $piscina->piscina_nombre}}</td>   
-                    <td>{{ $piscina->tipopiscina->tipo_nombre}}</td>  
+                    <td>{{ $piscina->piscina_tipo}}</td>  
                     <td>{{ $piscina->piscina_largo}}</td>
                     <td>{{ $piscina->piscina_ancho}}</td>  
                     <td>{{ $piscina->piscina_columna_agua}}</td>
@@ -66,30 +66,32 @@
                 @csrf
                 <div class="modal-body">
                     <div class="card-body">
-                   
+                        <div class="form-group row">
+                            <label for="idTipo" class="col-sm-3 col-form-label">Tipo Piscina</label>
+                            <div class="col-sm-9">
+                                <select class="custom-select select2" id="idTipo" name="idTipo" onchange="codigo();" required>
+                                    <option value="" label>--Seleccione una opcion--</option>
+                                    <option value="Piscina">Piscina</option>
+                                    <option value="Precriadero">Precriadero</option>
+                                    <option value="Reservorio">Reservorio</option>
+                                    <option value="Estuario">Estuario</option>     
+                                </select>
+                                <input type="hidden" class="form-control" id="idSecuencial" name="idSecuencial" value=""  required>
+                            </div>
+                        </div>  
                         <div class="form-group row">
                             <label for="idCodigo" class="col-sm-3 col-form-label">Codigo</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="idCodigo" name="idCodigo" placeholder="Codigo" required>
+                                <input type="text" class="form-control" id="idCodigo" name="idCodigo" placeholder="Codigo" readonly  required>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="idNombre" class="col-sm-3 col-form-label">Nombre</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="idNombre" name="idNombre" placeholder="Nombre" required>
+                                <input type="text" class="form-control" id="idNombre" name="idNombre" placeholder="Nombre"  required>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="idTipo" class="col-sm-3 col-form-label">Tipo Piscina</label>
-                            <div class="col-sm-9">
-                                <select class="custom-select select2" id="idTipo" name="idTipo" required>
-                                    <option value="" label>--Seleccione una opcion--</option>
-                                    @foreach($tipos as $tipo)
-                                    <option value="{{$tipo->tipo_id}}">{{$tipo->tipo_nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>                                          
+                                                               
                         <div class="form-group row">
                             <label for="idLargo" class="col-sm-3 col-form-label">Largo (Mts)</label>
                             <div class="col-sm-9">
@@ -142,9 +144,9 @@
                             <label for="idTipoEstado" class="col-sm-3 col-form-label">Tipo Piscina</label>
                             <div class="col-sm-9">
                                 <select class="custom-select select2" id="idTipoEstado" name="idTipoEstado" onchange="extraer();" required>
-                                    <option value="Seca" label>Seca</option>
-                                    <option value="En Preparacion" label>En Preparacion</option>
-                                    <option value="En Produccion" label>En Produccion</option>
+                                    <option value="SECA" >SECA</option>
+                                    <option value="EN PREPARACIÓN" >EN PREPARACIÓN</option>
+                                    <option value="EN PRODUCCIÓN" >EN PRODUCCIÓN</option>
                                 </select>
                                
                             </div>
@@ -164,8 +166,24 @@
 <!-- /.modal -->
 <script>
     function calculo(){
-        document.getElementById("idArea").value = (document.getElementById("idLargo").value*document.getElementById("idAncho").value*document.getElementById("idAltura").value*264.2);
-        document.getElementById("idVolumen").value = (document.getElementById("idLargo").value*document.getElementById("idAncho").value)/10000;
+        document.getElementById("idArea").value =(document.getElementById("idLargo").value*document.getElementById("idAncho").value)/10000;
+        document.getElementById("idVolumen").value = (document.getElementById("idLargo").value*document.getElementById("idAncho").value*document.getElementById("idAltura").value*264.2); 
     }
+    function codigo(){
+       
+       $.ajax({
+       url: '{{ url("codigopiscina") }}'+'/'+document.getElementById("idTipo").value,
+       dataType: "json",
+       type: "GET",
+       data: { 
+        
+       },
+       success: function(data){           
+           document.getElementById("idCodigo").value=data[0];
+           document.getElementById("idSecuencial").value=data[1];
+       },
+   });
+
+   }
 </script>
 @endsection

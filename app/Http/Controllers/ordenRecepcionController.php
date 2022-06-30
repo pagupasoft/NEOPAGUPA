@@ -1059,6 +1059,10 @@ class ordenRecepcionController extends Controller
             $general = new generalController();           
             $orden = Orden_Recepcion::findOrFail($id); 
             
+            $cierre = $general->cierre($orden->ordenr_fecha);          
+            if($cierre){
+                return redirect('ordenRecepecion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $cierre = $general->cierre($request->get('orden_fecha'));          
             if($cierre){
                 return redirect('ordenRecepecion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');

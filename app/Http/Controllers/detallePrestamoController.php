@@ -58,8 +58,12 @@ class detallePrestamoController extends Controller
     {
         try{      
            
-            DB::beginTransaction();   
-            
+            DB::beginTransaction(); 
+            $auditoria = new generalController();  
+            $cierre = $auditoria->cierre($request->get('idFecha'));
+            if ($cierre) {
+                return redirect('/detalleprestamos/'.$request->get('idprestamo').'/agregar')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $prestamo=Prestamo_Banco::findOrFail($request->get('idprestamo'));
            
             $datetime1 = strtotime($prestamo->prestamo_inicio);
@@ -133,7 +137,7 @@ class detallePrestamoController extends Controller
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
             */
-            $auditoria = new generalController();
+           
             $auditoria->registrarAuditoria('Registro de detalle de Interes -> '.$request->get('idValor').' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
             
             $auditoria->registrarAuditoria('Actualziacion  del Prestamo Interes Totales-> '.$prestamo->prestamo_total_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
@@ -292,8 +296,12 @@ class detallePrestamoController extends Controller
         try{      
            
             DB::beginTransaction();   
-            
+            $auditoria = new generalController();
             $detalle = Detalle_Prestamo::findOrFail($request->get('iddetalle'));
+            $cierre = $auditoria->cierre($request->get('idFecha'));
+            if ($cierre) {
+                return redirect('/detalleprestamos/'.$request->get('idprestamo'))->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $prestamo=Prestamo_Banco::findOrFail($detalle->prestamo_id);
            
             $datetime1 = strtotime($prestamo->prestamo_inicio);
@@ -309,7 +317,8 @@ class detallePrestamoController extends Controller
             $detalle->detalle_dias = $diff+1;
             $detalle->detalle_estado = '1';
             $detalle->save();
-            
+            $auditoria->registrarAuditoria('Actualziacion  del Detalle Prestamo Interes Totales-> '. $detalle->detalle_valor_interes.' con Prestamos Banco '.$prestamo->banco->bancoLista->banco_lista_nombre.' Con Interes '.$prestamo->prestamo_interes,$request->get('idprestamo'),'con Id '.$request->get('idprestamo'));
+                 
             DB::commit();
            
             return redirect('/detalleprestamos/'.$request->get('idprestamo'))->with('success','Datos guardados exitosamente');
@@ -331,7 +340,10 @@ class detallePrestamoController extends Controller
             DB::beginTransaction();
             $auditoria = new generalController();
             $detalle = Detalle_Prestamo::findOrFail($id);
-            
+            $cierre = $auditoria->cierre($detalle->detalle_fecha);
+            if ($cierre) {
+                return redirect('prestamos')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $detalle->delete();  
             if(isset($detalle->diario_id)){
                 $diario=Diario::findOrFail($detalle->diario_id);

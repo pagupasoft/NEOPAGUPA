@@ -152,7 +152,7 @@ class decimoCuartoConsolidadaController extends Controller
             $cierre = $general->cierre($request->get('idFechaemision'));
             setlocale(LC_TIME, "es");
             if ($cierre) {
-                return redirect('decimoC')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+                return redirect('decimoC/new/'.$request->get('punto_id'))->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
             $COUNT=1;
             if ($request->get('idTipo') == 'Cheque') {

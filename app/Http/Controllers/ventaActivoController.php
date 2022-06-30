@@ -194,10 +194,15 @@ class ventaActivoController extends Controller
     {
         try{
             DB::beginTransaction();
+
             $ventaActivo = Venta_Activo::findOrFail($id);
             $ventaActivoaux = Venta_Activo::findOrFail($id);
             $activoFijo=Activo_Fijo::findOrFail($ventaActivoaux->activo_id);
-
+            $general = new generalController();
+            $cierre = $general->cierre($ventaActivo->venta_fecha);          
+            if($cierre){
+                return redirect('ventaActivo')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $valoractual= floatval($activoFijo->activo_valor) + floatval($ventaActivoaux->venta_monto);
             $valorUtil =  (floatval($valoractual) * floatval($activoFijo->activo_vida_util)) / 100;
             $porcentajeUil= $activoFijo->activo_depreciacion;

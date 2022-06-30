@@ -54,9 +54,14 @@ class detalleAmortizacionController extends Controller
     {
         try{      
            
-            DB::beginTransaction(); 
+            DB::beginTransaction();
+            $auditoria = new generalController();
             $seguro=Amortizacion_Seguros::findOrFail($request->get('idseguro'));
+           $cierre = $auditoria->cierre($request->get('idFecha'));
            
+            if ($cierre) {
+                return redirect('/detalleamortizacion/'.$request->get('idseguro').'/agregar')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             
         
             $detalle = new Detalle_Amortizacion();
@@ -69,6 +74,8 @@ class detalleAmortizacionController extends Controller
             $detalle->detalle_estado = '1';
             $detalle->seguro()->associate($seguro);
             $detalle->save();
+           
+            $auditoria->registrarAuditoria('Registro de detalle de Amortizacion -> '. $request->get('idValor').' Seguro'.$seguro->amortizacion_observacion,'0','');
             DB::commit();
             return redirect('/detalleamortizacion/'.$request->get('idseguro').'/agregar')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){
@@ -157,7 +164,10 @@ class detalleAmortizacionController extends Controller
             DB::beginTransaction();
             $auditoria = new generalController();
             $detalle = Detalle_Amortizacion::findOrFail($id);
-            
+            $cierre = $auditoria->cierre($detalle->detalle_fecha);
+            if ($cierre) {
+                return redirect('amortizacion')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $detalle->delete();  
             if(isset($detalle->diario_id)){
                 $diario=Diario::findOrFail($detalle->diario_id);

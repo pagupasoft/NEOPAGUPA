@@ -73,6 +73,10 @@ class beneficiosSocialesController extends Controller
             $fechahasta=$request->get('fecha_hasta')."-01";
             $dth = new DateTime($fechahasta);
             $fechahasta=($dth->format('Y-m-t'));
+            $cierre = $general->cierre($request->get('idFechaemision'));
+            if ($cierre) {
+                return redirect('beneficioSocial/new/'.$request->get('punto_id'))->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
             $emplead=Beneficios_Sociales::validarbeneficio($fechadesde,$request->get('Tipo_id'),$request->get('sucursal_id'),$request->get('empleado_id'))->get();
          
             $empleado=Empleado::findOrFail($request->get('empleado_id'));

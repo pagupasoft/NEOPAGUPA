@@ -6,7 +6,13 @@
         <button onclick='window.location = "{{ url("piscina") }}";' class="btn btn-default btn-sm float-right"><i class="fa fa-undo"></i>&nbsp;Atras</button>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">            
+    <div class="card-body">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tipo</label>
+                <div class="col-sm-10">
+                    <label class="form-control">{{$piscina->piscina_tipo}}</label>
+                </div>
+            </div>            
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Codigo</label>
                 <div class="col-sm-10">
@@ -19,12 +25,7 @@
                     <label class="form-control">{{$piscina->piscina_nombre}}</label>
                 </div>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Tipo</label>
-                <div class="col-sm-10">
-                    <label class="form-control">{{$piscina->tipopiscina->tipo_nombre}}</label>
-                </div>
-            </div>
+            
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Largo</label>
                 <div class="col-sm-10">

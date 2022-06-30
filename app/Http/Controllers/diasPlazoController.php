@@ -56,6 +56,10 @@ class diasPlazoController extends Controller
                 $date=$factura->factura_fecha;
                 $dia="+ ".$request->get('factura_dias_plazo')." days";
                 $fecha =date("d-m-Y",strtotime($date.$dia)); 
+                $cierre = $general->cierre($fecha);
+                if ($cierre) {
+                    return redirect('cambioPlazo')->with('error2', 'No puede realizar la operacion por que pertenece a un mes bloqueado');
+                }
                 $factura->factura_fecha_pago=$fecha;
                 $factura->factura_dias_plazo=$request->get('factura_dias_plazo');
                 $factura->save();

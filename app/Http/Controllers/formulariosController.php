@@ -111,6 +111,11 @@ class formulariosController extends Controller
             if (isset($_POST['guardar'])){                
                 try{   
                     DB::beginTransaction();
+                    $auditoria = new generalController();
+                    $cierre = $auditoria->cierre($request->get('fecha_desde'));          
+                    if($cierre){
+                        return redirect('reporteTributario')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
                     $reporteTributarioEli = Reporte_Tributario::Reportributarios()->where('reporte_mes','=',date("m", strtotime($request->get('fecha_desde'))))->where('reporte_ano','=',date("Y", strtotime($request->get('fecha_hasta'))))->get();
                     foreach($reporteTributarioEli as $tributario){
                         $tributario->delete();          

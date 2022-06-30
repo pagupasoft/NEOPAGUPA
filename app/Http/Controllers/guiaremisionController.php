@@ -438,7 +438,13 @@ class guiaremisionController extends Controller
         try {    
             DB::beginTransaction();
             $general = new generalController();
+            $auditoria = new generalController();
             $guia=Guia_Remision::findOrFail($request->get('gr_id'));
+            $cierre = $auditoria->cierre($guia->gr_fecha);          
+            if($cierre){
+                return redirect('egresoBodega')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+            }
+           
             $guia->gr_estado = '0';
             $guia->update();
             $general->registrarAuditoria('Anulacion de guia de remision -> '.$guia->gr_numero,$guia->gr_numero,'Anulacion de guia de remision -> '.$guia->gr_numero);

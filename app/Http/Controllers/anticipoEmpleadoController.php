@@ -167,17 +167,18 @@ class anticipoEmpleadoController extends Controller
     public function store(Request $request)
     {
         try{           
-            DB::beginTransaction();            
+            DB::beginTransaction();       
+            $rangoDocumento = Rango_Documento::Rango($request->get('rango_id'))->first();     
             $general = new generalController();
             $cierre = $general->cierre($request->get('idFecha'));
             $urlcheque = '';
             if($cierre){
-                return redirect('listaAnticipoEmpleado')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                return redirect('anticipoEmpleado/new/'.$rangoDocumento->punto_id)->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
             $movimientoCaja = new Movimiento_Caja();
             $cajasxusuario=Arqueo_Caja::arqueoCajaxuser(Auth::user()->user_id)->first();  
             $cuentaBanco = Cuenta_Bancaria::CuentaBanco($request->get('cuenta_id'))->first();
-            $rangoDocumento = Rango_Documento::Rango($request->get('rango_id'))->first();
+            
             $cuentacaja=Caja::caja($request->get('idCaja'))->first();
             $empleado = Empleado::empleado($request->get('idEmpleado'))->first();
             $anticipoEmpleado = new Anticipo_Empleado();
@@ -527,12 +528,13 @@ class anticipoEmpleadoController extends Controller
                 $seleccion = $request->get('checkbox');
                 for ($i = 0; $i < count($seleccion); ++$i) {
                     $anticipo = Anticipo_Empleado::findOrFail($seleccion[$i]);
-                    $general = new generalController();
-                    $cierre = $general->cierre($anticipo->anticipo_fecha);
-                    
-                    if($cierre){
-                        return redirect('anticipoEmpleado')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-                    } 
+                    $cierre = $auditoria->cierre($anticipo->anticipo_fecha);
+                    if ($cierre) {
+                        return redirect('eliminatAntEmp')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
+                    }
+                }
+                for ($i = 0; $i < count($seleccion); ++$i) {
+                    $anticipo = Anticipo_Empleado::findOrFail($seleccion[$i]);
                     $diario = null;
                     if(isset($anticipo->diario)){
                         $diario = $anticipo->diario;
@@ -610,20 +612,25 @@ class anticipoEmpleadoController extends Controller
                 $seleccion2 = $request->get('checkbox2');
                 for ($i = 0; $i < count($seleccion2); ++$i) {
                     $descuento =  Descuento_Anticipo_Empleado::findOrFail($seleccion2[$i]);
-                    $valorDescuento = $descuento->descuento_valor;
                     $anticipo = Anticipo_Empleado::findOrFail($descuento->anticipo_id);
-                    
-                    $general = new generalController();
-                    $diario = null;
-                    
-                    $cierre = $general->cierre($descuento->descuento_fecha);                   
+                    $cierre = $auditoria->cierre($descuento->descuento_fecha);                   
                     if($cierre){
                         return redirect('eliminatAntEmp')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
                     }
-                    $cierre = $general->cierre($anticipo->anticipo_fecha);    
+                    $cierre = $auditoria->cierre($anticipo->anticipo_fecha);    
                     if($cierre){
                         return redirect('eliminatAntEmp')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
-                    }  
+                    } 
+                }
+                for ($i = 0; $i < count($seleccion2); ++$i) {
+                    $descuento =  Descuento_Anticipo_Empleado::findOrFail($seleccion2[$i]);
+                    $valorDescuento = $descuento->descuento_valor;
+                    $anticipo = Anticipo_Empleado::findOrFail($descuento->anticipo_id);
+                    
+                  
+                    $diario = null;
+                    
+                    
                     if(isset($descuento->diario->diario_id)){
                         $diario = $descuento->diario;
                     }

@@ -82,9 +82,9 @@
                     <div class="col-sm-10">
                         <select class="form-control select2" id="Tipo_grupo" name="Tipo_grupo" required>
                                 <option value="null" disabled>--Seleccione una opcion--</option>
-                                <option value="MANTENIMIENTOS" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'MANTENIMIENTOS') selected @endif @endif>MANTENIMIENTOS</option>
-                                <option value="TRANSACCIONES" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'TRANSACCIONES') selected @endif @endif>TRANSACCIONES</option>
-                                <option value="REPORTES Y CONSULTAS" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'REPORTES Y CONSULTAS') selected @endif @endif>REPORTES Y CONSULTAS</option>
+                                <option value="Mantenimientos" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'Mantenimientos') selected @endif @endif>Mantenimientos</option>
+                                <option value="Transacciones" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'Transacciones') selected @endif @endif>Transacciones</option>
+                                <option value="Reportes y Consultas" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'Reportes y Consultas') selected @endif @endif>Reportes y Consultas</option>
                                
                         </select>
                     </div>

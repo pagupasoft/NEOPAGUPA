@@ -41,9 +41,9 @@ class grupoPerController extends Controller
         try{
             DB::beginTransaction();
             
-            $matriz[0]='MANTENIMIENTOS';
-            $matriz[1]='TRANSACCIONES';
-            $matriz[2]='REPORTES Y CONSULTAS';
+            $matriz[0]='Mantenimientos';
+            $matriz[1]='Transacciones';
+            $matriz[2]='Reportes y Consultas';
             
             $grupoPer = new GrupoPer();
             $grupoPer->grupo_nombre = $request->get('idNombre');
@@ -163,6 +163,10 @@ class grupoPerController extends Controller
         try{
             DB::beginTransaction();
             $grupo = GrupoPer::findOrFail($id);
+            foreach($grupo->detalles as $detalle){
+                $tipo=Tipo_Grupo::findOrFail($detalle->tipo_id);
+                $tipo->delete();
+            } 
             $grupo->delete();
             /*Inicio de registro de auditoria */
             $auditoria = new generalController();

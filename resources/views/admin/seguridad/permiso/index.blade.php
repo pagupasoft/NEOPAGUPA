@@ -106,9 +106,9 @@
                             <div class="col-sm-9">
                                 <select class="form-control select2" id="Tipo_grupo" name="Tipo_grupo" required>
                                     <option value="null" disabled>--Seleccione una opcion--</option>         
-                                    <option value="MANTENIMIENTOS">MANTENIMIENTOS</option>
-                                    <option value="TRANSACCIONES">TRANSACCIONES</option>
-                                    <option value="REPORTES Y CONSULTAS">REPORTES Y CONSULTAS</option>
+                                    <option value="Mantenimientos">Mantenimientos</option>
+                                    <option value="Transacciones">Transacciones</option>
+                                    <option value="Reportes y Consultas">Reportes y Consultas</option>
                                 </select>
                             </div>
                         </div>

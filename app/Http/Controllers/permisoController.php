@@ -55,13 +55,13 @@ class permisoController extends Controller
                 $tipo = new Tipo_Grupo();
                 $tipo->tipo_nombre = $request->get('Tipo_grupo');
                 $tipo->tipo_icono = 'fas fa-circle';
-                if($request->get('Tipo_grupo')=='MANTENIMIENTOS'){
+                if($request->get('Tipo_grupo')=='Mantenimientos'){
                     $tipo->tipo_orden = '1';
                 }
-                if($request->get('Tipo_grupo')=='TRANSACCIONES'){
+                if($request->get('Tipo_grupo')=='Transacciones'){
                     $tipo->tipo_orden = '2';
                 }
-                if($request->get('Tipo_grupo')=='REPORTES Y CONSULTAS'){
+                if($request->get('Tipo_grupo')=='Reportes y Consultas'){
                     $tipo->tipo_orden = '3';
                 }
                 $tipo->tipo_estado = 1;
@@ -164,13 +164,13 @@ class permisoController extends Controller
                 $tipo = new Tipo_Grupo();
                 $tipo->tipo_nombre = $request->get('Tipo_grupo');
                 $tipo->tipo_icono = 'fas fa-circle';
-                if($request->get('Tipo_grupo')=='MANTENIMIENTOS'){
+                if($request->get('Tipo_grupo')=='Mantenimientos'){
                     $tipo->tipo_orden = '1';
                 }
-                if($request->get('Tipo_grupo')=='TRANSACCIONES'){
+                if($request->get('Tipo_grupo')=='Transacciones'){
                     $tipo->tipo_orden = '2';
                 }
-                if($request->get('Tipo_grupo')=='REPORTES Y CONSULTAS'){
+                if($request->get('Tipo_grupo')=='Reportes y Consultas'){
                     $tipo->tipo_orden = '3';
                 }
                 $tipo->tipo_estado = 1;

@@ -78,12 +78,13 @@
                     </div>
                 </div> 
                 <div class="form-group row">
-                    <label for="idGrupo" class="col-sm-2 col-form-label">Tipo Grupo</label>
+                    <label for="Tipo_grupo" class="col-sm-2 col-form-label">Tipo Grupo</label>
                     <div class="col-sm-10">
-                        <select class="form-control select2" id="idGrupo" name="idGrupo" require>
-                                    <option value="MANTENIMIENTOS" @if($permiso->tipogrupo->tipo_nombre == 'MANTENIMIENTOS') selected @endif>MANTENIMIENTOS</option>
-                                    <option value="TRANSACCIONES" @if($permiso->tipogrupo->tipo_nombre == 'TRANSACCIONES') selected @endif>TRANSACCIONES</option>
-                                    <option value="REPORTES Y CONSULTAS" @if($permiso->tipogrupo->tipo_nombre == 'REPORTES Y CONSULTAS') selected @endif>REPORTES Y CONSULTAS</option>
+                        <select class="form-control select2" id="Tipo_grupo" name="Tipo_grupo" required>
+                                <option value="null" disabled>--Seleccione una opcion--</option>
+                                <option value="MANTENIMIENTOS" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'MANTENIMIENTOS') selected @endif @endif>MANTENIMIENTOS</option>
+                                <option value="TRANSACCIONES" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'TRANSACCIONES') selected @endif @endif>TRANSACCIONES</option>
+                                <option value="REPORTES Y CONSULTAS" @if(isset($permiso->tipogrupo)) @if($permiso->tipogrupo->tipo_nombre == 'REPORTES Y CONSULTAS') selected @endif @endif>REPORTES Y CONSULTAS</option>
                                
                         </select>
                     </div>

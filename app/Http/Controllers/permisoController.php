@@ -43,32 +43,32 @@ class permisoController extends Controller
        try{
             DB::beginTransaction();
             $activador=false;
+            $tipo=null;
             $grupo=GrupoPer::findOrFail($request->get('idGrupo'));
             foreach($grupo->detalles as $detalle){
-                if($detalle->tipo_nombre==$request->get('idTipo')){
+                if($detalle->tipo_nombre==$request->get('Tipo_grupo')){
                     $activador=true;
                     $tipo=Tipo_Grupo::findOrFail($detalle->tipo_id);
                 }
-
             }
             if($activador==false){
                 $tipo = new Tipo_Grupo();
-                $tipo->tipo_nombre = $request->get('idTipo');
+                $tipo->tipo_nombre = $request->get('Tipo_grupo');
                 $tipo->tipo_icono = 'fas fa-circle';
-                if($request->get('idTipo')=='MANTENIMIENTOS'){
+                if($request->get('Tipo_grupo')=='MANTENIMIENTOS'){
                     $tipo->tipo_orden = '1';
                 }
-                if($request->get('idTipo')=='TRANSACCIONES'){
+                if($request->get('Tipo_grupo')=='TRANSACCIONES'){
                     $tipo->tipo_orden = '2';
                 }
-                if($request->get('idTipo')=='REPORTES Y CONSULTAS'){
+                if($request->get('Tipo_grupo')=='REPORTES Y CONSULTAS'){
                     $tipo->tipo_orden = '3';
                 }
                 $tipo->tipo_estado = 1;
                 $tipo->grupo_id  = $request->get('idGrupo');
                 $tipo->save();
                 $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.$request->get('idTipo'),'0','');
+                $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.$request->get('Tipo_grupo'),'0','');
             }
             $permiso = new Permiso();
             $permiso->permiso_nombre = $request->get('idNombre');
@@ -154,7 +154,7 @@ class permisoController extends Controller
             $activador=false;
             $grupo=GrupoPer::findOrFail($request->get('idGrupo'));
             foreach($grupo->detalles as $detalle){
-                if($detalle->tipo_nombre==$request->get('idTipo')){
+                if($detalle->tipo_nombre==$request->get('Tipo_grupo')){
                     $activador=true;
                     $tipo=Tipo_Grupo::findOrFail($detalle->tipo_id);
                 }
@@ -162,22 +162,22 @@ class permisoController extends Controller
             }
             if($activador==false){
                 $tipo = new Tipo_Grupo();
-                $tipo->tipo_nombre = $request->get('idTipo');
+                $tipo->tipo_nombre = $request->get('Tipo_grupo');
                 $tipo->tipo_icono = 'fas fa-circle';
-                if($request->get('idTipo')=='MANTENIMIENTOS'){
+                if($request->get('Tipo_grupo')=='MANTENIMIENTOS'){
                     $tipo->tipo_orden = '1';
                 }
-                if($request->get('idTipo')=='TRANSACCIONES'){
+                if($request->get('Tipo_grupo')=='TRANSACCIONES'){
                     $tipo->tipo_orden = '2';
                 }
-                if($request->get('idTipo')=='REPORTES Y CONSULTAS'){
+                if($request->get('Tipo_grupo')=='REPORTES Y CONSULTAS'){
                     $tipo->tipo_orden = '3';
                 }
                 $tipo->tipo_estado = 1;
                 $tipo->grupo_id  = $request->get('idGrupo');
                 $tipo->save();
                 $auditoria = new generalController();
-                $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.$request->get('idTipo'),'0','');
+                $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.$request->get('Tipo_grupo'),'0','');
             }
 
             $permiso = Permiso::findOrFail($id);

@@ -15,7 +15,8 @@
                     <th>Ruta Permiso</th>
                     <th>Tipo Permiso</th>
                     <th>Icono</th>
-                    <th>Orden</th>                    
+                    <th>Orden</th>   
+                    <th>Tipo</th>                       
                     <th>Grupo</th>
                     
                 </tr>
@@ -30,10 +31,12 @@
                     </td>
                     <td>{{ $permisos->permiso_nombre}}</td>
                     <td>{{ $permisos->permiso_ruta}}</td>
-                    <td>@if($permisos->permiso_tipo=='1')Administrador @else Cliente @endif</td>
+                    <td>@if($permisos->permiso_tipo=='1') Administrador @endif @if($permisos->permiso_tipo=='2') Cliente @endif</td>
                     <td>{{ $permisos->permiso_icono}}</td>
+                    <td>{{ $permisos->permiso_orden}}</td>    
+                    <td>@if(isset($permisos->tipo)){{ $permisos->tipo->tipo_nombre}}@endif</td>                   
                     <td>{{ $permisos->permiso_orden}}</td>                    
-                    <td>{{ $permisos->grupo_nombre}}</td>                    
+                                     
                 </tr>
                 @endforeach
             </tbody>
@@ -99,9 +102,10 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="idTipo" class="col-sm-3 col-form-label">Tipo Grupo</label>
+                            <label for="Tipo_grupo" class="col-sm-3 col-form-label">Tipo Grupo</label>
                             <div class="col-sm-9">
-                                <select class="form-control select2" id="idTipo" name="idTipo" require>         
+                                <select class="form-control select2" id="Tipo_grupo" name="Tipo_grupo" required>
+                                    <option value="null" disabled>--Seleccione una opcion--</option>         
                                     <option value="MANTENIMIENTOS">MANTENIMIENTOS</option>
                                     <option value="TRANSACCIONES">TRANSACCIONES</option>
                                     <option value="REPORTES Y CONSULTAS">REPORTES Y CONSULTAS</option>

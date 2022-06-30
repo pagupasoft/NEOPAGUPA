@@ -92,7 +92,7 @@ class Producto extends Model
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_id','=',$id);
     }
     public function scopeProductoTipo($query, $tipo, $sucursal){
-        $query->where('producto_tipo','=',$tipo);
+        $query->where('producto_tipo','=',$tipo)->where('producto_compra_venta','=','2');
         if($sucursal != '0'){
             $query->where('producto.sucursal_id', '=', $sucursal);
         }

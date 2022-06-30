@@ -48,7 +48,13 @@
                 <div class="col-sm-10">
                     <label class="form-control">{{$permiso->grupo_nombre}}</label>
                 </div>
-            </div>              
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tipo Grupo</label>
+                <div class="col-sm-10">
+                    <label class="form-control">@if(isset($permiso->tipo)){{ $permiso->tipo->tipo_nombre}}@endif</label>
+                </div>
+            </div>                 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Estado</label>
                 <div class="col-sm-10">

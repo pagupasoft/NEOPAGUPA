@@ -209,10 +209,10 @@
         for (var i = 2; i <= id_item; i++) {
           
             if($("input[name='Dtipo[]']")[i].value=='CREDITO'){
-                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) - Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
+                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) + Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
             }
             if($("input[name='Dtipo[]']")[i].value=='DEBITO'){
-                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) + Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
+                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) - Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
             }
         }
     }

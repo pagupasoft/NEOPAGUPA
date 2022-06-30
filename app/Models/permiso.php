@@ -26,7 +26,7 @@ class Permiso extends Model
     protected $guarded =[
     ];
     public function scopePermisos($query){
-        return $query->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso.empresa_id','=',Auth::user()->empresa_id)->where('permiso_estado','=','1')->orderBy('permiso_nombre','asc');
+        return $query->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso.empresa_id','=',Auth::user()->empresa_id)->where('permiso_estado','=','1')->orderBy('grupo_orden','asc');
     }
     public function scopePermiso($query, $id){
         return $query->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso.empresa_id','=',Auth::user()->empresa_id)->where('permiso_id','=',$id);

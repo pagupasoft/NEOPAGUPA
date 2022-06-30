@@ -26,7 +26,7 @@ class Casillero_tributario extends Model
     }
     public function scopeCasilleroTributario($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('casillero_estado','=','1')->where('casillero_id','=',$id);
-    }
+    }    
     public function scopeCasilleroTributarioPorCodigo($query, $codigo){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('casillero_codigo','=',$codigo);
     }

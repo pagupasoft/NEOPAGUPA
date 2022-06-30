@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Facade\Ignition\QueryRecorder\Query;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -90,8 +91,14 @@ class Producto extends Model
     public function scopeProducto($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_id','=',$id);
     }
-    public function scopeProductoTipo($query, $tipo){
-        return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_tipo','=',$tipo);
+    public function scopeProductoTipo($query, $tipo, $sucursal){
+        $query->where('producto_tipo','=',$tipo);
+        if($sucursal != '0'){
+            $query->where('producto.sucursal_id', '=', $sucursal);
+        }
+        $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1');
+        return $query;
+
     }
     public function scopeProductoCodigo($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_codigo','=',$id);

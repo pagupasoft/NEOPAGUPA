@@ -9,13 +9,22 @@
         <form class="form-horizontal" method="POST" action="{{ url("productoCasillaTributaria") }} "> 
         @csrf
             <div class="form-group row">                
-                <label for="idTipoProd" class="col-sm-2 col-form-label"><center>Tipo Producto:</center></label>
-                <div class="col-sm-3">
+                <label for="idTipoProd" class="col-sm-1 col-form-label"><center>Tipo Producto:</center></label>
+                <div class="col-sm-2">
                     <select class="custom-select select2" id="idTipoProd" name="idTipoProd" required>
                         <option value="">--Seleccione una opcion--</option>
                         <option value="2" @if($cc =="2") selected @endif>SERVICIO</option>
                         <option value="1" @if($cc =="1") selected @endif>ARTICULO</option>
                     </select> 
+                </div>                
+                    <label for="sucursal_id" class="col-sm-1 col-form-label">Sucursal</label>   
+                    <div class="col-sm-2">                         
+                            <select class="custom-select select2" id="sucursal_id" name="sucursal_id" require>
+                                <option value="0">Todas</option>
+                                @foreach($sucursales as $sucursal)
+                                    <option value="{{$sucursal->sucursal_id}}">{{$sucursal->sucursal_nombre}}</option>
+                                @endforeach
+                            </select>
                 </div>
                 <div class="col-sm-1">
                     <center><button id="buscarID" name="buscarID" type="submit"  class="btn btn-primary"><i class="fa fa-search"></i></button></center>
@@ -35,7 +44,7 @@
                 <tr class="text-center neo-fondo-tabla">
                     <th></th>
                     <th>Codigo</th>
-                    <th>Nombre</th>
+                    <th>Producto</th>
                     <th>Tipo</th>
                     <th>Seleccione un Casillero</th>
                 </tr>

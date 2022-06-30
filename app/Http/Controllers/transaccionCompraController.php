@@ -1486,12 +1486,16 @@ class transaccionCompraController extends Controller
                 $detalleDiario->detalle_estado = '1';
                 if($banderaOrdenRecepcion){
                     $detalleDiario->movimientoProducto()->associate($movimientoProducto);
-                }
-                if($producto->producto_compra_venta == '3'){
-                    $detalleDiario->cuenta_id = $producto->producto_cuenta_inventario;
+                    if($producto->producto_compra_venta == '3'){
+                        $detalleDiario->cuenta_id = $producto->producto_cuenta_inventario;
+                    }else{
+                        $detalleDiario->cuenta_id = $producto->producto_cuenta_gasto;
+                    }
                 }else{
-                    $detalleDiario->cuenta_id = $producto->producto_cuenta_gasto;
+                    $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'MERCADERIA POR RECEPTAR')->first();
+                    $detalleDiario->cuenta_id = $parametrizacionContable->cuenta_id;
                 }
+               
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$transaccion->transaccion_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$detalleDiario->cuenta_id.' por un valor de -> '.$total[$i]);
                 /**********************************************************************/
@@ -1874,10 +1878,19 @@ class transaccionCompraController extends Controller
                 if(isset($transaccion->ordenrecepcion)){
                     foreach ($transaccion->ordenrecepcion as $detalles) {
                         $orden=Orden_Recepcion::findOrFail($detalles->ordenr_id);
+                        $diarioOrden = $orden->diario;
                         $orden->transaccion_id=null;
                         $orden->ordenr_estado='1';
+                        $orden->diario_id = null;
                         $orden->save();
-                        $general->registrarAuditoria('Actualizacion de Orden de rectencion a null numero: -> '.$orden->ordenr_numero, $id, 'por Transaccion compra: -> '.$transaccion->transaccion_numero);
+                        $general->registrarAuditoria('Actualizacion de Orden de recepcion a null numero: -> '.$orden->ordenr_numero, $id, 'por Transaccion compra: -> '.$transaccion->transaccion_numero);
+                        foreach ($diarioOrden->detalles as $detalle) {
+                            $aux=$detalle;
+                            $detalle->delete();
+                        
+                            $general->registrarAuditoria('Eliminacion de detalle de diario de orden de recepcion '.$orden->ordenr_numero.' por eliminacion de Transaccion compra numero: -> '.$transaccion->transaccion_numero, $id, 'Con id de diario-> '.$aux->diario_id.'Comentario -> '.$aux->detalle_comentario);
+                        }
+                        $diarioOrden->delete();
                     }
                 }
                 $diarioTransaccion = $transaccion->diario;

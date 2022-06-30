@@ -116,12 +116,12 @@ class notaCreditoBancoController extends Controller
                      $idCuentaContable = Tipo_Movimiento_Banco::TipoMovimiento($cuentaId[$i])->first();
                      $detalleDiario = new Detalle_Diario();
                      if($tipo[$i]=='CREDITO'){
-                        $detalleDiario->detalle_debe = $haber[$i];
-                        $detalleDiario->detalle_haber = 0;
-                     }
-                     if($tipo[$i]=='DEBITO'){
                         $detalleDiario->detalle_debe = 0;
                         $detalleDiario->detalle_haber = $haber[$i];
+                     }
+                     if($tipo[$i]=='DEBITO'){
+                        $detalleDiario->detalle_debe = $haber[$i];
+                        $detalleDiario->detalle_haber = 0;
                      }
                      $detalleDiario->detalle_comentario = $descripcion[$i];
                      $detalleDiario->detalle_tipo_documento = 'NOTA DE CREDITO DE BANCO';

@@ -214,10 +214,10 @@
         document.getElementById("IdTOTAL").value = 0
         for (var i = 2; i <= id_item; i++) {
             if($("input[name='Dtipo[]']")[i].value=='CREDITO'){
-                document.getElementById("IdTOTAL").value = Number(Number(document.getElementById("IdTOTAL").value) + Number($("input[name='Ddebe[]']")[i].value)).toFixed(2);
+                document.getElementById("IdTOTAL").value = Number(Number(document.getElementById("IdTOTAL").value) - Number($("input[name='Ddebe[]']")[i].value)).toFixed(2);
             }
             if($("input[name='Dtipo[]']")[i].value=='DEBITO'){
-                document.getElementById("IdTOTAL").value = Number(Number(document.getElementById("IdTOTAL").value) - Number($("input[name='Ddebe[]']")[i].value)).toFixed(2);
+                document.getElementById("IdTOTAL").value = Number(Number(document.getElementById("IdTOTAL").value) + Number($("input[name='Ddebe[]']")[i].value)).toFixed(2);
             }
           
         }

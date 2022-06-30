@@ -470,6 +470,11 @@
 
 </form>
 <script type="text/javascript">
+    function round(num) {
+        var m = Number((Math.abs(num) * 100).toPrecision(15));
+         m =Math.round(m) / 100 * Math.sign(num);
+         return (m).toFixed(2);
+    }
     function cargarmetodo(){        
         //VALOR5 = CASILLERO 615
         //VALOR6 = CASILLERO 617
@@ -483,24 +488,24 @@
                 console.log(Number(document.getElementById("casill601").value).toFixed(2)); 
             if (parseFloat(document.getElementById("casill601").value) > parseFloat(document.getElementById("valor1").value)){ 
                 document.getElementById("valor5").value = 0
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value));
             }
             if (parseFloat(document.getElementById("casill601").value) < parseFloat(document.getElementById("valor1").value)){ 
                 console.log("601 si es menor");
-                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value));
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));
             }
             if (parseFloat(document.getElementById("casill601").value) == parseFloat(document.getElementById("valor1").value)){ 
                 //CASILLERO 615
-                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value));
                 //CASILLERO 617
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));
             }
         }
         //CASILLERO 602
         if(parseFloat(document.getElementById("valor0").value) > 0){            
-            document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value)).toFixed(2);
-            document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);            
+            document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value));
+            document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));            
         }
         //CASILLERO 617
         //document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
@@ -516,31 +521,31 @@
         //VALOR3 = CASILLERO 609
         //document.getElementById("valor5").value = Number(Number(document.getElementById("valor1").value)+Number(document.getElementById("valor0").value)).toFixed(2);
         if(parseFloat(document.getElementById("casill601").value) > 0){
-                console.log("601");
-                console.log(Number(document.getElementById("casill601").value).toFixed(2)); 
+                
             if (parseFloat(document.getElementById("casill601").value) > parseFloat(document.getElementById("valor1").value)){ 
                 document.getElementById("valor5").value = 0
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) - ( parseFloat(document.getElementById("casill601").value) - parseFloat(document.getElementById("valor1").value) ) + parseFloat(document.getElementById("valor3").value));
             }
             if (parseFloat(document.getElementById("casill601").value) < parseFloat(document.getElementById("valor1").value)){ 
                 console.log("601 si es menor");
-                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value));
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));
             }
             if (parseFloat(document.getElementById("casill601").value) == parseFloat(document.getElementById("valor1").value)){ 
                 //CASILLERO 615
-                document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value)).toFixed(2);
+                document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor1").value) - parseFloat(document.getElementById("casill601").value));
                 //CASILLERO 617
-                document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);
+                document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));
             }
         }
         //CASILLERO 602
         if(parseFloat(document.getElementById("valor0").value) > 0){            
-            document.getElementById("valor5").value = Number(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value)).toFixed(2);
-            document.getElementById("valor6").value = Number(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value)).toFixed(2);            
+            document.getElementById("valor5").value = round(parseFloat(document.getElementById("valor0").value) + parseFloat(document.getElementById("valor1").value));
+            document.getElementById("valor6").value = round(parseFloat(document.getElementById("valor2").value) + parseFloat(document.getElementById("valor3").value));            
         }
         //CASILLERO 617
         //document.getElementById("valor6").value = Number(Number(document.getElementById("valor2").value)+Number(document.getElementById("valor3").value)).toFixed(2);
+
 
     }
 </script>

@@ -35,7 +35,7 @@
                     <td>{{ $permisos->permiso_icono}}</td>
                     <td>{{ $permisos->permiso_orden}}</td>    
                     <td>@if(isset($permisos->tipo)){{ $permisos->tipo->tipo_nombre}}@endif</td>                   
-                    <td>{{ $permisos->permiso_orden}}</td>                    
+                    <td>{{ $permisos->grupo->grupo_nombre}}</td>                    
                                      
                 </tr>
                 @endforeach

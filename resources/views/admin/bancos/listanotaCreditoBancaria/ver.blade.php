@@ -80,6 +80,7 @@
                     <thead>
                         <tr class="letra-blanca" style="background-color: #0c7181;">
                             <th>MOVIMIENTO</th>
+                            <th>TIPO</th>
                             <th>DESCRIPCIÓN </th>                            
                             <th class="centrar-texto">VALOR</th>
                            
@@ -90,6 +91,7 @@
                         @foreach($notaCredito->detallesTipoMovimiento as $x)
                             <tr>                           
                                 <td>{{ $x->tipoMovBanco->tipo_nombre}}</td> 
+                                <td>@if($x->movimientonc_tipo) {{ $x->movimientonc_tipo}} @else DEBITO  @endif</td>  
                                 <td>{{ $x->movimientonc_descripcion}} </td> 
                                 <td class="text-center"> <?php echo '$' . number_format($x->movimientonc_valor, 2)?> </td>                                                    
                             </tr>

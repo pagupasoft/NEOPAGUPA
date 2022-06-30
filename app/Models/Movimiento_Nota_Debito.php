@@ -11,7 +11,8 @@ class Movimiento_Nota_Debito extends Model
     protected $table='movimiento_nota_debito';
     protected $primaryKey = 'movimientond_id';
     public $timestamps = true;
-    protected $fillable = [       
+    protected $fillable = [  
+        'movimientond_tipo',  
         'movimientond_valor',
         'movimientond_descripcion',
         'nota_id',

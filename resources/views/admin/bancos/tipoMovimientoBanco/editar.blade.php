@@ -32,6 +32,16 @@
                     <input type="text" class="form-control" id="idNombre" name="idNombre"  value="{{$tipoMovimientoBanco->tipo_nombre}}" required>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="idMovimiento" class="col-sm-2 col-form-label">Tipo Movimiento</label>
+                <div class="col-sm-10">
+                    <select class="custom-select select2" id="idMovimiento" name="idMovimiento" required>
+                        <option value="" selected disabled>--Seleccione una opcion--</option>
+                            <option value="CREDITO" @if($tipoMovimientoBanco->tipo_movimiento == 'CREDITO') selected @endif>CREDITO</option>
+                            <option value="DEBITO" @if($tipoMovimientoBanco->tipo_movimiento == 'DEBITO') selected @endif>DEBITO</option>
+                    </select>
+                </div>
+            </div>
             @if(Auth::user()->empresa->empresa_contabilidad == '1')
             <div class="form-group row">
                 <label for="idCuenta" class="col-sm-2 col-form-label">Cuenta</label>

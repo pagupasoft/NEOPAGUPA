@@ -84,7 +84,7 @@
                 </div>                
             </div>
             <div class="row">
-                <div class="col-sm-5" style="margin-bottom: 0px;">
+                <div class="col-sm-4" style="margin-bottom: 0px;">
                     <label>Movimiento de Cuenta</label>
                     <div class="form-group">
                         <div class="form-line">
@@ -94,6 +94,21 @@
                                      <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_nombre}}</option> 
                                 @endforeach
                             </select>
+                            <select class="invisible" id="id_movimiento" name="id_movimiento"
+                                    data-live-search="true" >
+                                <option value="" label>--Seleccione una opcion--</option>
+                                @foreach($movimientos as $movimiento)
+                                     <option value="{{$movimiento->tipo_id}}">{{$movimiento->tipo_movimiento}}</option> 
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-1" style="margin-bottom: 0px;">
+                    <label>Tipo</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            <input type="text" id="movimiento_id" name="movimiento_id" class="form-control" placeholder="Tipo" readonly>
                         </div>
                     </div>
                 </div>
@@ -125,6 +140,7 @@
                         <thead>
                             <tr class="letra-blanca" style="background-color: #0c7181;">                                
                                 <th>MOVIMIENTO</th>
+                                <th>TIPO </th>       
                                 <th>DESCRIPCIÓN </th>                               
                                 <th class="centrar-texto">VALOR</th>
                                 <th width="40"></th>
@@ -170,7 +186,7 @@
     }
     id_item = 1;
     function agregarItem() {
-        if(document.getElementById("id_descripcion").value != ''){
+        if(document.getElementById("id_descripcion").value != '' && document.getElementById("movimiento_id").value != ''){
             if(document.getElementById("id_haber").value > 0){
                 combo = document.getElementById("tipo_movimiento");
                 texto = combo.options[combo.selectedIndex].text;                
@@ -179,6 +195,7 @@
                 linea = linea.replace(/{idCuenta}/g,document.getElementById("tipo_movimiento").value);               
                 linea = linea.replace(/{cuenta}/g, texto);
                 linea = linea.replace(/{descripcion}/g, document.getElementById("id_descripcion").value);
+                linea = linea.replace(/{tipo}/g, document.getElementById("movimiento_id").value);
                 linea = linea.replace(/{haber}/g, Number(document.getElementById("id_haber").value).toFixed(2));
                 $("#item tbody").append(linea);
                 id_item = id_item + 1;
@@ -190,7 +207,13 @@
     function totalSeleccion(){     
         document.getElementById("IdTotal").value = 0
         for (var i = 2; i <= id_item; i++) {
-            document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) + Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
+          
+            if($("input[name='Dtipo[]']")[i].value=='CREDITO'){
+                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) - Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
+            }
+            if($("input[name='Dtipo[]']")[i].value=='DEBITO'){
+                document.getElementById("IdTotal").value = Number(Number(document.getElementById("IdTotal").value) + Number($("input[name='Dhaber[]']")[i].value)).toFixed(2);
+            }
         }
     }
     function limipiar(){
@@ -205,7 +228,9 @@
         document.getElementById("guardarID").value = "Enviando...";
 	    document.getElementById("guardarID").disabled = true;       
         if(document.getElementById("IdTotal").value <= 0){
+            document.getElementById("guardarID").disabled = false; 
             alert('El valor total no puede ser CERO, tampoco negativo');
+            
             return false
         }       
         return true;
@@ -215,6 +240,11 @@
     texto = combo.options[combo.selectedIndex].text;
     document.getElementById("id_descripcion").value  = 'P/R'+' '+texto;
     document.getElementById("id_haber").value = "0.00";
+
+     document.getElementById("id_movimiento").value=document.getElementById("tipo_movimiento").value;
+     combo2 = document.getElementById("id_movimiento");
+    texto2 = combo2.options[combo2.selectedIndex].text;
+    document.getElementById("movimiento_id").value = texto2;
 }
 </script>
 @endsection

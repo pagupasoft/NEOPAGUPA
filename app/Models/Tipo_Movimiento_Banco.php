@@ -14,6 +14,7 @@ class Tipo_Movimiento_Banco extends Model
     public $timestamps=true;
     protected $fillable = [
         'tipo_nombre', 
+        'tipo_movimiento', 
         'tipo_estado',    
         'empresa_id',
         'cuenta_id',

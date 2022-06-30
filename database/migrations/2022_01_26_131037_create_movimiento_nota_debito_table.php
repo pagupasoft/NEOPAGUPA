@@ -15,6 +15,7 @@ class CreateMovimientoNotaDebitoTable extends Migration
     {
         Schema::create('movimiento_nota_debito', function (Blueprint $table) {           
             $table->id('movimientond_id'); 
+            $table->string('movimientond_tipo');
             $table->float('movimientond_valor');
             $table->text('movimientond_descripcion');
             $table->bigInteger('nota_id');

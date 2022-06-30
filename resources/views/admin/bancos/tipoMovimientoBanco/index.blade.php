@@ -12,6 +12,7 @@
                 <tr class="text-center neo-fondo-tabla">
                     <th></th>
                     <th>Nombre</th>
+                    <th>Tipo</th>
                     @if(Auth::user()->empresa->empresa_contabilidad == '1')
                     <th>Cuenta</th>          
                     @endif                                                           
@@ -27,6 +28,9 @@
                         <a href="{{ url("tipoMovimientoBanco/{$tipoMovimientoBanco->tipo_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                        
                     </td>                                        
                     <td>{{ $tipoMovimientoBanco->tipo_nombre }}</td>
+                    
+                    <td>{{$tipoMovimientoBanco->tipo_movimiento}}</td>  
+                     
                     @if(Auth::user()->empresa->empresa_contabilidad == '1')
                     <td>{{ $tipoMovimientoBanco->cuenta->cuenta_numero.' - '.$tipoMovimientoBanco->cuenta->cuenta_nombre}}</td>  
                     @endif   
@@ -69,6 +73,16 @@
                                 <input type="text" class="form-control" id="idNombre" name="idNombre" placeholder="Nombre " required> 
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="idMovimiento" class="col-sm-3   col-form-label">Tipo Movimiento</label>
+                            <div class="col-sm-9">
+                                <select class="custom-select select2" id="idMovimiento" name="idMovimiento" required>
+                                    <option value="" selected disabled>--Seleccione una opcion--</option>
+                                        <option value="CREDITO">CREDITO</option>
+                                        <option value="DEBITO">DEBITO</option>
+                                </select>
+                            </div>
+                        </div>  
                         @if(Auth::user()->empresa->empresa_contabilidad == '1')
                         <div class="form-group row">
                             <label for="idCuenta" class="col-sm-3   col-form-label">Cuenta</label>

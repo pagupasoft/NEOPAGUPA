@@ -16,6 +16,7 @@ class CreateTipoMovimientoBancoTable extends Migration
         Schema::create('tipo_movimiento_banco', function (Blueprint $table) {
             $table->id('tipo_id');
             $table->string('tipo_nombre');
+            $table->string('tipo_movimiento');
             $table->string('tipo_estado');
             $table->integer('empresa_id');
             $table->foreign('empresa_id')->references('empresa_id')->on('empresa');

@@ -92,7 +92,8 @@ class notaDebitoBancoController extends Controller
             $general->registrarAuditoria('Registro de Nota de Debito de Banco -> '.$request->get('idBeneficiario'),$diario->diario_codigo,'Con motivo:'.$request->get('idMensaje'));
             
              //DETALLE DIARIOS DEBE
-             $cuentaId = $request->get('DidCuenta');           
+             $cuentaId = $request->get('DidCuenta');    
+             $tipo = $request->get('Dtipo');       
              $debe = $request->get('Ddebe');
              //$haber = $request->get('Dhaber');
              $descripcion = $request->get('Ddescripcion');
@@ -100,8 +101,15 @@ class notaDebitoBancoController extends Controller
                  if($cuentaId[$i] <> ''){
                      $idCuentaContable = Tipo_Movimiento_Banco::TipoMovimiento($cuentaId[$i])->first();                
                      $detalleDiario = new Detalle_Diario();
-                     $detalleDiario->detalle_debe = $debe[$i];
-                     $detalleDiario->detalle_haber = 0;
+                     if($tipo[$i]=='CREDITO'){
+                        $detalleDiario->detalle_debe = $debe[$i];
+                        $detalleDiario->detalle_haber = 0;
+                     }
+                     if($tipo[$i]=='DEBITO'){
+                        $detalleDiario->detalle_debe = 0;
+                        $detalleDiario->detalle_haber = $debe[$i];
+                     }
+                   
                      $detalleDiario->detalle_comentario = $descripcion[$i];
                      $detalleDiario->detalle_tipo_documento = 'NOTA DE DEBITO DE BANCO';
                      $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
@@ -112,6 +120,7 @@ class notaDebitoBancoController extends Controller
                      $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, $diario->diario_codigo,'');
                      //guarda muchos tipos de movimiento
                      $movimientoNotaDebito = new Movimiento_Nota_Debito();
+                     $movimientoNotaDebito->movimientond_tipo = $tipo[$i];
                      $movimientoNotaDebito->movimientond_valor = $debe[$i];
                      $movimientoNotaDebito->movimientond_descripcion = $descripcion[$i];
                      $movimientoNotaDebito->notaDebitoBanco()->associate($nota);

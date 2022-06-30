@@ -52,6 +52,7 @@ class tipoMovimientoBancoController extends Controller
         try{
             DB::beginTransaction();
             $tipoMovimientoBanco = new Tipo_Movimiento_Banco();
+            $tipoMovimientoBanco->tipo_movimiento  = $request->get('idMovimiento');       
             $tipoMovimientoBanco->tipo_nombre = $request->get('idNombre');           
             $tipoMovimientoBanco->tipo_estado  = 1;
             $tipoMovimientoBanco->empresa_id = Auth::user()->empresa_id;
@@ -131,7 +132,8 @@ class tipoMovimientoBancoController extends Controller
         try{
             DB::beginTransaction();
             $tipoMovimientoBanco = Tipo_Movimiento_Banco::findOrFail($id);
-            $tipoMovimientoBanco->tipo_nombre = $request->get('idNombre');           
+            $tipoMovimientoBanco->tipo_nombre = $request->get('idNombre'); 
+            $tipoMovimientoBanco->tipo_movimiento  = $request->get('idMovimiento');             
             if ($request->get('idEstado') == "on"){
                 $tipoMovimientoBanco->tipo_estado = 1;
             }else{

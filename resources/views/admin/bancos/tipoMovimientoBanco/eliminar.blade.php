@@ -30,6 +30,12 @@
                     <label class="form-control">{{$tipoMovimientoBanco->tipo_nombre}}</label>
                 </div>
             </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tipo Movimiento</label>
+                <div class="col-sm-10">
+                    <label class="form-control">{{$tipoMovimientoBanco->tipo_movimiento}}</label>
+                </div>
+            </div>
             @if(Auth::user()->empresa->empresa_contabilidad == '1')
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Cuenta Contable</label>

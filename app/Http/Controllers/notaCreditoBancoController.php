@@ -108,14 +108,21 @@ class notaCreditoBancoController extends Controller
              
              //DETALLE DIARIOS HABER
              $cuentaId = $request->get('DidCuenta');
+             $tipo = $request->get('Dtipo');
              $haber = $request->get('Dhaber');
              $descripcion = $request->get('Ddescripcion');
              for ($i = 2; $i < count($cuentaId); ++$i){
                  if($cuentaId[$i] <> ''){
                      $idCuentaContable = Tipo_Movimiento_Banco::TipoMovimiento($cuentaId[$i])->first();
                      $detalleDiario = new Detalle_Diario();
-                     $detalleDiario->detalle_debe = 0;
-                     $detalleDiario->detalle_haber = $haber[$i];
+                     if($tipo[$i]=='CREDITO'){
+                        $detalleDiario->detalle_debe = $haber[$i];
+                        $detalleDiario->detalle_haber = 0;
+                     }
+                     if($tipo[$i]=='DEBITO'){
+                        $detalleDiario->detalle_debe = 0;
+                        $detalleDiario->detalle_haber = $haber[$i];
+                     }
                      $detalleDiario->detalle_comentario = $descripcion[$i];
                      $detalleDiario->detalle_tipo_documento = 'NOTA DE CREDITO DE BANCO';
                      $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
@@ -126,6 +133,7 @@ class notaCreditoBancoController extends Controller
                      $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo, $diario->diario_codigo,'');
                     //guarda muchos tipos de movimiento
                     $movimientoNotaCredito = new Movimiento_Nota_Credito();
+                    $movimientoNotaCredito->movimientonc_tipo = $tipo[$i];
                     $movimientoNotaCredito->movimientonc_valor = $haber[$i];
                     $movimientoNotaCredito->movimientonc_descripcion = $descripcion[$i];
                     $movimientoNotaCredito->notaCreditoBanco()->associate($nota);

@@ -139,7 +139,7 @@ class ingresoBodegaController extends Controller
                 $diario->diario_secuencial = substr($diario->diario_codigo, 8);
                 $diario->diario_mes = DateTime::createFromFormat('Y-m-d', $request->get('ingreso_fecha'))->format('m');
                 $diario->diario_ano = DateTime::createFromFormat('Y-m-d', $request->get('ingreso_fecha'))->format('Y');
-                $diario->diario_comentario = 'COMPROBANTE DE INGRESO DE BODEGA DE PRODUCTO : '.$ingreso->cabecera_ingreso_numero;
+                $diario->diario_comentario = 'COMPROBANTE DE INGRESO DE BODEGA DE PRODUCTO : '.$ingreso->cabecera_ingreso_numero.', '.$request->get('ingreso_comentario');
                 $diario->diario_cierre = '0';
                 $diario->diario_estado = '1';
                 $diario->empresa_id = Auth::user()->empresa_id;

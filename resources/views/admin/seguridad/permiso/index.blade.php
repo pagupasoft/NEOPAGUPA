@@ -4,6 +4,7 @@
     <div class="card-header">
         <h3 class="card-title">Permisos</h3>
         <button class="btn btn-default btn-sm float-right" data-toggle="modal" data-target="#modal-nuevo"><i class="fa fa-plus"></i>&nbsp;Nuevo</button>
+        <a class="btn btn-success btn-sm float-right" href="{{ url("excelpermisos") }}"><i class="fas fa-file-excel"></i>&nbsp;Cargar Excel</a>
     </div>
     <!-- /.card-header -->
     <div class="card-body">

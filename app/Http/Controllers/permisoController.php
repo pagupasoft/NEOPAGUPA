@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Permiso;
 use App\Http\Controllers\Controller;
+use App\Models\Empresa;
 use App\Models\GrupoPer;
 use App\Models\Punto_Emision;
 use App\Models\Tipo_Grupo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class permisoController extends Controller
 {
@@ -26,6 +28,16 @@ class permisoController extends Controller
             $permisos=Permiso::permisos()->get();
             $gruposPers=GrupoPer::grupos()->get();
             return view('admin.seguridad.permiso.index',['gruposPers'=>$gruposPers,'permisos'=>$permisos, 'PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+        }
+        catch(\Exception $ex){      
+            return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function CargarExcel(){
+        try{
+            $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
+            $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+            return view('admin.seguridad.permiso.cargarexcel',['PE'=>Punto_Emision::puntos()->get(),'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -90,6 +102,74 @@ class permisoController extends Controller
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('permiso')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+    }
+    public function CargarExcelPermiso(Request $request){
+        try{
+            DB::beginTransaction();
+            if($request->file('excelPer')->isValid()){
+                $empresa = Empresa::empresa()->first();
+                $name = $empresa->empresa_ruc. '.' .$request->file('excelPer')->getClientOriginalExtension();
+                $path = $request->file('excelPer')->move(public_path().'\temp\Permisos', $name); 
+                $array = Excel::toArray(new Permiso(), $path);
+                for ($i=1;$i < count($array[0]);$i++) {
+                    $validar=trim($array[0][$i][5]);
+                    if ($validar) {
+                        $validacion=Permiso::Existe(trim($array[0][$i][1]))->first();
+                        if ($validacion) {
+                            $activador=false;
+                            $validacion2=GrupoPer::Existe(trim($array[0][$i][6]))->first();
+                            if($validacion2){
+                                $grupo=GrupoPer::findOrFail($validacion2->grupo_id);
+
+                                $tipo=null;
+                                foreach($grupo->detalles as $detalle){
+                                    if($detalle->tipo_nombre==trim($array[0][$i][5])){
+                                        $activador=true;
+                                        $tipo=Tipo_Grupo::findOrFail($detalle->tipo_id);
+                                    }
+                                }
+                                if( $activador==false){
+                                    $tipo = new Tipo_Grupo();
+                                    $tipo->tipo_nombre = trim($array[0][$i][5]);
+                                    $tipo->tipo_icono = 'fas fa-circle';
+                                    if(trim($array[0][$i][5])=='Mantenimientos'){
+                                        $tipo->tipo_orden = '1';
+                                    }
+                                    if(trim($array[0][$i][5])=='Transacciones'){
+                                        $tipo->tipo_orden = '2';
+                                    }
+                                    if(trim($array[0][$i][5])=='Reportes y Consultas'){
+                                        $tipo->tipo_orden = '3';
+                                    }
+                                    $tipo->tipo_estado = 1;
+                                    $tipo->grupo_id  = $grupo->grupo_id;
+                                    $tipo->save();
+                                    $auditoria = new generalController();
+                                    $auditoria->registrarAuditoria('Registro de tipo de Grupo -> '.trim($array[0][$i][5]),'0','');
+                                }
+                               
+                                    $permiso=Permiso::findOrFail($validacion->permiso_id);
+                                    if($tipo!=null){
+                                        $permiso->tipo_id=$tipo->tipo_id;
+                                    }else{
+                                        $permiso->tipo_id=null;
+                                    }
+                                    
+                                    $permiso->save();
+                                
+                                
+                            }
+                           
+                        }
+                    }
+                }
+            }
+        DB::commit();
+        return redirect('excelpermisos')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('excelpermisos')->with('error2','Ocurrio un error vuelva a intentarlo('.$ex->getMessage().')');
         }
     }
 

@@ -691,6 +691,10 @@ Route::post('/caja/guardarUsuario/{id}', [cajaController::class, 'guardarUsuario
 /***************/
 Route::get('/excelProvincia', [provinciaController::class, 'CargarExcel'])->middleware('auth');
 Route::post('/excelProvincia', [provinciaController::class, 'CargarExcelProvincia'])->middleware('auth');
+
+Route::get('/excelpermisos', [permisoController::class, 'CargarExcel'])->middleware('auth');
+Route::post('/excelpermisos', [permisoController::class, 'CargarExcelPermiso'])->middleware('auth');
+
 Route::get('/excelCiudad', [ciudadController::class, 'CargarExcel'])->middleware('auth');
 Route::post('/excelCiudad', [ciudadController::class, 'CargarExcelCiudad'])->middleware('auth');
 Route::get('/excelCasillero', [CasilleroTributarioController::class, 'subir'])->middleware('auth');

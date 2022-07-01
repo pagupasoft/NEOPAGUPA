@@ -27,6 +27,9 @@ class GrupoPer extends Model
     public function scopeGrupo($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('grupo_id','=',$id);
     }
+    public function scopeExiste($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('grupo_nombre','=',$id);
+    }
     public function permisos(){
         return $this->hasMany(Permiso::class, 'grupo_id', 'grupo_id');
     }

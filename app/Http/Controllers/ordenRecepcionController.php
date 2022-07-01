@@ -367,7 +367,13 @@ class ordenRecepcionController extends Controller
             if($cierre){
                 return redirect('ordenRecepecion')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-        
+            /*VERIFICAR TOTAL DE IVA DE DETALLE CON EL TOTAL DE IVA DE LA FACTURA*/
+            $totalDetalleIva = 0;
+            for ($i = 1; $i < count($cantidad); ++$i){
+                $totalDetalleIva = floatval($totalDetalleIva) + floatval($iva[$i]);
+            }
+            $squareVat = round($totalDetalleIva,2) == round(floatval($request->get('idIva')),2) ? false : true;
+            /*******/
             $transaccion->transaccion_fecha = $request->get('transaccion_fecha');
             $transaccion->transaccion_caducidad = $request->get('transaccion_caducidad');
             $transaccion->transaccion_impresion = $request->get('transaccion_impresion');
@@ -703,11 +709,21 @@ class ordenRecepcionController extends Controller
             if ($request->get('IvaBienesID') > 0){
                 $detalleDiario = new Detalle_Diario();
                 if($tipoComprobante->tipo_comprobante_codigo <> '04'){
-                    $detalleDiario->detalle_debe = $request->get('IvaBienesID');
+                    if($squareVat){
+                        $detalleDiario->detalle_debe = floatval($request->get('IvaBienesID')) + (floatval($request->get('idIva')) - floatval($totalDetalleIva));
+                        $squareVat = false;
+                    }else{
+                        $detalleDiario->detalle_debe = $request->get('IvaBienesID');
+                    }                    
                     $detalleDiario->detalle_haber = 0.00;
                 }else{
                     $detalleDiario->detalle_debe = 0.00;
-                    $detalleDiario->detalle_haber = $request->get('IvaBienesID');
+                    if($squareVat){
+                        $detalleDiario->detalle_haber = floatval($request->get('IvaBienesID')) + (floatval($request->get('idIva')) - floatval($totalDetalleIva));
+                        $squareVat = false;
+                    }else{
+                        $detalleDiario->detalle_haber = $request->get('IvaBienesID');
+                    }
                 }
                 $detalleDiario->detalle_comentario = 'P/R IVA PAGADO POR BIENES EN COMPRA';
                 $detalleDiario->detalle_tipo_documento = strtoupper($tipoComprobante->tipo_comprobante_nombre);
@@ -726,11 +742,21 @@ class ordenRecepcionController extends Controller
             if ($request->get('IvaServiciosID') > 0){
                 $detalleDiario = new Detalle_Diario();
                 if($tipoComprobante->tipo_comprobante_codigo <> '04'){
-                    $detalleDiario->detalle_debe = $request->get('IvaServiciosID');
+                    if($squareVat){
+                        $detalleDiario->detalle_debe = floatval($request->get('IvaServiciosID')) + (floatval($request->get('idIva')) - floatval($totalDetalleIva));
+                        $squareVat = false;
+                    }else{
+                        $detalleDiario->detalle_debe = $request->get('IvaServiciosID');
+                    }
                     $detalleDiario->detalle_haber = 0.00;
                 }else{
                     $detalleDiario->detalle_debe = 0.00;
-                    $detalleDiario->detalle_haber = $request->get('IvaServiciosID');
+                    if($squareVat){
+                        $detalleDiario->detalle_haber = floatval($request->get('IvaServiciosID')) + (floatval($request->get('idIva')) - floatval($totalDetalleIva));
+                        $squareVat = false;
+                    }else{
+                        $detalleDiario->detalle_haber = $request->get('IvaServiciosID');
+                    }
                 }
                 $detalleDiario->detalle_comentario = 'P/R IVA PAGADO POR SERVICIOS EN COMPRAS';
                 $detalleDiario->detalle_tipo_documento = strtoupper($tipoComprobante->tipo_comprobante_nombre);

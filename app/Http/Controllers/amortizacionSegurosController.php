@@ -99,6 +99,7 @@ class amortizacionSegurosController extends Controller
                     $detalle=new Detalle_Amortizacion();
                     if($mes==13){
                         $mes=1;
+                        $anio=$anio+1;
                     }
                     $fecha=$dia.'/'.$mes.'/'.$anio;
                     

@@ -150,6 +150,7 @@ class permisoController extends Controller
                                 }
                                
                                     $permiso=Permiso::findOrFail($validacion->permiso_id);
+                                    $permiso->permiso_nombre=trim($array[0][$i][0]);
                                     if($tipo!=null){
                                         $permiso->tipo_id=$tipo->tipo_id;
                                     }else{

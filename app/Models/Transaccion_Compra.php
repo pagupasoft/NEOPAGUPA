@@ -161,6 +161,9 @@ class Transaccion_Compra extends Model
     public function detalles(){
         return $this->hasMany(Detalle_TC::class, 'transaccion_id', 'transaccion_id');
     }
+    public function activo(){
+        return $this->belongsTo(Activo_Fijo::class, 'transaccion_id', 'transaccion_id');
+    }
     public function arqueoCaja(){
         return $this->belongsTo(Arqueo_Caja::class, 'arqueo_id', 'arqueo_id');
     }

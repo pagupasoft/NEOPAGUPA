@@ -31,6 +31,9 @@ class Permiso extends Model
     public function scopePermiso($query, $id){
         return $query->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso.empresa_id','=',Auth::user()->empresa_id)->where('permiso_id','=',$id);
     }
+    public function scopeExiste($query, $id){
+        return $query->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso.empresa_id','=',Auth::user()->empresa_id)->where('permiso_ruta','=',$id);
+    }
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'empresa_id');

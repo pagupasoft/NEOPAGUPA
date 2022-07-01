@@ -182,7 +182,7 @@ class detalleAmortizacionController extends Controller
             $auditoria->registrarAuditoria('Eliminacion de detalle de la amortizacion -> '.$detalle->detalle_valor.' con la amortizacion del seguro '.$detalle->seguro->amortizacion_total,'0','');
             /*Fin de registro de auditoria */
             DB::commit();
-            return redirect('amortizacion')->with('success','Datos eliminados exitosamente');
+            return redirect('detalleamortizacion/'.$detalle->seguro->amortizacion_id)->with('success','Datos eliminados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('amortizacion')->with('error','El registro no pudo ser borrado, tiene resgitros adjuntos.');

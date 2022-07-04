@@ -95,6 +95,13 @@
                         <td style="text-align:center;background: #3755B0; color: #FFFFFF;font-size: 12px;">{{ '$ '.number_format($datos[21][1]['iva'],2) }}</td>
                     </tr>
                 @endif
+                <tr>
+                    <td colspan="1" style="white-space: pre-wrap; background: #FFF; color: #000;font-size: 12px;">Total de Comprobantes de venta emitidas</td>
+                    <td class="centrar-texto" style="background: #FFF; color: #000;font-size: 12px;">{{ $cantidad_venta }}</td>
+                
+                    <td colspan="4" style="white-space: pre-wrap; background: #FFF; color: #000;font-size: 12px;">Total de Comprobantes de venta Anuladas</td>
+                    <td class="centrar-texto" style="background: #FFF; color: #000;font-size: 12px;">{{ $cantidad_venta_anulada }}</td>
+                </tr>
                 <tr><td colspan="7" style="text-align:center;background: #FF8747; font-size: 15px;"><b>COMPRAS</b></td></tr>
                 <tr>
                     <td style="background: #3755B0; color: #FFFFFF;font-size: 12px;">DETALLE</td>
@@ -185,6 +192,13 @@
                     <td style="text-align:center;background: #E9D65B; font-size: 15px;"><b>{{ '$ '.number_format($datos[11][1]['iva'],2) }}</b></td>
                 </tr>
                 @endif
+                <tr>
+                    <td colspan="1" style="white-space: pre-wrap; background: #FFF; color: #000; font-size: 12px;">Total de Comprobantes de Venta Recibidas</td>
+                    <td class="centrar-texto" style="background: #FFF; color: #000; font-size: 12px;">{{ $cantidad_compra }}</td>
+
+                    <td colspan="4" style="white-space: pre-wrap; background: #FFF; color: #000; font-size: 12px;">Total de Notas de Venta Recibidas</td>
+                    <td class="centrar-texto" style="background: #FFF; color: #000; font-size: 12px;">{{ $cantidad_compra_boleta }}</td>
+                </tr>
                 <tr><td colspan="7" style="text-align:center;background: #FF8747; font-size: 15px;"><b>RESUMEN IMPOSITIVO: AGENTE DE PERCEPCIÓN DEL IMPUESTO AL VALOR AGREGADO</b></td></tr>
                         <tr>
                             <td style="white-space: pre-wrap;font-size: 12px;">Impuesto causado (si la diferencia de los campos 499-564 es mayor que cero)</td>

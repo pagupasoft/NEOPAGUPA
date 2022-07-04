@@ -115,6 +115,14 @@
                             <td class="centrar-texto" style="background: #3755B0; color: #FFFFFF;">{{ '$ '.number_format($datos[21][1]['iva'],2) }}</td>
                         </tr>
                     @endif
+                    <tr>
+                        <td colspan="1" style="white-space: pre-wrap; background: #FFF; color: #000;">Total de Comprobantes de venta emitidas</td>
+                        <td class="centrar-texto" style="background: #FFF; color: #000;">{{ $cantidad_venta }}</td>
+                    
+                        <td colspan="4" style="white-space: pre-wrap; background: #FFF; color: #000;">Total de Comprobantes de venta Anuladas</td>
+                        <td class="centrar-texto" style="background: #FFF; color: #000;">{{ $cantidad_venta_anulada }}</td>
+                    </tr>
+                    
                     <tr><td colspan="7" class="centrar-texto" style="background: #FF8747; font-size: 20px;"><b>COMPRAS</b></td></tr>
                     <tr>
                         <td style="background: #3755B0; color: #FFFFFF;">DETALLE</td>
@@ -205,6 +213,13 @@
                         <td class="centrar-texto" style="background: #E9D65B; font-size: 15px;"><b>{{ '$ '.number_format($datos[11][1]['iva'],2) }}</b></td>
                     </tr>
                     @endif
+                    <tr>
+                        <td colspan="1" style="white-space: pre-wrap; background: #FFF; color: #000;">Total de Comprobantes de Venta Recibidas</td>
+                        <td class="centrar-texto" style="background: #FFF; color: #000;">{{ $cantidad_compra }}</td>
+
+                        <td colspan="4" style="white-space: pre-wrap; background: #FFF; color: #000;">Total de Notas de Venta Recibidas</td>
+                        <td class="centrar-texto" style="background: #FFF; color: #000;">{{ $cantidad_compra_boleta }}</td>
+                    </tr>
                     <tr><td colspan="7" class="centrar-texto" style="background: #FF8747; font-size: 20px;"><b>RESUMEN IMPOSITIVO: AGENTE DE PERCEPCIÓN DEL IMPUESTO AL VALOR AGREGADO</b></td></tr>
                         <tr>
                             <td style="white-space: pre-wrap;">Impuesto causado (si la diferencia de los campos 499-564 es mayor que cero)</td>
@@ -430,42 +445,42 @@
             console.log("girando")
         }
         function ocultarGif(){
-        document.getElementById("div-gif").style.display="none"
-        console.log("no girando")
-    }
+            document.getElementById("div-gif").style.display="none"
+            console.log("no girando")
+        }
 
-    tipo=""
+        tipo=""
 
-    function setTipo(t){
-        tipo=t
-    }
+        function setTipo(t){
+            tipo=t
+        }
 
-    setTimeout(function(){
-        console.log("registro de la funcion")
-        $("#idForm").submit(function(e) {
-            if(tipo=="")  return
-            var form = $(this);
-            form.append("excel", "descargar excel");
-            var actionUrl = form.attr('action');
+        setTimeout(function(){
+            console.log("registro de la funcion")
+            $("#idForm").submit(function(e) {
+                if(tipo=="")  return
+                var form = $(this);
+                form.append("excel", "descargar excel");
+                var actionUrl = form.attr('action');
 
 
-            console.log("submit "+actionUrl)
-            console.log(form.serialize())
-            console.log(form)
-            girarGif()
-            $.ajax({
-                type: "POST",
-                url: actionUrl,
-                data: form.serialize()+tipo,
-                success: function(data) {
-                    setTimeout(function(){
-                        ocultarGif()
-                        tipo=""
-                    }, 1000)
-                }
+                console.log("submit "+actionUrl)
+                console.log(form.serialize())
+                console.log(form)
+                girarGif()
+                $.ajax({
+                    type: "POST",
+                    url: actionUrl,
+                    data: form.serialize()+tipo,
+                    success: function(data) {
+                        setTimeout(function(){
+                            ocultarGif()
+                            tipo=""
+                        }, 1000)
+                    }
+                });
             });
-        });
-    }, 1200)
+        }, 1200)
     </script>
 
 </form>

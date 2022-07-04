@@ -100,12 +100,18 @@ class formulariosController extends Controller
                 }
 
                 $cantV=DB::select(
-                    DB::raw("select count(factura_id) as cant from factura_venta 
-                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
+                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
+                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id."
+                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
+                            and factura_venta.factura_fecha >= '".$request->get('fecha_desde')."' and factura_venta.factura_fecha <= '".$request->get('fecha_hasta')."' and factura_venta.factura_estado<>'2'
+                            and factura_venta.documento_anulado_id is NULL"));
 
                 $cantVA=DB::select(
-                    DB::raw("select count(factura_id) as cant from factura_venta 
-                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
+                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
+                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id." 
+                            and factura_venta.factura_fecha >='".$request->get('fecha_desde')."' and factura_venta.factura_fecha <='".$request->get('fecha_hasta')."' 
+                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
+                            and factura_venta.documento_anulado_id is not NULL"));
 
                 $cantC1=DB::select(
                     DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
@@ -122,12 +128,18 @@ class formulariosController extends Controller
             }
             if (isset($_POST['pdf'])){
                 $cantV=DB::select(
-                    DB::raw("select count(factura_id) as cant from factura_venta 
-                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
+                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
+                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id."
+                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
+                            and factura_venta.factura_fecha >= '".$request->get('fecha_desde')."' and factura_venta.factura_fecha <= '".$request->get('fecha_hasta')."' and factura_venta.factura_estado<>'2'
+                            and factura_venta.documento_anulado_id is NULL"));
 
                 $cantVA=DB::select(
-                    DB::raw("select count(factura_id) as cant from factura_venta 
-                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
+                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
+                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id." 
+                            and factura_venta.factura_fecha >='".$request->get('fecha_desde')."' and factura_venta.factura_fecha <='".$request->get('fecha_hasta')."' 
+                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
+                            and factura_venta.documento_anulado_id is not NULL"));
 
                 $cantC1=DB::select(
                     DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t

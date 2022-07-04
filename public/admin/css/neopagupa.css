@@ -779,7 +779,11 @@ li.timeline-item::before {
   padding-top: 12px;
 }
 .item-nivel1 {
-  background-color: #3b4552 !important;
-  border-radius: 5px;
-  /* border: 1px solid #62696b !important; */
+  background-color: #4ab8df ;
+}
+.textoitem{
+  color: #FFFFFF ;
+}
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link {
+  color: #ffffff;
 }

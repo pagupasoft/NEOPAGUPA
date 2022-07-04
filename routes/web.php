@@ -1125,6 +1125,7 @@ Route::post('/transaccioncompra/searchN', [transaccionCompraController::class, '
 Route::post('/facturaVentaDetalle/searchN', [facturaVentaController::class, 'buscarByDetalleFactura'])->middleware('auth');
 Route::post('/facturaVentaDetalleRet/searchN', [facturaVentaController::class, 'buscarByDetalleFacturaRet'])->middleware('auth');
 Route::get('/entidad/searchN/{buscar}', [pacienteController::class, 'buscarByEntidad'])->middleware('auth');
+Route::get('/entidad/{id}/eliminar', [entidadController::class, 'delete'])->middleware('auth');
 Route::get('/facturasCompra/searchN/{buscar}', [transaccionCompraController::class, 'buscarByProveedor'])->middleware('auth');
 Route::get('/datosFactCompra/searchN/{buscar}', [transaccionCompraController::class, 'buscarByTransaccion'])->middleware('auth');
 Route::get('/provincia/searchN/{buscar}', [pacienteController::class, 'buscarByPais'])->middleware('auth');

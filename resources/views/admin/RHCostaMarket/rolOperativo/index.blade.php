@@ -896,8 +896,8 @@ function cargardatosempleados(id){
                 document.getElementById("Sueldo_Empelado").innerHTML=data[i].empleado_sueldo;
                 document.getElementById("VEmpelado").value= data[i].empleado_sueldo;
                 document.getElementById("asumidot").value= data[i].empleado_iess_asumido;
-                document.getElementById("Valor_Dia").innerHTML=(data[i].empleado_sueldo/30).toFixed(2);
-                document.getElementById("Valor_Dia").innerHTML=(data[i].empleado_sueldo/30).toFixed(2);
+                document.getElementById("Valor_Dia").innerHTML=round(data[i].empleado_sueldo/30).toFixed(2);
+                document.getElementById("VDia").innerHTML=(data[i].empleado_sueldo/30).toFixed(2);
 
                 document.getElementById("sueldo_basico").value=data[i].parametrizar_sueldo_basico;
                
@@ -993,42 +993,42 @@ function cargarIngreso(id) {
             let saludo         =  document.getElementById("VJornada").value;
             var saludoPalabras = saludo.split('-');
            
-            document.getElementById("DiaN").value=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);  
-            document.getElementById("sueldos").innerHTML=((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value)).toFixed(2);
-            document.getElementById("Vsueldos").value=(Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value);
+            document.getElementById("DiaN").value=round((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value));  
+            document.getElementById("sueldos").innerHTML=round((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value));
+            document.getElementById("Vsueldos").value=round((Number(document.getElementById("VEmpelado").value)/Number(saludoPalabras[0]))*Number(document.getElementById("Normal").value));
             
             sumaingresos();
 
             if (document.getElementById("VAfiliado").value=="1") {
-                document.getElementById("Patronall").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS_Pa").innerHTML))/100).toFixed(2);
+                document.getElementById("Patronall").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS_Pa").innerHTML))/100);
                 document.getElementById("Patronal").value=document.getElementById("Patronall").innerHTML;
-                document.getElementById("IECEl").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
+                document.getElementById("IECEl").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("IECE/SECAP").innerHTML))/100);
                 document.getElementById("IECE").value= document.getElementById("IECEl").innerHTML;
-                document.getElementById("VACACIONESPL").innerHTML=(Number(document.getElementById("Total_In").value)/24).toFixed(2);
+                document.getElementById("VACACIONESPL").innerHTML=round(Number(document.getElementById("Total_In").value)/24);
                 document.getElementById("VACACIONESP").value= document.getElementById("VACACIONESPL").innerHTML;
                 if (document.getElementById("VCuarto").value=="1") {
-                    document.getElementById("TotalCuartoV").innerHTML=((Number(document.getElementById("sueldo_basico").value))/12).toFixed(2);
+                    document.getElementById("TotalCuartoV").innerHTML=round((Number(document.getElementById("sueldo_basico").value))/12);
                     document.getElementById("TCuarto").value=document.getElementById("TotalCuartoV").innerHTML;
                 }
                 else{
-                    document.getElementById("Cuartol").innerHTML=((Number(document.getElementById("sueldo_basico").value))/12).toFixed(2);
+                    document.getElementById("Cuartol").innerHTML=round((Number(document.getElementById("sueldo_basico").value))/12);
                     document.getElementById("Cuarto").value=document.getElementById("Cuartol").innerHTML;
                 }
                 if (document.getElementById("VTercero").value=="1") {
-                    document.getElementById("TotalTerceroV").innerHTML=((Number(document.getElementById("Total_In").value))/12).toFixed(2);
+                    document.getElementById("TotalTerceroV").innerHTML=round((Number(document.getElementById("Total_In").value))/12);
                     document.getElementById("TTercero").value=document.getElementById("TotalTerceroV").innerHTML;
                 }
                 else{
-                    document.getElementById("Tercerol").innerHTML=((Number(document.getElementById("Total_In").value))/12).toFixed(2);
+                    document.getElementById("Tercerol").innerHTML=round((Number(document.getElementById("Total_In").value))/12);
                     document.getElementById("Tercero").value=document.getElementById("Tercerol").innerHTML;
                 }
                 if (document.getElementById("reservatacu").value=="1") {
-                    document.getElementById("Fondol").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
-                    document.getElementById("Fondo").value=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+                    document.getElementById("Fondol").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100);
+                    document.getElementById("Fondo").value=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100);
                 }
                 if (document.getElementById("reservatacu").value=="0") {
-                    document.getElementById("TotalFondosV").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
-                    document.getElementById("TFondo").value=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+                    document.getElementById("TotalFondosV").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100);
+                    document.getElementById("TFondo").value=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%RES").innerHTML))/100);
                 }
                  
             }
@@ -1065,18 +1065,18 @@ function cargaregreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
-                    total+=Number(data[i]["valor"]);
+                    linea = linea.replace(/{valor}/g,  round(Number(data[i]["valor"])));
+                    total+=round(Number(data[i]["valor"]));
                     $("#tablaegresos tbody").append(linea);
                 
             }  
             if (document.getElementById("VAfiliado").value=="1") {
                 if(document.getElementById("asumidot").value=="1"){
-                    document.getElementById("iessAsumido").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
+                    document.getElementById("iessAsumido").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS").innerHTML))/100);
                     document.getElementById("ViessAsumido").value= document.getElementById("iessAsumido").innerHTML;
                 }
                 else{
-                    document.getElementById("iess").innerHTML=((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
+                    document.getElementById("iess").innerHTML=round((Number(document.getElementById("Total_In").value)*Number(document.getElementById("%IESS").innerHTML))/100);
                     document.getElementById("Viess").value= document.getElementById("iess").innerHTML;
                 }
                 
@@ -1090,17 +1090,21 @@ function cargaregreso(id) {
         },
     });
 }
-
+function round(num) {
+var m = Number((Math.abs(num) * 100).toPrecision(15));
+    m =Math.round(m) / 100 * Math.sign(num);
+    return (m).toFixed(2);
+} 
 function sumaingresos() { 
     var ingresos=0;
     $('#tablaingresos tr').each(function () {
     ingresos=Number($(this).find("td").eq(1).html())+ingresos;
     });
     
-    document.getElementById("Total_Inl").innerHTML= (ingresos).toFixed(2);      
+    document.getElementById("Total_Inl").innerHTML= round(ingresos);      
     document.getElementById("Total_In").value= ingresos;
 
-    document.getElementById("TotalIngresosV").innerHTML= (ingresos).toFixed(2);      
+    document.getElementById("TotalIngresosV").innerHTML= round(ingresos);      
     document.getElementById("TIngresos").value= ingresos;
     sumatotales()
 }
@@ -1133,9 +1137,9 @@ function sumaegresos() {
         
    
         
-        document.getElementById("anticipos").innerHTML=(descuentos).toFixed(2);
+        document.getElementById("anticipos").innerHTML=round(descuentos);
         document.getElementById("Vanticipos").value=descuentos;
-        document.getElementById("quincena").innerHTML=(quincena).toFixed(2);
+        document.getElementById("quincena").innerHTML=round(quincena);
         document.getElementById("Vquincena").value=quincena;
       
 
@@ -1144,10 +1148,10 @@ function sumaegresos() {
     $('#tablaegresos tr').each(function () {
         egresos=Number($(this).find("td").eq(1).html())+egresos;
     });
-    document.getElementById("Total_Egl").innerHTML= (egresos).toFixed(2);      
+    document.getElementById("Total_Egl").innerHTML= round(egresos);      
     document.getElementById("Total_Eg").value= egresos;
 
-    document.getElementById("TotalEgresos").innerHTML= (egresos).toFixed(2);      
+    document.getElementById("TotalEgresos").innerHTML= round(egresos);      
     document.getElementById("TEgresos").value= egresos;
     sumatotales();
 
@@ -1176,49 +1180,49 @@ function fechaactual(){
 function recalculo(){
     
     
-    var ingresos=Number(document.getElementById("Total_In").value);  
+    var ingresos=round(Number(document.getElementById("Total_In").value));  
    
      
   
     if(document.getElementById("VAfiliado").value=="1"){
-        document.getElementById("Patronall").innerHTML=(((ingresos)*Number(document.getElementById("%IESS_Pa").innerHTML))/100).toFixed(2);
-        document.getElementById("IECEl").innerHTML=(((ingresos)*Number(document.getElementById("IECE/SECAP").innerHTML))/100).toFixed(2);
+        document.getElementById("Patronall").innerHTML=round(((ingresos)*Number(document.getElementById("%IESS_Pa").innerHTML))/100);
+        document.getElementById("IECEl").innerHTML=round(((ingresos)*Number(document.getElementById("IECE/SECAP").innerHTML))/100);
         document.getElementById("IECE").value=document.getElementById("IECEl").innerHTML;
-        document.getElementById("VACACIONESPL").innerHTML=((ingresos)/24).toFixed(2);
+        document.getElementById("VACACIONESPL").innerHTML=round((ingresos)/24);
         document.getElementById("VACACIONESP").value= document.getElementById("VACACIONESPL").innerHTML;
         if(document.getElementById("asumidot").value=="1"){
 
-            document.getElementById("Tasumido").value=(((ingresos)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
+            document.getElementById("Tasumido").value=round(((ingresos)*Number(document.getElementById("%IESS").innerHTML))/100);
         }
         else{
-            document.getElementById("TotalIess").innerHTML=(((sueldo)*Number(document.getElementById("%IESS").innerHTML))/100).toFixed(2);
+            document.getElementById("TotalIess").innerHTML=round(((sueldo)*Number(document.getElementById("%IESS").innerHTML))/100);
             document.getElementById("Iess").value= document.getElementById("TotalIess").innerHTML;
         }
           
         if(document.getElementById("VCuarto").value=="1"){
-        document.getElementById("Cuartol").innerHTML=((sueldo)/12).toFixed(2);
+        document.getElementById("Cuartol").innerHTML=round((sueldo)/12);
         document.getElementById("Cuarto").value=0;
-        document.getElementById("TotalCuartoV").innerHTML=((sueldo)/12).toFixed(2);
+        document.getElementById("TotalCuartoV").innerHTML=round((sueldo)/12);
         document.getElementById("TCuarto").value=document.getElementById("TotalCuartoV").innerHTML;
         }
         else{
-            document.getElementById("Cuartol").innerHTML=((sueldo)/12).toFixed(2);
-            document.getElementById("Cuarto").value=((sueldo)/12).toFixed(2);
+            document.getElementById("Cuartol").innerHTML=round((sueldo)/12);
+            document.getElementById("Cuarto").value=round((sueldo)/12);
             document.getElementById("TotalCuartoV").innerHTML="0.00";
             document.getElementById("TCuarto").value=0;
         }
        
         if(document.getElementById("reservatacu").value=="1"){
            
-            document.getElementById("Fondol").innerHTML=(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+            document.getElementById("Fondol").innerHTML=round(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100);
             document.getElementById("TotalFondosV").innerHTML="0.00";
-            document.getElementById("Fondoacumulado").value=(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+            document.getElementById("Fondoacumulado").value=round(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100);
         }
         if(document.getElementById("reservatacu").value=="0"){
           
-            document.getElementById("Fondol").innerHTML=(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+            document.getElementById("Fondol").innerHTML=round(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100);
             document.getElementById("Fondoacumulado").value=0;
-            document.getElementById("TotalFondosV").innerHTML=(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100).toFixed(2);
+            document.getElementById("TotalFondosV").innerHTML=round(((sueldo)*Number(document.getElementById("%RES").innerHTML))/100);
             
         }
        
@@ -1504,7 +1508,7 @@ function ExtraerVacaciones(id) {
 }
 function porcentajepermiso() {
 
-    document.getElementById("VPermisol").innerHTML=(((Number(document.getElementById("Permisol").innerHTML)*Number(document.getElementById("VDia").value))*Number(document.getElementById("idPerpor").value))/100).toFixed(2);
+    document.getElementById("VPermisol").innerHTML=round(((Number(document.getElementById("Permisol").innerHTML)*Number(document.getElementById("VDia").value))*Number(document.getElementById("idPerpor").value))/100);
     document.getElementById("VPermiso").value= document.getElementById("VPermisol").innerHTML;
     sumaingresos();
 }
@@ -1543,8 +1547,8 @@ function getalimentacion(id) {
     if ($("input[name='checkali[]']")[id].checked==true) { 
         if (nuevo>=0) {    
             nuevo= Number(document.getElementById("comisariato").innerHTML)+Number($("input[name='Valor[]']")[id].value);
-            document.getElementById("comisariato").innerHTML=Number(nuevo).toFixed(2);
-            document.getElementById("Vcomisariato").value=Number(nuevo).toFixed(2);
+            document.getElementById("comisariato").innerHTML=round(Number(nuevo));
+            document.getElementById("Vcomisariato").value=round(Number(nuevo));
         }
         else{
             $("input[name='checkali[]']")[id].checked=false;
@@ -1553,8 +1557,8 @@ function getalimentacion(id) {
     }
     else{
             nuevo= Number(document.getElementById("comisariato").innerHTML)-Number($("input[name='Valor[]']")[id].value);
-            document.getElementById("comisariato").innerHTML=Number(nuevo).toFixed(2);
-            document.getElementById("Vcomisariato").value=Number(nuevo).toFixed(2);
+            document.getElementById("comisariato").innerHTML=round(Number(nuevo));
+            document.getElementById("Vcomisariato").value=round(Number(nuevo));
     }
 
     sumaegresos();
@@ -1611,13 +1615,13 @@ function SumaQuincena(id) {
 function sumatotales(){
     
    
-    document.getElementById("TIngreEgreV").innerHTML=(Number( document.getElementById("Total_Inl").innerHTML)-Number(document.getElementById("Total_Egl").innerHTML)).toFixed(2);
+    document.getElementById("TIngreEgreV").innerHTML=round(Number( document.getElementById("Total_Inl").innerHTML)-Number(document.getElementById("Total_Egl").innerHTML));
   
-    document.getElementById("LiquidacionTotal").innerHTML=(Number(document.getElementById("TIngreEgreV").innerHTML)
+    document.getElementById("LiquidacionTotal").innerHTML=round(Number(document.getElementById("TIngreEgreV").innerHTML)
     +Number(document.getElementById("TotalFondosV").innerHTML)
     +Number(document.getElementById("TotalTerceroV").innerHTML)
     +Number(document.getElementById("TotalCuartoV").innerHTML)
-    +Number(document.getElementById("Viaticos").value)).toFixed(2);
+    +Number(document.getElementById("Viaticos").value));
     
     document.getElementById("Liquidacion").value=Number(document.getElementById("LiquidacionTotal").innerHTML);
    

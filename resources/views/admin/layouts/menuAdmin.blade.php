@@ -10,7 +10,7 @@
         @foreach($tipoPermiso as $tipo)
         @if($grupo->grupo_id == $tipo->grupo_id)
         <ul class="nav nav-treeview">
-            <li class="nav-item">
+            <li class="nav-item item-nivel1">
             <a  class="nav-link">
                 <i class="fas fa-circle nav-icon"></i>
                 <p>

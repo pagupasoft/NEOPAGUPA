@@ -778,3 +778,8 @@ li.timeline-item::before {
   font-size: 18px;
   padding-top: 12px;
 }
+.item-nivel1 {
+  background-color: #3b4552 !important;
+  border-radius: 5px;
+  /* border: 1px solid #62696b !important; */
+}

@@ -98,15 +98,55 @@ class formulariosController extends Controller
                     $ant302vneto = $reporteAnt->reporte_vneto;
                     $ant302iva = $reporteAnt->reporte_viva;
                 }
-            return view('admin.sri.formularios.reporteTributario',['ant302vneto'=>$ant302vneto,'ant302iva'=>$ant302iva,'ant612'=>$ant612,'ant609'=>$ant609,'ant606'=>$ant606,'ant605'=>$ant605,'ant615'=>$ant615,'ant617'=>$ant617,'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'tipoPermiso'=>$tipoPermiso,'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
+
+                $cantV=DB::select(
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
+
+                $cantVA=DB::select(
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
+
+                $cantC1=DB::select(
+                    DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
+                            where transaccion_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and t.tipo_comprobante_codigo='01'
+                            and transaccion_compra.tipo_comprobante_id=t.tipo_comprobante_id"));
+
+                $cantC2=DB::select(
+                    DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
+                            where transaccion_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and tipo_comprobante_codigo='02'
+                            and transaccion_compra.tipo_comprobante_id=t.tipo_comprobante_id"));
+                
+                
+                return view('admin.sri.formularios.reporteTributario',['ant302vneto'=>$ant302vneto,'ant302iva'=>$ant302iva,'ant612'=>$ant612,'ant609'=>$ant609,'ant606'=>$ant606,'ant605'=>$ant605,'ant615'=>$ant615,'ant617'=>$ant617,'fecI'=>$request->get('fecha_desde'),'fecF'=>$request->get('fecha_hasta'),'datos'=>$datos,'cantidad_venta'=>$cantV[0]->cant, 'cantidad_venta_anulada'=>$cantVA[0]->cant, 'cantidad_compra'=>$cantC1[0]->cant, 'cantidad_compra_boleta'=>$cantC2[0]->cant, 'gruposPermiso'=>$gruposPermiso, 'permisosAdmin'=>$permisosAdmin]);
             }
             if (isset($_POST['pdf'])){
+                $cantV=DB::select(
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
+
+                $cantVA=DB::select(
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
+
+                $cantC1=DB::select(
+                    DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
+                            where transaccion_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and t.tipo_comprobante_codigo='01'
+                            and transaccion_compra.tipo_comprobante_id=t.tipo_comprobante_id"));
+
+                $cantC2=DB::select(
+                    DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
+                            where transaccion_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and tipo_comprobante_codigo='02'
+                            and transaccion_compra.tipo_comprobante_id=t.tipo_comprobante_id"));
+
+
+                
                 $empresa =  Empresa::empresa()->first();
                 $ruta = public_path().'/PDF/'.$empresa->empresa_ruc;
                 if (!is_dir($ruta)) {
                     mkdir($ruta, 0777, true);
                 }
-                $view =  \View::make('admin.formatosPDF.reporteTributario', ['valor1'=>$valor1,'valor2'=>$valor2,'valor3'=>$valor3,'valor4'=>$valor4,'valor5'=>$valor5,'valor6'=>$valor6,'datos'=>$datos,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa, 'base_imponible'=>$request->get('base_imponible'), 'valor_retenido'=>$request->get('valor_retenido')]);
+                $view =  \View::make('admin.formatosPDF.reporteTributario', ['valor1'=>$valor1,'valor2'=>$valor2,'valor3'=>$valor3,'valor4'=>$valor4,'valor5'=>$valor5,'valor6'=>$valor6,'datos'=>$datos,'cantidad_venta'=>$cantV[0]->cant, 'cantidad_venta_anulada'=>$cantVA[0]->cant, 'cantidad_compra'=>$cantC1[0]->cant, 'cantidad_compra_boleta'=>$cantC2[0]->cant,'desde'=>$request->get('fecha_desde'),'hasta'=>$request->get('fecha_hasta'),'empresa'=>$empresa, 'base_imponible'=>$request->get('base_imponible'), 'valor_retenido'=>$request->get('valor_retenido')]);
                 $nombreArchivo = 'REPORTE TRIBUTARIO DEL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_desde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('fecha_hasta'))->format('d-m-Y');
                 return PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->download($nombreArchivo.'.pdf');
             } 
@@ -718,7 +758,7 @@ class formulariosController extends Controller
                     }
                 }
             }
-            foreach(Nota_Credito::NCbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta')) 
+            foreach(Nota_Credito::NCbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
                 ->where('nc_tarifa12','>','0')->get()as $nc){
                 foreach($nc->detalles as $detallenc){
                     if($detallenc->detalle_iva > 0){

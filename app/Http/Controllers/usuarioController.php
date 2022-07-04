@@ -101,7 +101,7 @@ class usuarioController extends Controller
             $auditoria->registrarAuditoria('Restablecer contraseña de usuario -> '.$usuario->user_username,'0','');
             /*Fin de registro de auditoria */
              DB::commit();
-            return redirect('usuario')->with('success','Contraseña restablecida con exito');
+            return redirect('usuario')->with('success','Contraseña restablecida del 1 al 8 con exito');
         } catch(\Exception $ex){
             DB::rollBack();
             return redirect('usuario')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

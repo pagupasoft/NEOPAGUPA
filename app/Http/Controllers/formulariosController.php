@@ -748,13 +748,13 @@ class formulariosController extends Controller
                 $count ++;
             }
 
-            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, detalle_fv.detalle_iva
-            from factura_venta 
+            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, 
+            detalle_fv.detalle_iva,producto.producto_nombre from factura_venta 
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa12 > 0 and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
-
+            where factura_venta.factura_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%'
+            and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
             foreach($registros as $registro){
                 $countAux = 0;
                 if($registro->detalle_iva > 0){
@@ -801,12 +801,13 @@ class formulariosController extends Controller
                 }
             }
 
-            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, detalle_nc.detalle_iva
-            from nota_credito 
+            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, 
+            detalle_nc.detalle_iva,producto.producto_nombre from nota_credito 
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa12 > 0 and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
+            where nota_credito.nc_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%' 
+            and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registrosNC as $registro){
                 $countAux = 0;
@@ -888,12 +889,13 @@ class formulariosController extends Controller
                 $count ++;
             }
 
-            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, detalle_fv.detalle_iva
-            from factura_venta 
+            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, 
+            detalle_fv.detalle_iva, producto.producto_nombre from factura_venta 
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa0 > 0 and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
+            where factura_venta.factura_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'  
+            and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registros as $registro){
                 $countAux = 0;
@@ -942,12 +944,13 @@ class formulariosController extends Controller
                 }
             }
 
-            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, detalle_nc.detalle_iva
-            from nota_credito 
+            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, 
+            detalle_nc.detalle_iva, producto.producto_nombre from nota_credito 
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa0 > 0 and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
+            where nota_credito.nc_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'
+            and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registrosNC as $registro){
                 $countAux = 0;

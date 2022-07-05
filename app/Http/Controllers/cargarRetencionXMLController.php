@@ -295,7 +295,7 @@ class cargarRetencionXMLController extends Controller
             $general->registrarAuditoria('Registro de retencion de venta numero -> '.$retencion->retencion_numero,$retencion->retencion_numero,'Registro de retencion de venta numero -> '.$retencion->retencion_numero.' y con codigo de diario -> '.$diario->diario_codigo);
             /******************************************************************/
             foreach($xml->impuestos->impuesto as $impuesto){
-                if($impuesto->valorRetenido > 0){
+                if(floatval($impuesto->valorRetenido) > 0){
                     if($impuesto->codigo == '1'){
                         if(round(floatval($impuesto->valorRetenido),2) > 0){
                             $detalleRV = new Detalle_RV();
@@ -630,7 +630,7 @@ class cargarRetencionXMLController extends Controller
             return 'ok';
         }catch(\Exception $ex){
             DB::rollBack();
-            return ['4', $ex];
+            return ['4', $ex->getMessage()];
         }
     }
 }

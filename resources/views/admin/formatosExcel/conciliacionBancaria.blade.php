@@ -3,7 +3,7 @@
         <td colspan="10" style="text-align: center;">NEOPAGUPA | Sistema Contable</td>
     </tr>
     <tr>
-        <td colspan="10" style="text-align: center;">CONCILIACION BANCARIA DEL {{$datos[24]}} AL {{$datos[25]}}</td>
+        <td colspan="10" style="text-align: center;">CONCILIACION BANCARIA DEL {{$datos[27]}} AL {{$datos[28]}}</td>
     </tr>
 </table>
 <?php 
@@ -179,4 +179,33 @@
         <td>{{ $datos[20]}}</td>
         <td>{{ $datos[21]}}</td>
     </tr>
+</table>
+<table>
+    <tr colspan="">
+        <td colspan="10" style="text-align: center;">CHEQUES ANULADOS</td>
+    </tr>
+</table>
+<table>
+    <thead>
+        <tr class="text-center">
+            <th style="background:  #A7CCF3;">Fecha</th>                        
+            <th style="background:  #A7CCF3;">Numero</th>
+            <th style="background:  #A7CCF3;">Valor</th>
+            <th style="background:  #A7CCF3;">Beneficiario</th>                                         
+            <th style="background:  #A7CCF3;" class="text-left">Referencia</th>                                               
+        </tr>
+    </thead>
+    <tbody>
+    @if(isset($datos[24]))
+        @for ($c = 0; $c < count($datos[24]); ++$c) 
+        <tr class="text-center">                       
+            <td >{{ $datos[24][$c]['fecha']}}</td>
+            <td >{{ $datos[24][$c]['numero']}}</td>
+            <td >{{ number_format($datos[24][$c]['valor'],2)}}</td>
+            <td >{{ $datos[24][$c]['beneficiario']}}</td> 
+            <td class="text-left">{{ $datos[24][$c]['referencia']}}</td>
+        </tr>
+        @endfor
+    @endif
+    </tbody>
 </table>

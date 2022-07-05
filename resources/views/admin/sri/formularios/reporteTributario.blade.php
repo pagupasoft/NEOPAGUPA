@@ -40,30 +40,34 @@
                     </tr>
                     @if(count($datos[0]) > 0)
                         <tr><td colspan="7" style="background: #E9D65B; font-size: 15px;"><b>VENTAS CON IVA 12%</b></td></tr>
-                        @for ($i = 1; $i <= count($datos[0]); ++$i)
-                        <tr>
-                            <td style="white-space: pre-wrap;">{{ $datos[0][$i]['sustento'] }}</td>
-                            <td class="centrar-texto">{{ $datos[0][$i]['porcentaje'] }}</td>
-                            <td class="centrar-texto" style="background: #8BBDC7;">{{ $datos[0][$i]['casillero'] }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['compraBruta'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['nc'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['compraNeta'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['iva'],2) }}</td>
-                        </tr>
+                        @for ($i = 0; $i < count($datos[0]); ++$i)
+                            @if(round($datos[0][$i]['compraBruta'], 2) > 0 or $i > 0)
+                            <tr>
+                                <td style="white-space: pre-wrap;">{{ $datos[0][$i]['sustento'] }}</td>
+                                <td class="centrar-texto">{{ $datos[0][$i]['porcentaje'] }}</td>
+                                <td class="centrar-texto" style="background: #8BBDC7;">{{ $datos[0][$i]['casillero'] }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['compraBruta'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['nc'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['compraNeta'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[0][$i]['iva'],2) }}</td>
+                            </tr>
+                            @endif
                         @endfor
                     @endif
                     @if(count($datos[1]) > 0)
                         <tr><td colspan="7" style="background: #E9D65B; font-size: 15px;"><b>VENTAS CON IVA 0%</b></td></tr>
-                        @for ($i = 1; $i <= count($datos[1]); ++$i)
-                        <tr>
-                            <td style="white-space: pre-wrap;">{{ $datos[1][$i]['sustento'] }}</td>
-                            <td class="centrar-texto">{{ $datos[1][$i]['porcentaje'] }}</td>
-                            <td class="centrar-texto" style="background: #8BBDC7;">{{ $datos[1][$i]['casillero'] }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['compraBruta'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['nc'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['compraNeta'],2) }}</td>
-                            <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['iva'],2) }}</td>
-                        </tr>
+                        @for ($i = 0; $i < count($datos[1]); ++$i)
+                            @if(round($datos[1][$i]['compraBruta'], 2) > 0 or $i > 0)
+                            <tr>
+                                <td style="white-space: pre-wrap;">{{ $datos[1][$i]['sustento'] }}</td>
+                                <td class="centrar-texto">{{ $datos[1][$i]['porcentaje'] }}</td>
+                                <td class="centrar-texto" style="background: #8BBDC7;">{{ $datos[1][$i]['casillero'] }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['compraBruta'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['nc'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['compraNeta'],2) }}</td>
+                                <td class="centrar-texto">{{ '$ '.number_format($datos[1][$i]['iva'],2) }}</td>
+                            </tr>
+                            @endif
                         @endfor
                     @endif
                     @if(count($datos[2]) > 0)

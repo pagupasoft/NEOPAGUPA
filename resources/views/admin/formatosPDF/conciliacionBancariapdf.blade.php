@@ -3,7 +3,7 @@
     @section('titulo')
         <tr><td colspan="2" class="centrar letra15 negrita">CONCILIACION BANCARIA</td></tr>
         <tr><td colspan="2" class="centrar letra15 negrita">{{ $banco }} - Cuenta bancaria: {{$cuentaBancariaB}} </td></tr>banco
-        <tr><td colspan="2" class="centrar letra11">FECHA: {{ $datos[24] }} AL {{ $datos[25]}}</td></tr>
+        <tr><td colspan="2" class="centrar letra11">FECHA: {{ $datos[27] }} AL {{ $datos[28]}}</td></tr>
     @endsection
     <?php 
     $saldo = 0; 
@@ -96,6 +96,35 @@
             @endif
         </tbody>
     </table>
+    <table>
+    <tr colspan="">
+        <td class="negrita" style="width: 105px;"><center>CHEQUES ANULADOS</center></td>
+    </tr>
+</table>
+<table style="white-space: normal!important;" id="tabladetalle">
+    <thead>
+        <tr style="border: 1px solid black;" class="centrar letra12">
+            <th style="background:  #A7CCF3;">Fecha</th>                        
+            <th style="background:  #A7CCF3;">Numero</th>
+            <th style="background:  #A7CCF3;">Valor</th>
+            <th style="background:  #A7CCF3;">Beneficiario</th>                                         
+            <th style="background:  #A7CCF3;" class="text-left">Referencia</th>                                               
+        </tr>
+    </thead>
+    <tbody>
+    @if(isset($datos[24]))
+        @for ($c = 0; $c < count($datos[24]); ++$c) 
+        <tr class="letra10">                       
+            <td >{{ $datos[24][$c]['fecha']}}</td>
+            <td >{{ $datos[24][$c]['numero']}}</td>
+            <td >{{ number_format($datos[24][$c]['valor'],2)}}</td>
+            <td >{{ $datos[24][$c]['beneficiario']}}</td> 
+            <td class="text-left">{{ $datos[24][$c]['referencia']}}</td>
+        </tr>
+        @endfor
+    @endif
+    </tbody>
+</table>
     <div style="page-break-inside: avoid;">
     <br>
     <table class="conBorder" style="padding-left: 5px; padding-right: 560px;">

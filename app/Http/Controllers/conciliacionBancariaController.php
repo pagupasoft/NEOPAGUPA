@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use SebastianBergmann\Environment\Console;
 use TypeError;
 
 use function PHPUnit\Framework\throwException;
@@ -65,7 +66,7 @@ class conciliacionBancariaController extends Controller
            
                 $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->join('tipo_grupo','tipo_grupo.grupo_id','=','grupo_permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
                 $tipoPermiso=DB::table('usuario_rol')->select('tipo_grupo.grupo_id','tipo_grupo.tipo_id', 'tipo_nombre','tipo_icono','tipo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('tipo_grupo','tipo_grupo.tipo_id','=','permiso.tipo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('tipo_orden','asc')->distinct()->get();
-    $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+                $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
                 $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();  
                 return view('admin.bancos.conciliacionBancaria.index',
                 ['bancoC'=>$cuentaBancaria->banco,
@@ -94,10 +95,14 @@ class conciliacionBancariaController extends Controller
                 'cuentaBancaria'=>$cuentaBancaria,
                 'conciliacionBancariaMatriz'=>$datos[22],
                 'otrasconciliacionesBancariaMatriz'=>$datos[23],
+                'chequesAnulados'=>$datos[24],
+                'chequesMissing'=>$datos[25],
+                'isIncomplete'=> $datos[26],
                 'fechaI'=>$request->get('idDesde'),
                 'fechaF'=>$request->get('idHasta'),           
                 'bancos'=>Banco::Bancos()->get(),
                 'PE'=>Punto_Emision::puntos()->get(),
+                'tipoPermiso'=>$tipoPermiso,
                 'gruposPermiso'=>$gruposPermiso, 
                 'permisosAdmin'=>$permisosAdmin])->with('successMsg','Datos guardados exitosamente');
             
@@ -107,8 +112,8 @@ class conciliacionBancariaController extends Controller
         }
     }
     private function procesar(Request $request){
-        try{ 
-            $datos =  $this->consulta($request);
+        try{             
+            $datos =  $this->consulta($request);            
             if (isset($_POST['buscar'])){
                 $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->join('tipo_grupo','tipo_grupo.grupo_id','=','grupo_permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
                 $tipoPermiso=DB::table('usuario_rol')->select('tipo_grupo.grupo_id','tipo_grupo.tipo_id', 'tipo_nombre','tipo_icono','tipo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('tipo_grupo','tipo_grupo.tipo_id','=','permiso.tipo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('tipo_orden','asc')->distinct()->get();
@@ -141,22 +146,26 @@ class conciliacionBancariaController extends Controller
                 'cuentaBancaria'=>$cuentaBancaria,
                 'conciliacionBancariaMatriz'=>$datos[22],
                 'otrasconciliacionesBancariaMatriz'=>$datos[23],
+                'chequesAnulados'=>$datos[24],
+                'chequesMissing'=>$datos[25],
+                'isIncomplete'=> $datos[26],
                 'fechaI'=>$request->get('idDesde'),
                 'fechaF'=>$request->get('idHasta'),           
                 'bancos'=>Banco::Bancos()->get(),
                 'PE'=>Punto_Emision::puntos()->get(),
-                'gruposPermiso'=>$gruposPermiso, 
+                'tipoPermiso'=>$tipoPermiso,
+                'gruposPermiso'=>$gruposPermiso,
                 'permisosAdmin'=>$permisosAdmin]);  
             }
             if (isset($_POST['excel'])){
-                $datos[24] = $request->get('idDesde');
-                $datos[25] = $request->get('idHasta');
+                $datos[27] = $request->get('idDesde');
+                $datos[28] = $request->get('idHasta');
                 return Excel::download(new ViewExcel('admin.formatosExcel.conciliacionBancaria',$datos), 'NEOPAGUPA  Sistema Contable.xls');
             }
             if (isset($_POST['pdf'])){
                 $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();
-                $datos[24] = date("d/m/Y", strtotime($request->get('idDesde')));
-                $datos[25] = date("d/m/Y", strtotime($request->get('idHasta')));
+                $datos[27] = date("d/m/Y", strtotime($request->get('idDesde')));
+                $datos[28] = date("d/m/Y", strtotime($request->get('idHasta')));
                 $empresa =  Empresa::empresa()->first();
                 Auth::user()->user_nombre;
 
@@ -632,6 +641,13 @@ class conciliacionBancariaController extends Controller
             
             $conciliacionBancariaMatriz = [];
             $otrasconciliacionesBancariaMatriz = [];
+            $chequesAnuladosMatriz = [];
+            //CONSULTA CHEQUES ANULADOS
+            $chequesAnulado = Cheque::ChequeByCuentaAnulados($request->get('cuenta_id'))
+            ->where('cheque.cheque_fecha_emision','>=',$request->get('idDesde'))->where('cheque.cheque_fecha_emision','<=',$request->get('idHasta'))->get();
+            //CONSULTA CHEQUES ACTIVOS Y ANULADOS
+            $chequesActivosAnulados = Cheque::ChequeByCuentaActivoAnulado($request->get('cuenta_id'))
+            ->where('cheque.cheque_fecha_emision','>=',$request->get('idDesde'))->where('cheque.cheque_fecha_emision','<=',$request->get('idHasta'))->get();
             //POR CONCILIAR FECHA CONSULTADA            
             $depositos = Deposito::DepositosByCuenta($request->get('cuenta_id'))
             ->where('deposito.deposito_fecha','>=',$request->get('idDesde'))            
@@ -655,7 +671,35 @@ class conciliacionBancariaController extends Controller
 
             $ncBancos = Nota_Credito_banco::NCbancoByCuenta($request->get('cuenta_id'))
             ->where('nota_credito_banco.nota_fecha','>=',$request->get('idDesde'))->where('nota_credito_banco.nota_fecha','<=',$request->get('idHasta'))->get();
+            /*VALIDACION RANGO DE CHEQUES*/
+            $arrayAllCheques = [];     
+            $arrayMissCheques = '';
+            $isIncomplete = false;            
+            foreach($chequesActivosAnulados as $cheque){ 
+                array_push($arrayAllCheques,$cheque->cheque_numero);
+            }
+                 
+            for ($order = min($arrayAllCheques) ; $order < max($arrayAllCheques); $order++) {
+                if(!in_array($order, $arrayAllCheques)){
+                    $isIncomplete = true;       
+                    $arrayMissCheques = $arrayMissCheques.$order.' - ';
+                }
+            }
+            
+            
 
+            /*CHEUES ANULADOS*/
+            $countAnul = 0;
+            foreach($chequesAnulado as $cheque){
+                $chequesAnuladosMatriz[$countAnul]['fecha'] = $cheque->cheque_fecha_emision;
+                $chequesAnuladosMatriz[$countAnul]['numero'] = $cheque->cheque_numero;
+                $chequesAnuladosMatriz[$countAnul]['valor'] = $cheque->cheque_valor;
+                $chequesAnuladosMatriz[$countAnul]['beneficiario'] = $cheque->cheque_beneficiario;
+                $chequesAnuladosMatriz[$countAnul]['referencia'] = $cheque->cheque_descripcion;
+
+                $countAnul = $countAnul + 1;
+            }
+            /*//*/
             $count = 0;  
             $isFirst = true;
             foreach($cheques as $cheque){                    
@@ -1152,7 +1196,11 @@ class conciliacionBancariaController extends Controller
             $datos[20] = $transferenciaIngresosNoConciliados;
             $datos[21] = $transferenciaIngresosConciliadosOtros;
             $datos[22] = $conciliacionBancariaMatriz;
-            $datos[23] = $otrasconciliacionesBancariaMatriz;           
+            $datos[23] = $otrasconciliacionesBancariaMatriz; 
+            $datos[24] = $chequesAnuladosMatriz;    
+            $datos[25] = $arrayMissCheques;     
+            $datos[26] = $isIncomplete;
+          
             return $datos;
         }catch(\Exception $ex){
             return redirect('conciliacionBancaria')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

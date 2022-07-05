@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Casillero_tributario;
 use App\Models\Detalle_RC;
 use App\Models\Detalle_RV;
 use App\Models\Empresa;
@@ -101,18 +100,12 @@ class formulariosController extends Controller
                 }
 
                 $cantV=DB::select(
-                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
-                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id."
-                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
-                            and factura_venta.factura_fecha >= '".$request->get('fecha_desde')."' and factura_venta.factura_fecha <= '".$request->get('fecha_hasta')."' and factura_venta.factura_estado<>'2'
-                            and factura_venta.documento_anulado_id is NULL"));
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
 
                 $cantVA=DB::select(
-                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
-                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id." 
-                            and factura_venta.factura_fecha >='".$request->get('fecha_desde')."' and factura_venta.factura_fecha <='".$request->get('fecha_hasta')."' 
-                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
-                            and factura_venta.documento_anulado_id is not NULL"));
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
 
                 $cantC1=DB::select(
                     DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
@@ -129,18 +122,12 @@ class formulariosController extends Controller
             }
             if (isset($_POST['pdf'])){
                 $cantV=DB::select(
-                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
-                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id."
-                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
-                            and factura_venta.factura_fecha >= '".$request->get('fecha_desde')."' and factura_venta.factura_fecha <= '".$request->get('fecha_hasta')."' and factura_venta.factura_estado<>'2'
-                            and factura_venta.documento_anulado_id is NULL"));
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is NULL"));
 
                 $cantVA=DB::select(
-                    DB::raw("select count(distinct factura_venta.factura_id) as cant from factura_venta, bodega, sucursal, detalle_fv, producto
-                            where factura_venta.bodega_id=bodega.bodega_id and bodega.sucursal_id=sucursal.sucursal_id and sucursal.empresa_id=".Auth::user()->empresa_id." 
-                            and factura_venta.factura_fecha >='".$request->get('fecha_desde')."' and factura_venta.factura_fecha <='".$request->get('fecha_hasta')."' 
-                            and factura_venta.factura_id=detalle_fv.factura_id and detalle_fv.producto_id=producto.producto_id
-                            and factura_venta.documento_anulado_id is not NULL"));
+                    DB::raw("select count(factura_id) as cant from factura_venta 
+                            where factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."' and documento_anulado_id is not NULL"));
 
                 $cantC1=DB::select(
                     DB::raw("select count(transaccion_id) as cant from transaccion_compra, tipo_comprobante as t
@@ -724,280 +711,208 @@ class formulariosController extends Controller
             $liquidoMes = 0;
             /*VENTAS 12%*/
             $datos = [];
-            $datosAux = [];
             $count = 1;
+            $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa diferente de cero';
+            $datos[1]['porcentaje'] = '12'; 
+            $datos[1]['casillero'] = '401'; 
+            $datos[1]['compraBruta'] = 0; 
+            $datos[1]['nc'] = 0; 
+            $datos[1]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
+            $datos[1]['iva'] = 0; 
 
-            $datos[0]['sustento'] = 'SIN CASILLERO';
-            $datos[0]['porcentaje'] = '12'; 
-            $datos[0]['casillero'] = '0'; 
-            $datos[0]['compraBruta'] = 0; 
-            $datos[0]['nc'] = 0; 
-            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-            $datos[0]['iva'] = 0; 
-
-            foreach(Casillero_tributario::CasillerosTributarios()->where('casillero_tipo','=','VENTAS 12%')->get() as $casillero){
-                $datosAux[$count] = $casillero->casillero_codigo;
-
-                $datos[$count]['sustento'] = $casillero->casillero_descripcion;
-                $datos[$count]['porcentaje'] = '12'; 
-                $datos[$count]['casillero'] = $casillero->casillero_codigo; 
-                $datos[$count]['compraBruta'] = 0; 
-                $datos[$count]['nc'] = 0; 
-                $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
-                $datos[$count]['iva'] = 0; 
-                $count ++;
-            }
-
-            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, detalle_fv.detalle_iva
-            from factura_venta 
-            inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
-            inner join producto on producto.producto_id = detalle_fv.producto_id
-            left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa12 > 0 and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
-
-            foreach($registros as $registro){
-                $countAux = 0;
-                if($registro->detalle_iva > 0){
-                    if(is_null($registro->casillero_codigo)){
+            $datos[2]['sustento'] = 'Ventas de activos fijos gravadas tarifa diferente de cero';
+            $datos[2]['porcentaje'] = '12'; 
+            $datos[2]['casillero'] = '402'; 
+            $datos[2]['compraBruta'] = 0; 
+            $datos[2]['nc'] = 0;
+            $datos[2]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
+            $datos[2]['iva'] = 0; 
+            foreach(Factura_Venta::FacturasbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                ->where('factura_tarifa12','>','0')->get() as $venta){
+                foreach($venta->detalles as $detalle){
+                    if($detalle->detalle_iva > 0){
                         $compra = Transaccion_Compra::TransaccionSinFecha()
-                            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                            ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
-                            ->distinct('sustento_tributario.sustento_venta12','transaccion_compra.transaccion_fecha','transaccion_compra.transaccion_id')
-                            ->where('detalle_tc.producto_id','=',$registro->producto_id)->where('tipo_comprobante.tipo_comprobante_codigo','=','01')
-                            ->orderBy('transaccion_compra.transaccion_fecha','desc')->orderBy('transaccion_compra.transaccion_id','desc')->first();
+                        ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
+                        ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
+                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detalle->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta12)){
-                            $countAux = array_search($compra->sustento_venta12, $datosAux);
-                            if(!empty($countAux)){
-                                $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
-                                $datos[$countAux]['nc'] = 0; 
-                                $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                                $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                            }else{
-                                $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                                $datos[0]['nc'] = 0; 
-                                $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            if($compra->sustento_venta12 == '401' or $detalle->producto->producto_compra_venta == '2'){
+                                $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa diferente de cero';
+                                $datos[1]['porcentaje'] = $venta->factura_porcentaje_iva; 
+                                $datos[1]['casillero'] = '401'; 
+                                $datos[1]['compraBruta'] = floatval($datos[1]['compraBruta']) + $detalle->detalle_total; 
+                            }
+                            if($compra->sustento_venta12 == '402'){
+                                $datos[2]['sustento'] = 'Ventas de activos fijos gravadas tarifa diferente de cero';
+                                $datos[2]['porcentaje'] = $venta->factura_porcentaje_iva; 
+                                $datos[2]['casillero'] = '402'; 
+                                $datos[2]['compraBruta'] = floatval($datos[2]['compraBruta']) + $detalle->detalle_total; 
                             }
                         }else{
-                            $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                            $datos[0]['nc'] = 0; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
-                        }
-                    }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
-                        if(!empty($countAux)){
-                            $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
-                            $datos[$countAux]['nc'] = 0; 
-                            $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                            $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                        }else{
-                            $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                            $datos[0]['nc'] = 0; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa diferente de cero';
+                            $datos[1]['porcentaje'] = $venta->factura_porcentaje_iva; 
+                            $datos[1]['casillero'] = '401'; 
+                            $datos[1]['compraBruta'] = floatval($datos[1]['compraBruta']) + $detalle->detalle_total; 
                         }
                     }
                 }
             }
-
-            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, detalle_nc.detalle_iva
-            from nota_credito 
-            inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
-            inner join producto on producto.producto_id = detalle_nc.producto_id
-            left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa12 > 0 and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
-
-            foreach($registrosNC as $registro){
-                $countAux = 0;
-                if($registro->detalle_iva > 0){
-                    if(is_null($registro->casillero_codigo)){
+            foreach(Nota_Credito::NCbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                ->where('nc_tarifa12','>','0')->get()as $nc){
+                foreach($nc->detalles as $detallenc){
+                    if($detallenc->detalle_iva > 0){
                         $compra = Transaccion_Compra::TransaccionSinFecha()
-                            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                            ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
-                            ->distinct('sustento_tributario.sustento_venta12','transaccion_compra.transaccion_fecha','transaccion_compra.transaccion_id')
-                            ->where('detalle_tc.producto_id','=',$registro->producto_id)->orderBy('transaccion_compra.transaccion_fecha','desc')
-                            ->orderBy('transaccion_compra.transaccion_id','desc')->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
-                            if(isset($compra->sustento_venta12)){
-                                $countAux = array_search($compra->sustento_venta12, $datosAux);
-                                if(!empty($countAux)){
-                                    $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
-                                    $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                                    $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                                }else{
-                                    $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                                    $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                    $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
-                                }
-                            }else{
-                                $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                                $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                        ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
+                        ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta12')
+                        ->distinct('sustento_tributario.sustento_venta12')->where('detalle_tc.producto_id','=',$detallenc->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
+                        if(isset($compra->sustento_venta12)){
+                            if($compra->sustento_venta12 == '401' or $detalle->producto->producto_compra_venta == '2'){
+                                $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
                             }
-                    }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
-                        if(!empty($countAux)){
-                            $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
-                            $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                            $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+                            if($compra->sustento_venta12 == '402'){
+                                $datos[2]['nc'] = floatval($datos[2]['nc']) + $detallenc->detalle_total; 
+                            }
                         }else{
-                            $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
                         }
                     }
                 }
-            }
+            }   
+            $datos[1]['compraNeta'] = floatval($datos[1]['compraBruta']) - floatval($datos[1]['nc']);  
+            $datos[1]['iva'] = floatval($datos[1]['compraNeta']) * (floatval($datos[1]['porcentaje']) / 100); 
+            $datos[1]['porcentaje'] = $datos[1]['porcentaje'].'%';
+            $liquidoMes = $liquidoMes + floatval($datos[1]['iva']);
 
-            for($i = 0; $i < count($datos); $i++){
-                $liquidoMes= $liquidoMes + floatval($datos[$i]['iva']);
+            $datos[2]['compraNeta'] = floatval($datos[2]['compraBruta']) - floatval($datos[2]['nc']);  
+            $datos[2]['iva'] = floatval($datos[2]['compraNeta']) * (floatval($datos[2]['porcentaje']) / 100); 
+            $datos[2]['porcentaje'] = $datos[2]['porcentaje'].'%';
+            $liquidoMes= $liquidoMes + floatval($datos[2]['iva']);
 
-                $datos[$i]['porcentaje'] = '12%'; 
-
-                $total1 = $total1 + $datos[$i]['compraBruta'];
-                $total2 = $total2 + $datos[$i]['nc'];
-                $total3 = $total3 + $datos[$i]['compraNeta'];
-                $total4 = $total4 + $datos[$i]['iva'];
-            }
-
+            $total1 = $total1 + $datos[1]['compraBruta'] + $datos[2]['compraBruta'];
+            $total2 = $total2 + $datos[1]['nc'] + $datos[2]['nc'];
+            $total3 = $total3 + $datos[1]['compraNeta'] + $datos[2]['compraNeta'];
+            $total4 = $total4 + $datos[1]['iva'] + $datos[2]['iva'];
             $resultado[0]= $datos;
             /*************/
             /*VENTAS 0%*/
             $datos = [];
-            $datosAux = [];
             $count = 1;
+            $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que no dan derecho a crédito tributario';
+            $datos[1]['porcentaje'] = '0'; 
+            $datos[1]['casillero'] = '403'; 
+            $datos[1]['compraBruta'] = 0; 
+            $datos[1]['nc'] = 0; 
+            $datos[1]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
+            $datos[1]['iva'] = 0; 
 
-            $datos[0]['sustento'] = 'SIN CASILLERO';
-            $datos[0]['porcentaje'] = '0'; 
-            $datos[0]['casillero'] = '0'; 
-            $datos[0]['compraBruta'] = 0; 
-            $datos[0]['nc'] = 0; 
-            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-            $datos[0]['iva'] = 0; 
+            $datos[2]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que dan derecho a crédito tributario';
+            $datos[2]['porcentaje'] = '0'; 
+            $datos[2]['casillero'] = '405'; 
+            $datos[2]['compraBruta'] = 0; 
+            $datos[2]['nc'] = 0;
+            $datos[2]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
+            $datos[2]['iva'] = 0; 
 
-            foreach(Casillero_tributario::CasillerosTributarios()->where('casillero_tipo','=','VENTAS 0%')->get() as $casillero){
-                $datosAux[$count] = $casillero->casillero_codigo;
+            $datos[3]['sustento'] = 'Ventas de activos fijos gravadas tarifa 0% que dan derecho a crédito tributario';
+            $datos[3]['porcentaje'] = '0'; 
+            $datos[3]['casillero'] = '406'; 
+            $datos[3]['compraBruta'] = 0; 
+            $datos[3]['nc'] = 0;
+            $datos[3]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
+            $datos[3]['iva'] = 0; 
 
-                $datos[$count]['sustento'] = $casillero->casillero_descripcion;
-                $datos[$count]['porcentaje'] = '0'; 
-                $datos[$count]['casillero'] = $casillero->casillero_codigo; 
-                $datos[$count]['compraBruta'] = 0; 
-                $datos[$count]['nc'] = 0; 
-                $datos[$count]['compraNeta'] = floatval($datos[$count]['compraBruta']) - floatval($datos[$count]['nc']);  
-                $datos[$count]['iva'] = 0; 
-                $count ++;
-            }
-
-            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, detalle_fv.detalle_iva
-            from factura_venta 
-            inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
-            inner join producto on producto.producto_id = detalle_fv.producto_id
-            left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa0 > 0 and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
-
-            foreach($registros as $registro){
-                $countAux = 0;
-                if($registro->detalle_iva == 0){
-                    if(is_null($registro->casillero_codigo)){
+            foreach(Factura_Venta::FacturasbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta'))
+                ->where('factura_tarifa0','>','0')->get() as $venta){
+                foreach($venta->detalles as $detalle){
+                    if($detalle->detalle_iva == 0){           
                         $compra = Transaccion_Compra::TransaccionSinFecha()
-                            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                            ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
-                            ->distinct('sustento_tributario.sustento_venta0','transaccion_compra.transaccion_fecha','transaccion_compra.transaccion_id')
-                            ->where('detalle_tc.producto_id','=',$registro->producto_id)->where('tipo_comprobante.tipo_comprobante_codigo','=','01')
-                            ->orderBy('transaccion_compra.transaccion_fecha','desc')->orderBy('transaccion_compra.transaccion_id','desc')->first();
-
+                        ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
+                        ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
+                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detalle->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                         if(isset($compra->sustento_venta0)){
-                            $countAux = array_search($compra->sustento_venta0, $datosAux);
-                            if(!empty($countAux)){
-                                $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
-                                $datos[$countAux]['nc'] = 0; 
-                                $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                                $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                            }else{
-                                $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                                $datos[0]['nc'] = 0; 
-                                $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            if($compra->sustento_venta0 == '403'){
+                                $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que no dan derecho a crédito tributario';
+                                $datos[1]['porcentaje'] = 0; 
+                                $datos[1]['casillero'] = '403'; 
+                                $datos[1]['compraBruta'] = floatval($datos[1]['compraBruta']) + $detalle->detalle_total; 
+                            }
+                            elseif($compra->sustento_venta0 == '405' or $detalle->producto->producto_compra_venta == '2'){
+                                $datos[2]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que dan derecho a crédito tributario';
+                                $datos[2]['porcentaje'] = 0; 
+                                $datos[2]['casillero'] = '405'; 
+                                $datos[2]['compraBruta'] = floatval($datos[2]['compraBruta']) + $detalle->detalle_total; 
+                            }
+                            elseif($compra->sustento_venta0 == '406'){
+                                $datos[3]['sustento'] = 'Ventas de activos fijos gravadas tarifa 0% que dan derecho a crédito tributario';
+                                $datos[3]['porcentaje'] = 0; 
+                                $datos[3]['casillero'] = '406'; 
+                                $datos[3]['compraBruta'] = floatval($datos[3]['compraBruta']) + $detalle->detalle_total;  
                             }
                         }else{
-                            $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                            $datos[0]['nc'] = 0; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
-                        }
-                    }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
-                        if(!empty($countAux)){
-                            $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
-                            $datos[$countAux]['nc'] = 0; 
-                            $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                            $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                        }else{
-                            $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                            $datos[0]['nc'] = 0; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            if($venta->cliente->tipoCliente->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $datos[1]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que no dan derecho a crédito tributario';
+                                $datos[1]['porcentaje'] = 0; 
+                                $datos[1]['casillero'] = '403'; 
+                                $datos[1]['compraBruta'] = floatval($datos[1]['compraBruta']) + $detalle->detalle_total; 
+                            }else{
+                                $datos[2]['sustento'] = 'Ventas locales (excluye activos fijos) gravadas tarifa 0% que dan derecho a crédito tributario';
+                                $datos[2]['porcentaje'] = 0; 
+                                $datos[2]['casillero'] = '405'; 
+                                $datos[2]['compraBruta'] = floatval($datos[2]['compraBruta']) + $detalle->detalle_total; 
+                            }
+                            
                         }
                     }
                 }
             }
-
-            $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, detalle_nc.detalle_iva
-            from nota_credito 
-            inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
-            inner join producto on producto.producto_id = detalle_nc.producto_id
-            left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa0 > 0 and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
-
-            foreach($registrosNC as $registro){
-                $countAux = 0;
-                if($registro->detalle_iva > 0){
-                    if(is_null($registro->casillero_codigo)){
+            foreach(Nota_Credito::NCbyFecha($request->get('fecha_desde'),$request->get('fecha_hasta')) 
+                ->where('nc_tarifa0','>','0')->get()as $nc){
+                foreach($nc->detalles as $detallenc){
+                    if($detallenc->detalle_iva == 0){
                         $compra = Transaccion_Compra::TransaccionSinFecha()
-                            ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
-                            ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
-                            ->distinct('sustento_tributario.sustento_venta0','transaccion_compra.transaccion_fecha','transaccion_compra.transaccion_id')
-                            ->where('detalle_tc.producto_id','=',$registro->producto_id)->orderBy('transaccion_compra.transaccion_fecha','desc')
-                            ->orderBy('transaccion_compra.transaccion_id','desc')->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
-                            if(isset($compra->sustento_venta0)){
-                                $countAux = array_search($compra->sustento_venta0, $datosAux);
-                                if(!empty($countAux)){
-                                    $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
-                                    $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                                    $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
-                                }else{
-                                    $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                                    $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                    $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
-                                }
-                            }else{
-                                $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                                $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                                $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                        ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')
+                        ->join('detalle_tc','detalle_tc.transaccion_id','=','transaccion_compra.transaccion_id')->select('sustento_tributario.sustento_venta0')
+                        ->distinct('sustento_tributario.sustento_venta0')->where('detalle_tc.producto_id','=',$detallenc->producto_id)
+                        ->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
+                        if(isset($compra->sustento_venta0)){
+                            if($compra->sustento_venta0 == '403'){
+                                $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
                             }
-                    }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
-                        if(!empty($countAux)){
-                            $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
-                            $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
-                            $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+                            if($compra->sustento_venta0 == '405' or $detallenc->producto->producto_compra_venta == '2'){
+                                $datos[2]['nc'] = floatval($datos[2]['nc']) + $detallenc->detalle_total; 
+                            }
+                            if($compra->sustento_venta0 == '406'){
+                                $datos[3]['nc'] = floatval($datos[3]['nc']) + $detallenc->detalle_total; 
+                            }
                         }else{
-                            $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            if($nc->cliente->tipoCliente->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $datos[1]['nc'] = floatval($datos[1]['nc']) + $detallenc->detalle_total; 
+                            }else{
+                                $datos[2]['nc'] = floatval($datos[2]['nc']) + $detallenc->detalle_total; 
+                            }
                         }
                     }
                 }
-            }
+            }   
+            $datos[1]['compraNeta'] = floatval($datos[1]['compraBruta']) - floatval($datos[1]['nc']);  
+            $datos[1]['iva'] = floatval($datos[1]['compraNeta']) * (floatval($datos[1]['porcentaje']) / 100); 
+            $datos[1]['porcentaje'] = $datos[1]['porcentaje'].'%';
 
-            for($i = 0; $i < count($datos); $i++){
-                $datos[$i]['porcentaje'] = '0%'; 
+            $datos[2]['compraNeta'] = floatval($datos[2]['compraBruta']) - floatval($datos[2]['nc']);  
+            $datos[2]['iva'] = floatval($datos[2]['compraNeta']) * (floatval($datos[2]['porcentaje']) / 100); 
+            $datos[2]['porcentaje'] = $datos[2]['porcentaje'].'%';
 
-                $total1 = $total1 + $datos[$i]['compraBruta'];
-                $total2 = $total2 + $datos[$i]['nc'];
-                $total3 = $total3 + $datos[$i]['compraNeta'];
-                $total4 = $total4 + $datos[$i]['iva'];
-            }
+            $datos[3]['compraNeta'] = floatval($datos[3]['compraBruta']) - floatval($datos[3]['nc']);  
+            $datos[3]['iva'] = floatval($datos[3]['compraNeta']) * (floatval($datos[3]['porcentaje']) / 100); 
+            $datos[3]['porcentaje'] = $datos[3]['porcentaje'].'%';
+
+            $total1 = $total1 + $datos[1]['compraBruta'] + $datos[2]['compraBruta'] + $datos[3]['compraBruta'];
+            $total2 = $total2 + $datos[1]['nc'] + $datos[2]['nc'] + $datos[3]['nc'];
+            $total3 = $total3 + $datos[1]['compraNeta'] + $datos[2]['compraNeta'] + $datos[3]['compraNeta'];
+            $total4 = $total4 + $datos[1]['iva'] + $datos[2]['iva'] + $datos[3]['iva'];
             $resultado[1]= $datos;
             /*************/
             /*TOTAL VENTAS 12% Y 0%*/
@@ -1113,8 +1028,16 @@ class formulariosController extends Controller
             ->groupBy('sustento_tributario.sustento_credito')->groupBy('transaccion_porcentaje_iva')
             ->orderBy('sustento_tributario.sustento_compra12')->get() as $compra){
                 if($compra->sustento_compra12 != '535'){
-                    $casillero = Casillero_tributario::CasilleroTributarioPorCodigo($compra->sustento_compra12)->first();
-                    $datos[$count]['sustento'] = isset($casillero->casillero_descripcion) ? $casillero->casillero_descripcion : '';
+                    $datos[$count]['sustento'] = ''; 
+                    if($compra->sustento_compra12 == '500'){
+                        $datos[$count]['sustento'] ='Adquisiciones y pagos (excluye activos fijos) gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
+                    }
+                    if($compra->sustento_compra12 == '501'){
+                        $datos[$count]['sustento'] ='Adquisiciones locales de activos fijos gravados tarifa diferente de cero (con derecho a crédito tributario)'; 
+                    }
+                    if($compra->sustento_compra12 == '502'){
+                        $datos[$count]['sustento'] ='Otras adquisiciones y pagos gravados tarifa diferente de cero (sin derecho a crédito tributario)'; 
+                    }
                     $datos[$count]['porcentaje'] = $compra->transaccion_porcentaje_iva.'%'; 
                     $datos[$count]['casillero'] = $compra->sustento_compra12; 
                     $datos[$count]['compraBruta'] = $compra->tarifa12; 
@@ -1146,8 +1069,13 @@ class formulariosController extends Controller
             ->where('transaccion_compra.transaccion_tarifa0','>',0)->groupBy('sustento_tributario.sustento_compra0')->groupBy('transaccion_porcentaje_iva')
             ->orderBy('sustento_tributario.sustento_compra0')->get() as $compra){
                 if($compra->sustento_compra0 != '535'){
-                    $casillero = Casillero_tributario::CasilleroTributarioPorCodigo($compra->sustento_compra0)->first();
-                    $datos[$count]['sustento'] = isset($casillero->casillero_descripcion) ? $casillero->casillero_descripcion : '';
+                    $datos[$count]['sustento'] = ''; 
+                    if($compra->sustento_compra0 == '506'){
+                        $datos[$count]['sustento'] ='Importaciones de bienes (incluye activos fijos) gravados tarifa 0%'; 
+                    }
+                    if($compra->sustento_compra0 == '507'){
+                        $datos[$count]['sustento'] ='Adquisiciones y pagos (incluye activos fijos) gravados tarifa 0%'; 
+                    }
                     $datos[$count]['porcentaje'] = '0%'; 
                     $datos[$count]['casillero'] = $compra->sustento_compra0; 
                     $datos[$count]['compraBruta'] = $compra->tarifa0; 

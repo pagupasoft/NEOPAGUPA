@@ -7,7 +7,8 @@
         <div class="card-header">
             <h3 class="card-title">Conciliación Bancaria</h3>
             <div class="float-right">
-                <button type="submit" id="guardar" name="guardar" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Guardar Conciliación"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                <button type="submit"  id="guardar" name="guardar" class="invisible"><i class="fa fa-trash"></i></button>
+                <button type="button" onclick="verificarFechaGuardar();" id="guardarAux" name="guardarAux" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Guardar Conciliación"><i class="fa fa-save"></i>&nbsp;Guardar</button>
             </div>
         </div>
         
@@ -53,6 +54,8 @@
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" id="validarRango" value="@if(isset($isIncomplete)) @if($isIncomplete) 0 @else 1 @endif @else 1 @endif">
+                        <input type="hidden" id="chequesMissing" value="@if(isset($chequesMissing)) {{$chequesMissing}} @endif">
                         <div class="col-md-2 centrar-texto">
                             <button type="submit" id="buscar" name="buscar" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Buscar"><i class="fa fa-search"></i></button>
                             <button onclick="setTipo('&excel=descarga')" type="submit" id="excel" name="excel" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar a Excel" value="fdds"><i class="fas fa-file-excel"></i></button>
@@ -236,7 +239,7 @@
                 if(isset($saldoAnteriorContable)){
                     $saldo = $saldoAnteriorContable;
                 }
-            ?> 
+            ?>               
             <div class="card-body table-responsive p-0" style="height: 400px;">
                 <table id="tree-table" class="table table-head-fixed text-nowrap">
                     <thead>
@@ -366,6 +369,33 @@
                 </tbody>
             </table>
             </div>
+            <hr>
+            <center><h3><b>CHEQUES ANULADOS</b><h3></center>
+            <div class="card-body table-responsive p-0" style="height: 400px;">
+            <table id="tree-table2" class="table table-head-fixed text-nowrap">
+                <thead>
+                    <tr class="text-center">
+                        <th>Fecha</th>                        
+                        <th>Numero</th>
+                        <th>Valor</th>
+                        <th>Beneficiario</th>                                         
+                        <th class="text-left">Referencia</th>                                               
+                    </tr>
+                </thead>
+                <tbody>
+                @if(isset($chequesAnulados))
+                    @for ($c = 0; $c < count($chequesAnulados); ++$c) 
+                    <tr class="text-center">                       
+                        <td >{{ $chequesAnulados[$c]['fecha']}}</td>
+                        <td >{{ $chequesAnulados[$c]['numero']}}</td>
+                        <td >{{ number_format($chequesAnulados[$c]['valor'],2)}}</td>
+                        <td >{{ $chequesAnulados[$c]['beneficiario']}}</td> 
+                        <td class="text-left">{{ $chequesAnulados[$c]['referencia']}}</td>
+                    </tr>
+                    @endfor
+                @endif
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -429,6 +459,17 @@
         //calculate_load_times();
         girarGif();
         return true;
+    }
+
+    function verificarFechaGuardar() {
+        if(document.getElementById("validarRango").value.trim() == '0'){
+            bootbox.alert({
+                message: "Los siguientes numero de cheques no se encuentran registrados, registre los cheques faltantes para poder conciliar. <br>"+document.getElementById("chequesMissing").value,
+                size: 'large'
+            });
+        }else{
+            $("#guardar").click();
+        }
     }
 
     function cargarCuenta(){

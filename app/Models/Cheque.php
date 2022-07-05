@@ -46,6 +46,12 @@ class Cheque extends Model
     public function scopeChequeByCuenta($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','1')->orderby('cheque.cheque_numero','asc');
     }
+    public function scopeChequeByCuentaAnulados($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','2')->orderby('cheque.cheque_numero','asc');
+    }
+    public function scopeChequeByCuentaActivoAnulado($query, $id){
+        return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->orderby('cheque.cheque_numero','asc');
+    }
     public function scopeChequeOtrosByCuenta($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('cheque.cuenta_bancaria_id','=',$id)->where('cheque.cheque_estado','=','1')->orderby('cheque.cheque_numero','asc');
     }

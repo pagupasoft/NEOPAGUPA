@@ -44,7 +44,7 @@
                 <div class="form-group row">
                     <label for="idFecha" class="col-sm-2 col-form-label">Fecha</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="idFecha" name="idFecha" value='<?php echo (date("Y") . "-" . date("m") . "-" . date("d")); ?>' required>
+                        <input type="date" class="form-control" id="idFecha" name="idFecha" onchange="fechaCheque();" value='<?php echo (date("Y") . "-" . date("m") . "-" . date("d")); ?>' required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -168,6 +168,9 @@
     }
     function cargarBeneficiario(){
         document.getElementById("idBeneficiariocheque").value =  document.getElementById("idBeneficiario").value;
+    }
+    function fechaCheque(){
+        document.getElementById("idFechaCheque").value = document.getElementById("idFecha").value;
     }
 </script>
 @endsection

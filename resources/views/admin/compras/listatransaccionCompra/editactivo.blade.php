@@ -572,7 +572,7 @@
                                                     style="margin-bottom: 0px;">
                                                     <div class="form-group">
                                                         <input id="baseFuente" name="baseFuente" type="text"
-                                                            class="form-control" placeholder="0.00" value="0.00"
+                                                            class="form-control" placeholder="0.00" value="0.00" onkeyup="calcularRF();" onclick="calcularRF();"
                                                             >
                                                     </div>
                                                 </div>
@@ -695,7 +695,7 @@
                                                     <div class="form-group">
                                                         <div class="form-line">
                                                             <input id="baseIva" name="baseIva" type="text"
-                                                                class="form-control" placeholder="Total" value="0.00"
+                                                                class="form-control" placeholder="Total" value="0.00" onkeyup="calcularRI();" onclick="calcularRI();"
                                                                 >
                                                         </div>
                                                     </div>

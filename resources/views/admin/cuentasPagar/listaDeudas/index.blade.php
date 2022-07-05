@@ -1,12 +1,12 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-secondary">
+<div class="card card-secondary" style="position: absolute; width: 100%">
     <div class="card-header">
         <h3 class="card-title">Lista de Deudas</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="{{ url("listaDeudas") }}">
+        <form id="idForm" class="form-horizontal" method="POST" action="{{ url("listaDeudas") }}">
         @csrf
             <div class="form-group row">
                 <div class="col-sm-6">
@@ -48,9 +48,9 @@
                             </select>
                         </div>
                         <div class="col-sm-3">
-                            <button type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                            <button type="submit" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
-                            <button type="submit" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
+                            <button type="submit" onclick="girarGif()" type="submit" id="buscar" name="buscar" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                            <button type="submit" onclick="setTipo('&pdf=descarga')" id="pdf" name="pdf" class="btn btn-secondary"><i class="fas fa-print"></i></button>
+                            <button type="submit" onclick="setTipo('&excel=descarga')" id="excel" name="excel" class="btn btn-success"><i class="fas fa-file-excel"></i></button>
                         </div>
                     </div>
                     
@@ -181,5 +181,47 @@
     </div>
     <!-- /.card-body -->
 </div>
-<!-- /.card -->
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+
+    function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    tipo=""
+    function setTipo(t){tipo=t}
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            if(tipo=="") return
+            var form = $(this);
+            var actionUrl = form.attr('action');
+
+
+            console.log("submit "+actionUrl)
+            console.log(form.serialize())
+            console.log(form)
+            girarGif()
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize()+tipo,
+                success: function(data) {
+                    setTimeout(function(){
+                        ocultarGif()
+                        tipo=""
+                    }, 1000)
+                }
+            });
+        });
+    }, 1200)
+</script>
 @endsection

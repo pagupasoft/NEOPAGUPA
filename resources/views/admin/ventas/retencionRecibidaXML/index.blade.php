@@ -6,7 +6,7 @@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <form class="form-horizontal" method="POST" action="{{ url("retencionRecibidaXML") }} " enctype="multipart/form-data"> 
+        <form onsubmit="girarGif()" class="form-horizontal" method="POST" action="{{ url("retencionRecibidaXML") }} " enctype="multipart/form-data"> 
         @csrf
             <div class="form-group row">
                 <label for="idDescripcion" class="col-sm-1 col-form-label"><center>Archivo SRI : </center></label>
@@ -62,5 +62,13 @@
     </div>
     <!-- /.card-body -->
 </div>
-<!-- /.card -->
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+</script>
 @endsection

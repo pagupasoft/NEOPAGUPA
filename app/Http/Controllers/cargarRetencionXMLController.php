@@ -223,6 +223,11 @@ class cargarRetencionXMLController extends Controller
             }
             $valorRetencion = 0;
             foreach($xml->impuestos->impuesto as $impuesto){
+                /*VALIDACION PORCENTAJE RETENIDO DIFERENTE*/
+                if(round(floatval($impuesto->baseImponible) * (floatval($impuesto->porcentajeRetener)/100),2) != round(floatval($impuesto->valorRetenido),2)){
+                    throw new Exception('Error la retencion no pudo ser registrada, el valor retenido es difrente al valor calculado con el codigo de retencion '.$impuesto->codigoRetencion);
+                }
+                /*FIN*/
                 $valorRetencion = round($valorRetencion,2) + round(floatval($impuesto->valorRetenido),2);
                 $factura = null;
                 $nd = null;

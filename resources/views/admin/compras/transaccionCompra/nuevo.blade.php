@@ -882,6 +882,12 @@ var combo = document.getElementById("transaccion_porcentaje_iva");
 var porcentajeIva = combo.options[combo.selectedIndex].text;
 porcentajeIva = parseFloat(porcentajeIva) / 100;
 
+    function round(num) {
+        var m = Number((Math.abs(num) * 100).toPrecision(15));
+         m =Math.round(m) / 100 * Math.sign(num);
+         return (m);
+    }
+
 function cargarSustento(){
     var centroConsumo = document.getElementById("ccProducto");
     var centroConsumoSustento = document.getElementById("idCCSustento");
@@ -1102,18 +1108,24 @@ function agregarItemRF() {
         porcentajeRF = document.getElementById("conceptoFuenteIDAux");
         codRF = document.getElementById("conceptoFuenteID");
         valorRF = Number(document.getElementById("valorFuente").value);
-
-        var linea = $("#plantillaItemRF").html();
-        linea = linea.replace(/{ID}/g, id_itemRF);
-        linea = linea.replace(/{DbaseRF}/g, Number(baseRF).toFixed(2));
-        linea = linea.replace(/{DcodigoRF}/g, codRF.options[codRF.selectedIndex].text);
-        linea = linea.replace(/{DRFID}/g, codRF.value);
-        linea = linea.replace(/{DporcentajeRF}/g, porcentajeRF.options[codRF.selectedIndex].text);
-        linea = linea.replace(/{DvalorRF}/g, Number(valorRF).toFixed(2));
-        $("#cargarItemRF tbody").append(linea);
-        id_itemRF = id_itemRF + 1;
-        totalRF(valorRF, baseRF);
-        resetearCamposRF();
+        if(round(baseRF*(Number(porcentajeRF.options[codRF.selectedIndex].text)/100)) == round(valorRF)){
+            var linea = $("#plantillaItemRF").html();
+            linea = linea.replace(/{ID}/g, id_itemRF);
+            linea = linea.replace(/{DbaseRF}/g, Number(baseRF).toFixed(2));
+            linea = linea.replace(/{DcodigoRF}/g, codRF.options[codRF.selectedIndex].text);
+            linea = linea.replace(/{DRFID}/g, codRF.value);
+            linea = linea.replace(/{DporcentajeRF}/g, porcentajeRF.options[codRF.selectedIndex].text);
+            linea = linea.replace(/{DvalorRF}/g, Number(valorRF).toFixed(2));
+            $("#cargarItemRF tbody").append(linea);
+            id_itemRF = id_itemRF + 1;
+            totalRF(valorRF, baseRF);
+            resetearCamposRF();
+        }else{
+            bootbox.alert({
+                message: "El valor retenido no es igual al calculado revise los valores y vuleva a intentar.",
+                size: 'small'
+            });
+        }
     }else{
         bootbox.alert({
             message: "La base no puede ser 0.00",
@@ -1153,18 +1165,24 @@ function agregarItemRI() {
         porcentajeRI = document.getElementById("conceptoIvaIDAux");
         codRI = document.getElementById("conceptoIvaID");
         valorRI = Number(document.getElementById("valorIva").value);
-
-        var linea = $("#plantillaItemRI").html();
-        linea = linea.replace(/{ID}/g, id_itemRI);
-        linea = linea.replace(/{DbaseRI}/g, Number(baseRI).toFixed(2));
-        linea = linea.replace(/{DcodigoRI}/g, codRI.options[codRI.selectedIndex].text);
-        linea = linea.replace(/{DRIID}/g, codRI.value);
-        linea = linea.replace(/{DporcentajeRI}/g, porcentajeRI.options[codRI.selectedIndex].text);
-        linea = linea.replace(/{DvalorRI}/g, Number(valorRI).toFixed(2));
-        $("#cargarItemRI tbody").append(linea);
-        id_itemRI = id_itemRI + 1;
-        totalRI(valorRI);
-        resetearCamposRI();
+        if(round(baseRI*(Number(porcentajeRI.options[codRI.selectedIndex].text)/100)) == round(valorRI)){
+            var linea = $("#plantillaItemRI").html();
+            linea = linea.replace(/{ID}/g, id_itemRI);
+            linea = linea.replace(/{DbaseRI}/g, Number(baseRI).toFixed(2));
+            linea = linea.replace(/{DcodigoRI}/g, codRI.options[codRI.selectedIndex].text);
+            linea = linea.replace(/{DRIID}/g, codRI.value);
+            linea = linea.replace(/{DporcentajeRI}/g, porcentajeRI.options[codRI.selectedIndex].text);
+            linea = linea.replace(/{DvalorRI}/g, Number(valorRI).toFixed(2));
+            $("#cargarItemRI tbody").append(linea);
+            id_itemRI = id_itemRI + 1;
+            totalRI(valorRI);
+            resetearCamposRI();
+        }else{
+            bootbox.alert({
+                message: "El valor retenido no es igual al calculado revise los valores y vuleva a intentar.",
+                size: 'small'
+            });
+        }
     }else{
         bootbox.alert({
             message: "La base no puede ser 0.00",

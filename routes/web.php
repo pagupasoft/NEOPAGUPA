@@ -174,6 +174,7 @@ use App\Http\Controllers\cargarXMLController;
 use App\Http\Controllers\CasilleroTributarioController;
 use App\Http\Controllers\categoriaCostoController;
 use App\Http\Controllers\categoriaRolController;
+use App\Http\Controllers\cierreAnualController;
 use App\Http\Controllers\cierreMesController;
 use App\Http\Controllers\contabilizacionMensualController;
 use App\Http\Controllers\cuadreCajaAbiertaController;
@@ -938,6 +939,10 @@ Route::post('/estadoResultados', [estadoResultadosController::class, 'consultar'
 /*ESTADO DE SITUACION FINANCIERO*/
 Route::get('/estadoFinanciero', [estadoFinancieroController::class, 'nuevo'])->middleware('auth');
 Route::post('/estadoFinanciero', [estadoFinancieroController::class, 'consultar'])->middleware('auth');
+/*ESTADO DE Cierre contable*/
+Route::get('/cierreContable', [cierreAnualController::class, 'nuevo'])->middleware('auth');
+Route::post('/cierreContable', [cierreAnualController::class, 'consultar'])->middleware('auth');
+
 /*MAYOR AUXILIAR*/
 Route::get('/mayorAuxiliar', [mayorAuxiliarController::class, 'nuevo'])->middleware('auth');
 Route::post('/mayorAuxiliar', [mayorAuxiliarController::class, 'consultar'])->middleware('auth');
@@ -1125,6 +1130,7 @@ Route::post('/transaccioncompra/searchN', [transaccionCompraController::class, '
 Route::post('/facturaVentaDetalle/searchN', [facturaVentaController::class, 'buscarByDetalleFactura'])->middleware('auth');
 Route::post('/facturaVentaDetalleRet/searchN', [facturaVentaController::class, 'buscarByDetalleFacturaRet'])->middleware('auth');
 Route::get('/entidad/searchN/{buscar}', [pacienteController::class, 'buscarByEntidad'])->middleware('auth');
+Route::get('/entidad/{id}/eliminar', [entidadController::class, 'delete'])->middleware('auth');
 Route::get('/facturasCompra/searchN/{buscar}', [transaccionCompraController::class, 'buscarByProveedor'])->middleware('auth');
 Route::get('/datosFactCompra/searchN/{buscar}', [transaccionCompraController::class, 'buscarByTransaccion'])->middleware('auth');
 Route::get('/provincia/searchN/{buscar}', [pacienteController::class, 'buscarByPais'])->middleware('auth');

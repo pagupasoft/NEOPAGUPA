@@ -896,9 +896,9 @@ function cargardatosempleados(id){
                 document.getElementById("Sueldo_Empelado").innerHTML=data[i].empleado_sueldo;
                 document.getElementById("VEmpelado").value= data[i].empleado_sueldo;
                 document.getElementById("asumidot").value= data[i].empleado_iess_asumido;
-                document.getElementById("Valor_Dia").innerHTML=round(data[i].empleado_sueldo/30).toFixed(2);
-                document.getElementById("VDia").innerHTML=(data[i].empleado_sueldo/30).toFixed(2);
-
+                document.getElementById("Valor_Dia").innerHTML=round(data[i].empleado_sueldo/30);
+             
+                document.getElementById("VDia").value=round(data[i].empleado_sueldo/30);
                 document.getElementById("sueldo_basico").value=data[i].parametrizar_sueldo_basico;
                
         
@@ -985,8 +985,8 @@ function cargarIngreso(id) {
                     linea = linea.replace(/{rubro}/g, data[i]["nombre"]);
                     linea = linea.replace(/{nombre}/g, data[i]["descripcion"]);
                     linea = linea.replace(/{tipo}/g,  data[i]["rubro_tipo"]);
-                    linea = linea.replace(/{valor}/g,  Number(data[i]["valor"]).toFixed(2));
-                    total+=Number(data[i]["valor"]);
+                    linea = linea.replace(/{valor}/g,  round(Number(data[i]["valor"])));
+                    total+=round(Number(data[i]["valor"]));
                     $("#tablaingresos tbody").append(linea);
                 
             }  

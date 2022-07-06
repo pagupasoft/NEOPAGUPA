@@ -37,6 +37,9 @@ class Detalle_Pago_CXP extends Model
     public function scopeCuentaPagarPagosCorte($query, $cuenta_id,$fecha_corte){
         return $query->join('cuenta_pagar','detalle_pago_cxp.cuenta_pagar_id','=','cuenta_pagar.cuenta_id')->join('pago_cxp','detalle_pago_cxp.pago_id','=','pago_cxp.pago_id')->where('cuenta_pagar.cuenta_id','=',$cuenta_id)->where('pago_fecha','<=',$fecha_corte)->orderBy('pago_fecha','asc');
     }
+    public function scopeCuentaPagarPagosAfterCorte($query, $cuenta_id,$fecha_corte){
+        return $query->join('cuenta_pagar','detalle_pago_cxp.cuenta_pagar_id','=','cuenta_pagar.cuenta_id')->join('pago_cxp','detalle_pago_cxp.pago_id','=','pago_cxp.pago_id')->where('cuenta_pagar.cuenta_id','=',$cuenta_id)->where('pago_fecha','>',$fecha_corte)->orderBy('pago_fecha','asc');
+    }
     public function cuentaPagar()
     {
         return $this->belongsTo(Cuenta_Pagar::class, 'cuenta_pagar_id', 'cuenta_id');

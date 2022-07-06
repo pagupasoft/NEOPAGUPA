@@ -87,7 +87,9 @@ class cuentaPagarController extends Controller
                 $datos[$count]['tot'] = '1';
                 $count ++;
                 $countProveedor = $count - 1;
+                $banderaMigrada = false;
                 foreach(Cuenta_Pagar::CuentasPagarByPagos($request->get('fecha_desde'),$request->get('fecha_hasta'),$proveedor->proveedor_id,$todo,$request->get('sucursal_id') )->select('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_monto','cuenta_pagar.cuenta_descripcion')->distinct('cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_id')->get() as $cuenta){
+                    $banderaMigrada = false;
                     $datos[$count]['nom'] = ''; 
                     $datos[$count]['doc'] = ''; 
                     $datos[$count]['num'] = ''; 
@@ -111,10 +113,16 @@ class cuentaPagarController extends Controller
                     if($datos[$count]['doc'] == ''){
                         $datos[$count]['num'] = substr($cuenta->cuenta_descripcion, 39);
                         $datos[$count]['doc'] = 'FACTURA'; 
+                        $datos[$count]['dia'] = '';
+                        $banderaMigrada = true;
                     }
                     $datos[$count]['fec'] = $cuenta->cuenta_fecha;
                     $datos[$count]['mon'] = $cuenta->cuenta_monto; 
-                    $datos[$count]['sal'] = $cuenta->cuenta_monto;  
+                    if($banderaMigrada){
+                        $datos[$count]['sal'] = $cuenta->cuenta_saldo;  
+                    }else{
+                        $datos[$count]['sal'] = $cuenta->cuenta_monto; 
+                    }  
                     $datos[$count]['pag'] = 0; 
                     $datos[$count]['fep'] = ''; 
                     $datos[$count]['tip'] = ''; 
@@ -133,7 +141,11 @@ class cuentaPagarController extends Controller
                         $datos[$count]['dia'] = $pago->pagoCXP->diario->diario_codigo; 
                         $datos[$count]['tip'] = $pago->detalle_pago_descripcion; 
                         $datos[$count]['tot'] = '3';
-                        $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        if(!$banderaMigrada){
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        }else{
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
+                        }
                         $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                         $count ++;
                     }
@@ -154,7 +166,11 @@ class cuentaPagarController extends Controller
                             }
                             $datos[$count]['tip'] = 'CRUCE DE ANTICIPO DE PROVEEDOR';
                             $datos[$count]['tot'] = '3';
-                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            if(!$banderaMigrada){
+                                $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            }else{
+                                $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
+                            }
                             $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                             $count ++;
                         }
@@ -211,7 +227,9 @@ class cuentaPagarController extends Controller
                 $datos[$count]['tot'] = '1';
                 $count ++;
                 $countProveedor = $count - 1;
-                foreach(Cuenta_Pagar::CuentasPagarPendientes($request->get('fecha_corte'),$proveedor->proveedor_id,$request->get('sucursal_id'))->select('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_monto','cuenta_pagar.cuenta_descripcion')->having('cuenta_monto','>',DB::raw("(SELECT sum(detalle_pago_valor) FROM detalle_pago_cxp inner join pago_cxp on pago_cxp.pago_id = detalle_pago_cxp.pago_id WHERE pago_fecha <= '".$request->get('fecha_corte')."' and detalle_pago_cxp.cuenta_pagar_id = cuenta_pagar.cuenta_id)"))->orhavingRaw("(SELECT sum(detalle_pago_valor) FROM detalle_pago_cxp inner join pago_cxp on pago_cxp.pago_id = detalle_pago_cxp.pago_id WHERE pago_fecha <= '".$request->get('fecha_corte')."' and detalle_pago_cxp.cuenta_pagar_id = cuenta_pagar.cuenta_id) is null")->groupBy('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_monto')->get() as $cuenta){
+                $banderaMigrada = false;
+                foreach(Cuenta_Pagar::CuentasPagarPendientesCorte($request->get('fecha_corte'),$proveedor->proveedor_id,$request->get('sucursal_id'))->select('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_monto','cuenta_pagar.cuenta_descripcion')->having('cuenta_monto','>',DB::raw("(SELECT sum(detalle_pago_valor) FROM detalle_pago_cxp inner join pago_cxp on pago_cxp.pago_id = detalle_pago_cxp.pago_id WHERE pago_fecha <= '".$request->get('fecha_corte')."' and detalle_pago_cxp.cuenta_pagar_id = cuenta_pagar.cuenta_id)"))->orhavingRaw("(SELECT sum(detalle_pago_valor) FROM detalle_pago_cxp inner join pago_cxp on pago_cxp.pago_id = detalle_pago_cxp.pago_id WHERE pago_fecha <= '".$request->get('fecha_corte')."' and detalle_pago_cxp.cuenta_pagar_id = cuenta_pagar.cuenta_id) is null")->groupBy('cuenta_pagar.cuenta_id','cuenta_pagar.cuenta_fecha','cuenta_pagar.cuenta_monto')->get() as $cuenta){
+                    $banderaMigrada = false;
                     $datos[$count]['nom'] = ''; 
                     $datos[$count]['doc'] = ''; 
                     $datos[$count]['num'] = ''; 
@@ -235,10 +253,17 @@ class cuentaPagarController extends Controller
                     if($datos[$count]['doc'] == ''){
                         $datos[$count]['num'] = substr($cuenta->cuenta_descripcion, 39);
                         $datos[$count]['doc'] = 'FACTURA'; 
+                        $datos[$count]['dia'] = '';
+                        $banderaMigrada = true;
                     }
                     $datos[$count]['fec'] = $cuenta->cuenta_fecha;
                     $datos[$count]['mon'] = $cuenta->cuenta_monto; 
-                    $datos[$count]['sal'] = $cuenta->cuenta_monto;  
+                    if($banderaMigrada){
+                        $datos[$count]['sal'] = $cuenta->cuenta_saldo + Detalle_Pago_CXP::CuentaPagarPagosAfterCorte($cuenta->cuenta_id,$request->get('fecha_corte'))->sum('detalle_pago_valor')
+                        + Descuento_Anticipo_Proveedor::DescuentosAnticipoByCXPCorte(substr($cuenta->cuenta_descripcion, 39),$request->get('fecha_corte'))->sum('descuento_valor');  
+                    }else{
+                        $datos[$count]['sal'] = $cuenta->cuenta_monto; 
+                    }   
                     $datos[$count]['pag'] = 0; 
                     $datos[$count]['fep'] = ''; 
                     $datos[$count]['tip'] = ''; 
@@ -253,16 +278,25 @@ class cuentaPagarController extends Controller
                         $datos[$count]['mon'] = ''; 
                         $datos[$count]['sal'] = '';  
                         $datos[$count]['pag'] = $pago->detalle_pago_valor; 
-                        $datos[$count]['fep'] = $pago->pagoCXP->pago_fecha; 
-                        $datos[$count]['dia'] = $pago->pagoCXP->diario->diario_codigo; 
+                        $datos[$count]['fep'] = $pago->pagoCXP->pago_fecha;
+
+                        if(Auth::user()->empresa->empresa_contabilidad == '1'){
+                            $datos[$count]['dia'] = $pago->pagoCXP->diario->diario_codigo; 
+                        }else{
+                            $datos[$count]['dia'] = ''; 
+                        }
                         $datos[$count]['tip'] = $pago->detalle_pago_descripcion; 
                         $datos[$count]['tot'] = '3';
-                        $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        if(!$banderaMigrada){
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->detalle_pago_valor);
+                        }else{
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
+                        }
                         $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                         $count ++;
                     }
-                    if($cuenta->transaccionCompra){
-                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cuenta->transaccionCompra->transaccion_id)->orderBy('descuento_fecha')->get() as $pago){
+                    if(isset($cuenta->transaccionCompra->transaccion_id)){
+                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipoByFacturaCorte($cuenta->transaccionCompra->transaccion_id,$request->get('fecha_corte'))->orderBy('descuento_fecha')->get() as $pago){
                             $datos[$count]['nom'] = ''; 
                             $datos[$count]['doc'] = ''; 
                             $datos[$count]['num'] = ''; 
@@ -278,7 +312,31 @@ class cuentaPagarController extends Controller
                             }
                             $datos[$count]['tip'] = 'CRUCE DE ANTICIPO DE PROVEEDOR';
                             $datos[$count]['tot'] = '3';
+
                             $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']) - floatval($pago->descuento_valor);
+                            $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
+                            $count ++;
+                        }
+                    }
+                    if($banderaMigrada){
+                        foreach(Descuento_Anticipo_Proveedor::DescuentosAnticipoByCXPCorte(substr($cuenta->cuenta_descripcion, 39),$request->get('fecha_corte'))->orderBy('descuento_fecha')->get() as $pago){
+                            $datos[$count]['nom'] = ''; 
+                            $datos[$count]['doc'] = ''; 
+                            $datos[$count]['num'] = ''; 
+                            $datos[$count]['fec'] = '';
+                            $datos[$count]['mon'] = ''; 
+                            $datos[$count]['sal'] = ''; 
+                            $datos[$count]['pag'] = $pago->descuento_valor;                             
+                            $datos[$count]['fep'] = $pago->descuento_fecha; 
+                            if(Auth::user()->empresa->empresa_contabilidad == '1'){
+                                $datos[$count]['dia'] = $pago->diario->diario_codigo; 
+                            }else{
+                                $datos[$count]['dia'] = ''; 
+                            }
+                            $datos[$count]['tip'] = 'CRUCE DE ANTICIPO DE PROVEEDOR';
+                            $datos[$count]['tot'] = '3';
+
+                            $datos[$countCuenta]['sal'] = floatval($datos[$countCuenta]['sal']);
                             $datos[$countCuenta]['pag'] = floatval($datos[$countCuenta]['pag']) + floatval($datos[$count]['pag']);
                             $count ++;
                         }
@@ -286,6 +344,15 @@ class cuentaPagarController extends Controller
                     $datos[$countProveedor]['mon'] = floatval($datos[$countProveedor]['mon']) + floatval($datos[$countCuenta]['mon']);
                     $datos[$countProveedor]['sal'] = floatval($datos[$countProveedor]['sal']) + floatval($datos[$countCuenta]['sal']);
                     $datos[$countProveedor]['pag'] = floatval($datos[$countProveedor]['pag']) + floatval($datos[$countCuenta]['pag']);
+                    
+                    if(round($datos[$countCuenta]['sal'],2) == 0){
+                        $count = $count - 1;
+                        while($countCuenta <= $count){
+                            array_pop($datos);
+                            $count = $count - 1;
+                        }
+                        $count = $count + 1;
+                    }
                 }
                 $mon = $mon + floatval($datos[$countProveedor]['mon']);
                 $sal = $sal + floatval($datos[$countProveedor]['sal']);

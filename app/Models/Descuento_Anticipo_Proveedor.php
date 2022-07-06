@@ -25,8 +25,20 @@ class Descuento_Anticipo_Proveedor extends Model
     public function scopeDescuentosAnticipoByFactura($query, $id){
         return $query->where('transaccion_id','=',$id);
     }
+    public function scopeDescuentosAnticipoByFacturaCorte($query, $id, $fecha_corte){
+        return $query->where('transaccion_id','=',$id)->where('descuento_fecha','<=',$fecha_corte);
+    }
+    public function scopeDescuentosAnticipoByFacturaAfterCorte($query, $id, $fecha_corte){
+        return $query->where('transaccion_id','=',$id)->where('descuento_fecha','>',$fecha_corte);
+    }
     public function scopeDescuentosAnticipoByCXP($query, $numero){
         return $query->where('descuento_descripcion','=',$numero);
+    }
+    public function scopeDescuentosAnticipoByCXPCorte($query, $numero, $fecha_corte){
+        return $query->where('descuento_descripcion','=',$numero)->where('descuento_fecha','<=',$fecha_corte);;
+    }
+    public function scopeDescuentosAnticipoByCXPAfterCorte($query, $numero, $fecha_corte){
+        return $query->where('descuento_descripcion','=',$numero)->where('descuento_fecha','>',$fecha_corte);;
     }
     public function scopeDescuentosAnticipoByProveedorFecha($query, $proveedor_id, $fecha){
         return $query->join('anticipo_proveedor','anticipo_proveedor.anticipo_id','=','descuento_anticipo_proveedor.anticipo_id')->where('anticipo_proveedor.proveedor_id','=',$proveedor_id)->where('descuento_fecha','<=',$fecha);

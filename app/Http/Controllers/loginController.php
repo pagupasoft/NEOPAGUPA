@@ -45,10 +45,15 @@ class loginController extends Controller
             );
             if (Auth::attempt($userdata, true)) {
                 $request->session()->regenerate();
-                Auth::login(User::findOrFail(Auth::user()->user_id));
+                $usuario=User::findOrFail(Auth::user()->user_id);
+                Auth::login($usuario);
                 $auditoria = new generalController();
                 $auditoria->registrarAuditoria('Inicio de sesion usuario->'.$request->get('idUsername').' Con Id ->'.Auth::user()->user_id,Auth::user()->user_id,'');
-                return redirect()->intended('principal');
+
+                if($usuario->user_cambio_clave==1)
+                    return redirect()->intended('principal')->with('cambio clave', "El Administrador ha restablecido la clave, actualice su Clave de forma inmediata");
+                else
+                    return redirect()->intended('principal');
             }
             return back()->withErrors([
                 'user_username' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',

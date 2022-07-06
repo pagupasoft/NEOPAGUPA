@@ -73,6 +73,12 @@
                 <ul class="navbar-nav" role="tablist"></ul>
             </div>
             <div class="tab-content">
+                @if ($message = Session::get('cambio clave'))
+                    <div class="alert alert-info alert-block">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <strong>{{ $message }}</strong>
+                    </div>
+                @endif
                 <div class="tab-empty">
                 <center>
                     <img src="{{ asset('admin/imagenes/logo-01.png') }}" alt="NEOPAGUPA" style="opacity: .8" height="700">

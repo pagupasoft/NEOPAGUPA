@@ -58,7 +58,8 @@ class perfilController extends Controller
                 'user_estado' => 1
             );
             if (Auth::attempt($userdata, true)) {
-                $usuario->password = bcrypt($request->get('idNueva'));           
+                $usuario->password = bcrypt($request->get('idNueva'));
+                $usuario->user_cambio_clave=0;
                 Auth::login(User::findOrFail(Auth::user()->user_id));
                 $usuario->save();
                 return redirect('perfil')->with('success','Contraseña actualizada exitosamente');

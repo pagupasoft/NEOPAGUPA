@@ -57,16 +57,20 @@ class perfilController extends Controller
                 'password' => $request->get('idActual'),
                 'user_estado' => 1
             );
+            $cambioDeClave=$usuario->user_cambio_clave;
+
             if (Auth::attempt($userdata, true)) {
                 $usuario->password = bcrypt($request->get('idNueva'));
                 $usuario->user_cambio_clave=0;
                 Auth::login(User::findOrFail(Auth::user()->user_id));
                 $usuario->save();
-                return redirect('perfil')->with('success','Contraseña actualizada exitosamente');
+
+                if($cambioDeClave==0) 
+                    return redirect('perfil')->with('success','Contraseña actualizada exitosamente');
+
+                return redirect('principal')->with('info','Contraseña actualizada exitosamente');
             }
-            return back()->withErrors([
-                'user_username' => 'Contraseña Actual incorrecta',           
-            ]);
+            return back()->withErrors(['user_username' => 'Contraseña Actual incorrecta']);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');

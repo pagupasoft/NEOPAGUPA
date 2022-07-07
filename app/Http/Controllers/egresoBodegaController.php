@@ -198,14 +198,14 @@ class egresoBodegaController extends Controller
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$egreso->cabecera_egreso_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$tipo->cuenta->cuenta_numero.' en el haber por un valor de -> '.$request->get('idTotal'));                
                 $url = $general->pdfDiario($diario);
+                $url2 = $general->pdfComprobanteEgresoBodega($egreso);
             }
             DB::commit();
-            return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('success','Egreso de bodega se registrada exitosamente')->with('diario',$url);
+            return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('success','Egreso de bodega se registrada exitosamente')->with('diario',$url)->with('pdf2', $url2);
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }  
-       
     }
 
     /**
@@ -258,17 +258,6 @@ class egresoBodegaController extends Controller
             if($cierre){
                 return redirect('egresoBodega')->with('error2','No puede realizar la operacion por que pertenece a un mes bloqueado');
             }
-           
-            foreach($egreso->detalles as $detalle){
-                $movimiento=$detalle->movimiento;
-                $detalle->movimiento_id=null;
-                $detalle->update();
-                $auditoria->registrarAuditoria('Actualizacion del Id a null para la eliminacion del Movimiento  motivo'.$movimiento->movimiento_motivo.' y tipo '.$movimiento->movimiento_tipo.'  relacionado al Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);         
-                $movimiento->delete();
-                $auditoria->registrarAuditoria('Eliminacion del Movimiento  motivo'.$movimiento->movimiento_motivo.' y tipo '.$movimiento->movimiento_tipo.'  relacionado al Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);   
-                $detalle->delete();
-                $auditoria->registrarAuditoria('Eliminacion del Detalle Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);   
-            } 
             $diario=$egreso->diario;
             $egreso->diario_id=null;
             $egreso->save();
@@ -282,6 +271,18 @@ class egresoBodegaController extends Controller
                 $diario->delete();   
                 $auditoria->registrarAuditoria('Eliminacion del  diario  N°'.$diario->diario_codigo .'relacionado al Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);   
             }
+
+            foreach($egreso->detalles as $detalle){
+                $movimiento=$detalle->movimiento;
+                $detalle->movimiento_id=null;
+                $detalle->update();
+                $auditoria->registrarAuditoria('Actualizacion del Id a null para la eliminacion del Movimiento  motivo'.$movimiento->movimiento_motivo.' y tipo '.$movimiento->movimiento_tipo.'  relacionado al Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);         
+                $movimiento->delete();
+                $auditoria->registrarAuditoria('Eliminacion del Movimiento  motivo'.$movimiento->movimiento_motivo.' y tipo '.$movimiento->movimiento_tipo.'  relacionado al Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);   
+                $detalle->delete();
+                $auditoria->registrarAuditoria('Eliminacion del Detalle Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);   
+            } 
+            
                 $egreso->delete(); 
             $auditoria->registrarAuditoria('Eliminacion del Egreso de Bodega N°-> '.$egreso->cabecera_egreso_numero,$egreso->cabecera_egreso_numero,'Permiso con id -> '.$id);
             DB::commit();

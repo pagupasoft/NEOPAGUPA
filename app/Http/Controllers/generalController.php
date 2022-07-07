@@ -13,9 +13,11 @@ use App\Models\Decimo_Cuarto;
 use App\Models\Decimo_Tercero;
 use App\Models\Diario;
 use App\Models\Documento_Anulado;
+use App\Models\Egreso_Bodega;
 use App\Models\Empleado;
 use App\Models\Empresa;
 use App\Models\Factura_Venta;
+use App\Models\Ingreso_Bodega;
 use App\Models\Movimiento_Producto;
 use App\Models\Nota_Entrega;
 use App\Models\Orden_Despacho;
@@ -111,6 +113,30 @@ class generalController extends Controller
         }
         $nombreArchivo = $diario->diario_codigo. ".pdf";
         $view =  \View::make('admin.formatosPDF.diario', ['empresa'=> $empresa,'diario'=> $diario]);
+        PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
+        return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y').'/'.$nombreArchivo;
+    }
+    public function pdfComprobanteEgresoBodega(Egreso_Bodega $egreso){
+        $empresa = Empresa::empresa()->first();
+        $diario=Diario::findOrFail($egreso->diario_id);
+        $ruta = public_path().'/DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y');
+        if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+        }
+        $nombreArchivo = $diario->diario_codigo. "_comprobante_egreso.pdf";
+        $view =  \View::make('admin.formatosPDF.comprobanteEgresoBodega', ['empresa'=> $empresa,'egreso'=> $egreso]);
+        PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
+        return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y').'/'.$nombreArchivo;
+    }
+    public function pdfComprobanteIngresoBodega(Ingreso_Bodega $ingreso){
+        $empresa = Empresa::empresa()->first();
+        $diario=Diario::findOrFail($ingreso->diario_id);
+        $ruta = public_path().'/DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y');
+        if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+        }
+        $nombreArchivo = $diario->diario_codigo. "_comprobante_ingreso.pdf";
+        $view =  \View::make('admin.formatosPDF.comprobanteIngresoBodega', ['empresa'=> $empresa,'ingreso'=> $ingreso]);
         PDF::loadHTML($view)->save($ruta.'/'.$nombreArchivo)->download($nombreArchivo);
         return 'DIARIOS/'.$empresa->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $diario->diario_fecha)->format('d-m-Y').'/'.$nombreArchivo;
     }

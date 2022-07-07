@@ -462,14 +462,15 @@
     }
 
     function verificarFechaGuardar() {
-        if(document.getElementById("validarRango").value.trim() == '0'){
+        $("#guardar").click();
+        /*if(document.getElementById("validarRango").value.trim() == '0'){
             bootbox.alert({
                 message: "Los siguientes numero de cheques no se encuentran registrados, registre los cheques faltantes para poder conciliar. <br>"+document.getElementById("chequesMissing").value,
                 size: 'large'
             });
         }else{
             $("#guardar").click();
-        }
+        }*/
     }
 
     function cargarCuenta(){

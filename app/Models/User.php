@@ -29,6 +29,7 @@ class User extends Authenticatable
         'user_tipo', 
         'password',
         'empresa_id',
+        'user_cambio_clave'
     ];
 
     /**
@@ -55,6 +56,11 @@ class User extends Authenticatable
     public function scopeUsuario($query, $id){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('user_username','<>','SuperAdministrador')->where('user_id','=',$id);
     }
+
+    public function scopeFindByEmail($query, $mail){
+        return $query->where('user_correo','=',$mail);
+    }
+
     public function roles(){
         return $this->hasManyThrough(Rol::class, Usuario_Rol::class, 'user_id', 'rol_id', 'user_id', 'rol_id');
     }

@@ -51,7 +51,7 @@ class loginController extends Controller
                 $auditoria->registrarAuditoria('Inicio de sesion usuario->'.$request->get('idUsername').' Con Id ->'.Auth::user()->user_id,Auth::user()->user_id,'');
 
                 if($usuario->user_cambio_clave==1)
-                    return redirect()->intended('principal')->with('cambio clave', "El Administrador ha restablecido la clave, actualice su Clave de forma inmediata");
+                    return redirect()->to('cambiarClave');
                 else
                     return redirect()->intended('principal');
             }

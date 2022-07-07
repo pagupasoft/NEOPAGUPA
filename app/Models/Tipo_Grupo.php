@@ -20,5 +20,8 @@ class Tipo_Grupo extends Model
     ];
     protected $guarded =[
     ]; 
+    public function permisos(){
+        return $this->hasMany(Permiso::class, 'grupo_id', 'grupo_id');
+    }
     
 }

@@ -15,10 +15,19 @@
             @csrf
             <div class="form-group row">
                 <label for="sucursal_id" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <select class="custom-select" id="sucursal_id" name="sucursal_id" require>
                         @foreach($sucursales as $sucursal)
                             <option value="{{$sucursal->sucursal_id}}" @if(isset($sucursalC)) @if($sucursalC == $sucursal->sucursal_id) selected @endif @endif>{{$sucursal->sucursal_nombre}}</option>
+                        @endforeach
+                    </select> 
+                </div>
+                <label for="sucursal_id" class="col-sm-1 col-form-label"><center>Estado:</center></label>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="Estado_id" name="Estado_id" >
+                        <option value="TODOS" label>--TODOS--</option>   
+                        @foreach($estados as $estado)
+                            <option value="{{$estado->empleado_estado}}" @if(isset($Estado_id)) @if($Estado_id == $estado->empleado_estado) selected @endif @endif>@if($estado->empleado_estado=="1") Activo @else Inactivo @endif</option>
                         @endforeach
                     </select> 
                 </div>
@@ -54,6 +63,7 @@
                     <th>Contacto Direccion </th>
                     <th>Observacion </th>
                     <th>Sueldo </th>
+                    <th>Estado </th>
                     <th>Fecha Ingreso </th>
                     <th>Fecha Salida </th>
                     <th>Horas Extra </th>
@@ -106,6 +116,14 @@
                         <td>{{ $empleado->empleado_contacto_direccion}}</td>
                         <td>{{ $empleado->empleado_observacion}}</td>
                         <td>{{ number_format($empleado->empleado_sueldo,2) }}</td>
+                      
+                        <td> @if($empleado->empleado_estado=="1")
+                            <i class="fa fa-check-circle neo-verde"></i>
+                            @else
+                            <i class="fa fa-times-circle neo-rojo"></i>
+                            @endif
+                        </td>
+
                         <td>{{ $empleado->empleado_fecha_ingreso}}</td>
                         <td>
                             @if($empleado->empleado_fecha_salida != null)

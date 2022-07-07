@@ -198,14 +198,14 @@ class egresoBodegaController extends Controller
                 $diario->detalles()->save($detalleDiario);
                 $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,$egreso->cabecera_egreso_numero,'Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '.$tipo->cuenta->cuenta_numero.' en el haber por un valor de -> '.$request->get('idTotal'));                
                 $url = $general->pdfDiario($diario);
+                $url2 = $general->pdfComprobanteEgresoBodega($egreso);
             }
             DB::commit();
-            return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('success','Egreso de bodega se registrada exitosamente')->with('diario',$url);
+            return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('success','Egreso de bodega se registrada exitosamente')->with('diario',$url)->with('pdf2', $url2);
         }catch(\Exception $ex){
             DB::rollBack();
             return redirect('/egresoBodega/new/'.$request->get('punto_id'))->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }  
-       
     }
 
     /**

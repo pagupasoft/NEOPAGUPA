@@ -233,9 +233,10 @@ class ingresoBodegaController extends Controller
             $url = '';
             if(Auth::user()->empresa->empresa_contabilidad == '1'){
                 $url = $general->pdfDiario($diario);
+                $url2 = $general->pdfComprobanteIngresoBodega($ingreso);
             }
             DB::commit();
-            return redirect('/ingresoBodega/new/'.$request->get('punto_id'))->with('success','ingreso de bodega se registrada exitosamente')->with('diario',$url);
+            return redirect('/ingresoBodega/new/'.$request->get('punto_id'))->with('success','ingreso de bodega se registrada exitosamente')->with('diario',$url)->with('pdf2',$url2);
         }catch(\Exception $ex){
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         } 

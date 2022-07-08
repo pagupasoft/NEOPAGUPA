@@ -753,7 +753,7 @@ class formulariosController extends Controller
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%'
+            where factura_venta.factura_estado <> '2' and factura_venta.factura_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%'
             and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
             foreach($registros as $registro){
                 $countAux = 0;
@@ -809,7 +809,7 @@ class formulariosController extends Controller
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%' 
+            where nota_credito.nc_estado = '1' and nota_credito.nc_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%' 
             and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registrosNC as $registro){
@@ -900,7 +900,7 @@ class formulariosController extends Controller
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where factura_venta.factura_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'  
+            where factura_venta.factura_estado <> '2' and factura_venta.factura_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'  
             and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registros as $registro){
@@ -958,7 +958,7 @@ class formulariosController extends Controller
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
-            where nota_credito.nc_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'
+            where nota_credito.nc_estado = '1' and nota_credito.nc_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'
             and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
 
             foreach($registrosNC as $registro){

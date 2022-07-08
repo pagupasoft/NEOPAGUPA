@@ -39,6 +39,13 @@
             </div>
     
             <div class="card-body">
+                <div class="d-flex flex-row justify-content-end">
+                    <span class="mr-2">
+                    <i class="fas fa-square text-pagado"></i> Empleado sin Cuenta Bancaria
+                    </span>
+
+                    
+                </div>
                 <div class="table-responsive">
                     @include ('admin.recursosHumanos.rolPagoConsolidado.items')
                     <table id="example5" name="example5" class="table table-bordered table-hover table-responsive sin-salto">
@@ -73,11 +80,11 @@
                                 </td>
                                 
                                 
-                                <td width="150">{{ $datos[$i]['Dcedula'] }} <input class="invisible" name="Dcedula[]" value="{{ $datos[$i]['Dcedula'] }}" /></td>
-                                <td width="150">{{ $datos[$i]['Dnombre'] }} <input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['Dnombre'] }}" /></td>
+                                <td width="150" @if($datos[$i]['DCuenta']==0) style="background:  #70B1F7;" @endif>{{ $datos[$i]['Dcedula'] }} <input class="invisible" name="Dcedula[]" value="{{ $datos[$i]['Dcedula'] }}" /></td>
+                                <td width="150" @if($datos[$i]['DCuenta']==0) style="background:  #70B1F7;" @endif>{{ $datos[$i]['Dnombre'] }} <input class="invisible" name="Dnombre[]" value="{{ $datos[$i]['Dnombre'] }}" /></td>
                                 
-                                <td width="150"><input type="number" class="form-controltext"  name="DCsueldo[]"  value="{{ $datos[$i]['Dsueldo'] }}" required readonly><input class="invisible" name="Dsueldo[]" value="{{ $datos[$i]['Dsueldo'] }}" /></td>
-                                <td width="150"> <input type="number" step="any" min="0.01" class="form-control"   name="quincena[]" value="{{ $datos[$i]['quincena'] }}" required >
+                                <td width="150" @if($datos[$i]['DCuenta']==0) style="background:  #70B1F7;" @endif><input type="number" class="form-controltext"  name="DCsueldo[]"  value="{{ $datos[$i]['Dsueldo'] }}" required readonly><input class="invisible" name="Dsueldo[]" value="{{ $datos[$i]['Dsueldo'] }}" /></td>
+                                <td width="150" @if($datos[$i]['DCuenta']==0) style="background:  #70B1F7;" @endif> <input type="number" step="any" min="0.01" class="form-control"   name="quincena[]" value="{{ $datos[$i]['quincena'] }}" required >
                                 </td>
                                 
                             </tr>

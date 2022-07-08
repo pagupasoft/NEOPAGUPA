@@ -71,7 +71,7 @@ class generalController extends Controller
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
-    public function registrarAuditoria($descripcion, $numeroDocumento, $adicional){
+    public function registrarAuditoria($descripcion, $numeroDocumento, $adicional, $documentoB64=null){
         try{
             DB::beginTransaction();
             if(Auth::user()->user_username != 'SuperAdministrador'){
@@ -84,6 +84,7 @@ class generalController extends Controller
                 $auditoria->auditoria_numero_documento=$numeroDocumento;
                 $auditoria->auditoria_estado='1';
                 $auditoria->user_id=Auth::user()->user_id;
+                if($documentoB64!=null)$auditoria->auditoria_documento_respaldo=$documentoB64;
                 $auditoria->save();
             }
             DB::commit();

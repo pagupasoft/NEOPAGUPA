@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <div class="card card-primary card-outline">
-    <form class="form-horizontal"  method="POST" action="{{ url("ingresoBodega") }}">
+    <form class="form-horizontal"  method="POST" action="{{ url("ingresoBodega") }}" onsubmit="return validarTotal()">
         @csrf
         <div class="card-header">
             <div class="row">
@@ -394,6 +394,17 @@ function cargarTotales(total) {
     document.getElementById("idSubtotal").value = subtotal;
     document.getElementById("total").innerHTML = subtotal;
     document.getElementById("idTotal").value = subtotal;
+}
+
+function validarTotal(){
+    if(parseFloat(document.getElementById("idTotal").value)<=0 || document.getElementById("idTotal").value==""){
+        alert("No se puede guardar esta orden sin ningún item o en valor 0")
+        return false;
+    }
+
+    console.log(document.getElementById("idTotal").value)
+
+    return true;
 }
 
 

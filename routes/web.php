@@ -535,6 +535,8 @@ Route::resource('nauplio', nauplioController::class)->middleware('auth');
 Route::resource('transaccionCActivoFijo', transaccionCompraActivoFijoController::class)->middleware('auth');
 
 /*RUTAS PARA VER DATOS ANTES DE ELIMINAR REGISTROS */
+Route::get('/verDocumentoAuditoria/{id}', [auditoriaController::class, 'verDocumento'])->middleware('auth');
+
 Route::get('/nauplio/{id}/ver', [nauplioController::class, 'ver'])->middleware('auth')->middleware('acceso');
 Route::get('/transferenciasiembra/nuevo', [transferenciaSiembraController::class, 'nuevo'])->middleware('auth');
 

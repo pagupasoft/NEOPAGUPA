@@ -1,7 +1,7 @@
 @extends ('admin.layouts.admin')
 @section('principal')
-<div class="card card-primary card-outline">
-    <form class="form-horizontal" method="POST"  action="{{ url("transaccionCompra") }} " onsubmit="return validarForm();">
+<div class="card card-primary card-outline" style="position: absolute; width: 100%">
+    <form id="idForm" class="form-horizontal" method="POST"  action="{{ url("transaccionCompra") }} " onsubmit="return validarForm();">
         @csrf
         <div class="card-header">
             <div class="row">
@@ -867,6 +867,28 @@
         </div>
     </form>
 </div>
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+    function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            girarGif()
+            
+        });
+    }, 1200)
+</script>
+
 <!-- /.card -->
 @section('scriptAjax')
 <script src="{{ asset('admin/js/ajax/autocompleteProveedor.js') }}"></script>
@@ -1206,14 +1228,23 @@ function validarForm(){
    
     if(comprobanteCodigo.options[comprobante.selectedIndex].value != '04'){
         if(document.getElementById("idSubtotal").value != document.getElementById("totalBaseFuenteId").value){
+            setTimeout(function(){
+                ocultarGif();
+            }, 500)
+            console.log("sdfsdfdsfsdfds")
             bootbox.alert({
                 message: "El total se retención en la fuente es diferente del subtotal de la factura.",
                 size: 'small'
             });
+
+            
             return false;
         }
     }
     if(document.getElementById("proveedorID").value == ''){
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)
         bootbox.alert({
             message: "Seleccione un proveedor antes de guardar.",
             size: 'small'
@@ -1225,6 +1256,9 @@ function validarForm(){
        
         if(document.getElementById("manualID").checked ==true){
             if(document.getElementById("serieFacManual").value == ''){
+                setTimeout(function(){
+                    ocultarGif();
+                }, 500)
                 bootbox.alert({
                     message: "Tiene que registrar la serie de la factura",
                     size: 'small'
@@ -1232,6 +1266,9 @@ function validarForm(){
                 return false
             }
             if(document.getElementById("scuencialFacManual").value == ''){
+                setTimeout(function(){
+                    ocultarGif();
+                }, 500)
                 bootbox.alert({
                     message: "Tiene que registrar el secuencial de la factura",
                     size: 'small'
@@ -1239,6 +1276,9 @@ function validarForm(){
                 return false
             }
             if(document.getElementById("autorizacionFacManual").value == ''){
+                setTimeout(function(){
+                    ocultarGif();
+                }, 500)
                 bootbox.alert({
                     message: "Tiene que registrar la autorizacion de la factura",
                     size: 'small'
@@ -1247,6 +1287,9 @@ function validarForm(){
             }
         }else{
             if(document.getElementById("factura_id").value == '0'){
+                setTimeout(function(){
+                    ocultarGif();
+                }, 500)
                 bootbox.alert({
                     message: "Seleccione la factura antes de guardar",
                     size: 'small'
@@ -1256,14 +1299,23 @@ function validarForm(){
         }
     }
     if(Number(id_itemRF)+Number(id_itemRI) == 2 && comprobanteCodigo.options[comprobante.selectedIndex].value != '04'){
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)
         alert('Registre datos de retencion antes de guardar');
         return false
     }
     if(Number(id_itemRF)+Number(id_itemRI) > 2 && comprobanteCodigo.options[comprobante.selectedIndex].value == '04'){
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)
         alert('Elimine los datos de retencion antes de guardar');
         return false
     }
     if(document.getElementById("idTotal").value == 0){
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)
         bootbox.alert({
             message: "El total de la compra tiene que set mayor a 0.00",
             size: 'small'

@@ -439,7 +439,25 @@ class conciliacionBancariaController extends Controller
                     $movimientoAux->update();
                 }
             }*/
-            $general->registrarAuditoria('Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta'),0,'Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta').' de banco -> '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.' con cuenta bancaria -> '.$cuentaBancaria->cuenta_bancaria_numero);
+            $datos =  $this->consulta($request);
+            
+            $cuentaBancaria = Cuenta_Bancaria::CuentaBancaria($request->get('cuenta_id'))->first();
+            $datos[27] = date("d/m/Y", strtotime($request->get('idDesde')));
+            $datos[28] = date("d/m/Y", strtotime($request->get('idHasta')));
+            $empresa =  Empresa::empresa()->first();
+            Auth::user()->user_nombre;
+
+            $ruta = public_path().'/PDF/'.$empresa->empresa_ruc;
+            if (!is_dir($ruta)) {
+            mkdir($ruta, 0777, true);
+            }
+            $view =  \View::make('admin.formatosPDF.conciliacionBancariapdf',['user'=>Auth::user()->user_nombre,'empresa'=>$empresa,'datos'=>$datos,'banco'=>$cuentaBancaria->banco->bancoLista->banco_lista_nombre,'cuentaBancariaB'=>$cuentaBancaria->cuenta_bancaria_numero]);
+            $nombreArchivo = 'REPORTE BANCARIO '.'-'.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.'-'.$cuentaBancaria->cuenta_bancaria_numero.DateTime::createFromFormat('Y-m-d', $request->get('idDesde'))->format('d-m-Y').' AL '.DateTime::createFromFormat('Y-m-d', $request->get('idHasta'))->format('d-m-Y');
+            
+            PDF::loadHTML($view)->setPaper('a4', 'landscape')->save('PDF/'.$empresa->empresa_ruc.'/'.$nombreArchivo.'.pdf')->save($nombreArchivo.'.pdf');
+            $pdfB64Doc = chunk_split(base64_encode(file_get_contents($ruta.'/'.$nombreArchivo.'.pdf')));
+
+            $general->registrarAuditoria('Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta'),0,'Registro de conciliacion con fecha desde -> '.$request->get('idDesde').' hasta -> '.$request->get('idHasta').' de banco -> '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre.' con cuenta bancaria -> '.$cuentaBancaria->cuenta_bancaria_numero, $pdfB64Doc);
             DB::commit();
             return $this->buscar($request);
         }catch(\Exception $ex){

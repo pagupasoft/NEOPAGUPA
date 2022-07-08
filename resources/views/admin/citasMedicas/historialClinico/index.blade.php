@@ -23,7 +23,7 @@
             @foreach($pacientes as $paciente)
                 <tr class="text-center">
                     <td>                        
-                        <a href="/public/historialClinico/{{$paciente->paciente_id}}/ver"  class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver historial"><i class="fa fa-calendar-check"></i></a> 
+                        <a href="{{ url('historialClinico/'.$paciente->paciente_id) }}/ver"  class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver historial"><i class="fa fa-calendar-check"></i></a> 
                     </td>    
                     <td>{{ $paciente->paciente_cedula}}</td>   
                     <td>{{ $paciente->paciente_cedula}}</td>         

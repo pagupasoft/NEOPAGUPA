@@ -204,16 +204,19 @@ class entidadController extends Controller
         try{
             DB::beginTransaction();
             $entidad = Entidad::findOrFail($id);
+            $nombre=$entidad->entidad_nombre;
+            $ea=Entidad_Aseguradora::entidadAseguradoraByEntidad($entidad->entidad_id)->first();
+            $ea->delete();
             $entidad->delete();
 
             $auditoria = new generalController();
-            $auditoria->registrarAuditoria('Eliminacion de entidad -> '.$entidad->entidad_nombre,'0','');
+            $auditoria->registrarAuditoria('Eliminacion de entidad -> '.$nombre,'0','');
             /*Fin de registro de auditoria */
             DB::commit();
             return redirect('entidad')->with('success','Datos de Entidad eliminados exitosamente');
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('entidad')->with('error','El registro no pudo ser borrado, tiene resgitros adjuntos.');
+            return redirect('entidad')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 }

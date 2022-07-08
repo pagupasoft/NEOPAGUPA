@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
-                        <button id="guardarID" type="submit" class="btn btn-success btn-sm" ><i
+                        <button id="guardarID" type="submit" class="btn btn-danger btn-sm" ><i
                                 class="fa fa-save"></i><span> Eliminar</span></button>
                                 <!--   
                                 <a href="{{ url("egresoBodega") }}" class="btn btn-danger btn-sm not-active-neo"><i

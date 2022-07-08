@@ -12,10 +12,10 @@
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
                       
-                    <button id="guardarID" type="submit" class="btn btn-success btn-sm" ><i
+                    <button id="guardarID" type="submit" class="btn btn-danger btn-sm" ><i
                                 class="fa fa-save"></i><span> Eliminar</span></button>
                         <button type="button" id="cancelarID" name="cancelarID" onclick='window.location = "{{ url("ingresoBodega") }}";'
-                            class="btn btn-danger btn-sm not-active-neo" ><i
+                            class="btn btn-light btn-sm not-active-neo" ><i
                                 class="fas fa-times-circle"></i><span> Cancelar</span></button>
                     </div>
                 </div>

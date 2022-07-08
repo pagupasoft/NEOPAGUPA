@@ -511,7 +511,7 @@ class quincenaConsolidadaController extends Controller
                     $datos[$count]['Dsueldo'] =$empleado->empleado_sueldo;
                     $datos[$count]['DCuenta'] =0;
                     if($empleado->empleado_cuenta_numero){
-                        if (round(floatval($empleado->empleado_cuenta_numero))==0) {
+                        if (floatval($empleado->empleado_cuenta_numero)>0) {
                             $datos[$count]['DCuenta'] =1;
                         }
                     }

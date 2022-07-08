@@ -10,13 +10,14 @@
         @csrf
             <div class="form-group row">
                 <label for="idDescripcion" class="col-sm-1 col-form-label"><center>Archivo SRI : </center></label>
-                <div class="col-sm-10">
+                <div class="col-sm-9">
                     <input type="file" id="file_sri" name="file_sri" class="form-control" required/>
                     <input type="hidden" id="puntoID" name="puntoID" value="@if(isset($punto)) {{$punto}} @endif"/>                  
                 </div>
-                <div class="col-sm-1">
-                    <center><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button></center>
-                </div>
+                <div class="float-right">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                    <a href="javascript: history.go(-1)" class="btn btn-danger"><i class="fa fa-undo"></i>&nbsp;Atras</a>  
+                </div>  
             </div>             
         </form>
         <hr>

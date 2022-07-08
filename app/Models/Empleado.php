@@ -91,7 +91,11 @@ class Empleado extends Model
     public function scopeEmpleados($query){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empleado_estado','=','1')->orderBy('empleado_nombre','asc');
-    }    
+    } 
+    public function scopeEmpleadosEstado($query){
+        return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->orderBy('empleado_estado','asc');
+    }   
     public function scopeEmpleadosControlDias($query, $sucursal){
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')
@@ -116,6 +120,15 @@ class Empleado extends Model
         return $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
         ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
         ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)->orderBy('empleado_nombre','asc');
+    }
+    public function scopeEmpleadosbuscar($query, $sucursal, $estado){
+         $query->join('empleado_cargo', 'empleado_cargo.empleado_cargo_id','=','empleado.cargo_id')
+        ->join('empresa_departamento','empresa_departamento.departamento_id','=','empleado.departamento_id')
+        ->where('empleado_cargo.empresa_id','=',Auth::user()->empresa_id)->where('empresa_departamento.sucursal_id','=',$sucursal)->orderBy('empleado_nombre','asc');
+        if($estado != 'TODOS'){
+            $query->where('empleado_estado', '=', $estado);
+        }
+        return  $query;  
     }
     public function scopeEmpleadosBySucursalAdministrativo($query, $sucursal){
         return $query->join('tipo_empleado', 'tipo_empleado.tipo_id','=','empleado.tipo_id')

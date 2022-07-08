@@ -963,7 +963,7 @@ class formulariosController extends Controller
 
             foreach($registrosNC as $registro){
                 $countAux = 0;
-                if($registro->detalle_iva > 0){
+                if($registro->detalle_iva == 0){
                     if(is_null($registro->casillero_codigo)){
                         $compra = Transaccion_Compra::TransaccionSinFecha()
                             ->join('sustento_tributario','sustento_tributario.sustento_id','=','transaccion_compra.sustento_id')

@@ -98,6 +98,13 @@ class Detalle_Diario extends Model
             return $query->join('diario','diario.diario_id','=','detalle_diario.diario_id')->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('cuenta.cuenta_numero','like',"".$numero."%")->where('diario.diario_fecha','>=',$fechaInicio)->where('diario.diario_fecha','<=',$fechaFin);
         }
     }
+    public function scopeSaldoActualByFechaCuenta($query, $cuenta, $fechaInicio, $fechaFin){
+        if($fechaInicio == '0'){
+            return $query->join('diario','diario.diario_id','=','detalle_diario.diario_id')->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('cuenta.cuenta_id','=',$cuenta)->where('diario.diario_fecha','<=',$fechaFin);
+        }else{
+            return $query->join('diario','diario.diario_id','=','detalle_diario.diario_id')->join('cuenta','cuenta.cuenta_id','=','detalle_diario.cuenta_id')->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('cuenta.cuenta_id','=',$cuenta)->where('diario.diario_fecha','>=',$fechaInicio)->where('diario.diario_fecha','<=',$fechaFin);
+        }
+    }
     public function scopeSaldoActualCuenta($query, $id, $fecha){
         return $query->join('diario','diario.diario_id','=','detalle_diario.diario_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('detalle_diario.cuenta_id','=',$id)->where('diario.diario_fecha','<=',$fecha);
     }

@@ -1108,7 +1108,7 @@ function agregarItemRF() {
         porcentajeRF = document.getElementById("conceptoFuenteIDAux");
         codRF = document.getElementById("conceptoFuenteID");
         valorRF = Number(document.getElementById("valorFuente").value);
-        if(round(baseRF*(Number(porcentajeRF.options[codRF.selectedIndex].text)/100)) == round(valorRF)){
+        
             var linea = $("#plantillaItemRF").html();
             linea = linea.replace(/{ID}/g, id_itemRF);
             linea = linea.replace(/{DbaseRF}/g, Number(baseRF).toFixed(2));
@@ -1120,12 +1120,7 @@ function agregarItemRF() {
             id_itemRF = id_itemRF + 1;
             totalRF(valorRF, baseRF);
             resetearCamposRF();
-        }else{
-            bootbox.alert({
-                message: "El valor retenido no es igual al calculado revise los valores y vuleva a intentar.",
-                size: 'small'
-            });
-        }
+        
     }else{
         bootbox.alert({
             message: "La base no puede ser 0.00",

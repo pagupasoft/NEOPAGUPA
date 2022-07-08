@@ -275,13 +275,8 @@
                             @endif
                             !-->
                             <?php $varacum = 0;?> 
-                            @if(count($datos[18]) > 0)
-                                @for ($i = 1; $i <= count($datos[18]); ++$i)
-                                <?php 
-                                    $varacum = $varacum + $datos[18][$i]['valor'];
-                                 ?>                                    
-                                @endfor
-                                <td class="centrar-texto"> <input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($varacum,2, '.', '')}}" onkeyup="calculos();" required/> </td>
+                            @if(count($datos[16]) > 0)                                
+                                <td class="centrar-texto"> <input class="form-control derecha-texto" id="valor3" name="valor3" value="{{number_format($datos[17][1]['valor'],2, '.', '')}}" onkeyup="calculos();" required/> </td>
                             @else
                                 <td class="centrar-texto"> <input class="form-control derecha-texto" id="valor3" name="valor3" value="0" onkeyup="calculos();" required/> </td>
                   

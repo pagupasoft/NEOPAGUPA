@@ -40,6 +40,10 @@ class  Diario extends Model
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_id', 'sucursal_id');
     }
+    public function diariocierre()
+    {
+        return $this->belongsTo(Diario::class, 'diario_cierre_id', 'diario_id');
+    }
     public function movimientocaja()
     {
         return $this->belongsTo(Movimiento_Caja::class, 'diario_id', 'diario_id');
@@ -888,7 +892,10 @@ public function scopeDiarioTransferenciaFechaSucursalBanco($query,$fechadesde,$f
                   ->orwhere(DB::raw('lower(diario_tipo)'), 'like', '%'.strtolower($buscar).'%')
                   ->orwhere(DB::raw('lower(diario_comentario)'), 'like', '%'.strtolower($buscar).'%');
         });
-    }    
+    }
+    public function scopeDiariosCierre($query,$fechaI,$fechaF,$sucursal){
+        return $query->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('diario_fecha','>=',$fechaI)->where('diario_fecha','<=',$fechaF)->where('sucursal_id','=',$sucursal);
+    }
     public function scopeDiario($query, $id){
         return $query->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('diario.diario_id','=',$id)->join('sucursal','sucursal.sucursal_id','=','diario.sucursal_id');
     }

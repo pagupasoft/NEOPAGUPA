@@ -103,6 +103,8 @@ class cierreMesController extends Controller
             $cierre->cierre_estado = "1";
             $cierre->sucursal_id = $request->get('sucursal_id2');
             $cierre->save();
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Ingreso de cierre de mes contable -> '.$cierre->cierre_ano,'0','');
             DB::commit();
             return redirect('cierreMes')->with('success','Datos guardados exitosamente');
         }catch(\Exception $ex){

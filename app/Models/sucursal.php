@@ -48,6 +48,9 @@ class sucursal extends Model
     public function scopeSucursalByNombre($query, $nom){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('sucursal_nombre','=',$nom);
     }
+    public function scopeSucursalByContable($query, $id, $nom){
+        return $query->join('parametrizacion_contable','parametrizacion_contable.sucursal_id','=','sucursal.sucursal_id')->join('cuenta','cuenta.cuenta_id','=','parametrizacion_contable.cuenta_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('sucursal.sucursal_id','=',$id)->where('parametrizacion_nombre','=',$nom);
+    }
     public function scopeSucursalId($query, $buscar){
         return $query->where('empresa_id','=',Auth::user()->empresa_id)->where('sucursal_estado','=','1')->where('sucursal_id','=',$buscar)->orderBy('sucursal_nombre','asc');
     }

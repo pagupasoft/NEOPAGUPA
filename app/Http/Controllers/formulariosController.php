@@ -178,7 +178,7 @@ class formulariosController extends Controller
                     //VENTAS CON 12%       
                     if(count($datos[0]) > 0){
                                      
-                        for ($i = 1; $i <= count($datos[0]); ++$i){
+                        for ($i = 1; $i < count($datos[0]); ++$i){
                             $reporteTributario = new Reporte_Tributario(); 
                             $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
                             $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));          
@@ -195,7 +195,7 @@ class formulariosController extends Controller
                     }
                     //VENTAS CON 0%       
                     if(count($datos[1]) > 0){                        
-                        for ($i = 1; $i <= count($datos[1]); ++$i){  
+                        for ($i = 1; $i < count($datos[1]); ++$i){  
                             $reporteTributario = new Reporte_Tributario();
                             $reporteTributario->reporte_mes = date("m", strtotime($request->get('fecha_desde')));       
                             $reporteTributario->reporte_ano = date("Y", strtotime($request->get('fecha_hasta')));                          

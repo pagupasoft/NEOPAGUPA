@@ -50,6 +50,7 @@
                     <th>No. Documento</th>
                     <th>Usuario</th>
                     <th>Adicional</th>
+                    <th>Documento</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,6 +63,13 @@
                         <td class="text-center">{{ $x->auditoria_numero_documento}}</td>
                         <td class="text-center">{{ $x->user_nombre}}</td>
                         <td>{{ $x->auditoria_adicional}}</td>
+                        @if($x->auditoria_documento_respaldo)
+                            <td>
+                                <a target="_blank" href="{{ url('verDocumentoAuditoria/'.$x->auditoria_id.'') }}">ver documento pdf</a>
+                            </td>
+                        @else
+                            <td>-</td>
+                        @endif
                     </tr>
                     @endforeach
                 @endif

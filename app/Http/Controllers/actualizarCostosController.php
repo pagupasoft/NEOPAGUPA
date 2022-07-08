@@ -30,6 +30,7 @@ class actualizarCostosController extends Controller
     }
     public function actualizar(Request $request){
         try{
+            ini_set('max_execution_time', 0);
             $this->verificarAsientosCostos($request->get('fecha_desde'), $request->get('fecha_hasta'));
             $this->actualizarPrecioCosto($request->get('fecha_desde'), $request->get('fecha_hasta'));
             return redirect('actualizarCostos')->with('success','Datos actualizados exitosamente');

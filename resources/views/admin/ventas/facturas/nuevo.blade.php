@@ -1,8 +1,8 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="card card-primary card-outline">
-    <form class="form-horizontal" method="POST" action="{{ url("factura") }}" onsubmit="return validacion()">
+<div class="card card-primary card-outline" style="position: absolute; width: 100%">
+    <form id="idForm" class="form-horizontal" method="POST" action="{{ url("factura") }}" onsubmit="return validacion()">
         @csrf
         <div class="card-header">
             <div class="row">
@@ -547,6 +547,27 @@
         </div>
     </form>
 </div>
+<div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">
+    <img src="{{ url('img/loading.gif') }}" width=90px height=90px style="align-items: center">
+</div>
+<script>
+    function girarGif(){
+        document.getElementById("div-gif").style.display="inline"
+        console.log("girando")
+    }
+    function ocultarGif(){
+        document.getElementById("div-gif").style.display="none"
+        console.log("no girando")
+    }
+
+    setTimeout(function(){
+        console.log("registro de la funcion")
+        $("#idForm").submit(function(e) {
+            girarGif()
+            
+        });
+    }, 1200)
+</script>
 <!-- /.card -->
 @section('scriptAjax')
 <script src="{{ asset('admin/js/ajax/autocompleteCliente.js') }}"></script>
@@ -754,6 +775,9 @@ function ponerCeros(num) {
 }
 function validacion() {
     if(document.getElementById("factura_comentario").value.length > 300){
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)
         bootbox.alert({
         message: "El numero de caracteres del comentario no puede exceder de 300 caracteres.",
             size: 'small'
@@ -761,7 +785,10 @@ function validacion() {
         return false
     }
     
-    if (document.getElementById("idTotalFactura").value <= 0) {      
+    if (document.getElementById("idTotalFactura").value <= 0) {    
+        setTimeout(function(){
+            ocultarGif();
+        }, 500)  
         bootbox.alert({
             message: "El total de la factura debe ser mayor a cero.",
             size: 'large'
@@ -773,6 +800,9 @@ function validacion() {
             monto = Number(document.getElementById("idMontoCredito").value);
             valor = Number(document.getElementById("saldoPendienteID").value) + Number(document.getElementById("idMontoFacturado").value);
             if(valor > monto){
+                setTimeout(function(){
+                    ocultarGif();
+                }, 500)
                 bootbox.alert({
                     message: "El cliente esta excediendo el monto de credito asignado.",
                     size: 'small'

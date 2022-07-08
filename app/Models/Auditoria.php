@@ -20,6 +20,7 @@ class Auditoria extends Model
         'auditoria_numero_documento',
         'auditoria_estado',
         'user_id',
+        'auditoria_documento_respaldo'
     ];
     protected $guarded = [
     ];

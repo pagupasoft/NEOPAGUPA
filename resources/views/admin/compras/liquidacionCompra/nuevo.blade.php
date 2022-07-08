@@ -504,7 +504,7 @@
                                                         <div class="form-line">
                                                             <input id="valorFuente" name="valorFuente" type="text"
                                                                 class="form-control" placeholder="0.00" value="0.00"
-                                                                disabled>
+                                                                disabled readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -599,7 +599,7 @@
                                                         <div class="form-line">
                                                             <input id="valorIva" name="valorIva" type="text"
                                                                 class="form-control" placeholder="Total" value="0.00"
-                                                                disabled>
+                                                                disabled readonly>
                                                         </div>
                                                     </div>
                                                 </div>

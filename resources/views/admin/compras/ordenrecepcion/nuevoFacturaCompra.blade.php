@@ -573,7 +573,7 @@
                                                     <div class="form-group">
                                                         <input id="baseFuente" name="baseFuente" type="text"
                                                             class="form-control" placeholder="0.00" value="0.00"
-                                                            >
+                                                            onkeyup="calcularRF();" onclick="calcularRF();">
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5"
@@ -608,7 +608,7 @@
                                                         <div class="form-line">
                                                             <input id="valorFuente" name="valorFuente" type="text"
                                                                 class="form-control" placeholder="0.00" value="0.00"
-                                                                >
+                                                                readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -668,7 +668,7 @@
                                                         <div class="form-line">
                                                             <input id="baseIva" name="baseIva" type="text"
                                                                 class="form-control" placeholder="Total" value="0.00"
-                                                                >
+                                                                onkeyup="calcularRI();" onclick="calcularRI();">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -704,7 +704,7 @@
                                                         <div class="form-line">
                                                             <input id="valorIva" name="valorIva" type="text"
                                                                 class="form-control" placeholder="Total" value="0.00"
-                                                                >
+                                                                readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1263,6 +1263,13 @@ function validarForm(){
             });
             return false;
         }
+    }
+    if(document.getElementById("proveedorID").value == ''){
+        bootbox.alert({
+            message: "Seleccione un proveedor antes de guardar.",
+            size: 'small'
+        });
+        return false;
     }
     
     if(comprobanteCodigo.options[comprobante.selectedIndex].value == '04' || comprobanteCodigo.options[comprobante.selectedIndex].value == '05'){

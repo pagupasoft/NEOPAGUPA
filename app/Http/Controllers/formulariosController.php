@@ -773,12 +773,14 @@ class formulariosController extends Controller
                                 $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                 $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                             }else{
+                                $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                                 $datos[0]['nc'] = 0; 
                                 $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                             }
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                             $datos[0]['nc'] = 0; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
@@ -792,6 +794,7 @@ class formulariosController extends Controller
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                             $datos[0]['nc'] = 0; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
@@ -826,11 +829,13 @@ class formulariosController extends Controller
                                     $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                     $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                                 }else{
+                                    $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                     $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                                     $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                     $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                                 }
                             }else{
+                                $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                                 $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
@@ -842,6 +847,7 @@ class formulariosController extends Controller
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                             $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
@@ -916,12 +922,14 @@ class formulariosController extends Controller
                                 $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                 $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                             }else{
+                                $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                                 $datos[0]['nc'] = 0; 
                                 $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                             }
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                             $datos[0]['nc'] = 0; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
@@ -935,6 +943,7 @@ class formulariosController extends Controller
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
                             $datos[0]['nc'] = 0; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
@@ -969,11 +978,13 @@ class formulariosController extends Controller
                                     $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                     $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                                 }else{
+                                    $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                     $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                                     $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                     $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                                 }
                             }else{
+                                $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                                 $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
@@ -985,6 +996,7 @@ class formulariosController extends Controller
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
                         }else{
+                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['nc'] = floatval($datos[0]['nc']) + $registro->detalle_total; 
                             $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
                             $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 

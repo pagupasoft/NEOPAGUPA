@@ -28,6 +28,13 @@ class Entidad_Aseguradora extends Model
         return $query->join('entidad', 'entidad.entidad_id','=','entidad_aseguradora.entidad_id')->where('entidad.empresa_id','=',Auth::user()->empresa_id)->where('entidada_id', '=', $id);
     }
 
+    public function scopeEntidadAseguradoraByEntidad($query, $id)
+    {
+        return $query->join('entidad', 'entidad.entidad_id','=','entidad_aseguradora.entidad_id'
+                    )->where('entidad.empresa_id','=',Auth::user()->empresa_id
+                    )->where('entidad.entidad_id', '=', $id);
+    }
+
     public function scopeAseguradorasEntidades($query, $id){
 
         return $query->join('entidad', 'entidad.entidad_id','=','entidad_aseguradora.entidad_id' 

@@ -45,6 +45,7 @@
                     <th>Iva Servicios</th>
                     <th>Seire Retención</th>
                     <th>Sec. Retención</th>
+                    <th>Fecha Retención</th>
                     <th>Autorizacion Ret.</th>
                     <th>Total Base Fuente</th>
                     <th>Retenido Fuente</th>
@@ -79,6 +80,7 @@
                     <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_ivaS,2)}}</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_serie }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ substr(str_repeat(0, 9).$transaccionCompra->retencionCompra->retencion_secuencial, - 9) }} @endif</td>
+                    <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_fecha }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_autorizacion }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $fuenteRetBase = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'FUENTE') {$fuenteRetBase = $fuenteRetBase + $detalle->detalle_base;} ?>  @endforeach {{ number_format($fuenteRetBase,2) }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $fuenteRet = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'FUENTE') {$fuenteRet = $fuenteRet + $detalle->detalle_valor;} ?>  @endforeach {{ number_format($fuenteRet,2) }} @endif</td>
@@ -118,6 +120,7 @@
                     <th>Iva Servicios</th>
                     <th>Seire Retención</th>
                     <th>Sec. Retención</th>
+                    <th>Fecha Retención</th>
                     <th>Autorizacion Ret.</th>
                     <th>Total Base Fuente</th>
                     <th>Retenido Fuente</th>
@@ -146,6 +149,7 @@
                     <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_ivaS,2)}}</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_serie }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ substr(str_repeat(0, 9).$transaccionCompra->retencionCompra->retencion_secuencial, - 9) }} @endif</td>
+                    <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_fecha }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_autorizacion }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $fuenteRetBase = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'FUENTE') {$fuenteRetBase = $fuenteRetBase + $detalle->detalle_base;} ?>  @endforeach {{ number_format($fuenteRetBase,2) }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $fuenteRet = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'FUENTE') {$fuenteRet = $fuenteRet + $detalle->detalle_valor;} ?>  @endforeach {{ number_format($fuenteRet,2) }} @endif</td>
@@ -221,6 +225,7 @@
                     <th>Iva Servicios</th>
                     <th>Seire Retención</th>
                     <th>Sec. Retención</th>
+                    <th>Fecha Retención</th>
                     <th>Autorizacion Ret.</th>
                     <th>Retenido Fuente</th>
                     <th>Iva Bienes</th>
@@ -250,6 +255,7 @@
                     <td class="text-rigth">${{ number_format($transaccionCompra->transaccion_ivaS,2)}}</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_serie }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ substr(str_repeat(0, 9).$transaccionCompra->retencionCompra->retencion_secuencial, - 9) }} @endif</td>
+                    <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_fecha }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra) {{ $transaccionCompra->retencionCompra->retencion_autorizacion }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $fuenteRet = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'FUENTE') {$fuenteRet = $fuenteRet + $detalle->detalle_valor;} ?>  @endforeach {{ number_format($fuenteRet,2) }} @endif</td>
                     <td class="text-rigth">@if($transaccionCompra->retencionCompra)  <?php $ivaRetB = 0; ?> @foreach($transaccionCompra->retencionCompra->detalles as $detalle) <?php if($detalle->detalle_tipo == 'IVA' and $detalle->conceptoRetencion->concepto_objeto == 'BIENES') {$ivaRetB = $ivaRetB + $detalle->detalle_base;} ?>  @endforeach {{ number_format($ivaRetB,2) }} @endif</td>

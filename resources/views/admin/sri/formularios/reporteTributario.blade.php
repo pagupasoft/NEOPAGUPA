@@ -433,6 +433,30 @@
                 @endif               
                 </tbody>
             </table>
+            <center><h3 class="neo-fondo-tabla"><b>PRODUCTOS POR CASILLERO Y VENTA</b><h3></center>
+            <table id="example2" class="table table-bordered table-hover table-responsive sin-salto">
+                <thead>
+                    <tr class="text-center">
+                        <th>Producto</th>
+                        <th>Casillero</th>
+                        <th>Valor</th>
+                        <th>Factura</th>  
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($datos))
+                        @for ($i = 1; $i <= count($datos[24]); ++$i)
+                        <tr>
+                            <td class="text-center">{{ $datos[24][$i]['producto'] }}</td>
+                            <td class="text-center">{{ $datos[24][$i]['codigo'] }}</td>
+                            <td class="text-center">{{ number_format( $datos[24][$i]['valor'],2) }}</td>
+                            <td class="text-center">{{ $datos[24][$i]['factura'] }}</td> 
+
+                        </tr>                         
+                        @endfor
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
     <div id="div-gif" class="col-md-12 text-center" style="position: absolute;height: 300px; margin-top: 150px; display: none">

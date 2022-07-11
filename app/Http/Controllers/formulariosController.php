@@ -708,6 +708,8 @@ class formulariosController extends Controller
     public function datos(Request $request){
         try{
             $resultado = null;
+            $datosProductos = [];
+            $countProd = 1;
             $datos = [];
             $count = 1;
             $total1 = 0;
@@ -749,9 +751,11 @@ class formulariosController extends Controller
             }
 
             $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, 
-            detalle_fv.detalle_iva,producto.producto_nombre from factura_venta 
+            detalle_fv.detalle_iva,producto.producto_nombre, factura_venta.factura_numero, tipo_cliente.tipo_cliente_nombre from factura_venta
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
+            inner join cliente on cliente.cliente_id = factura_venta.cliente_id
+            inner join tipo_cliente on tipo_cliente.tipo_cliente_id = cliente.tipo_cliente_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
             where factura_venta.factura_estado <> '2' and factura_venta.factura_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%'
             and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
@@ -766,12 +770,24 @@ class formulariosController extends Controller
                             ->where('detalle_tc.producto_id','=',$registro->producto_id)->where('tipo_comprobante.tipo_comprobante_codigo','=','01')
                             ->orderBy('transaccion_compra.transaccion_fecha','desc')->orderBy('transaccion_compra.transaccion_id','desc')->first();
                         if(isset($compra->sustento_venta12)){
-                            $countAux = array_search($compra->sustento_venta12, $datosAux);
+                            if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $countAux = array_search('403', $datosAux);                           
+                            }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                                $countAux = array_search('405', $datosAux);
+                            }else{
+                                $countAux = array_search($compra->sustento_venta12, $datosAux);
+                            }
                             if(!empty($countAux)){
                                 $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
                                 $datos[$countAux]['nc'] = 0; 
                                 $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                 $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+                                
+                                $datosProductos[$countProd]['producto'] = $registro->producto_nombre;
+                                $datosProductos[$countProd]['codigo'] = $datos[$countAux]['casillero'];
+                                $datosProductos[$countProd]['valor'] = $registro->detalle_total;
+                                $datosProductos[$countProd]['factura'] = $registro->factura_numero;
+                                $countProd = $countProd + 1;
                             }else{
                                 $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
@@ -787,12 +803,24 @@ class formulariosController extends Controller
                             $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                         }
                     }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                            $countAux = array_search('403', $datosAux);                           
+                        }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                            $countAux = array_search('405', $datosAux);
+                        }else{
+                            $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        }
                         if(!empty($countAux)){
                             $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
                             $datos[$countAux]['nc'] = 0; 
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+                            
+                            $datosProductos[$countProd]['producto'] = $registro->producto_nombre;
+                            $datosProductos[$countProd]['codigo'] = $datos[$countAux]['casillero'];
+                            $datosProductos[$countProd]['valor'] = $registro->detalle_total;
+                            $datosProductos[$countProd]['factura'] = $registro->factura_numero;
+                            $countProd = $countProd + 1;
                         }else{
                             $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
@@ -805,9 +833,12 @@ class formulariosController extends Controller
             }
 
             $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, 
-            detalle_nc.detalle_iva,producto.producto_nombre from nota_credito 
+            detalle_nc.detalle_iva,producto.producto_nombre, tipo_cliente.tipo_cliente_nombre from nota_credito 
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
+            inner join factura_venta on factura_venta.factura_id = nota_credito.factura_id
+            inner join cliente on cliente.cliente_id = factura_venta.cliente_id
+            inner join tipo_cliente on tipo_cliente.tipo_cliente_id = cliente.tipo_cliente_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
             where nota_credito.nc_estado = '1' and nota_credito.nc_tarifa12 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 12%' 
             and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
@@ -823,7 +854,13 @@ class formulariosController extends Controller
                             ->where('detalle_tc.producto_id','=',$registro->producto_id)->orderBy('transaccion_compra.transaccion_fecha','desc')
                             ->orderBy('transaccion_compra.transaccion_id','desc')->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                             if(isset($compra->sustento_venta12)){
-                                $countAux = array_search($compra->sustento_venta12, $datosAux);
+                                if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                    $countAux = array_search('403', $datosAux);                           
+                                }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                                    $countAux = array_search('405', $datosAux);
+                                }else{
+                                    $countAux = array_search($compra->sustento_venta12, $datosAux);
+                                }
                                 if(!empty($countAux)){
                                     $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
                                     $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
@@ -841,7 +878,13 @@ class formulariosController extends Controller
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                             }
                     }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                            $countAux = array_search('403', $datosAux);                           
+                        }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                            $countAux = array_search('405', $datosAux);
+                        }else{
+                            $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        }
                         if(!empty($countAux)){
                             $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
@@ -896,9 +939,11 @@ class formulariosController extends Controller
             }
 
             $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, 
-            detalle_fv.detalle_iva, producto.producto_nombre from factura_venta 
+            detalle_fv.detalle_iva, producto.producto_nombre, factura_venta.factura_numero, tipo_cliente.tipo_cliente_nombre from factura_venta
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
+            inner join cliente on cliente.cliente_id = factura_venta.cliente_id
+            inner join tipo_cliente on tipo_cliente.tipo_cliente_id = cliente.tipo_cliente_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
             where factura_venta.factura_estado <> '2' and factura_venta.factura_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'  
             and factura_venta.factura_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
@@ -915,12 +960,24 @@ class formulariosController extends Controller
                             ->orderBy('transaccion_compra.transaccion_fecha','desc')->orderBy('transaccion_compra.transaccion_id','desc')->first();
 
                         if(isset($compra->sustento_venta0)){
-                            $countAux = array_search($compra->sustento_venta0, $datosAux);
+                            if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                $countAux = array_search('403', $datosAux);                           
+                            }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                                $countAux = array_search('405', $datosAux);
+                            }else{
+                                $countAux = array_search($compra->sustento_venta0, $datosAux);
+                            }
                             if(!empty($countAux)){
                                 $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
                                 $datos[$countAux]['nc'] = 0; 
                                 $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                                 $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+
+                                $datosProductos[$countProd]['producto'] = $registro->producto_nombre;
+                                $datosProductos[$countProd]['codigo'] = $datos[$countAux]['casillero'];
+                                $datosProductos[$countProd]['valor'] = $registro->detalle_total;
+                                $datosProductos[$countProd]['factura'] = $registro->factura_numero;
+                                $countProd = $countProd + 1;
                             }else{
                                 $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                                 $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
@@ -936,12 +993,24 @@ class formulariosController extends Controller
                             $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                         }
                     }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                            $countAux = array_search('403', $datosAux);                           
+                        }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                            $countAux = array_search('405', $datosAux);
+                        }else{
+                            $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        }
                         if(!empty($countAux)){
                             $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
                             $datos[$countAux]['nc'] = 0; 
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
                             $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+
+                            $datosProductos[$countProd]['producto'] = $registro->producto_nombre;
+                            $datosProductos[$countProd]['codigo'] = $datos[$countAux]['casillero'];
+                            $datosProductos[$countProd]['valor'] = $registro->detalle_total;
+                            $datosProductos[$countProd]['factura'] = $registro->factura_numero;
+                            $countProd = $countProd + 1;
                         }else{
                             $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
                             $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
@@ -954,9 +1023,12 @@ class formulariosController extends Controller
             }
 
             $registrosNC=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_nc.detalle_total, 
-            detalle_nc.detalle_iva, producto.producto_nombre from nota_credito 
+            detalle_nc.detalle_iva, producto.producto_nombre, tipo_cliente.tipo_cliente_nombre from nota_credito 
             inner join detalle_nc on detalle_nc.nc_id = nota_credito.nc_id
             inner join producto on producto.producto_id = detalle_nc.producto_id
+            inner join factura_venta on factura_venta.factura_id = nota_credito.factura_id
+            inner join cliente on cliente.cliente_id = factura_venta.cliente_id
+            inner join tipo_cliente on tipo_cliente.tipo_cliente_id = cliente.tipo_cliente_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
             where nota_credito.nc_estado = '1' and nota_credito.nc_tarifa0 > 0 and producto.producto_nombre not like '%REEMBOLSO DE GASTO 0%'
             and nota_credito.nc_fecha between '".$request->get('fecha_desde')."' and '".$request->get('fecha_hasta')."'"));
@@ -972,7 +1044,13 @@ class formulariosController extends Controller
                             ->where('detalle_tc.producto_id','=',$registro->producto_id)->orderBy('transaccion_compra.transaccion_fecha','desc')
                             ->orderBy('transaccion_compra.transaccion_id','desc')->where('tipo_comprobante.tipo_comprobante_codigo','=','01')->first();
                             if(isset($compra->sustento_venta0)){
-                                $countAux = array_search($compra->sustento_venta0, $datosAux);
+                                if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                                    $countAux = array_search('403', $datosAux);                           
+                                }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                                    $countAux = array_search('405', $datosAux);
+                                }else{
+                                    $countAux = array_search($compra->sustento_venta0, $datosAux);
+                                }
                                 if(!empty($countAux)){
                                     $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
                                     $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
@@ -990,7 +1068,13 @@ class formulariosController extends Controller
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                             }
                     }else{
-                        $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
+                            $countAux = array_search('403', $datosAux);                           
+                        }elseif($registro->tipo_cliente_nombre == 'CLIENTE EXPORTADOR'){
+                            $countAux = array_search('405', $datosAux);
+                        }else{
+                            $countAux = array_search($registro->casillero_codigo, $datosAux);
+                        }
                         if(!empty($countAux)){
                             $datos[$countAux]['nc'] = floatval($datos[$countAux]['nc']) + $registro->detalle_total; 
                             $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
@@ -1014,6 +1098,7 @@ class formulariosController extends Controller
                 $total4 = $total4 + $datos[$i]['iva'];
             }
             $resultado[1]= $datos;
+            $resultado[24] = $datosProductos;
             /*************/
             /*TOTAL VENTAS 12% Y 0%*/
             $datos = [];

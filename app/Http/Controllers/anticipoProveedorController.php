@@ -104,7 +104,8 @@ class anticipoProveedorController extends Controller
                             $anticipoProveedor->anticipo_motivo = ($array[0][$i][2]);
                             $anticipoProveedor->anticipo_valor = ($array[0][$i][3]);  
                             $anticipoProveedor->anticipo_saldo = ($array[0][$i][4]);   
-                        
+                            $anticipoProveedor->anticipo_saldom = ($array[0][$i][4]);   
+
                             $anticipoProveedor->proveedor_id = $proveedor->proveedor_id;
                             $anticipoProveedor->rango_id =$rangoDocumento->rango_id;
                           

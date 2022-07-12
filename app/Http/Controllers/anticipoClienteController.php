@@ -104,7 +104,7 @@ class anticipoClienteController extends Controller
                             $anticipoCliente->anticipo_motivo = ($array[0][$i][2]);
                             $anticipoCliente->anticipo_valor = ($array[0][$i][3]);  
                             $anticipoCliente->anticipo_saldo = ($array[0][$i][4]);   
-                        
+                            $anticipoCliente->anticipo_saldom = ($array[0][$i][4]); 
                             $anticipoCliente->cliente_id = $cliente->cliente_id;
                             $anticipoCliente->rango_id =$rangoDocumento->rango_id;
                           

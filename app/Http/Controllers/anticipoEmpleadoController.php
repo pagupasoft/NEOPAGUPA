@@ -118,7 +118,8 @@ class anticipoEmpleadoController extends Controller
                             $anticipoEmpleado->anticipo_motivo = ($array[0][$i][2]);
                             $anticipoEmpleado->anticipo_valor = ($array[0][$i][3]);  
                             $anticipoEmpleado->anticipo_saldo = ($array[0][$i][4]);   
-                        
+                            $anticipoEmpleado->anticipo_saldom = ($array[0][$i][4]); 
+
                             $anticipoEmpleado->empleado_id = $empleado->empleado_id;
                             $anticipoEmpleado->rango_id =$rangoDocumento->rango_id;
                             $anticipoEmpleado->anticipo_documento = 0; 

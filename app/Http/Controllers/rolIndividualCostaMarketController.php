@@ -240,7 +240,7 @@ class rolIndividualCostaMarketController extends Controller
                 $cheque->cheque_numero = $request->get('idNcheque');
                 $cheque->cheque_descripcion =  'PAGO ROL DE EMPLEADO '.$empleado->empleado_nombre.' CON MES Y AÑO '.date('Y', strtotime($request->get('fechafinal'))).'/'.date('F', strtotime($request->get('fechafinal')));
                 $cheque->cheque_beneficiario = $empleado->empleado_nombre;
-                $cheque->cheque_fecha_emision = $request->get('fechaactual');
+                $cheque->cheque_fecha_emision = $request->get('fechafinal');
                 $cheque->cheque_fecha_pago = $request->get('idFechaCheque');
                 $cheque->cheque_valor = $cabecera_rol->cabecera_rol_pago;
                 $cheque->cheque_valor_letras = $formatter->toInvoice($cheque->cheque_valor, 2, 'Dolares');
@@ -399,7 +399,7 @@ class rolIndividualCostaMarketController extends Controller
                     $quincenas=Quincena::findOrFail($idquincena[$quincena[$j]]);
                 
                     $anticipoquincena=new Descuento_Quincena();
-                    $anticipoquincena->descuento_fecha=$request->get('fechaactual');
+                    $anticipoquincena->descuento_fecha=$request->get('fechafinal');
                     $anticipoquincena->descuento_descripcion='Descuento de quincena en Rol';
                     $anticipoquincena->descuento_valor=$valorquincena[$j];
                     $anticipoquincena->descuento_estado='1';
@@ -422,9 +422,8 @@ class rolIndividualCostaMarketController extends Controller
                 for ($j = 0; $j < count($anticipos); ++$j) {
                     if (($valoranticipos[$j])>0) {
                         $anticipo=Anticipo_Empleado::findOrFail($idanticipos[$anticipos[$j]]);
-        
                         $anticipodescuento=new Descuento_Anticipo_Empleado();
-                        $anticipodescuento->descuento_fecha=$request->get('fechaactual');
+                        $anticipodescuento->descuento_fecha=$request->get('fechafinal');
                         $anticipodescuento->descuento_descripcion='Descuento de anticipo en Rol';
                         $anticipodescuento->descuento_valor=$valoranticipos[$j];
                         $anticipodescuento->descuento_estado='1';

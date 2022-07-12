@@ -124,7 +124,7 @@ class anticipoEmpleadoController extends Controller
                             $anticipoEmpleado->rango_id =$rangoDocumento->rango_id;
                             $anticipoEmpleado->anticipo_documento = 0; 
                             $anticipoEmpleado->anticipo_estado = 1;
-/*
+
                             $detalleDiario = new Detalle_Diario();
                             $detalleDiario->detalle_debe =  ($array[0][$i][4]);
                             $detalleDiario->detalle_haber = 0.00 ;
@@ -145,7 +145,7 @@ class anticipoEmpleadoController extends Controller
                             $diario->detalles()->save($detalleDiario);
                             $general->registrarAuditoria('Registro de Detalle de Diario codigo: -> '.$diario->diario_codigo,'0','En la cuenta del Haber -> '.$detalleDiario->cuenta->cuenta_numero.' con el valor de: -> '.$array[0][$i][3]);
                             
-                            */
+                          
                             $anticipoEmpleado->diario_id= $diario->diario_id;
                             $anticipoEmpleado->save();
                             $activador=true;

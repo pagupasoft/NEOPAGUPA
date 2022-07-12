@@ -134,9 +134,11 @@ class anticipoClienteController extends Controller
                         }
                     }
                 }
+                /*
                 if($activador==true){
                     $detalleDiarioAux->delete();
                 }
+                */
             }
             DB::commit();
             return redirect('listaAnticipoCliente')->with('success','Datos guardados exitosamente');

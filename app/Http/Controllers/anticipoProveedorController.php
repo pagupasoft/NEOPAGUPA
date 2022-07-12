@@ -120,7 +120,7 @@ class anticipoProveedorController extends Controller
                             $detalleDiario->detalle_conciliacion = '0';
                             $detalleDiario->detalle_estado = '1';        
                             $detalleDiario->proveedor_id = $proveedor->proveedor_id;
-                            $activador=true;
+                            
                             $parametrizacionContable=Parametrizacion_Contable::ParametrizacionByNombre($diario->sucursal_id, 'ANTICIPO DE PROVEEDOR')->first();
                             if($parametrizacionContable->parametrizacion_cuenta_general == '1'){
                                 $detalleDiario->cuenta_id = $parametrizacionContable->cuenta_id;
@@ -135,9 +135,11 @@ class anticipoProveedorController extends Controller
                         }
                     }
                 }
+               /*
                 if($activador==true){
                     $detalleDiarioAux->delete();
                 }
+                */
             }
             DB::commit();
             return redirect('listaAnticipoProveedor')->with('success','Datos guardados exitosamente');

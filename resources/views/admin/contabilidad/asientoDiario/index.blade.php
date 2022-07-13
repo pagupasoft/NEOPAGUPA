@@ -50,7 +50,7 @@
                         <tbody>
                             @foreach($diarios as $diario)
                                 <tr>
-                                    <td class="filaDelgada20"><div class="custom-control custom-radio"><input type="radio" class="custom-control-input" id="dia{{ $diario->diario_id }}" name="radioDiario" value="{{ $diario->diario_id }}" onchange="this.form.submit()" @if(isset($diarioS)) @if($diarioS->diario_id == $diario->diario_id) checked @endif @endif><label for="dia{{ $diario->diario_id }}" class="custom-control-label" style="font-size: 15px; font-weight: normal !important;">{{ $diario->diario_codigo }}</label></div></td>
+                                    <td class="filaDelgada20"><div class="custom-control custom-radio"><input type="radio" class="custom-control-input" id="dia{{ $diario->diario_id }}" name="radioDiario" value="{{ $diario->diario_id }}" onchange="this.form.submit()" @if(isset($diarioS)) @if($diarioS->diario_id == $diario->diario_id) checked @endif @endif><label for="dia{{ $diario->diario_id }}" class="custom-control-label" style="font-size: 15px; font-weight: normal !important;">@if($diario->diario_tipo=='CDCO') {{ $diario->diario_codigo }} (MANUAL) @ELSE {{ $diario->diario_codigo }} (AUTOMATICO) @ENDIF</label></div></td>
                                 </tr>
                             @endforeach
                         </tbody>

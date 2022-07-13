@@ -231,6 +231,7 @@ use App\Http\Controllers\inicializarCuentasPagarController;
 use App\Http\Controllers\laboratorioCamaroneraController;
 use App\Http\Controllers\listaAsientosDiariosController;
 use App\Http\Controllers\listaBeneficiosController;
+use App\Http\Controllers\listaCierreResultadoController;
 use App\Http\Controllers\listaControlDiaController;
 use App\Http\Controllers\listadecimoCuartoController;
 use App\Http\Controllers\tarjetaCreditoController;
@@ -506,6 +507,7 @@ Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middle
 Route::resource('listaIngresoBanco', listaIngresoBancoController::class)->middleware('auth');
 Route::resource('reporteBancario', repoteBancarioController::class)->middleware('auth');
 Route::resource('ordenAtencionIess', ordenAtencionIessController::class)->middleware('auth');
+Route::resource('listaCierreResultado', listaCierreResultadoController::class)->middleware('auth');
 
 Route::resource('listanotaCreditoBancario', listaNotaCreditoBancoController::class)->middleware('auth');
 Route::resource('listanotaDebitoBancario', listaNotaDebitoBancoController::class)->middleware('auth');
@@ -1014,6 +1016,8 @@ Route::get('/asientoDiario/editar/{id}', [asientoDiarioController::class, 'edita
 Route::post('/asientoDiario/editar/guardar', [asientoDiarioController::class, 'guardarAsientoEditado'])->middleware('auth');
 Route::get('/asientoDiario/eiminar/{id}', [asientoDiarioController::class, 'verEliminar'])->middleware('auth');
 Route::post('/asientoDiario/eliminar', [asientoDiarioController::class, 'eliminar'])->middleware('auth');
+Route::get('/asientoDiarioC/eiminar/{id}', [listaCierreResultadoController::class, 'verEliminar'])->middleware('auth');
+Route::post('/asientoDiarioC/eliminar', [listaCierreResultadoController::class, 'eliminar'])->middleware('auth');
 Route::get('/asientoDiario/editarD/{id}', [asientoDiarioController::class, 'editarD'])->middleware('auth');
 Route::post('/asientoDiario/editarD', [asientoDiarioController::class, 'guardarDescuadrado'])->middleware('auth');
 Route::get('/asientoDiario/descuadrados', [asientoDiarioController::class, 'descuadradosIndex'])->middleware('auth');

@@ -10,7 +10,7 @@
 <body>
     <header>
         <div style="float: right; font-size: 12px; text-align: right;">
-            <?php echo('Fecha: '.date("d/m/Y")); ?><br><?php echo('Hora: '.date("H:i:s")); ?></div>
+            <?php echo('Fecha: '.date("d/m/Y")); ?><br><?php echo('Hora: '.date("H:i:s")); ?>@if(isset($diario))<br><?php echo('Sucursal: '.$diario->sucursal->sucursal_nombre) ?>@endif</div>
         <table>
             <tr>
                 <td style="width: 180px;">

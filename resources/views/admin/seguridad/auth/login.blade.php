@@ -55,6 +55,7 @@
                         </div>
                     </center>
                     @endif
+                    @if($requerirRuc)
                     <div class="input-group mb-3">
                         <input type="text" name="idRuc" class="form-control" placeholder="Ruc Empresa" required>
                         <div class="input-group-append">
@@ -63,6 +64,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                     <div class="input-group mb-3">
                         <input type="text" name="idUsername" class="form-control" placeholder="Username" required>
                         <div class="input-group-append">

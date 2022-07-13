@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empresa;
+use App\Models\Parametrizar_Empresa;
 
 class loginController extends Controller
 {
@@ -22,8 +23,14 @@ class loginController extends Controller
     public function index()
     {
         try{
+            $paramEmpresa= Parametrizar_Empresa::buscarConfiguracion("REQUERIR RUC")->first();
+            $REQUERIR_RUC=1;
 
-            return view('admin.seguridad.auth.login');
+            if($paramEmpresa){
+                if($paramEmpresa->parametrizar_valor==0) $REQUERIR_RUC=0;
+            }
+
+            return view('admin.seguridad.auth.login', ["requerirRuc"=>$REQUERIR_RUC]);
         }
         catch(\Exception $ex){      
             return redirect('inicio')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
@@ -32,17 +39,25 @@ class loginController extends Controller
     public function authenticate(Request $request)
     {
         try{
-            $empresa = Empresa::where('empresa_ruc', $request->get('idRuc'))->first();
-            $id = 0;
-            if ($empresa != null) {
-                $id = $empresa->empresa_id;
-            }
+            $paramEmpresa= Parametrizar_Empresa::buscarConfiguracion("REQUERIR RUC")->first();
+
             $userdata = array(
-                'empresa_id' => $id,
                 'user_username' => $request->get('idUsername'),
                 'password' => $request->get('idPassword'),
                 'user_estado' => 1
             );
+
+            $REQUERIR_RUC=1;
+
+            if($paramEmpresa){
+                if($paramEmpresa->parametrizar_valor==0) $REQUERIR_RUC=0;
+            }
+            
+            if($REQUERIR_RUC==1){
+                $empresa = Empresa::where('empresa_ruc', $request->get('idRuc'))->first();
+                $userdata['empresa_id']=$empresa->empresa_id;
+            }
+
             if (Auth::attempt($userdata, true)) {
                 $request->session()->regenerate();
                 $usuario=User::findOrFail(Auth::user()->user_id);

@@ -128,6 +128,9 @@ class egresoBancoController extends Controller
             if($request->get('idTipo') == 'CHEQUE'){
                 $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BANCO: '.$request->get('idBeneficiario').' CHEQUE : '.$cheque->cheque_numero;
             }
+            if($request->get('idTipo') == 'TRANSFERENCIA'){
+                $diario->diario_comentario = 'COMPROBANTE DE EGRESO DE BANCO: '.$request->get('idBeneficiario').' TRANSFERENCIA ';
+            }
             $diario->diario_cierre = '0';
             $diario->diario_estado = '1';
             $diario->empresa_id = Auth::user()->empresa_id;
@@ -215,6 +218,7 @@ class egresoBancoController extends Controller
                 'secuencial'=>substr(str_repeat(0, 9).$secuencial, - 9),                
                 'PE'=>Punto_Emision::puntos()->get(),
                 'rangoDocumento'=>$rangoDocumento,
+                'tipoPermiso'=>$tipoPermiso,
                 'sucursalp'=>$sucursalp->sucursal_id,
                 'gruposPermiso'=>$gruposPermiso, 
                 'permisosAdmin'=>$permisosAdmin]

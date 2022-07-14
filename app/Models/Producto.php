@@ -91,12 +91,17 @@ class Producto extends Model
     public function scopeProducto($query, $id){
         return $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1')->where('producto_id','=',$id);
     }
-    public function scopeProductoTipo($query, $tipo, $sucursal){
-        $query->where('producto_tipo','=',$tipo)->where('producto_compra_venta','=','2');
+    public function scopeProductoTipo($query, $tipo, $sucursal, $compraVenta){
+        $query->join('sucursal','sucursal.sucursal_id','=','producto.sucursal_id')->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1');        
+        if($tipo != '0'){
+            $query->where('producto_tipo', '=', $tipo);
+        }
         if($sucursal != '0'){
             $query->where('producto.sucursal_id', '=', $sucursal);
         }
-        $query->where('producto.empresa_id','=',Auth::user()->empresa_id)->where('producto_estado','=','1');
+        if($compraVenta != '0'){
+            $query->where('producto_compra_venta', '=', $compraVenta);
+        }        
         return $query;
 
     }

@@ -39,10 +39,13 @@ class generalController extends Controller
 {
     public static function redondear2Dec(float $numero){
         $numero=str_replace(',','',$numero);
+
+        if(count(explode(".", $numero))==1) return number_format($numero,2,".","");
+
         $decimal = explode(".", $numero)[1];
 
         if(substr($decimal, 2, 1)==5 && substr($decimal, 1, 1) % 2 ==0)  return bcdiv($numero, 1, 2);
-        return number_format(round($numero, 2), 2);
+        return number_format(round($numero, 2), 2,".","");
     }
 
     public function denegado()

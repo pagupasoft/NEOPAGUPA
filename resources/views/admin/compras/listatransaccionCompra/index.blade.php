@@ -81,11 +81,11 @@
                                 @if($x->tipoComprobante->tipo_comprobante_codigo=='04')
                                     @if(isset($x->diario->anticipoproveedor))
                                         @if($x->diario->anticipoproveedor->anticipo_valor == $x->diario->anticipoproveedor->anticipo_saldo)  
-                                            <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>   
+                                            <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>   
                                             <a href="{{ url("transaccioncompra/{$x->transaccion_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>             
                                         @endif
                                     @else
-                                        <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a> 
+                                        <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a> 
                                         <a href="{{ url("transaccioncompra/{$x->transaccion_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>             
                                     @endif
                                 @else
@@ -93,11 +93,11 @@
                                     @if(count($x->notas_d_c)==0)
                                         
                                         @if(($x->transaccion_tipo_pago)=='EN EFECTIVO')
-                                            <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>  
+                                            <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>  
                                             <a href="{{ url("transaccioncompra/{$x->transaccion_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>             
                                         @else
                                             @if($x->cuentaPagar->cuenta_monto == $x->cuentaPagar->cuenta_saldo)  
-                                                <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>   
+                                                <a href="{{ url("transaccioncompra/{$x->transaccion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>   
                                                 <a href="{{ url("transaccioncompra/{$x->transaccion_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>             
                                             @endif
                                         @endif

@@ -117,15 +117,25 @@ class Transaccion_Compra extends Model
     public function scopeFacturaNumeroAnt($query, $numeroFactura, $proveedor){
         return $query->join('cuenta_pagar','transaccion_compra.cuenta_id','=','cuenta_pagar.cuenta_id')->join('proveedor','proveedor.proveedor_id','=','transaccion_compra.proveedor_id')->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')->where('empresa_id','=',Auth::user()->empresa_id)->where('transaccion_compra.proveedor_id','=',$proveedor)->where('transaccion_estado','=','1')->where('transaccion_numero','like','%'.$numeroFactura.'%')->orderBy('transaccion_numero','desc');
     }
-    public function scopeTransaccionFiltrar($query, $fechaInicio, $fechaFin,$numeroDoc,$sucursal){
-        return $query->join('proveedor','proveedor.proveedor_id','=','transaccion_compra.proveedor_id')
+    public function scopeTransaccionFiltrar($query, $fechatodo, $fechaInicio, $fechaFin,$numeroDoc,$sucursal,$proveedor){
+         $query->join('proveedor','proveedor.proveedor_id','=','transaccion_compra.proveedor_id')
         ->join('tipo_comprobante','tipo_comprobante.tipo_comprobante_id','=','transaccion_compra.tipo_comprobante_id')
         ->join('sucursal','sucursal.sucursal_id','=','transaccion_compra.sucursal_id')
         ->where('sucursal.empresa_id','=',Auth::user()->empresa_id)
-        ->where('sucursal.sucursal_nombre','=',$sucursal)
-        ->where('transaccion_fecha','>=',$fechaInicio)
-        ->where('transaccion_fecha','<=',$fechaFin)
         ->where('transaccion_numero','like','%'.$numeroDoc.'%');
+        if($proveedor != '0'){
+            $query->where('proveedor.proveedor_id','=',$proveedor);
+        } 
+        if($sucursal != '0'){
+            $query->where('sucursal.sucursal_id','=',$sucursal);
+        } 
+        if($fechatodo != 'on'){
+            $query->where('transaccion_fecha','>=',$fechaInicio)
+            ->where('transaccion_fecha','<=',$fechaFin);
+        }
+       
+       
+        return $query; 
     }
     public function scopeTransaccionOnFiltrar($query,$numeroDoc){
         return $query->join('proveedor','proveedor.proveedor_id','=','transaccion_compra.proveedor_id')

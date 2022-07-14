@@ -34,10 +34,21 @@
                 <label for="sucursal" class="col-sm-1 col-form-label"><center>Sucursal:</center></label>
                 <div class="col-sm-4">
                     <select class="custom-select select2" id="sucursal" name="sucursal">  
-                        <option value="--TODOS--" label>--TODOS--</option>                      
+                        <option value="0" label>--TODOS--</option>                      
                         @foreach($sucursales as $sucursal)
-                            <option id="{{$sucursal->sucursal_nombre}}" name="sucursal" value="{{$sucursal->sucursal_nombre}}" @if(isset($idsucursal)) @if($sucursal->sucursal_nombre==$idsucursal) selected @endif @endif>
+                            <option value="{{$sucursal->sucursal_id}}" @if(isset($idsucursal)) @if($sucursal->sucursal_id==$idsucursal) selected @endif @endif>
                                 {{$sucursal->sucursal_nombre}} 
+                            </option>
+                        @endforeach
+                    </select>                                     
+                </div> 
+                <label for="sucursal" class="col-sm-1 col-form-label"><center>Proveedor:</center></label>
+                <div class="col-sm-4">
+                    <select class="custom-select select2" id="idproveedor" name="idproveedor">  
+                        <option value="0" label>--TODOS--</option>                      
+                        @foreach($proveedores as $proveedor)
+                            <option  value="{{$proveedor->proveedor_id}}" @if(isset($idproveedor)) @if($proveedor->proveedor_id==$idproveedor) selected @endif @endif>
+                                {{$proveedor->proveedor_nombre}} 
                             </option>
                         @endforeach
                     </select>                                     

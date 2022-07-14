@@ -12,11 +12,20 @@
                 <label for="idTipoProd" class="col-sm-1 col-form-label"><center>Tipo Producto:</center></label>
                 <div class="col-sm-2">
                     <select class="custom-select select2" id="idTipoProd" name="idTipoProd" required>
-                        <option value="">--Seleccione una opcion--</option>
+                        <option value="0">--Seleccione una opcion--</option>
                         <option value="2" @if($cc =="2") selected @endif>SERVICIO</option>
                         <option value="1" @if($cc =="1") selected @endif>ARTICULO</option>
                     </select> 
-                </div>                
+                </div>   
+                <label for="idCompraVenta" class="col-sm-1 col-form-label"><center>Tipo Compra/Venta:</center></label>
+                <div class="col-sm-2">
+                    <select class="custom-select select2" id="idCompraVenta" name="idCompraVenta" required>
+                        <option value="0">--Seleccione una opcion--</option>                      
+                        <option value="1">Compra</option>
+                        <option value="2">Venta</option>
+                        <option value="3">Compra/Venta</option>
+                    </select> 
+                </div>              
                     <label for="sucursal_id" class="col-sm-1 col-form-label">Sucursal</label>   
                     <div class="col-sm-2">                         
                             <select class="custom-select select2" id="sucursal_id" name="sucursal_id" require>

@@ -110,7 +110,15 @@ class clienteController extends Controller
             if ($parametrizacionContableCliente->parametrizacion_cuenta_general == '0') {
                 
                     $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE CLIENTE')->first();
-           
+                    if (!$cuentap) {
+                        $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS DE EMPLEADO')->first();
+                    }
+                    if (!$cuentap) {
+                        $cuentap=Cuenta::BuscarByCuenta('ANTICIPO A EMPLEADO')->first();
+                    }
+                    if (!$cuentap) {
+                        $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADO')->first();
+                    }
                     if ($cuentap) {
                         $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
                         $sec=1;
@@ -135,8 +143,10 @@ class clienteController extends Controller
             }
             if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
            
-                    $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR COBRAR')->first();
-           
+                    $cuentapr=Cuenta::BuscarByCuenta('CUENTAS POR COBRAR')->first();
+                    if (!$cuentap) {
+                        $cuentap=Cuenta::BuscarByCuenta('CUENTA POR COBRAR')->first();
+                    }
                     if ($cuentapr) {
                         $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
                         $sec=1;

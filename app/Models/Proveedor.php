@@ -66,7 +66,7 @@ class Proveedor extends Model
     }
     public function tipoSujeto()
     {
-        return $this->belongsTo(tipo_sujeto::class, 'tipo_sujeto_id', 'tipo_sujeto_id');
+        return $this->belongsTo(Tipo_Sujeto::class, 'tipo_sujeto_id', 'tipo_sujeto_id');
     }
     public function tipoIdentificacion()
     {
@@ -78,6 +78,6 @@ class Proveedor extends Model
     }
     public function categoriaProveedor()
     {
-        return $this->belongsTo(categoria_proveedor::class, 'categoria_proveedor_id', 'categoria_proveedor_id');
+        return $this->belongsTo(Categoria_Proveedor::class, 'categoria_proveedor_id', 'categoria_proveedor_id');
     }
 }

@@ -76,7 +76,7 @@
                             @if($x->proforma_estado ==1)
                                 <td> 
                                 <button type="submit"  method="POST"  class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Facturar"><i class="fas fa-money-check-alt"></i></button>
-                                <a href="{{ url("proforma/edit/{$x->proforma_id}") }}"  data-toggle="tooltip" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>        
+                                <a href="{{ url("proforma/edit/{$x->proforma_id}") }}"  data-toggle="tooltip" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>        
                                 </td> 
                                 <td>
                                     <select class="custom-select" id="punto_id" name="punto_id" onchange="ShowSelected(); ">

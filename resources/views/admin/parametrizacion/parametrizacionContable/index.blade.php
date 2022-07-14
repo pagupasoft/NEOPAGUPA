@@ -35,7 +35,7 @@
                     @foreach($parametrizacionContable as $parametrizacionContable)
                     <tr>
                         <td class="text-center">
-                            <a href="{{ url("parametrizacionContable/{$parametrizacionContable->parametrizacion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                            <a href="{{ url("parametrizacionContable/{$parametrizacionContable->parametrizacion_id}/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                             <a href="{{ url("parametrizacionContable/{$parametrizacionContable->parametrizacion_id}") }}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
                         </td>
                         <td>{{ $parametrizacionContable->parametrizacion_nombre}}</td>

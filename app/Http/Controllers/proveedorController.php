@@ -120,7 +120,15 @@ class proveedorController extends Controller
             $proveedor->proveedor_estado  = 1; 
             if ($parametrizacionContableProveedor->parametrizacion_cuenta_general == '0') {
                 $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE PROVEEDOR')->first();
-           
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS DE PROVEEDOR')->first();  
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPO A PROVEEDOR')->first();  
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A PROVEEDOR')->first();  
+                }
                 if ($cuentap) {
                     $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
                     $sec=1;
@@ -144,7 +152,9 @@ class proveedorController extends Controller
             }
             if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
                 $cuentapr=Cuenta::BuscarByCuenta('CUENTA POR PAGAR')->first();
-           
+                if (!$cuentapr) {
+                    $cuentapr=Cuenta::BuscarByCuenta('CUENTAS POR PAGAR')->first();  
+                }
                 if ($cuentapr) {
                     $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
                     $sec=1;

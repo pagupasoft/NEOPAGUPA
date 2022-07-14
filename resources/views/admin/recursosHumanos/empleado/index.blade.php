@@ -88,7 +88,7 @@
                     @foreach($empleados as $empleado)
                     <tr class="text-center">
                         <td>
-                            <a href="{{ url("empleado/{$empleado->empleado_id}/edit") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                            <a href="{{ url("empleado/{$empleado->empleado_id}/edit") }}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                             <a href="{{ url("empleado/{$empleado->empleado_id}") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             <a href="{{ url("empleado/{$empleado->empleado_id}/eliminar") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                             <a href="{{ url("fichaEmpeladoPdf/imprimir/{$empleado->empleado_id}") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir"><i class="fa fa-print"></i></a>   

@@ -92,7 +92,7 @@
                             @endif 
                             <td>
                             @if($x->ordenr_estado ==1)
-                                <a href="{{ url("ordenRecepecion/{$x->ordenr_id}/edit")}}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                <a href="{{ url("ordenRecepecion/{$x->ordenr_id}/edit")}}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                 <a href="{{ url("ordenRecepecion/{$x->ordenr_id}/eliminar") }}"  class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                           
                             @endif
                                 <a href="{{ url("ordenRecepecion/{$x->ordenr_id}") }}" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye"></i></a>     

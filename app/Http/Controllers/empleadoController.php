@@ -216,7 +216,15 @@ class empleadoController extends Controller
             $empleado->banco_lista_id = $request->get('idBanco'); 
             if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
                 $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADOS')->first();
-           
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPO A EMPLEADO')->first();
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS DE EMPLEADO')->first();
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('ANTICIPO DE EMPLEADO')->first();
+                }
                 if ($cuentap) {
                     $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
                     $sec=1;
@@ -240,7 +248,15 @@ class empleadoController extends Controller
             }
             if ($parametrizacionContable->parametrizacion_cuenta_general == '0') {
                 $cuentapr=Cuenta::BuscarByCuenta('PRESTAMOS A EMPLEADOS')->first();
-           
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('PRESTAMO A EMPLEADO')->first();
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('PRESTAMO DE EMPLEADO')->first();
+                }
+                if (!$cuentap) {
+                    $cuentap=Cuenta::BuscarByCuenta('PRESTAMOS DE EMPLEADO')->first();
+                }
                 if ($cuentapr) {
                     $cuentaapdre=Cuenta::BuscarByCuenta($cuentapr->cuenta_id)->max('cuenta_secuencial');
                     $sec=1;

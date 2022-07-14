@@ -52,7 +52,7 @@
                         @if(number_format($diario->debe-$diario->haber,2) != 0)
                         <tr class="text-center">
                             <td>
-                                <a href="{{ url("asientoDiario/editarD/{$diario->diario_id}") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                <a href="{{ url("asientoDiario/editarD/{$diario->diario_id}") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                 <a href="{{ url("asientoDiario/ver/{$diario->diario_id}") }}" class="btn btn-xs btn-success"  data-toggle="tooltip" data-placement="top" title="Ver"><i class="fa fa-eye" aria-hidden="true"></i></a>
                             </td>
                             <td>{{ $diario->diario_fecha }}</td>

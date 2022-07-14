@@ -28,7 +28,7 @@
                         <td>                        
                             <a href="{{ url("valorLaboratorio/{$detalleLaboratorios->detalle_id}/agregarValorLaboratorio")}}" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="Agregar valor de laboratorio"><i class="fa fa-tasks" aria-hidden="true"></i></a>
                             <a href="{{ url("valorLaboratorio/{$detalleLaboratorios->detalle_id}/agregarValorReferencial")}}" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="Agregar valor referencial"><i class="fa fa-tasks" aria-hidden="true"></i></a>
-                            <a href="{{ url("valorLaboratorio/{$detalleLaboratorios->detalle_id}/editar")}}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>                   
+                            <a href="{{ url("valorLaboratorio/{$detalleLaboratorios->detalle_id}/editar")}}" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>                   
                             @if(count($detalleLaboratorios->valorreferencial)==0)
                                 @if(count($detalleLaboratorios->valorlaboratorio)==0)    
                                     <a href="{{ url("valorLaboratorio/{$detalleLaboratorios->detalle_id}/eliminar")}}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>                    

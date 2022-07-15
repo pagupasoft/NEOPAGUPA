@@ -120,8 +120,8 @@ class clienteController extends Controller
                         $cuentap=Cuenta::BuscarByCuenta('ANTICIPOS A EMPLEADO')->first();
                     }
                     if ($cuentap) {
-                        $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
                         $sec=1;
+                        $cuentaapdre=Cuenta::BuscarByCuenta($cuentap->cuenta_id)->max('cuenta_secuencial');
                         if ($cuentaapdre) {
                             $sec=$sec+$cuentaapdre;
                         }

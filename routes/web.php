@@ -945,6 +945,7 @@ Route::get('/estadoFinanciero', [estadoFinancieroController::class, 'nuevo'])->m
 Route::post('/estadoFinanciero', [estadoFinancieroController::class, 'consultar'])->middleware('auth');
 /*ESTADO DE Cierre contable*/
 Route::get('/cierreContable', [cierreAnualController::class, 'nuevo'])->middleware('auth');
+Route::get('/cierreFinanciero', [cierreAnualController::class, 'nuevofinanciero'])->middleware('auth');
 Route::post('/cierreContable', [cierreAnualController::class, 'consultar'])->middleware('auth');
 
 /*MAYOR AUXILIAR*/

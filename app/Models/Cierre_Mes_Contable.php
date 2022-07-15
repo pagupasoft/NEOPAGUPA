@@ -34,6 +34,9 @@ class Cierre_Mes_Contable extends Model
     public function scopeCierreBySucursal($query,$sucursal_id){
         return $query->join('sucursal','cierre_mes_contable.sucursal_id','=','sucursal.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('cierre_mes_contable.sucursal_id','=',$sucursal_id)->where('cierre_estado','=','1')->orderBy('cierre_ano','asc');
     }
+    public function scopeCierreAnioSucursal($query,$anio,$sucursal_id){
+        return $query->join('sucursal','cierre_mes_contable.sucursal_id','=','sucursal.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('cierre_mes_contable.cierre_ano','=',$anio)->where('cierre_mes_contable.sucursal_id','=',$sucursal_id)->where('cierre_estado','=','1')->orderBy('cierre_ano','asc');
+    }
     public function scopeCierre($query,$anio){
         return $query->join('sucursal','cierre_mes_contable.sucursal_id','=','sucursal.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('cierre_ano','=',$anio)->where('cierre_estado','=','1')->orderBy('cierre_ano','asc');
     }

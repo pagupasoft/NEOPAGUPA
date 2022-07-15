@@ -221,7 +221,7 @@ class anticipoEmpleadoController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '.$request->get('idMensaje').' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Cheque numero de anticipo de empleado: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '.$request->get('idMensaje').' con el valor de: -> '.$request->get('idValor'));
             } 
             /**********************asiento diario****************************/
             $general = new generalController();

@@ -216,7 +216,7 @@ class decimoCuartoConsolidadaController extends Controller
                    
                         $cheque->save();
                      
-                        $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '.$decimo->decimo_descripcion.' con el valor de: -> '.$valor[$contador[$i]]);
+                        $general->registrarAuditoria('Registro de Cheque numero de decimo cuarto: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '.$decimo->decimo_descripcion.' con el valor de: -> '.$valor[$contador[$i]]);
                        
 
                         /**********************asiento diario****************************/
@@ -338,7 +338,7 @@ class decimoCuartoConsolidadaController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$total);
+                $general->registrarAuditoria('Registro de Transferencia decimo cuarto numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$total);
 
 
                

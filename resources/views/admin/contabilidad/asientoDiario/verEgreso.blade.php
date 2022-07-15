@@ -8,7 +8,7 @@
                     DIARIO
                 </h3>
                 <div class="float-right">
-                    <a target="_blank" href="{{ url("asientoDiario/imprimirEgreso/{$diario->diario_id}") }}"><button type="button" class="btn btn-default btn-sm"><i class="fa fa-print"></i>&nbsp;Impimir</button></a>
+                    <a target="_blank" href="{{ url("asientoDiario/imprimirEgreso/{$diario->diario_id}") }}"><button type="button" class="btn btn-default btn-sm"><i class="fa fa-print"></i>&nbsp;Imprimir</button></a>
                     <button type="button" onclick='history.back();'  class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button>                
                 </div>
             </div>

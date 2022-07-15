@@ -170,7 +170,7 @@ class vacacionController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $vacacion->vacacion_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Cheque  pago vacaciones  numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $vacacion->vacacion_descripcion.' con el valor de: -> '.$request->get('idValor'));
             }
             /*REGISTRO DE TRSNFERENCIA*/          
             if ($request->get('idTipo') == 'Transferencia'){       
@@ -184,7 +184,7 @@ class vacacionController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $vacacion->vacacion_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Transferencia pago vacaciones numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $vacacion->vacacion_descripcion.' con el valor de: -> '.$request->get('idValor'));
             }
 
             /********************detalle de diario de venta********************/

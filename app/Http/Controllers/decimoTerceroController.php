@@ -183,7 +183,7 @@ class decimoTerceroController extends Controller
                     $cheque->save();
                     $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
                     $ncheque++;
-                    $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$valor[$i]);
+                    $general->registrarAuditoria('Registro de Cheque numero decimo tercero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$valor[$i]);
                 } 
                 if ($request->get('idTipo') == 'Transferencia'){       
                     $transferencia = new Transferencia();

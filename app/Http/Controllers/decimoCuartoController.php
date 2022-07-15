@@ -122,7 +122,7 @@ class decimoCuartoController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Cheque numero de decimo cuarto: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
             } 
             /*REGISTRO DE TRANSFERENCIA*/            
             if ($request->get('idTipo') == 'Transferencia'){       
@@ -135,7 +135,7 @@ class decimoCuartoController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Transferencia de decimo cuarto numero: -> '.$request->get('ncuenta'),'0','Por motivo de: -> '. $decimo->decimo_descripcion.' con el valor de: -> '.$request->get('idValor'));
             }  
 
             $diario = new Diario();

@@ -293,7 +293,7 @@ class rolIndividualController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id_cheque'), $cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '. $cabecera_rol->cabecera_rol_descripcion.' con el valor de: -> '.$cabecera_rol->cabecera_rol_pago);
+                $general->registrarAuditoria('Registro de Cheque pago de rol numero: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '. $cabecera_rol->cabecera_rol_descripcion.' con el valor de: -> '.$cabecera_rol->cabecera_rol_pago);
             }
                     
             if ($request->get('tipo') == 'Transferencia') {
@@ -306,7 +306,7 @@ class rolIndividualController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $cabecera_rol->cabecera_rol_descripcion.' con el valor de: -> '.$total);
+                $general->registrarAuditoria('Registro de Transferencia  pago de rol numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $cabecera_rol->cabecera_rol_descripcion.' con el valor de: -> '.$total);
             }
                     
             $detalleDiario = new Detalle_Diario();

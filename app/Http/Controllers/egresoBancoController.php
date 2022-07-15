@@ -90,7 +90,7 @@ class egresoBancoController extends Controller
                 $cheque->empresa_id = Auth::user()->empresa->empresa_id;
                 $cheque->save();
                 $egresoBanco->cheque()->associate($cheque);
-                $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'),'0','Por motivo de: -> '.$request->get('idMensaje').' con el valor de: -> '.$request->get('idValor'));
+                $general->registrarAuditoria('Registro de Cheque de egreso de banco numero : -> '.$request->get('idNcheque'),'0','Por motivo de: -> '.$request->get('idMensaje').' con el valor de: -> '.$request->get('idValor'));
                 $urlcheque = $general->pdfImprimeCheque($request->get('cuenta_id'),$cheque);
             }
             /*REGISTRO DATOS DE TRASNFERENCIA*/                
@@ -106,7 +106,7 @@ class egresoBancoController extends Controller
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
                 $egresoBanco->transferencia()->associate($transferencia);
-                $general->registrarAuditoria('Registro de transferencia del banco',$banco->banco_lista_nombre,'Registro de transferencia. '.' por un valor de '.$request->get('idValor')); 
+                $general->registrarAuditoria('Registro de transferencia de egreso de banco del banco',$banco->banco_lista_nombre,'Registro de transferencia. '.' por un valor de '.$request->get('idValor')); 
                
             }
             /**********************asiento diario****************************/

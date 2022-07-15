@@ -216,7 +216,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                    
                         $cheque->save();
                      
-                        $general->registrarAuditoria('Registro de Cheque numero: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '.$beneficios->beneficios_descripcion.' con el valor de: -> '.$valor[$contador[$i]]);
+                        $general->registrarAuditoria('Registro de Cheque numero de beneficios sociales: -> '.$request->get('idNcheque'), '0', 'Por motivo de: -> '.$beneficios->beneficios_descripcion.' con el valor de: -> '.$valor[$contador[$i]]);
                        
 
                         /**********************asiento diario****************************/
@@ -339,7 +339,7 @@ class beneficiosSocialesConsolidadaController extends Controller
                 $transferencia->transferencia_estado = '1';
                 $transferencia->empresa_id = Auth::user()->empresa->empresa_id;
                 $transferencia->save();
-                $general->registrarAuditoria('Registro de Transferencia numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $beneficios->beneficios_descripcion.' con el valor de: -> '.$total);
+                $general->registrarAuditoria('Registro de Transferencia de beneficios sociales numero: -> '.$request->get('ncuenta'), '0', 'Por motivo de: -> '. $beneficios->beneficios_descripcion.' con el valor de: -> '.$total);
 
 
                

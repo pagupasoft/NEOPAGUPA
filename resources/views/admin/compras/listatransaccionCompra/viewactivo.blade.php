@@ -1,17 +1,16 @@
 @extends ('admin.layouts.admin')
 @section('principal')
 <div class="card card-primary card-outline">
-    <form class="form-horizontal" method="POST" action="{{ route('transaccionCompra.destroy', [$compras->transaccion_id]) }}">
-        @method('DELETE')
+    <form class="form-horizontal" >
         @csrf
         <div class="card-header">
             <div class="row">
                 <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS - Documento</b></h2>
+                    <h2 class="card-title"><b>TRANSACCIÓN COMPRAS ACTIVO FIJO - Documento</b></h2>
                 </div>
                 <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
                     <div class="float-right">
-                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>&nbsp;Eliminar</button>
+                   
                      <!--     
                         <button type="button"  onclick='window.location = "{{ url("listatransaccionCompra") }}";' class="btn btn-default btn-sm"><i class="fa fa-undo"></i>&nbsp;Atras</button> 
                         --> 

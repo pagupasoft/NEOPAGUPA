@@ -848,15 +848,15 @@ class transaccionCompraActivoFijoController extends Controller
             $url = $general->pdfDiario($diario);          
             DB::commit();
             if($tipoComprobante->tipo_comprobante_codigo == '04'){
-                return redirect('/transaccionCompra/new/'.$request->get('punto_id'))->with('success','Transaccion registrada exitosamente')->with('diario',$url);
+                return redirect('/transaccionCActivoFijo/new/'.$request->get('punto_id'))->with('success','Transaccion registrada exitosamente')->with('diario',$url);
             }else if($retencion->retencion_xml_estado == 'AUTORIZADO' and $tipoComprobante->tipo_comprobante_codigo <> '04'){
-                return redirect('/transaccionCompra/new/'.$request->get('punto_id'))->with('success','Transaccion registrada y autorizada exitosamente')->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $retencion->retencion_fecha)->format('d-m-Y').'/'.$retencion->retencion_xml_nombre.'.pdf')->with('diario',$url);
+                return redirect('/transaccionCActivoFijo/new/'.$request->get('punto_id'))->with('success','Transaccion registrada y autorizada exitosamente')->with('pdf','documentosElectronicos/'.Empresa::Empresa()->first()->empresa_ruc.'/'.DateTime::createFromFormat('Y-m-d', $retencion->retencion_fecha)->format('d-m-Y').'/'.$retencion->retencion_xml_nombre.'.pdf')->with('diario',$url);
             }else{
-                return redirect('/transaccionCompra/new/'.$request->get('punto_id'))->with('success','Transaccion registrada exitosamente')->with('error2','ERROR SRI--> '.$retencionAux->retencion_xml_estado.' : '.$retencionAux->retencion_xml_mensaje)->with('diario',$url);
+                return redirect('/transaccionCActivoFijo/new/'.$request->get('punto_id'))->with('success','Transaccion registrada exitosamente')->with('error2','ERROR SRI--> '.$retencionAux->retencion_xml_estado.' : '.$retencionAux->retencion_xml_mensaje)->with('diario',$url);
             }
         }catch(\Exception $ex){
             DB::rollBack();
-            return redirect('/transaccionCompra/new/'.$request->get('punto_id'))->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return redirect('/transaccionCActivoFijo/new/'.$request->get('punto_id'))->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 

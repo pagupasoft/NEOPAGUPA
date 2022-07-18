@@ -421,9 +421,7 @@
                     var linea = $("#plantillaItemAnticipo").html();
                     linea = linea.replace(/{ID}/g, id_itemA);
                     linea = linea.replace(/{AID}/g, data[i].anticipo_id);
-                    var date = new Date(data[i].anticipo_fecha);
-                    mes = (date.getMonth() + 1);
-                    linea = linea.replace(/{AFecha}/g, date.getDate() + "/" + String(mes).padStart(2, 0) + "/" + date.getFullYear());
+                    linea = linea.replace(/{AFecha}/g,  formato(data[i].anticipo_fecha));
                     linea = linea.replace(/{AMonto}/g, Number(data[i].anticipo_valor).toFixed(2));
                     linea = linea.replace(/{ASaldo}/g, Number(data[i].anticipo_saldo).toFixed(2));
                     document.getElementById("totAnt").value = Number(Number(document.getElementById("totAnt").value) + Number(data[i].anticipo_saldo)).toFixed(2);
@@ -438,7 +436,9 @@
             },
         });
     }
-
+    function formato(texto){
+    return texto.replace(/^(\d{4})-(\d{2})-(\d{2})$/g,'$3/$2/$1');
+    }
     function limpiarTabla() {
         for (var i = 1; i < id_item; i++) {
             $("#row_" + i).remove();

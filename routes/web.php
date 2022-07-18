@@ -916,8 +916,10 @@ Route::get('/mantenimiento', [ordenMantenimientoController::class, 'index']);
 Route::get('/mantenimiento/{id}/ver', [ordenMantenimientoController::class, 'getOrden']);
 Route::post('/mantenimiento', [ordenMantenimientoController::class, 'actualizarOrden']);
 Route::post('/actualizarEstadoMantenimiento', [ordenMantenimientoController::class, 'actualizarEstadoOrden']);
+Route::post('/anularOrden', [ordenMantenimientoController::class, 'anularOrden']);
 Route::post('/guardarordenmantenimiento', [ordenMantenimientoController::class, 'store']);
 Route::post('/loginmantenimiento', [ordenMantenimientoController::class, 'login']);
+Route::get('enviarNotificacion', [ordenMantenimientoController::class, 'enviar']);
 
 //CHEQUE IMPRESION
 Route::get('/cuentaBancaria/new/{id}', [cuentaBancariaController::class, 'configurarCheque'])->middleware('auth');
@@ -1154,7 +1156,7 @@ Route::get('/cuentaBancariaId/searchN/{buscar}', [cuentaBancariaController::clas
 Route::get('/cuentasCaja/searchN', [anticipoClienteController::class, 'buscarByCuentas'])->middleware('auth');
 Route::get('/cuentaParametrizadaCaja/searchN/{buscar}', [parametrizacionContableController::class, 'buscarByNomCuenta'])->middleware('auth');
 Route::get('/cliente/searchN/{buscar}', [clienteController::class, 'buscarByNombre'])->middleware('auth');
-Route::get('/cliente/searchNCedula/{buscar}', [clienteController::class, 'buscarByNombreCedula'])->middleware('auth');
+Route::get('/cliente/searchNCedula/{buscar}', [clienteController::class, 'scopeClientesByCedulaNombre'])->middleware('auth');
 Route::get('/buscarClienteNombreCedula', [clienteController::class, 'buscarClienteByNombreCedula']);
 Route::get('/buscarEmpleadoNombreCedula', [empleadoController::class, 'buscarEmpleadoByNombreCedula']);
 Route::get('/buscarProductoByNombre', [productoController::class, 'buscarProductoByNombre']);
@@ -1449,3 +1451,7 @@ Route::get('/comprasactivofijo/xmlProducto/{clave}/{punto}',  [cargaractivofijoX
 Route::post('/producto/compra',  [cargarXMLController::class, 'cargarproducto'])->middleware('auth');
 Route::post('/productofijo/compra',  [cargaractivofijoXMLController::class, 'cargarproducto'])->middleware('auth');
 Route::get('/buscarProducto/searchN/{buscar}',  [productoController::class, 'buscarByProducto'])->middleware('auth');
+
+
+
+Route::get('/redondear/{num}',  [generalController::class, 'redondear2Dec'])->middleware('auth');

@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->foreign('empresa_id')->references('empresa_id')->on('empresa');
             $table->timestamps();
             $table->integer('user_cambio_clave')->default(0);
+            $table->string('user_token_fcm')->nullable();
         });
     }
 

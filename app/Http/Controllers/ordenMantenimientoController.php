@@ -13,8 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ordenMantenimientoController extends Controller
-{
+class ordenMantenimientoController extends Controller{
     public function index(){
         $ordenes=Orden_Mantenimiento::ordenes()->get();
 
@@ -75,7 +74,7 @@ class ordenMantenimientoController extends Controller
     public function getOrden($id){
         //$gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=', Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
         //$tipoPermiso=DB::table('usuario_rol')->select('tipo_grupo.grupo_id','tipo_grupo.tipo_id', 'tipo_nombre','tipo_icono','tipo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('tipo_grupo','tipo_grupo.tipo_id','=','permiso.tipo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('tipo_orden','asc')->distinct()->get();
-    $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+        //$permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
 
         try{
             $orden=Orden_Mantenimiento::findOrFail($id);
@@ -200,26 +199,25 @@ class ordenMantenimientoController extends Controller
             DB::commit();
             return redirect('listaMantenimiento')->with('success', 'La Orden actualizada correctamente');;
         }
-        catch(\Exception $e){
+        catch(\Exception $ex){
             DB::rollBack();
             return redirect('listaMantenimiento')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
         }
     }
 
     public function login(Request $request){
-        //$prestamos=DB::table('users')->join('prestamo_banco','prestamo_banco.prestamo_id','=','detalle_prestamo.prestamo_id')
-        
-
         try{
+            $usuario=User::findByEmail($request->get('idUsername'))->get();
+
             $userdata = array(
-                'user_username' => $request->get('idUsername'),
+                'user_username' => $usuario[0]->user_username,
                 'password' => $request->get('idPassword'),
                 'user_estado' => 1
             );
             if (Auth::attempt($userdata, true)) {
                 $gruposPermiso=DB::table('usuario_rol')->select('grupo_permiso.grupo_id', 'grupo_nombre', 'grupo_icono','grupo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('grupo_permiso','grupo_permiso.grupo_id','=','permiso.grupo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=', Auth::user()->user_id)->orderBy('grupo_orden','asc')->distinct()->get();
                 $tipoPermiso=DB::table('usuario_rol')->select('tipo_grupo.grupo_id','tipo_grupo.tipo_id', 'tipo_nombre','tipo_icono','tipo_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->join('tipo_grupo','tipo_grupo.tipo_id','=','permiso.tipo_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('tipo_orden','asc')->distinct()->get();
-    $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
+                $permisosAdmin=DB::table('usuario_rol')->select('permiso_ruta', 'permiso_nombre', 'permiso_icono', 'tipo_id', 'grupo_id', 'permiso_orden')->join('rol_permiso','usuario_rol.rol_id','=','rol_permiso.rol_id')->join('permiso','permiso.permiso_id','=','rol_permiso.permiso_id')->where('permiso_estado','=','1')->where('usuario_rol.user_id','=',Auth::user()->user_id)->orderBy('permiso_orden','asc')->get();
 
                 $request->session()->regenerate();
 
@@ -240,10 +238,10 @@ class ordenMantenimientoController extends Controller
 
                 return response()->json($data, 200);
             }
-            return response()->json(["result"=>"FAIL", "message"=>"credenciales incorrectas"], 202);
+            return response()->json(["result"=>"FAIL", "mensaje"=>"credenciales incorrectas "], 202);
         }
         catch(\Exception $ex){      
-            return response()->json(["result"=>"FAIL"], 202);
+            return response()->json(["result"=>"FAIL", "mensaje"=>$ex->getMessage()], 202);
         }
     }
 
@@ -252,10 +250,18 @@ class ordenMantenimientoController extends Controller
             DB::beginTransaction();
 
             $orden=Orden_Mantenimiento::findOrFail($request->orden_id);
-            $orden->orden_observacion=$request->observacion;
-            $orden->orden_resultado=$request->resultado;
-            $orden->orden_estado=$request->estado;
-            $orden->orden_finalizacion=date('Y-m-d', time());  
+            $orden->orden_observacion="".$request->observacion;
+            $orden->orden_estatus=$request->estatus;
+
+            $orden->orden_resultado=1;
+
+            if($request->resultado=="Operativo") $orden->orden_resultado=2;
+
+
+            if($request->estatus==2){
+                $orden->orden_finalizacion=date('Y-m-d', time());  
+                $orden->orden_estado=4;
+            }
             
             if($request->imagen){
                 $orden->orden_recibido_por=$request->recibido_por;
@@ -266,13 +272,119 @@ class ordenMantenimientoController extends Controller
             $auditoria = new generalController();
             $auditoria->registrarAuditoria('Se actualizó la orden '.$orden->numero, $orden->orden_id, $orden->orden_id);
 
+
             DB::commit();
-            return redirect('listaMantenimiento')->with('success', 'La Orden actualizada correctamente');
+            //return redirect('listaMantenimiento')->with('success', 'La Orden actualizada correctamente');
+
+            $usuarios="";
+
+            foreach($orden->responsables as $responsable){                
+                $usuarios[]=$responsable->empleado->empleado_nombre;
+            }
+
+            //$this->sendNotification("Orden Creada", "La orden °".$orden->orden_id." ha sido creada", "", $usuarios);
+
+
+            return response()->json(["result"=>"OK", "mensaje"=>"Actualizada Correctamente", "data"=>$orden], 201);
         }
         catch(\Exception $ex){
             DB::rollBack();
-            return redirect('listaMantenimiento')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+            return response()->json(["result"=>"FAIL", "mensaje"=>"No se pudo actualizar la orden de Mantenimiento"], 410);
         }
+    }
+
+    public function anularOrden(Request $request){
+        try{
+            DB::beginTransaction();
+
+            $orden=Orden_Mantenimiento::findOrFail($request->orden_id);
+            $orden->orden_estado=0;
+            $orden->save();
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Se anuló la orden '.$orden->numero, $orden->orden_id, $orden->orden_id);
+
+            DB::commit();
+            //$this->sendNotification("Orden Anulada", "La orden °".$orden->orden_id." ha sido creada");
+
+            $usuarios="";
+
+            foreach($orden->responsables as $responsable){                
+                $usuarios[]=$responsable->empleado->empleado_nombre;
+            }
+
+            //$this->sendNotification("Orden Anulada", "La Orden N° ".$orden->orden_id." ha sido anulada",$usuarios);
+
+
+            return response()->json(["result"=>"OK", "mensaje"=>"orden Anulada Correctamente"], 201);
+        }
+        catch(\Exception $ex){
+            DB::rollBack();
+            return response()->json(["result"=>"FAIL", "mensaje"=>"No se pudo actualizar la orden de Mantenimiento"], 410);
+        }
+    }
+
+    public function guardarTokenUsuario(Request $request){
+        try{
+            DB::beginTransaction();
+
+            $usuario=User::findOrFail($request->user_id);
+            $usuario->usuario_token_fcm=$request->user_token_fcm;
+            $usuario->save();
+
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Se agregó el token fcm al usuairio '.$usuario->user_username, $usuario->user_id, '');
+
+
+            DB::commit();
+            return response()->json(["result"=>"OK", "mensaje"=>"Token Actualizada Correctamente"], 201);
+        }
+        catch(\Exception $ex){
+            DB::rollBack();
+            return response()->json(["result"=>"FAIL", "mensaje"=>"No se pudo actualizar la orden de Mantenimiento"], 410);
+        }
+    }
+
+    public function enviar(){
+        $result=$this->sendNotification("Orden Creada", "La orden °33 ha sido creada", "", "fgdfgfdgdf");
+
+        return 'notificacion enviada '.$result;
+    }
+
+    private function sendNotification($title, $message, $listaUsuarios, $img=null){
+        $msg = urlencode($message);
+        $data = array(
+            'title'=>$title,
+            'sound' => "default",
+            'msg'=>$msg,
+            //'data'=>$datapayload,
+            'body'=>$message,
+            'color' => "#79bc64"
+        );
+        if($img){
+            $data["image"] = $img;
+            $data["style"] = "picture";
+            $data["picture"] = $img;
+        }
+        $fields = array(
+            'to'=>$listaUsuarios,
+            'notification'=>$data,
+            //'data'=>$datapayload,
+            "priority" => "high",
+        );
+        $headers = array(
+            'Authorization: key=AAAAwCXuQ98:APA91bFfYo6_dJL3N36MRyILv-MP8ZSJbhnFiiD9epx2vPCpJ86-9VIytaKBiFgMFYbXe_fdyZwOv7rO6WIdGZBWRbkC1OmYFJbrmXK3d9H4LVRLwWmzK-82FNBVJgFkuan0zSRn0jFO',
+            'Content-Type: application/json'
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close( $ch );
+        return $result;
     }
 
     private function subir_foto($imagen, $orden, $recibido){

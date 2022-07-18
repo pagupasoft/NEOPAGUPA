@@ -7,7 +7,7 @@
             <form class="form-horizontal" method="POST" action="{{ url("lquincena/anular") }} " >
                 @csrf
                 <input type="hidden" id="idquincena" name="idquincena" value="{{$quincena->quincena_id}}"/>
-                <button type="submit" class="btn btn-success btn-sm ">Eliminar</button>
+                <button type="submit" class="btn btn-danger btn-sm "><i class="fa fa-ban" aria-hidden="true"></i>&nbsp;Anular</button>
                 <!-- 
                 <a href="{{ url("lquincena") }}" class="btn btn-danger btn-sm">Cancelar</a>
                 --> 

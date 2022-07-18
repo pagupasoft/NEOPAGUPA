@@ -29,7 +29,8 @@ class  Diario extends Model
         'diario_estado',
         'empresa_id',
         'sucursal_id',
-        'diario_cierre_id'
+        'diario_cierre_id',
+        'diario_financiero_id'
     ];
     protected $guarded =[
     ];
@@ -43,6 +44,10 @@ class  Diario extends Model
     public function diariocierre()
     {
         return $this->belongsTo(Diario::class, 'diario_cierre_id', 'diario_id');
+    }
+    public function diariodinanciero()
+    {
+        return $this->belongsTo(Diario::class, 'diario_financiero_id', 'diario_id');
     }
     public function movimientocaja()
     {
@@ -89,7 +94,9 @@ class  Diario extends Model
     public function scopeDiarioSucursal($query){
         return $query->join('sucursal','sucursal.sucursal_id','=','diario.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->orderBy('sucursal_nombre','asc');
     }
-
+    public function scopeDiarioSucursalCierre($query){
+        return $query->join('sucursal','sucursal.sucursal_id','=','diario.sucursal_id')->where('sucursal.empresa_id','=',Auth::user()->empresa_id)->where('diario_tipo','=','CDCR')->orderBy('sucursal_nombre','asc');
+    }
     public function scopeDiarioTransferenciaDistinc($query){
         return  $query->join('sucursal','sucursal.sucursal_id','=','diario.sucursal_id')
         ->join('detalle_diario','detalle_diario.diario_id','=','diario.diario_id')
@@ -902,6 +909,13 @@ public function scopeDiarioTransferenciaFechaSucursalBanco($query,$fechadesde,$f
     public function scopeDiariosDescuadrados($query, $sucursal,$fechaI,$fechaF){
         $query->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('diario_fecha','>=',$fechaI)->where('diario_fecha','<=',$fechaF);
         if($sucursal  > 0){
+            $query->where('sucursal_id','=',$sucursal);
+        }
+        return $query;
+    }
+    public function scopeDiariosCierres($query, $sucursal,$fechaI,$fechaF){
+        $query->where('diario.empresa_id','=',Auth::user()->empresa_id)->where('diario_tipo','=','CDCR')->where('diario_fecha','>=',$fechaI)->where('diario_fecha','<=',$fechaF);
+        if($sucursal > 0){
             $query->where('sucursal_id','=',$sucursal);
         }
         return $query;

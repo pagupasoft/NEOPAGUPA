@@ -31,7 +31,7 @@ class cuentaController extends Controller
             $cuentas = Cuenta::cuentas()->select('cuenta_id','cuenta_numero','cuenta_nombre','cuenta_nivel',DB::raw('(select count(*) from detalle_diario where cuenta.cuenta_id=detalle_diario.cuenta_id ) as detallesContable'))->get();
           /*  foreach($cuentas as $cuenta){
                 $arbol=$arbol.'<li style="border: 1px solid rgba(0,0,0,.125);font-weight: bold;"><span class="caret">'.$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre.'     ';
-                $arbol=$arbol.'&nbsp;&nbsp;&nbsp;<a href="{{ url('."'".'cuenta/'.$cuenta->cuenta_id.'/edit'."'".') }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                $arbol=$arbol.'&nbsp;&nbsp;&nbsp;<a href="{{ url('."'".'cuenta/'.$cuenta->cuenta_id.'/edit'."'".') }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                 <a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/eliminar") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>';
                 if($cuenta->detallescontable == 0){
                     $arbol = $arbol.'<a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/subcuenta") }}" class="btn btn-xs btn-secondary"  data-toggle="tooltip" data-placement="top" title="Añadir Cuenta"><i class="fa fa-tasks" aria-hidden="true"></i></a>';
@@ -77,7 +77,7 @@ class cuentaController extends Controller
                     $arbol=$arbol.' style="font-weight: bold;"';
                 }
                 $arbol=$arbol.'><span class="caret">'.$cuenta->cuenta_numero.' - '.$cuenta->cuenta_nombre.'   '.'</span>';
-                $arbol=$arbol.'&nbsp;&nbsp;&nbsp;<a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                $arbol=$arbol.'&nbsp;&nbsp;&nbsp;<a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/edit") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                 <a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/eliminar") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                 @if('.$cuenta->detallescontable.' == 0) <a href="{{ url("cuenta/'.$cuenta->cuenta_id.'/subcuenta") }}" class="btn btn-xs btn-secondary"  data-toggle="tooltip" data-placement="top" title="Añadir Cuenta"><i class="fa fa-tasks" aria-hidden="true"></i></a>@endif';
                 $arbol=$arbol.$this->cuentasHijas($cuenta->cuenta_id);

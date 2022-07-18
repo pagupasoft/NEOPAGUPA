@@ -16,6 +16,8 @@ use App\Models\Movimiento_Caja;
 use App\Models\Parametrizacion_Contable;
 use App\Models\Proveedor;
 use App\Models\sucursal;
+use App\Models\Tipo_Movimiento_Banco;
+use App\Models\Tipo_Movimiento_Caja;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +45,8 @@ class descuentoManualAnticipoProveedorController extends Controller
         'cajas'=>$cajas,
         'bancos'=>Banco::bancos()->get(),
         'sucursales'=>$sucursales,   
+        'movimientos'=>[],
+        'movimientosBanco'=>[], 
         'gruposPermiso'=>$gruposPermiso,             
         'permisosAdmin'=>$permisosAdmin]);
     
@@ -116,6 +120,8 @@ class descuentoManualAnticipoProveedorController extends Controller
             'sucursalS'=>$sucursalS,
             'proveedorS'=>$proveedorS,           
             'sucursales'=>$sucursales,
+            'movimientos'=>Tipo_Movimiento_Caja::tipoMovimientos()->where('sucursal_id','=',$request->get('sucursalID'))->get(),
+            'movimientosBanco'=>Tipo_Movimiento_Banco::TipoMovimientos()->where('sucursal_id','=',$request->get('sucursalID'))->get(),
             'proveedores'=>$proveedores,
             'gruposPermiso'=>$gruposPermiso,         
             'permisosAdmin'=>$permisosAdmin]);
@@ -289,12 +295,38 @@ class descuentoManualAnticipoProveedorController extends Controller
                                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                                 $detalleDiario->detalle_conciliacion = '0';
                                 $detalleDiario->detalle_estado = '1';
-                                $detalleDiario->cuenta_id = $cuentaBancaria->cuenta_id;
+                                if($request->get('flexRadioDefault') == 'OTRO'){                                    
+                                    $tipo=substr($request->get('movimiento_id'), -1);
+                                    $Idmovimiento=substr($request->get('movimiento_id'), 0, -1);
+                                    if ($tipo=='C') {
+                                        $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($Idmovimiento)->first();
+                                        $detalleDiario->cuenta_id = $TipoMovimientoCaja->cuenta_id;
+                                    }
+                                    if ($tipo=='B') {
+                                        $TipoMovimientoCaja=Tipo_Movimiento_Banco::TipoMovimiento($Idmovimiento)->first();
+                                        $detalleDiario->cuenta_id = $TipoMovimientoCaja->cuenta_id;
+                                    }                                    
+                                } 
                                 if($request->get('flexRadioDefault') == 'BANCO'){
+                                    $detalleDiario->cuenta_id = $cuentaBancaria->cuenta_id;
                                     $detalleDiario->deposito()->associate($deposito);
                                 }
+                                if($request->get('flexRadioDefault') == 'CAJA'){
+                                    $detalleDiario->cuenta_id = $arqueoCaja->caja->cuenta_id;
+                                }
                                 $diario->detalles()->save($detalleDiario);
-                                $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $cuentaBancaria->cuenta->cuenta_numero.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+                                if($request->get('flexRadioDefault') == 'BANCO'){
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $cuentaBancaria->cuenta->cuenta_numero.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+
+                                }
+                                if($request->get('flexRadioDefault') == 'CAJA'){
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $arqueoCaja->caja->cuenta_id.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+
+                                }
+                                if($request->get('flexRadioDefault') == 'OTRO'){
+                                    $general->registrarAuditoria('Registro de detalle de diario con codigo -> '.$diario->diario_codigo,'0','Registro de detalle de diario con codigo -> '.$diario->diario_codigo.' con cuenta contable -> '. $TipoMovimientoCaja->cuenta_id.' en el debe por un valor de -> '.$datosSuc[$i]['valorSeleccion']);
+
+                                }
                                 /***************************************************************************/
                             }
                         }

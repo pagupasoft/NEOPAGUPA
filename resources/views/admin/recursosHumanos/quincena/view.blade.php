@@ -86,8 +86,8 @@
                                 @if($quincena[$i]["consolidado"]!='0')   
                                 <a href="{{ url("lquincena/{$quincena[$i]["id"]}/eliminarconsolidada") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Quincena Consolidada"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>                        
                                 @endif   
-                            @if($quincena[$i]["pago"]=='Cheque')
-                                <a href="{{ url("lquincena/{$quincena[$i]["idcheque"]}/anular") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Anularlo"><i class="fa fa-ban" aria-hidden="true"></i></a>                        
+                                @if($quincena[$i]["pago"]=='Cheque')
+                                <a href="{{ url("lquincena/{$quincena[$i]["id"]}/anular") }}" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Anular Cheque"><i class="fa fa-ban" aria-hidden="true"></i></a>                        
                                 @endif
                             @endif
                             <a href="{{ url("lquincena/{$quincena[$i]["id"]}/imprimirempleado") }}" target="_blank" class="btn btn-xs btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimir Diario"><i class="fa fa-print"></i></a>                   

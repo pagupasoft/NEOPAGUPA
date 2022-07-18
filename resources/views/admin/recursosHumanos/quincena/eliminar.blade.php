@@ -7,7 +7,7 @@
             <form class="form-horizontal" method="POST" action="{{ route('lquincena.destroy', [$quincena->quincena_id]) }}">
                 @method('DELETE')
                 @csrf
-                <button type="submit" class="btn btn-success btn-sm ">Eliminar</button>
+                <button type="submit" class="btn btn-danger btn-sm "><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Eliminar</button>
                 <!-- 
                 <a href="{{ url("lquincena") }}" class="btn btn-danger btn-sm">Cancelar</a>
                 --> 

@@ -46,7 +46,7 @@
                     @foreach($cierres as $cierre)
                         <tr class="text-center">
                             <td>
-                                <a href="{{ url("cierreMes/editar/{$cierre->cierre_id}") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Ediar"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                <a href="{{ url("cierreMes/editar/{$cierre->cierre_id}") }}" class="btn btn-xs btn-primary"  data-toggle="tooltip" data-placement="top" title="Editar"><i class="fa fa-edit" aria-hidden="true"></i></a>
                                 <a href="{{ url("cierreMes/eliminar/{$cierre->cierre_id}") }}" class="btn btn-xs btn-danger"  data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-trash" aria-hidden="true"></i></a>
                             </td>
                            <td>{{ $cierre->cierre_ano }}</td> 

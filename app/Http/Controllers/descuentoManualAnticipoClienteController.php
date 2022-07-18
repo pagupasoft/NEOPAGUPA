@@ -15,6 +15,8 @@ use App\Models\Diario;
 use App\Models\Movimiento_Caja;
 use App\Models\Parametrizacion_Contable;
 use App\Models\sucursal;
+use App\Models\Tipo_Movimiento_Banco;
+use App\Models\Tipo_Movimiento_Caja;
 use App\Models\Transferencia;
 use DateTime;
 use Illuminate\Http\Request;
@@ -42,7 +44,9 @@ class descuentoManualAnticipoClienteController extends Controller
         'cajasxusuario'=>$cajasxusuario,
         'cajas'=>$cajas,
         'bancos'=>Banco::bancos()->get(),
-        'sucursales'=>$sucursales,   
+        'sucursales'=>$sucursales, 
+        'movimientos'=>[],
+        'movimientosBanco'=>[], 
         'gruposPermiso'=>$gruposPermiso,             
         'permisosAdmin'=>$permisosAdmin]);
     
@@ -117,6 +121,8 @@ class descuentoManualAnticipoClienteController extends Controller
             'sucursalS'=>$sucursalS,
             'clienteS'=>$clienteS,           
             'sucursales'=>$sucursales,
+            'movimientos'=>Tipo_Movimiento_Caja::tipoMovimientos()->where('sucursal_id','=',$request->get('sucursalID'))->get(),
+            'movimientosBanco'=>Tipo_Movimiento_Banco::TipoMovimientos()->where('sucursal_id','=',$request->get('sucursalID'))->get(),
             'clientes'=>$clientes,
             'gruposPermiso'=>$gruposPermiso,         
             'permisosAdmin'=>$permisosAdmin]);
@@ -126,7 +132,7 @@ class descuentoManualAnticipoClienteController extends Controller
     }
 
     private function cruzar(Request $request){
-        //try{
+        try{
             DB::beginTransaction();
             $general = new generalController();
             $cierre = $general->cierre($request->get('idFechaCruze'));         
@@ -275,20 +281,36 @@ class descuentoManualAnticipoClienteController extends Controller
                                 }
                             }
                             if(Auth::user()->empresa->empresa_contabilidad == '1'){
-                                /********************detalle de diario de pago a cliente********************/
+                                /********************detalle de diario de pago a cliente********************/                                
                                 $detalleDiario = new Detalle_Diario();
                                 $detalleDiario->detalle_debe = 0.00;
                                 $detalleDiario->detalle_haber = $datosSuc[$i]['valorSeleccion'];
                                 if($request->get('flexRadioDefault') == 'BANCO'){
                                     $detalleDiario->detalle_comentario = 'P/R CRUCE ANTICIPOS DE CLIENTES CON '.$cuentaBancaria->banco->bancoLista->banco_lista_nombre. ' cuenta No. '.$cuentaBancaria->cuenta_bancaria_numero;
-                                }else{
+                                }
+                                if($request->get('flexRadioDefault') == 'CAJA'){
                                     $detalleDiario->detalle_comentario = 'P/R CRUCE ANTICIPOS DE CLIENTES CON CAJA';
+                                }
+                                if($request->get('flexRadioDefault') == 'OTRO'){
+                                    $detalleDiario->detalle_comentario = 'P/R CRUCE ANTICIPOS DE CLIENTES';
                                 }
                                 
                                 $detalleDiario->detalle_tipo_documento = 'DESCUENTO ANTICIPO DE CLIENTE';
                                 $detalleDiario->detalle_numero_documento = $diario->diario_numero_documento;
                                 $detalleDiario->detalle_conciliacion = '0';
-                                $detalleDiario->detalle_estado = '1';                                
+                                $detalleDiario->detalle_estado = '1'; 
+                                if($request->get('flexRadioDefault') == 'OTRO'){                                    
+                                    $tipo=substr($request->get('movimiento_id'), -1);
+                                    $Idmovimiento=substr($request->get('movimiento_id'), 0, -1);
+                                    if ($tipo=='C') {
+                                        $TipoMovimientoCaja=Tipo_Movimiento_Caja::tipoMovimiento($Idmovimiento)->first();
+                                        $detalleDiario->cuenta_id = $TipoMovimientoCaja->cuenta_id;
+                                    }
+                                    if ($tipo=='B') {
+                                        $TipoMovimientoCaja=Tipo_Movimiento_Banco::TipoMovimiento($Idmovimiento)->first();
+                                        $detalleDiario->cuenta_id = $TipoMovimientoCaja->cuenta_id;
+                                    }                                    
+                                }                               
                                 if($request->get('flexRadioDefault') == 'BANCO'){
                                     $detalleDiario->cuenta_id = $cuentaBancaria->cuenta_id;
                                     $detalleDiario->transferencia()->associate($transferencia);
@@ -314,10 +336,10 @@ class descuentoManualAnticipoClienteController extends Controller
             $url = $general->pdfVariosDiario($diarios, $request->get('idFechaCruze'));
             DB::commit();
             return redirect('descuentoManualClientes')->with('success','Cruce realizado exitosamente')->with('diario',$url);
-       // }catch(\Exception $ex){
+        }catch(\Exception $ex){
             DB::rollBack();
             return redirect('descuentoManualClientes')->with('error2','Oucrrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
-        //}
+        }
     }
 
     /**

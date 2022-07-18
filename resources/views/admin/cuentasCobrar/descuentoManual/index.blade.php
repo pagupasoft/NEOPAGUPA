@@ -68,7 +68,7 @@
                                         <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="CAJA" onclick="myFunctionDivCaja();">
                                         <label class="form-check-label" for="flexRadioDefault1">CRUZAR CON CAJA</label>
                                     </div> 
-                                </div>
+                                </div>                                
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-6">
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group row"> 
-                                        <div class="col-sm-11">                              
+                                        <div class="col-sm-5">                              
                                             <select class="custom-select select2" id="idCaja" name="idCaja" disabled>
                                                 <option value="" label>--Seleccione una caja--</option>
                                                 @if($cajasxusuario)
@@ -106,6 +106,26 @@
                                         </div>                                                       
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="OTRO" onclick="myFunctionDivOtro();">
+                                        <label class="form-check-label" for="flexRadioDefault3">OTROS</label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <label for="movimiento_id" class="col-sm-6 col-form-label">Movimiento Caja Y Bancos: </label>
+                                        <div class="col-sm-11">
+                                            <select class="custom-select select2" id="movimiento_id" name="movimiento_id" disabled>
+                                                <option value="" label>--Seleccione una opcion--</option>
+                                                @foreach($movimientos as $movimiento)
+                                                    <option value="{{$movimiento->tipo_id}}C">CAJA - {{$movimiento->tipo_nombre}}</option>
+                                                @endforeach
+                                                @foreach($movimientosBanco as $movimientobanco)
+                                                    <option value="{{$movimientobanco->tipo_id}}B">BANCO - {{$movimientobanco->tipo_nombre}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                </div> 
+                                </div>                               
                             </div>                                                   
                         </div>                        
                 </div> 
@@ -212,10 +232,18 @@ function myFunctionDivBanco(){
     document.getElementById("idCaja").disabled=true;
     document.getElementById("banco_id").disabled=false;
     document.getElementById("cuenta_id").disabled=false;
-
+    document.getElementById("movimiento_id").disabled=true;
 }
 function myFunctionDivCaja(){
     document.getElementById("idCaja").disabled=false;
+    document.getElementById("banco_id").disabled=true;
+    document.getElementById("cuenta_id").disabled=true;
+    document.getElementById("movimiento_id").disabled=true;
+
+}
+function myFunctionDivOtro(){
+    document.getElementById("movimiento_id").disabled=false;
+    document.getElementById("idCaja").disabled=true;
     document.getElementById("banco_id").disabled=true;
     document.getElementById("cuenta_id").disabled=true;
 }

@@ -45,8 +45,8 @@ class descuentoManualAnticipoProveedorController extends Controller
         'cajas'=>$cajas,
         'bancos'=>Banco::bancos()->get(),
         'sucursales'=>$sucursales,   
-        'movimientos'=>[],
-        'movimientosBanco'=>[], 
+        'movimientos'=>Tipo_Movimiento_Caja::TipoMovimientos()->get(),
+        'movimientosBanco'=>Tipo_Movimiento_Banco::TipoMovimientos()->get(), 
         'gruposPermiso'=>$gruposPermiso,             
         'permisosAdmin'=>$permisosAdmin]);
     

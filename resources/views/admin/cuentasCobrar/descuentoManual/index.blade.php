@@ -21,7 +21,7 @@
                 <div class="col-sm-3">
                     <select id="sucursalID" name="sucursalID" class="form-control show-tick"
                         data-live-search="true">
-                        <option value="0">Todos</option>
+                       
                         @foreach($sucursales as $sucursal)
                             <option value="{{ $sucursal->sucursal_id }}"@if(isset($sucursalS)) @if($sucursalS == $sucursal->sucursal_id) selected @endif @endif>{{ $sucursal->sucursal_nombre }}</option>
                         @endforeach

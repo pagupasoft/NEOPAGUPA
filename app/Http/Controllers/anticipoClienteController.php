@@ -618,7 +618,7 @@ class anticipoClienteController extends Controller
                     $auditoria->registrarAuditoria('Eliminacion del descuento con valor'.$descuento->descuento_valor,'',' Con Descripcion: '.$descuento->descuento_descripcion);  
                    
                     $diario->delete();
-                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de '.$descuento->descuento_descripcion);  
+                    $auditoria->registrarAuditoria('Eliminacion del diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de '.$descuento->descuento_descripcion);  
                   
                      
                     if ($cxcAux) {

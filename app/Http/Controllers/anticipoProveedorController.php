@@ -643,6 +643,7 @@ class anticipoProveedorController extends Controller
                     
                     if(isset($descuento->diario->diario_id)){
                         $diario = $descuento->diario;
+                        $diario=Diario::findOrFail($diario->diario_id);
                     }
                     if(isset($descuento->transaccionCompra->cuentaPagar)){
                         $cxpAux = $descuento->transaccionCompra->cuentaPagar;
@@ -654,17 +655,31 @@ class anticipoProveedorController extends Controller
                         $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por pagar');  
                     }
                     $descuento->delete();
-                    if(isset($cxpAux->transaccionCompra->transaccion_id)){
-                        $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
-                    }else{
-                        $cxpAux->cuenta_saldo = $cxpAux->cuenta_saldo + $valorDescuento;
+                    $auditoria->registrarAuditoria('Eliminacion del descuento con valor'.$descuento->descuento_valor,'',' Con Descripcion: '.$descuento->descuento_descripcion);  
+                   
+                    $diario->delete();
+                    $auditoria->registrarAuditoria('Eliminacion del diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de '.$descuento->descuento_descripcion);  
+                    if ($cxpAux) {
+                        if (isset($cxpAux->transaccionCompra->transaccion_id)) {
+                            $cxpAux->cuenta_saldo = $cxpAux->cuenta_monto - Cuenta_Pagar::CuentaPagarPagos($cxpAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Proveedor::DescuentosAnticipoByFactura($cxpAux->transaccionCompra->transaccion_id)->sum('descuento_valor');
+                        } else {
+                            $cxpAux->cuenta_saldo = $cxpAux->cuenta_saldo + $valorDescuento;
+                        }
+                        if ($cxpAux->cuenta_saldo == 0) {
+                            $cxpAux->cuenta_estado = '2';
+                        } else {
+                            $cxpAux->cuenta_estado = '1';
+                        }
+                        $cxpAux->update();
+                        if (isset($descuento->transaccionCompra->cuentaPagar)) {
+                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
+                            $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
+                        }
+                        if (!isset($descuento->transaccionCompra->cuentaPagar)) {
+                            $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                            $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                        }
                     }
-                    if($cxpAux->cuenta_saldo == 0){
-                        $cxpAux->cuenta_estado = '2';
-                    }else{
-                        $cxpAux->cuenta_estado = '1';
-                    }
-                    $cxpAux->update();
                     if(is_null($anticipo->anticipo_documento)){
                         $anticipo->anticipo_saldo = $anticipo->anticipo_saldo + $valorDescuento;
                     }else{
@@ -676,14 +691,7 @@ class anticipoProveedorController extends Controller
                         $anticipo->anticipo_estado = '1';
                     }
                     $anticipo->update();
-                    if (isset($descuento->transaccionCompra->cuentaPagar)) {
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$cxpAux->transaccionCompra->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
-                        $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$cxpAux->transaccionCompra->transaccion_numero);
-                    }
-                    if (!isset($descuento->transaccionCompra->cuentaPagar)) {
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por pagar de proveedor', '0', 'Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
-                        $auditoria->registrarAuditoria('Actualizacion de anticipo proveedor','0','Actualizacion de cuenta por pagar por eliminacion de cruce de anticipos de proveedor -> '.$descuento->anticipo->proveedor->proveedor_nombre.' con factura -> '.$descuento->descuento_descripcion);
-                    }
+                    $auditoria->registrarAuditoria('Actualizacion de anticipo por la eliminacion de descuento', '0', 'Actualizacion  por eliminacion de cruce de anticipos motivo de  ->'.$descuento->descuento_descripcion);
                 }
             }
             DB::commit();

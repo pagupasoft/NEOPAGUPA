@@ -594,6 +594,7 @@ class anticipoClienteController extends Controller
                      
                     if(isset($descuento->diario->diario_id)){
                         $diario = $descuento->diario;
+                        $diario=Diario::findOrFail($diario->diario_id);
                     }
                     if(isset($descuento->factura->cuentaCobrar)){
                         $cxcAux = $descuento->factura->cuentaCobrar;
@@ -602,20 +603,45 @@ class anticipoClienteController extends Controller
                     }
                     foreach($diario->detalles as $detalle){
                         $detalle->delete();
-                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de cruce de anticipo con cuentas por cobrar');  
+                        $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de '.$descuento->descuento_descripcion);  
+                    }
+                    $arqueoCaja=Arqueo_Caja::arqueoCaja(Auth::user()->user_id)->first();
+                    if($diario->movimientocaja){
+                        $movimientoCaja = Movimiento_Caja::MovimientoCajaxarqueo($arqueoCaja->arqueo_id, $diario->diario_id)->first();
+                        if($movimientoCaja){
+                            $movimientoCaja->delete();
+                        }else{
+                            $noTienecaja = 'Lo valores en Efectivo no pudieron ser eliminados, porque CAJA esta Cerrada';                               
+                        }
                     }
                     $descuento->delete();
-                    if(isset($descuento->factura->cuentaCobrar)){
-                        $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
-                    }else{
-                        $cxcAux->cuenta_saldo = $cxcAux->cuenta_saldo + $valorDescuento;
+                    $auditoria->registrarAuditoria('Eliminacion del descuento con valor'.$descuento->descuento_valor,'',' Con Descripcion: '.$descuento->descuento_descripcion);  
+                   
+                    $diario->delete();
+                    $auditoria->registrarAuditoria('Eliminacion del detalle diario  N°'.$diario->diario_codigo,$diario->diario_codigo,'Eliminacion de detalle de diario por eliminacion de '.$descuento->descuento_descripcion);  
+                  
+                     
+                    if ($cxcAux) {
+                        if (isset($descuento->factura->cuentaCobrar)) {
+                            $cxcAux->cuenta_saldo = $cxcAux->cuenta_monto - Cuenta_Cobrar::CuentaCobrarPagos($cxcAux->cuenta_id)->sum('detalle_pago_valor') - Descuento_Anticipo_Cliente::DescuentosAnticipoByFactura($cxcAux->facturaVenta->factura_id)->sum('descuento_valor');
+                        } else {
+                            $cxcAux->cuenta_saldo = $cxcAux->cuenta_saldo + $valorDescuento;
+                        }
+                        if ($cxcAux->cuenta_saldo == 0) {
+                            $cxcAux->cuenta_estado = '2';
+                        } else {
+                            $cxcAux->cuenta_estado = '1';
+                        }
+                        $cxcAux->update();
+                        if(isset($descuento->factura->factura_id)){
+                            $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente', '0', 'Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
+                            $auditoria->registrarAuditoria('Actualizacion de anticipo cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
+                        }
+                        if (!isset($descuento->factura->factura_id)) {
+                            $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente', '0', 'Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->cliente->cliente_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                            $auditoria->registrarAuditoria('Actualizacion de anticipo cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->cliente->cliente_nombre.' con factura -> '.$descuento->descuento_descripcion);
+                        }
                     }
-                    if($cxcAux->cuenta_saldo == 0){
-                        $cxcAux->cuenta_estado = '2';
-                    }else{
-                        $cxcAux->cuenta_estado = '1';
-                    }
-                    $cxcAux->update();
                     if(is_null($anticipo->anticipo_documento)){
                         $anticipo->anticipo_saldo = $anticipo->anticipo_saldo + $valorDescuento;
                     }else{
@@ -627,14 +653,7 @@ class anticipoClienteController extends Controller
                         $anticipo->anticipo_estado = '1';
                     }
                     $anticipo->update();
-                    if(isset($descuento->factura->factura_id)){
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente', '0', 'Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
-                        $auditoria->registrarAuditoria('Actualizacion de anticipo cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->facturaVenta->cliente->cliente_nombre.' con factura -> '.$cxcAux->facturaVenta->factura_numero);
-                    }
-                    if (!isset($descuento->factura->factura_id)) {
-                        $auditoria->registrarAuditoria('Actualizacion de cuenta por cobrar de cliente', '0', 'Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->cliente->cliente_nombre.' con factura -> '.$descuento->descuento_descripcion);
-                        $auditoria->registrarAuditoria('Actualizacion de anticipo cliente','0','Actualizacion de cuenta por cobrar por eliminacion de cruce de anticipos de cliente -> '.$cxcAux->cliente->cliente_nombre.' con factura -> '.$descuento->descuento_descripcion);
-                    }
+                    $auditoria->registrarAuditoria('Actualizacion de Anticipo por la eliminacion de descuento de aniticipo con el valor de '.$descuento->descuento_valor, '0', 'Actualizacion por eliminacion de descuento anticipo de cruce de '.$descuento->descuento_descripcion);
                 }
             }                                        
             DB::commit();

@@ -64,4 +64,13 @@ class Orden_Mantenimiento extends Model
                     )->where('sucursal.empresa_id', '=', 1
                     )->orderBy('orden_mantenimiento.orden_id', 'desc');
     }
+    public function scopeOrdenesFilterByEstado($query, $estado){
+        return $query->select('orden_mantenimiento.orden_id', 'orden_mantenimiento.orden_fecha_inicio', 'orden_mantenimiento.orden_estado', 'orden_mantenimiento.orden_asignacion','orden_mantenimiento.orden_resultado','orden_mantenimiento.orden_prioridad', 'orden_mantenimiento.tipo_id', 'orden_mantenimiento.orden_lugar','cliente.cliente_id', 'cliente.cliente_nombre'
+                    )->join('sucursal', 'sucursal.sucursal_id', '=', 'orden_mantenimiento.sucursal_id'
+                    )->join('cliente', 'cliente.cliente_id', "=", "orden_mantenimiento.cliente_id"
+                    //)->where('sucursal.empresa_id', '=', Auth::user()->empresa_id);
+                    )->where('sucursal.empresa_id', '=', 1
+                    )->where('orden_mantenimiento.orden_estado','=', $estado
+                    )->orderBy('orden_mantenimiento.orden_id', 'desc');
+    }
 }

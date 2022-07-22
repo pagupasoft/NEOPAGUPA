@@ -9,13 +9,17 @@ use App\Models\Detalle_Mantenimiento;
 use App\Models\Detalle_Orden_Mantenimiento;
 use App\Models\Orden_Mantenimiento;
 use App\Models\Responsable_Mantenimiento;
+use App\Models\Responsable_User_Mantenimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ordenMantenimientoController extends Controller{
-    public function index(){
-        $ordenes=Orden_Mantenimiento::ordenes()->get();
+    public function index(Request $request){
+        if($request->orden_estado==5)
+            $ordenes=Orden_Mantenimiento::ordenes()->get();
+        else
+            $ordenes=Orden_Mantenimiento::ordenesFilterByEstado($request->orden_estado)->get();
 
         $data=[
             'result'=>'OK',
@@ -49,6 +53,44 @@ class ordenMantenimientoController extends Controller{
         //return $ordenes;
 
         return view('admin.mantenimiento.index', $data);
+    }
+
+    public function listaTecnicos(){
+        $tecnicos=Responsable_User_Mantenimiento::tecnicos()->get();
+        $usuarios=User::usuarios()->get();
+        $empleados=Empleado::empleados()->get();
+        
+        $data=[
+            'usuarios'=>$usuarios,
+            'empleados'=>$empleados,
+            'tecnicos'=>$tecnicos
+        ];
+
+        return view('admin.mantenimiento.tecnicos', $data);
+    }
+
+    public function agregarTecnicoMantenimiento(Request $request)
+    {
+        try{              
+            DB::beginTransaction();
+            $responsable_user = new Responsable_User_Mantenimiento();
+
+            $responsable_user->empleado_id=$request->get('empleado_id');
+            $responsable_user->user_id=$request->get('usuario_id');      
+            $responsable_user->save();
+
+
+            
+            $auditoria = new generalController();
+            $auditoria->registrarAuditoria('Registro de Tecnico Mantenimiento -> '.$responsable_user->empleado_id, $responsable_user->empleado_id,'');
+            /*Fin de registro de auditoria */            
+            DB::commit();
+            return redirect('tecnicosMantenimiento')->with('success','Datos guardados exitosamente');
+        }catch(\Exception $ex){
+            DB::rollBack();
+            return redirect('tecnicosMantenimiento')->with('error2','Ocurrio un error en el procedimiento. Vuelva a intentar. ('.$ex->getMessage().')');
+        }
+
     }
 
     public function comprobarStock($id){
@@ -132,6 +174,7 @@ class ordenMantenimientoController extends Controller{
             $nuevaOrden->orden_observacion="";
             $nuevaOrden->orden_recibido_por="";
             $nuevaOrden->orden_estado=1;
+            $nuevaOrden->orden_resultado=1;
 
             $nuevaOrden->tipo_id=$request->tipo_id;
             $nuevaOrden->user_id=3;
@@ -139,12 +182,18 @@ class ordenMantenimientoController extends Controller{
             $nuevaOrden->sucursal_id=1;
             $nuevaOrden->save();
 
+            $listaANotificar[]="";
+
             for ($i = 0; $i < count($request->responsable); ++$i){
+                $responsable_usuario=Responsable_User_Mantenimiento::searchByEmpleado($request->responsable[$i])->first();
+                
                 $responsable=new Responsable_Mantenimiento();
-                $responsable->empleado_id=$request->responsable[$i];
+                $responsable->responsable_user_id=$responsable_usuario->responsable_user_id;
                 $responsable->orden_id=$nuevaOrden->orden_id;
                 $responsable->responsable_estado=1;
                 $responsable->save();
+
+                if($responsable_usuario->user->user_fcm_token!="") $listaANotificar[]=$responsable_usuario->user->user_fcm_token;
             }
 
             for ($i = 0; $i < count($request->detalle); ++$i){
@@ -177,7 +226,9 @@ class ordenMantenimientoController extends Controller{
             $auditoria->registrarAuditoria('Registro de nueva orden numero '.$nuevaOrden->numero, $nuevaOrden->orden_id, '');
 
             DB::commit();
-            return response()->json(["result"=>"OK", "mensaje"=>"guardado correctamente"], 200);
+
+            $this->sendNotification("Orden Creada", "La orden °".$nuevaOrden->orden_id." ha sido creada", $listaANotificar, "ORDER DETAIL", $nuevaOrden->orden_id, "");
+            return response()->json(["result"=>"OK", "mensaje"=>"guardado correctamente ", "notificados"=>$listaANotificar], 200);
         }
         catch(\Exception $e){
             DB::rollBack();
@@ -238,25 +289,22 @@ class ordenMantenimientoController extends Controller{
 
                 return response()->json($data, 200);
             }
-            return response()->json(["result"=>"FAIL", "mensaje"=>"credenciales incorrectas "], 202);
+            return response()->json(["result"=>"FAIL", "mensaje"=>"credenciales Incorrectas "], 202);
         }
         catch(\Exception $ex){      
-            return response()->json(["result"=>"FAIL", "mensaje"=>$ex->getMessage()], 202);
+            return response()->json(["result"=>"FAIL", "mensaje"=>"credenciales Incorrectas "], 202);
         }
     }
 
     public function actualizarOrden(Request $request){
         try{
             DB::beginTransaction();
-
             $orden=Orden_Mantenimiento::findOrFail($request->orden_id);
             $orden->orden_observacion="".$request->observacion;
             $orden->orden_estatus=$request->estatus;
-
             $orden->orden_resultado=1;
 
             if($request->resultado=="Operativo") $orden->orden_resultado=2;
-
 
             if($request->estatus==2){
                 $orden->orden_finalizacion=date('Y-m-d', time());  
@@ -276,13 +324,15 @@ class ordenMantenimientoController extends Controller{
             DB::commit();
             //return redirect('listaMantenimiento')->with('success', 'La Orden actualizada correctamente');
 
-            $usuarios="";
+            
+            $usuarios[]="";
 
             foreach($orden->responsables as $responsable){                
-                $usuarios[]=$responsable->empleado->empleado_nombre;
+                $usuarios[]=$responsable->responsableUser->user->user_fcm_token;
             }
+            
 
-            //$this->sendNotification("Orden Creada", "La orden °".$orden->orden_id." ha sido creada", "", $usuarios);
+            $this->sendNotification("Orden Creada", "La orden °".$orden->orden_id." ha sido actualizada", $usuarios, "ORDER DETAIL", $orden->orden_id, "");
 
 
             return response()->json(["result"=>"OK", "mensaje"=>"Actualizada Correctamente", "data"=>$orden], 201);
@@ -328,7 +378,7 @@ class ordenMantenimientoController extends Controller{
             DB::beginTransaction();
 
             $usuario=User::findOrFail($request->user_id);
-            $usuario->usuario_token_fcm=$request->user_token_fcm;
+            $usuario->user_fcm_token=$request->user_fcm_token;
             $usuario->save();
 
             $auditoria = new generalController();
@@ -340,17 +390,21 @@ class ordenMantenimientoController extends Controller{
         }
         catch(\Exception $ex){
             DB::rollBack();
-            return response()->json(["result"=>"FAIL", "mensaje"=>"No se pudo actualizar la orden de Mantenimiento"], 410);
+            return response()->json(["result"=>"FAIL", "mensaje"=>"No se pudo actualizar la orden de Mantenimiento ".$ex], 410);
         }
     }
 
     public function enviar(){
-        $result=$this->sendNotification("Orden Creada", "La orden °33 ha sido creada", "", "fgdfgfdgdf");
+        //$listaUsuarios=array();
+        $listaUsuarios[]="eUxN1EA3SUOwULL-ha4-mr:APA91bEgZFIqBKbQtznG9mNJCzDqXn0bLIPOg5lJztPz1El5p_5_udkfMsXw_jwYBBZxsjfc9rmMeiMPQMhKpL-Gnc2DY96UoNmSgL2eiau8WW6K05oDayIDhhPZuEh67QgBXRgegaHC";
+        $listaUsuarios[]="c_FHf2aAQtyviKivjrrXXD:APA91bGy-oZlD-WlTWyexAzqybvkY60Z92LPqkgyA9pXyxoME29JD1faXZaD95jyG_0fXlrkB5bMsFJze3ouu4b0TUhXi6HNW0vMkbIATLbpXcdwBifvgHNOiX0NBrgCW-g6BGFV3j_6";
+        $result=$this->sendNotification("Uso del Servicio", "Esta función es para comprobar el estado en Línea del Servicio", $listaUsuarios, "", "", "");
 
         return 'notificacion enviada '.$result;
     }
 
-    private function sendNotification($title, $message, $listaUsuarios, $img=null){
+    private function sendNotification($title, $message, $listaUsuarios, $accion, $codigo=0, $img=null){
+        //echo 'users '.json_encode($listaUsuarios).'<br><br>';
         $msg = urlencode($message);
         $data = array(
             'title'=>$title,
@@ -365,10 +419,17 @@ class ordenMantenimientoController extends Controller{
             $data["style"] = "picture";
             $data["picture"] = $img;
         }
+
+        if($codigo){
+            $data["codigo"]=$codigo;
+            $data["accion"]=$accion;
+        }
+
         $fields = array(
-            'to'=>$listaUsuarios,
+            'registration_ids'=>$listaUsuarios,
+            //'to'=>json_encode($listaUsuarios),
             'notification'=>$data,
-            //'data'=>$datapayload,
+            'data'=>$data,
             "priority" => "high",
         );
         $headers = array(

@@ -774,7 +774,7 @@ Route::get('/medicoAseguradora/{id}/aseguradoras', [medicoAseguradoraController:
 Route::post('/medicoAseguradora/guardarAseguradoras/{id}', [medicoAseguradoraController::class, 'guardarAseguradoras'])->name('medicoAseguradora.guardarAseguradoras')->middleware('auth');
 Route::get('/usuario/{id}/puntos', [usuarioController::class, 'puntosEmisionPermiso'])->middleware('auth');
 Route::post('/usuario/guardarPuntos/{id}', [usuarioController::class, 'guardarPuntos'])->name('usuario.guardarPuntosE')->middleware('auth');
-Route::get('/procedimientoEspecialidad/{id}/especialidad', [procedimientoEspecialidadController::class, 'especialidad'])->middleware('auth')->middleware('acceso');
+Route::get('/procedimientoEspecialidad/{especialidad_id}', [procedimientoEspecialidadController::class, 'index'])->middleware('auth')->middleware('acceso');
 Route::post('/procedimientoEspecialidad/guardarEspecialidades/{id}', [procedimientoEspecialidadController::class, 'guardarEspecialidades'])->name('procedimientoEspecialidad.guardarEspecialidades')->middleware('auth');
 Route::get('/aseguradoraProcedimiento/{id}/procedimiento', [aseguradoraProcedimientoController::class, 'procedimiento'])->middleware('auth')->middleware('acceso');
 Route::post('/aseguradoraProcedimiento/guardarProcedimiento/{id}', [aseguradoraProcedimientoController::class, 'guardarProcedimiento'])->name('aseguradoraProcedimiento.guardarProcedimiento')->middleware('auth');
@@ -911,6 +911,7 @@ Route::post('/listarRetencionesAnuladas', [anularRetencionesController::class, '
 
 //MANTENIMIENTO
 Route::get('/listaMantenimiento', [ordenMantenimientoController::class, 'listaOrdenes']);
+Route::get('/tecnicosMantenimiento', [ordenMantenimientoController::class, 'listaTecnicos']);
 Route::get('/orden/{id}/comprobarStock', [ordenMantenimientoController::class, 'comprobarStock']);
 Route::get('/mantenimiento', [ordenMantenimientoController::class, 'index']);
 Route::get('/mantenimiento/{id}/ver', [ordenMantenimientoController::class, 'getOrden']);
@@ -920,6 +921,8 @@ Route::post('/anularOrden', [ordenMantenimientoController::class, 'anularOrden']
 Route::post('/guardarordenmantenimiento', [ordenMantenimientoController::class, 'store']);
 Route::post('/loginmantenimiento', [ordenMantenimientoController::class, 'login']);
 Route::get('enviarNotificacion', [ordenMantenimientoController::class, 'enviar']);
+Route::post('/mantenimientoguardartoken', [ordenMantenimientoController::class, 'guardarTokenUsuario']);
+Route::post('/agregartecnicomantenimiento', [ordenMantenimientoController::class, 'agregarTecnicoMantenimiento']);
 
 //CHEQUE IMPRESION
 Route::get('/cuentaBancaria/new/{id}', [cuentaBancariaController::class, 'configurarCheque'])->middleware('auth');

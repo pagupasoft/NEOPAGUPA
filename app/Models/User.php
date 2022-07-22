@@ -29,7 +29,8 @@ class User extends Authenticatable
         'user_tipo', 
         'password',
         'empresa_id',
-        'user_cambio_clave'
+        'user_cambio_clave',
+        'user_fcm_token'
     ];
 
     /**

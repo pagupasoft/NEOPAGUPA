@@ -14,14 +14,14 @@ class Responsable_Mantenimiento extends Model
     protected $fillable=[
         'responsable_estado',
         'orden_id',
-        'empleado_id'
+        'responsable_user_id'
     ];
 
     protected $guarded=[
     ];
 
-    public function empleado(){
-        return $this->hasOne(Empleado::class, 'empleado_id', 'empleado_id');
+    public function responsableUser(){
+        return $this->hasOne(Responsable_Usuario_Mantenimiento::class, 'responsable_user_id', 'responsable_user_id');
     }
 
     public function orden(){

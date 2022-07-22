@@ -39,16 +39,14 @@ class loginController extends Controller
     public function authenticate(Request $request)
     {
         try{
-            $paramEmpresa= Parametrizar_Empresa::buscarConfiguracion("REQUERIR RUC")->first();
-
             $userdata = array(
                 'user_username' => $request->get('idUsername'),
                 'password' => $request->get('idPassword'),
                 'user_estado' => 1
             );
-
+            
             $REQUERIR_RUC=1;
-
+            $paramEmpresa= Parametrizar_Empresa::buscarConfiguracion("REQUERIR RUC")->first();
             if($paramEmpresa){
                 if($paramEmpresa->parametrizar_valor==0) $REQUERIR_RUC=0;
             }

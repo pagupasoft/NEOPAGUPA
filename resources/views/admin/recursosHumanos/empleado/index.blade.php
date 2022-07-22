@@ -236,19 +236,19 @@
                                 <!--Datos Generales-->
                                 <br>
                                 <div class="form-group row">
-                                    <label for="idCedula" class="col-sm-3 col-form-label">Cedula</label>
+                                    <label for="idCedula" class="col-sm-3 col-form-label">Cedula*</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control" id="idCedula" name="idCedula" placeholder="#Cedula" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idNombre" class="col-sm-3 col-form-label">Nombre</label>
+                                    <label for="idNombre" class="col-sm-3 col-form-label">Nombre*</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control" id="idNombre" name="idNombre" placeholder="Nombre" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idSexo" class="col-sm-3 col-form-label">Sexo</label>
+                                    <label for="idSexo" class="col-sm-3 col-form-label">Sexo*</label>
                                     <div class="col-sm-4">
                                         <select id="idSexo" name="idSexo" class="form-control show-tick " data-live-search="true" required>
                                             <option value="" label>--Seleccione--</option>
@@ -256,7 +256,7 @@
                                             <option value="Femenino">Femenino</option>
                                         </select>
                                     </div>
-                                    <label for="idEstatura" class="col-sm-2 col-form-label">Estatura</label>
+                                    <label for="idEstatura" class="col-sm-2 col-form-label">Estatura*</label>
                                     <div class="col-sm-3 input-group mb-2">
                                         <input type="text" class="form-control" id="idEstatura" name="idEstatura" placeholder="Estatura" >
                                         <div class="input-group-append">
@@ -265,34 +265,34 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idGrupoS" class="col-sm-3 col-form-label">Grupo Sanguineo</label>
+                                    <label for="idGrupoS" class="col-sm-3 col-form-label">Grupo Sanguineo*</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control" id="idGrupoS" name="idGrupoS" placeholder="Grupo Sanguineo" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idLugarNac" class="col-sm-3 col-form-label">Lugar de Nacimiento</label>
+                                    <label for="idLugarNac" class="col-sm-3 col-form-label">Lugar de Nacimiento*</label>
                                     <div class="col-sm-3">
                                         <input type="text" class="form-control" id="idLugarNac" name="idLugarNac" placeholder="Lugar de Nacimiento" required>
                                     </div>
-                                    <label for="idFechaNac" class="col-sm-3 col-form-label">Fecha de Nacimiento</label>
+                                    <label for="idFechaNac" class="col-sm-3 col-form-label">Fecha de Nacimiento*</label>
                                     <div class="col-sm-3">
                                         <input type="date" class="form-control" id="idFechaNac" name="idFechaNac" value="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idEdad" class="col-sm-3 col-form-label">Edad</label>
+                                    <label for="idEdad" class="col-sm-3 col-form-label">Edad*</label>
                                     <div class="col-sm-3">
                                         <input type="number" class="form-control" id="idEdad" name="idEdad" placeholder="Edad" required>
                                     </div>
-                                    <label for="idNacionalidad" class="col-sm-3 col-form-label">Nacionalidad</label>
+                                    <label for="idNacionalidad" class="col-sm-3 col-form-label">Nacionalidad*</label>
                                     <div class="col-sm-3">
                                         <input type="text" class="form-control" id="idNacionalidad" name="idNacionalidad" placeholder="Nacionalidad" >
                                     </div>
 
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idEstadoCivil" class="col-sm-3 col-form-label">Estado Civil</label>
+                                    <label for="idEstadoCivil" class="col-sm-3 col-form-label">Estado Civil*</label>
                                     <div class="col-sm-9">
                                         <select id="idEstadoCivil" name="idEstadoCivil" class="form-control show-tick " data-live-search="true" >
                                             <option value="" label>--Seleccione una opcion--</option>
@@ -305,23 +305,23 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idDireccion" class="col-sm-3 col-form-label">Direccion</label>
+                                    <label for="idDireccion" class="col-sm-3 col-form-label">Direccion*</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control" id="idDireccion" name="idDireccion" placeholder="Direccion" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idTelefono" class="col-sm-3 col-form-label">Teléfono</label>
+                                    <label for="idTelefono" class="col-sm-3 col-form-label">Teléfono*</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="idTelefono" name="idTelefono" placeholder="000000000" required>
+                                        <input type="text" class="form-control" id="idTelefono" name="idTelefono" placeholder="000000000">
                                     </div>
                                     <label for="idCelular" class="col-sm-1 col-form-label">Celular</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="idCelular" name="idCelular" placeholder="0000000000" required>
+                                        <input type="text" class="form-control" id="idCelular" name="idCelular" placeholder="0000000000">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idCorreo" class="col-sm-3 col-form-label">Correo</label>
+                                    <label for="idCorreo" class="col-sm-3 col-form-label">Correo*</label>
                                     <div class="col-sm-9">
                                         <input type="email" class="form-control" id="idCorreo" name="idCorreo" placeholder="Correo Electronico" required>
                                     </div>
@@ -358,7 +358,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idFechaIng" class="col-sm-3 col-form-label">Fecha de Ingreso</label>
+                                    <label for="idFechaIng" class="col-sm-3 col-form-label">Fecha de Ingreso*</label>
                                     <div class="col-sm-3">
                                         <input type="date" class="form-control" id="idFechaIng" name="idFechaIng" value="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
@@ -370,14 +370,14 @@
                                 <div class="form-group row">
                                     <label for="idDepartamento" class="col-sm-2 col-form-label">Departamento</label>
                                     <div class="col-sm-4">
-                                        <select id="idDepartamento" name="idDepartamento" class="form-control select2" data-live-search="true" required>
+                                        <select id="idDepartamento" name="idDepartamento" class="form-control select2" data-live-search="true">
                                             <option value="" label>--Seleccione --</option>
                                             @foreach($departamentos as $departamento)
                                             <option value="{{$departamento->departamento_id}}">{{$departamento->departamento_nombre.' - '.$departamento->sucursal->sucursal_nombre}}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <label for="idCargo" class="col-sm-2 col-form-label">Cargo</label>
+                                    <label for="idCargo" class="col-sm-2 col-form-label">Cargo*</label>
                                     <div class="col-sm-4">
                                         <select id="idCargo" name="idCargo" class="form-control select2" data-live-search="true" required>
                                             <option value="" label>--Seleccione --</option>
@@ -388,7 +388,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="idSueldo" class="col-sm-2 col-form-label">Sueldo</label>
+                                    <label for="idSueldo" class="col-sm-2 col-form-label">Sueldo*</label>
                                     <div class="col-sm-4 ">
                                         <input type="number" class="form-control derecha-texto" id="idSueldo" name="idSueldo" value="0.00" step="any" placeholder="0.00" required>
                                     </div>
@@ -400,7 +400,7 @@
                                 </div>
                                 
                                 <div class="form-group row">
-                                    <label for="idTipo" class="col-sm-2 col-form-label">Tipo Empleado</label>
+                                    <label for="idTipo" class="col-sm-2 col-form-label">Tipo Empleado*</label>
                                     <div class="col-sm-4">
                                         <select id="idTipo" name="idTipo" class="form-control select2" data-live-search="true" required>
                                             <option value="" label>--Seleccione --</option>
@@ -533,7 +533,7 @@
                                 <div class="form-group row">
                                     <label for="idBanco" class="col-sm-3 col-form-label">Banco</label>
                                     <div class="col-sm-9">
-                                        <select id="idBanco" name="idBanco" class="form-control select2" data-live-search="true" required>
+                                        <select id="idBanco" name="idBanco" class="form-control select2" data-live-search="true">
                                             <option value="" label>--Seleccione una opcion--</option>
                                             @foreach($banco as $banco)
                                             <option value="{{$banco->banco_lista_id}}">{{$banco->banco_lista_nombre}}</option>
@@ -544,7 +544,7 @@
                                 <div class="form-group row">
                                     <label for="idCuenta" class="col-sm-3 col-form-label">Numero de Cuenta</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="idCuenta" name="idCuenta" placeholder="Cuenta" required>
+                                        <input type="text" class="form-control" id="idCuenta" name="idCuenta" placeholder="Cuenta">
                                     </div>
                                 </div>
                                 <div class="card text-center">
@@ -577,7 +577,7 @@
                                 <div class="form-group row">
                                     <label for="idCargaF" class="col-sm-3 col-form-label">Carga Familiar</label>
                                     <div class="col-sm-3">
-                                        <input type="number" class="form-control" id="idCargaF" name="idCargaF" placeholder="Carga Familiar" >
+                                        <input type="number" class="form-control" id="idCargaF" name="idCargaF" placeholder="Carga Familiar" value=0>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -643,7 +643,7 @@
             edad == "" || nacionalidad == "" || estadoCivil == "" || correo == "" || cargaF == "" ||
             contactoNombre == "" || contactoTelefono == "" || contactoCelular == "" || contactoDireccion == "" || observacion == "" ||
             sueldo == "" || fechaIng == "" || cuantaTipo == "" || cuenta == "" || cargo == "" ||
-            departamento == "" || cuentaAnti == "" || cuentaPres == "" || tipo == "" || banco == "") {
+            cuentaAnti == "" || cuentaPres == "" || tipo == "" || banco == "") {
             toastr.warning('Debe rellenar todos los campos','Alerta!', {
                 "progressBar": true,
                 "preventDuplicates": true,

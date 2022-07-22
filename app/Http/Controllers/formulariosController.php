@@ -750,10 +750,11 @@ class formulariosController extends Controller
                 $count ++;
             }
 
-            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id, detalle_fv.detalle_total, 
+            $registros=DB::select(DB::raw("select casillero_tributario.casillero_codigo, producto.producto_id,grupo_producto.grupo_nombre, detalle_fv.detalle_total, 
             detalle_fv.detalle_iva,producto.producto_nombre, factura_venta.factura_numero, tipo_cliente.tipo_cliente_nombre from factura_venta
             inner join detalle_fv on detalle_fv.factura_id = factura_venta.factura_id
             inner join producto on producto.producto_id = detalle_fv.producto_id
+            inner join grupo_producto on producto.grupo_id = grupo_producto.grupo_id
             inner join cliente on cliente.cliente_id = factura_venta.cliente_id
             inner join tipo_cliente on tipo_cliente.tipo_cliente_id = cliente.tipo_cliente_id
             left join casillero_tributario on producto.casillero_id = casillero_tributario.casillero_id
@@ -796,11 +797,29 @@ class formulariosController extends Controller
                                 $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
                             }
                         }else{
-                            $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
-                            $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
-                            $datos[0]['nc'] = 0; 
-                            $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
-                            $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            if($registro->grupo_nombre=='ACTIVO FIJO'){
+                                $countAux = array_search('402', $datosAux); 
+                            }else{
+                                $countAux = array_search('401', $datosAux); 
+                            }
+                            if(!empty($countAux)){
+                                $datos[$countAux]['compraBruta'] = floatval($datos[$countAux]['compraBruta']) + $registro->detalle_total;  
+                                $datos[$countAux]['nc'] = 0; 
+                                $datos[$countAux]['compraNeta'] = floatval($datos[$countAux]['compraBruta']) - floatval($datos[$countAux]['nc']);  
+                                $datos[$countAux]['iva'] = floatval($datos[$countAux]['compraNeta']) * (floatval($datos[$countAux]['porcentaje']) / 100); 
+                                
+                                $datosProductos[$countProd]['producto'] = $registro->producto_nombre;
+                                $datosProductos[$countProd]['codigo'] = $datos[$countAux]['casillero'];
+                                $datosProductos[$countProd]['valor'] = $registro->detalle_total;
+                                $datosProductos[$countProd]['factura'] = $registro->factura_numero;
+                                $countProd = $countProd + 1;
+                            }else{
+                                $datos[0]['sustento'] = $datos[0]['sustento'].' - '.$registro->producto_nombre;
+                                $datos[0]['compraBruta'] = floatval($datos[0]['compraBruta']) + $registro->detalle_total;  
+                                $datos[0]['nc'] = 0; 
+                                $datos[0]['compraNeta'] = floatval($datos[0]['compraBruta']) - floatval($datos[0]['nc']);  
+                                $datos[0]['iva'] = floatval($datos[0]['compraNeta']) * (floatval($datos[0]['porcentaje']) / 100); 
+                            }
                         }
                     }else{
                         if($registro->tipo_cliente_nombre == 'CLIENTE LOCAL'){
